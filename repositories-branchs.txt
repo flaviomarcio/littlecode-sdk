@@ -1,0 +1,3 @@
+git@github.com:flaviomarcio/littlecode-utils-core.git;release/0.0.1
+git@github.com:flaviomarcio/littlecode-setup.git;release/0.0.1
+git@github.com:flaviomarcio/littlecode-mq.git;release/0.0.1
