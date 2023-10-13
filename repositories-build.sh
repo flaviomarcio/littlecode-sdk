@@ -24,9 +24,14 @@ function build(){
 function main(){
   source gitGo
   local cloneDir="${PWD}/targets"
-  build "${cloneDir}" "littlecode-utils-core" "release/0.0.1"
-  build "${cloneDir}" "littlecode-setup" "release/0.0.1"
-  build "${cloneDir}" "littlecode-mq" "release/0.0.1"
+  local RELEASE_0_0_1=release/0.0.1
+  build "${cloneDir}" "littlecode-dependencies-java" ${RELEASE_0_0_1}
+  build "${cloneDir}" "littlecode-utils-core" ${RELEASE_0_0_1}
+  build "${cloneDir}" "littlecode-setup" ${RELEASE_0_0_1}
+  build "${cloneDir}" "littlecode-mq" ${RELEASE_0_0_1}
+  build "${cloneDir}" "littlecode-business" ${RELEASE_0_0_1}
+  build "${cloneDir}" "littlecode-scheduler" ${RELEASE_0_0_1}
+
 }
 
 
