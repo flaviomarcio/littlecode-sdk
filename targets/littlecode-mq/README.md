@@ -1,1 +1,0 @@
-# java-littlecode-mq
