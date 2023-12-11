@@ -19,7 +19,7 @@ public class MQStarted {
 
     public MQStarted(ApplicationContext applicationContext, Environment environment) {
         this.checkAdapters();
-        this.mq = new MQ(new MQ.Factory(new MQ.Setting(applicationContext, environment)));
+        this.mq = new MQ(applicationContext, environment);
         if (this.mq().setting().isAutoStart())
             this.mq().listen();
     }

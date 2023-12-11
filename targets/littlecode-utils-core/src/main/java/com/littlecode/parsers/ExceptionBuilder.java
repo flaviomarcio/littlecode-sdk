@@ -86,9 +86,6 @@ public class ExceptionBuilder {
     public static RuntimeException ofDefault(Object target) {
         return of(Type.Default, target);
     }
-    public static RuntimeException ofUnAuthorization(String message) {
-        return of(Type.UnAuthorization, message);
-    }
     public static RuntimeException ofArithmetical(String message) {
         return of(Type.Arithmetical, message);
     }
@@ -125,13 +122,14 @@ public class ExceptionBuilder {
     public static RuntimeException ofFrameWork(String message) {
         return of(Type.FrameWork, message);
     }
-
-
-    //Class<?>
-    public static RuntimeException ofUnAuthorization(Class<?> eClass) {
-        return of(Type.UnAuthorization, eClass);
+    public static RuntimeException ofUnAuthorization(String message) {
+        return of(Type.UnAuthorization, message);
+    }
+    public static RuntimeException ofNetwork(String message) {
+        return of(Type.Network, message);
     }
 
+    //Class<?>
     public static RuntimeException ofArithmetical(Class<?> eClass) {
         return of(Type.Arithmetical, eClass);
     }
@@ -176,14 +174,16 @@ public class ExceptionBuilder {
     public static RuntimeException ofFrameWork(Class<?> eClass) {
         return of(Type.FrameWork, eClass);
     }
+    public static RuntimeException ofUnAuthorization(Class<?> eClass) {
+        return of(Type.UnAuthorization, eClass);
+    }
+    public static RuntimeException ofNetwork(Class<?> eClass) {
+        return of(Type.Network, eClass);
+    }
 
     //Class<?>,message
     public static RuntimeException ofDefault(Class<?> eClass, String message) {
         return of(Type.Default, eClass, message);
-    }
-
-    public static RuntimeException ofUnAuthorization(Class<?> eClass, String message) {
-        return of(Type.UnAuthorization, eClass, message);
     }
 
     public static RuntimeException ofArithmetical(Class<?> eClass, String message) {
@@ -230,14 +230,16 @@ public class ExceptionBuilder {
     public static RuntimeException ofFrameWork(Class<?> eClass, String message) {
         return of(Type.FrameWork, eClass, message);
     }
+    public static RuntimeException ofUnAuthorization(Class<?> eClass, String message) {
+        return of(Type.UnAuthorization, eClass, message);
+    }
+    public static RuntimeException ofNetwork(Class<?> eClass, String message) {
+        return of(Type.Network, eClass, message);
+    }
 
     //format
     public static RuntimeException ofDefault(String format, Object... args) {
         return of(Type.Default, format, args);
-    }
-
-    public static RuntimeException ofUnAuthorization(String format, Object... args) {
-        return of(Type.UnAuthorization, format, args);
     }
     public static RuntimeException ofArithmetical(String format, Object... args) {
         return of(Type.Arithmetical, format, args);
@@ -279,6 +281,12 @@ public class ExceptionBuilder {
     public static RuntimeException ofFrameWork(String format, Object... args) {
         return of(Type.FrameWork, format, args);
     }
+    public static RuntimeException ofUnAuthorization(String format, Object... args) {
+        return of(Type.UnAuthorization, format, args);
+    }
+    public static RuntimeException ofNetwork(String format, Object... args) {
+        return of(Type.Network, format, args);
+    }
 
     void setArgs(Object[] args) {
         this.args = args;
@@ -309,6 +317,7 @@ public class ExceptionBuilder {
             case Parser -> new ParserException(message);
             case Setting -> new InvalidSettingException(message);
             case UnAuthorization -> new UnAuthorizationException(message);
+            case Network -> new NetworkException(message);
             default -> new RuntimeException(message);
         };
     }
@@ -328,6 +337,7 @@ public class ExceptionBuilder {
         Parser,
         Setting,
         UnAuthorization,
+        Network
     }
 
 }

@@ -48,9 +48,9 @@ public class ModelUtil {
         if(field.isAnnotationPresent(Column.class)){
             var annotation=field.getAnnotation(Column.class);
             if(annotation!=null){
-                checkNull=annotation.nullable();
+                checkNull=!annotation.nullable();
                 checkLen=annotation.length()>0;
-                if(!annotation.nullable() && fieldValue==null){
+                if(checkNull && fieldValue==null){
                     log.error("object:[{}], field: [{}], annotation:[{}], is null ", target.getClass().getName(), field.getName(), annotation.getClass().getName());
                     return false;
                 }
@@ -61,7 +61,7 @@ public class ModelUtil {
         }
 
         if(field.isAnnotationPresent(JoinColumn.class))
-            checkNull=checkNull || field.getAnnotation(JoinColumn.class).nullable();
+            checkNull=checkNull || !field.getAnnotation(JoinColumn.class).nullable();
 
         if(field.isAnnotationPresent(Id.class)){
             var annotation=field.getAnnotation(Id.class);
@@ -75,7 +75,8 @@ public class ModelUtil {
         }
 
         if(checkLen && field.getType().equals(String.class)){
-            if(((String)fieldValue).length()>length){
+            var strValue=((String)fieldValue);
+            if(strValue!=null && strValue.length()>length){
                 log.error("object:[{}], field: [{}], maximum:[{}], current:[{}], message:\"exceeded length\" ",target.getClass().getName(), field.getName(), length,((String) fieldValue).length());
                 return false;
             }

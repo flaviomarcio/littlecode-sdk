@@ -8,7 +8,6 @@ import com.littlecode.parsers.ObjectUtil;
 import com.littlecode.parsers.PrimitiveUtil;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -22,26 +21,36 @@ import java.util.*;
 
 @Slf4j
 @Service
-@Component
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class MQ {
     public static final String MQ_BEAN_NAME_INSTANCE = "littleCodeMqBeanNameInstance";
     public static final String MQ_BEAN_NAME_DISPATCHER = "littleCodeMqBeanNameDispatcher";
     public static final String MQ_BEAN_NAME_CONSUMER = "littleCodeMqBeanNameConsumer";
     public static final String MQ_BEAN_RECEIVER = "littleCodeMqBeanReceiver";
-
-    private final Factory factory;
+    private final Setting setting;
     private MQAdapter adapter = null;
+
+    public MQ(){
+        this.setting=new Setting();
+    }
+
+    public MQ(Setting setting){
+        this.setting=setting;
+    }
+
+    public MQ(ApplicationContext applicationContext, Environment environment){
+        this.setting=new Setting(applicationContext,environment);
+    }
 
 
     public Setting setting() {
-        return this.factory.setting();
+        return setting.load();
     }
 
     private MQAdapter adapterCreate() {
         if(adapter!=null)
             return this.adapter;
-        var engine = factory.setting().getEngine();
+        var engine = setting.getEngine();
         if (PrimitiveUtil.isEmpty(engine))
             throw ExceptionBuilder.ofNotFound(String.format("Invalid [%s] name", MQAdapter.class.getName()));
         var aClass = ObjectUtil.classByName(engine);
@@ -106,7 +115,6 @@ public class MQ {
     }
 
     @Configuration
-    @Getter
     public static class Setting {
         private static final String env_mq_engine = "littlecode.mq.engine";
         private static final String env_mq_auto_create = "littlecode.mq.auto-create";
@@ -126,37 +134,101 @@ public class MQ {
         private static final String env_mq_idle_sleep = "littlecode.mq.idle-sleep";
         private static final String env_client_id = "littlecode.mq.client.id";
         private static final String env_client_secret = "littlecode.mq.client.secret";
-        private final ApplicationContext applicationContext;
-        private final Environment environment;
 
+        private static ApplicationContext STATIC_APPLICATION_CONTEXT;
+        private static Environment STATIC_ENVIRONMENT;
+
+        private boolean loaded=false;
+        @Getter
+        private ApplicationContext context;
+        @Getter
+        private Environment environment;
+
+        @Getter
+        @Setter
         private String engine;
+        @Getter
+        @Setter
         private boolean autoCreate;
+        @Getter
+        @Setter
         private boolean autoStart;
+        @Getter
+        @Setter
         private boolean stopOnFail;
+        @Getter
+        @Setter
         private String hostName;
+        @Getter
+        @Setter
         private String vHostName;
+        @Getter
+        @Setter
         private String queueChannel;
+        @Getter
+        @Setter
         private String queueExchange;
+        @Getter
+        @Setter
         private int port;
+        @Getter
+        @Setter
         private String url;
+        @Getter
         private List<String> queueName;
+        @Setter
         private List<String> queueNameConsumer;
+        @Getter
+        @Setter
         private List<String> queueNameDispatcher;
+        @Getter
+        @Setter
         private String queueRegion;
+        @Setter
         private int queueMaxNumber;
+        @Setter
         private int queueIdleSleep;
+        @Getter
+        @Setter
         private String clientId;
+        @Getter
+        @Setter
         private String clientSecret;
 
-        public Setting(ApplicationContext applicationContext, Environment environment) {
-            this.applicationContext = applicationContext;
-            this.environment = environment;
+        public ApplicationContext getContext(){
+            if(this.context ==null)
+                return STATIC_APPLICATION_CONTEXT;
+            return this.context;
+        }
+
+        public Environment getEnvironment(){
+            if(this.environment ==null)
+                return STATIC_ENVIRONMENT;
+            return this.environment;
+        }
+
+        public Setting() {
+            configure(STATIC_APPLICATION_CONTEXT, STATIC_ENVIRONMENT);
+        }
+
+        public Setting(ApplicationContext context, Environment environment) {
+            configure(context, environment);
+        }
+
+        private void configure(ApplicationContext context, Environment environment) {
+            this.context = context;
+            this.environment =environment;
+            if(Setting.STATIC_APPLICATION_CONTEXT==null)
+                Setting.STATIC_APPLICATION_CONTEXT= context;
+            if(Setting.STATIC_ENVIRONMENT==null)
+                Setting.STATIC_ENVIRONMENT=environment;
             this.load();
         }
 
+
         public String readEnv(String env, String defaultValue) {
             try {
-                return environment.getProperty(env, defaultValue);
+                return getEnvironment().getProperty(env, defaultValue);
             } catch (Exception e) {
                 return defaultValue;
             }
@@ -164,7 +236,7 @@ public class MQ {
 
         public List<String> readEnvList(String env) {
             try {
-                var values = List.of(environment.getProperty(env, "").split(","));
+                var values = List.of(getEnvironment().getProperty(env, "").split(","));
                 List<String> out = new ArrayList<>();
                 values.forEach(s -> {
                     if (s != null && !s.trim().isEmpty())
@@ -180,7 +252,9 @@ public class MQ {
             return this.readEnv(env, "");
         }
 
-        private void load() {
+        private Setting load() {
+            if(loaded)
+                return this;
             this.engine = readEnv(env_mq_engine, "amqp");
             this.autoCreate = PrimitiveUtil.toBool(readEnv(env_mq_auto_create, "false"));
             this.autoStart = PrimitiveUtil.toBool(readEnv(env_mq_auto_start, "false"));
@@ -197,10 +271,22 @@ public class MQ {
             this.queueNameDispatcher = readEnvList(env_mq_name_dispatcher);
             this.clientId = readEnv(env_client_id);
             this.clientSecret = readEnv(env_client_secret);
-            this.queueMaxNumber = PrimitiveUtil.toInt(environment.getProperty(env_mq_max_number, "1"));
-            this.queueIdleSleep = PrimitiveUtil.toInt(environment.getProperty(env_mq_idle_sleep, "1000"));
+            this.queueMaxNumber = PrimitiveUtil.toInt(getEnvironment().getProperty(env_mq_max_number, "1"));
+            this.queueIdleSleep = PrimitiveUtil.toInt(getEnvironment().getProperty(env_mq_idle_sleep, "1000"));
+            this.loaded=true;
+            return this;
         }
 
+        public void setQueueName(final List<String> queueName) {
+            this.queueName = queueName;
+        }
+
+        public void setQueueName(final String queueName) {
+            if(PrimitiveUtil.isEmpty(queueName))
+                this.queueName.clear();
+            else
+                this.queueName=List.of(queueName);
+        }
 
         public List<String> getQueueNameConsumer() {
             if (!PrimitiveUtil.isEmpty(this.queueName))
@@ -210,9 +296,12 @@ public class MQ {
             return new ArrayList<>();
         }
 
-
         public List<String> getQueueNameDispatchers() {
-            return this.queueNameDispatcher;
+            if (!PrimitiveUtil.isEmpty(this.queueName))
+                return this.queueName;
+            if (!PrimitiveUtil.isEmpty(this.queueNameDispatcher))
+                return this.queueNameDispatcher;
+            return new ArrayList<>();
         }
 
         public int getQueueMaxNumber() {
@@ -238,9 +327,9 @@ public class MQ {
             private String messageId;
             private UUID checksum;
             private Object body;
+            private String fail;
             public Task(){
             }
-
             public static Task of(Object type, Object body) {
                 var outType=ObjectUtil.classToName(type);
                 return Task
@@ -332,42 +421,4 @@ public class MQ {
         }
     }
 
-    @Slf4j
-    @RequiredArgsConstructor
-    @Configuration
-    public static class Factory {
-        private final Setting setting;
-
-        public Setting setting() {
-            return setting;
-        }
-
-        public <T> T getBean(String beanName, Class<T> valueType) {
-            try {
-                return setting.getApplicationContext().getBean(beanName, valueType);
-            } catch (BeansException ignore) {
-                return null;
-            }
-        }
-
-        @SuppressWarnings("unused")
-        public String getBeanString(String beanName) {
-            var response = this.getBean(beanName, String.class);
-            return response == null ? "" : response;
-        }
-
-        public List<String> getBeanListString(String beanName) {
-            var list = getBean(beanName, List.class);
-            if (list == null)
-                return new ArrayList<>();
-            List<String> out = new ArrayList<>();
-            for (var item : list) {
-                var queue = item.toString().trim();
-                if (!queue.isEmpty())
-                    out.add(item.toString());
-            }
-
-            return out;
-        }
-    }
 }

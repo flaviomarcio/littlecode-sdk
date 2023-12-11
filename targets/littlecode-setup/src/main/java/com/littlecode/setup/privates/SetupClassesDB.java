@@ -4,6 +4,7 @@ import com.littlecode.exceptions.FrameworkException;
 import com.littlecode.files.IOUtil;
 import com.littlecode.files.PathUtil;
 import com.littlecode.setup.db.metadata.MetaDataClasses;
+import com.littlecode.util.SystemUtil;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
@@ -57,8 +58,8 @@ public class SetupClassesDB {
 
     public interface ObjectBase {
         void clear();
-
-        ObjectBase makeSources();
+//
+//        void makeSources();
 
         default boolean isValid() {
             return true;
@@ -85,12 +86,19 @@ public class SetupClassesDB {
             return String.format("target: %s, fileName: %s, fail:%s", this.target, this.getFileName(), this.fail);
         }
 
+        public File getDirectory() {
+            if (this.directory != null)
+                return this.directory;
+            log.info("Directory is empty, using default directory JAVA_TEMP_DIR: [{}]", SystemUtil.Env.JAVA_TEMP_DIR.toFile());
+            return (this.directory = SystemUtil.Env.JAVA_TEMP_DIR.toFile());
+        }
+
         public File getFileName() {
             if (this.fileName != null)
                 return this.fileName;
             return
                     this.fileName = PathUtil
-                            .target(directory)
+                            .target(getDirectory())
                             .part(this.target.getValue() + SQL_EXTENSION)
                             .toFile();
         }

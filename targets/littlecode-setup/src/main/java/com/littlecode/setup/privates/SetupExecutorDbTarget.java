@@ -26,6 +26,18 @@ public class SetupExecutorDbTarget {
     private SetupSetting setting;
     private Connection connection;
     private Setup.ExecutorDataBase executorDataBase;
+    private SetupExecutorDbDDL setupExecutorDbDDL;
+
+    private SetupExecutorDbDDL setupExecutorDbDDL (){
+        if(setupExecutorDbDDL!=null)
+            return setupExecutorDbDDL;
+        return setupExecutorDbDDL=SetupExecutorDbDDL
+                .builder()
+                .connection(connection)
+                .executorDataBase(this.executorDataBase)
+                .setting(this.setting)
+                .build();
+    }
 
     private List<SetupClassesDB.StatementItem> createStatementItemList() {
 
@@ -100,12 +112,7 @@ public class SetupExecutorDbTarget {
             statementItems.addAll(parseDir.apply(fileList));
         }
         if (setting.getDatabase().isAutoStart()) {
-            var easySetupExecutorDbDDL = SetupExecutorDbDDL
-                    .builder()
-                    .executorDataBase(this.executorDataBase)
-                    .setting(this.setting)
-                    .build()
-                    .execute();
+            var easySetupExecutorDbDDL = setupExecutorDbDDL();
             if (setting.getDatabase().isAutoApply())
                 statementItems.addAll(easySetupExecutorDbDDL.getStatementItems());
         }
@@ -116,40 +123,36 @@ public class SetupExecutorDbTarget {
         var ddlSetting = setting.getDatabase().getDDL();
         if (!ddlSetting.isAutoSave())
             return;
-        List<SetupClassesDB.StatementItem> statementItems = new ArrayList<>();
-        var dropSafeOld = ddlSetting.isSafeDrops();
-        try {
-            ddlSetting.setSafeDrops(false);
-            var easySetupExecutorDbDDL = SetupExecutorDbDDL
-                    .builder()
-                    .executorDataBase(this.executorDataBase)
-                    .setting(this.setting)
-                    .build()
-                    .execute();
-            statementItems.addAll(easySetupExecutorDbDDL.getStatementItems());
-        } finally {
-            ddlSetting.setSafeDrops(dropSafeOld);
+
+        var setupExecutorDbDDL=this.setupExecutorDbDDL();
+
+        var databases=setting.getDatabase().getTarget().getDatabases();
+        if(databases==null || databases.isEmpty())
+            databases=List.of(setupExecutorDbDDL.metaDataEngine().databaseOf());
+        for(var database:databases){
+            List<SetupClassesDB.StatementItem> statementItems = new ArrayList<>();
+            var dropSafeOld = ddlSetting.isSafeDrops();
+            try {
+                ddlSetting.setSafeDrops(false);
+                var easySetupExecutorDbDDL = this.setupExecutorDbDDL();
+                statementItems.addAll(easySetupExecutorDbDDL.getStatementItems(database));
+            } finally {
+                ddlSetting.setSafeDrops(dropSafeOld);
+            }
+
+            var exportDir = this.setting.getDatabase().getDDL().getExporterDirName(database.name().toLowerCase());
+            IOUtil
+                    .target(exportDir)
+                    .delete();
+
+            IOUtil.createDir(exportDir);
+            statementItems
+                    .forEach(
+                            statementItem ->
+                                    log.debug("out file: {}", statementItem.save(exportDir).getFileName())
+                    );
         }
 
-        var dbType="";
-        try {
-            dbType=connection.getMetaData().getDatabaseProductName().toLowerCase();
-        } catch (SQLException e) {
-            log.error(e.getMessage());
-            dbType="unknown";
-        }
-
-        var exportDir = this.setting.getDatabase().getDDL().getExporterDirName(dbType);
-        IOUtil
-                .target(exportDir)
-                .delete();
-
-        IOUtil.createDir(exportDir);
-        statementItems
-                .forEach(
-                        statementItem ->
-                                log.debug("out file: {}", statementItem.save(exportDir).getFileName())
-                );
     }
 
     private boolean executeExecSources() {

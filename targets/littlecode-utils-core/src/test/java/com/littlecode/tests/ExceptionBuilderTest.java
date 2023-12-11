@@ -52,9 +52,6 @@ public class ExceptionBuilderTest {
         Assertions.assertThrows(ParserException.class, () -> {
             throw ExceptionBuilder.ofParser(Object.class);
         });
-        Assertions.assertThrows(UnAuthorizationException.class, () -> {
-            throw ExceptionBuilder.ofUnAuthorization(Object.class);
-        });
         Assertions.assertThrows(UnknownException.class, () -> {
             throw ExceptionBuilder.ofUnknown(Object.class);
         });
@@ -63,6 +60,12 @@ public class ExceptionBuilderTest {
         });
         Assertions.assertThrows(FrameworkException.class, () -> {
             throw ExceptionBuilder.ofFrameWork(Object.class);
+        });
+        Assertions.assertThrows(UnAuthorizationException.class, () -> {
+            throw ExceptionBuilder.ofUnAuthorization(Object.class);
+        });
+        Assertions.assertThrows(NetworkException.class, () -> {
+            throw ExceptionBuilder.ofNetwork(Object.class);
         });
     }
 
@@ -96,9 +99,6 @@ public class ExceptionBuilderTest {
         Assertions.assertThrows(ParserException.class, () -> {
             throw ExceptionBuilder.ofParser("test");
         });
-        Assertions.assertThrows(UnAuthorizationException.class, () -> {
-            throw ExceptionBuilder.ofUnAuthorization("test");
-        });
         Assertions.assertThrows(InvalidException.class, () -> {
             throw ExceptionBuilder.ofInvalid("test");
         });
@@ -110,6 +110,12 @@ public class ExceptionBuilderTest {
         });
         Assertions.assertThrows(FrameworkException.class, () -> {
             throw ExceptionBuilder.ofFrameWork("test");
+        });
+        Assertions.assertThrows(UnAuthorizationException.class, () -> {
+            throw ExceptionBuilder.ofUnAuthorization("test");
+        });
+        Assertions.assertThrows(NetworkException.class, () -> {
+            throw ExceptionBuilder.ofNetwork("test");
         });
     }
 
@@ -159,6 +165,9 @@ public class ExceptionBuilderTest {
         Assertions.assertThrows(FrameworkException.class, () -> {
             throw ExceptionBuilder.ofFrameWork("%s: %s", "test", Object.class);
         });
+        Assertions.assertThrows(NetworkException.class, () -> {
+            throw ExceptionBuilder.ofNetwork("%s: %s", "test", Object.class);
+        });
     }
 
     @Test
@@ -204,6 +213,9 @@ public class ExceptionBuilderTest {
         });
         Assertions.assertThrows(FrameworkException.class, () -> {
             throw ExceptionBuilder.ofFrameWork(Object.class, "test");
+        });
+        Assertions.assertThrows(NetworkException.class, () -> {
+            throw ExceptionBuilder.ofNetwork(Object.class, "test");
         });
     }
 

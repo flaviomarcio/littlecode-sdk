@@ -4,6 +4,7 @@ import com.littlecode.parsers.ObjectUtil;
 import com.littlecode.parsers.PrimitiveUtil;
 import com.littlecode.parsers.StringUtil;
 import com.littlecode.setup.SetupDescription;
+import com.littlecode.setup.SetupMetaField;
 import com.littlecode.setup.privates.SetupClassesDB;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,30 +13,25 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 
 public class MetaDataClasses {
-
-    public static final String SQL_COMMAND_COMMENT = "--";
-    public static final String SQL_COMMAND_DELIMITER = ";";
     public static final String UNKNOWN = "UNKNOWN";
-    public static final String FORMAT_EXTENSION_UUID = "create extension if not exists \"uuid-ossp\"";
-    public static final String FORMAT_SET_DEFAULT_SCHEMA = "set search_path to %s";
-    public static final String FORMAT_CREATE_SCHEMA = "create schema if not exists %s";
-    public static final String FORMAT_CREATE_TABLE = "create table if not exists %s(%s)";
-    public static final String FORMAT_ALTER_TABLE = "alter table if exists %s ";
-    public static final String FORMAT_ALTER_TABLE_ADD_COLUMN = FORMAT_ALTER_TABLE + "add if not exists %s";
-    @SuppressWarnings("unused")
-    public static final String FORMAT_DROP_SCHEMA = "drop schema if exists %s cascade";
-    public static final String FORMAT_DROP_TABLE = "drop table if exists %s cascade";
-    //public static final String FORMAT_DROP_CONSTRAINT ="drop constraint if exists %s";
+    public static final String SQL_COMMAND_COMMENT = "--";
+    public static final String SQL_NOT_NULL = " not null ";
+    public static final String SQL_DEFAULT = " default ";
+    public static final String SQL_COMMAND_DELIMITER = ";";
+    public static final String FORMAT_CONSTRAINT_NAME_FK = "fk__%s_%s_on_%s_%s";
     public static final String FORMAT_CONSTRAINT_NAME_PK = "pk__%s_%s";
-    public static final String FORMAT_CONSTRAINT_NAME_FK = "fk__%s_on_%s_%s";
-    public static final String FORMAT_TABLE_PK = "alter table if exists %s add constraint %s primary key (%s)";
-    public static final String FORMAT_TABLE_FK = "alter table if exists %s add constraint %s foreign key (%s) references %s(%s)";
+    public static final String FORMAT_TABLE_FK = "alter table %s add constraint %s foreign key (%s) references %s(%s)";
+    public static final String FORMAT_TABLE_PK = "alter table %s add constraint %s primary key (%s)";
+    public static final String FORMAT_CREATE_SCHEMA = "create schema %s";
+    public static final String FORMAT_CREATE_TABLE = "create table %s(%s)".toUpperCase();
+    public static final String FORMAT_DROP_SCHEMA = "drop schema %s cascade".toUpperCase();
+    public static final String FORMAT_DROP_TABLE = "drop table %s cascade".toUpperCase();
+    public static final String FORMAT_SET_DEFAULT_SCHEMA = "set schema %s;";
+    public static final String FORMAT_ALTER_TABLE = "alter table %s ".toUpperCase();
+    public static final String FORMAT_ALTER_TABLE_ADD_COLUMN = FORMAT_ALTER_TABLE + "add %s".toUpperCase();
 
     public enum DataType {
         Unknown, String, Boolean, Double, Integer, BigInt, Uuid, Date, Time, DateTime
@@ -45,11 +41,12 @@ public class MetaDataClasses {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class MetaField {
-        Boolean nullable;
-        Boolean unique;
-        Boolean primaryKey;
-        Object defaultValue;
-        Boolean ignored;
+        private Boolean nullable;
+        private Boolean unique;
+        private Boolean primaryKey;
+        private Boolean foreignKey;
+        private Object defaultValue;
+        private Boolean ignored;
         private Class<?> fieldMetaType;
         private Field field;
         private DataType dataType;
@@ -78,18 +75,23 @@ public class MetaDataClasses {
         }
 
         private Column column() {
-
             if (!field.isAnnotationPresent(Column.class))
                 return null;
             return field.getAnnotation(Column.class);
         }
 
         private JoinColumn joinColumn() {
-
             if (!field.isAnnotationPresent(JoinColumn.class))
                 return null;
             return field.getAnnotation(JoinColumn.class);
         }
+
+        private Id idColumn() {
+            if (!field.isAnnotationPresent(Id.class))
+                return null;
+            return field.getAnnotation(Id.class);
+        }
+
 
         public String getComment() {
             if (!field.isAnnotationPresent(SetupDescription.class))
@@ -139,11 +141,16 @@ public class MetaDataClasses {
                 return this.nullable;
             var column = this.column();
             if (column != null)
-                this.nullable = column.nullable();
+                return (this.nullable = column.nullable());
             else {
                 var joinColumn = this.joinColumn();
                 if (joinColumn != null)
-                    this.nullable = joinColumn.nullable();
+                    return (this.nullable = joinColumn.nullable());
+                else {
+                    var id = this.idColumn();
+                    if (id != null)
+                        return (this.nullable = false);
+                }
             }
             return this.nullable == null || Boolean.TRUE.equals(this.nullable);
         }
@@ -163,9 +170,30 @@ public class MetaDataClasses {
         }
 
         public Boolean isPrimaryKey() {
-            if (this.primaryKey == null)
-                this.primaryKey = this.field.isAnnotationPresent(Id.class) || this.isUnique();
-            return this.primaryKey;
+            if (this.primaryKey != null)
+                return this.primaryKey;
+            if (!(this.field.isAnnotationPresent(Id.class) || this.isUnique()))
+                return (this.primaryKey = false);
+
+            var setupMetaField = this.field.getType().getAnnotation(SetupMetaField.class);
+            if (setupMetaField != null) {
+                if (setupMetaField.ignore())
+                    return (this.primaryKey = false);
+                return (this.primaryKey = setupMetaField.primaryKeyIgnore());
+            }
+            return (this.primaryKey = true);
+        }
+
+        public Boolean isForeignKey() {
+            if (!this.field.getType().isAnnotationPresent(Table.class))
+                return (foreignKey = false);
+            var setupMetaField = this.field.getType().getAnnotation(SetupMetaField.class);
+            if (setupMetaField != null) {
+                if (setupMetaField.ignore())
+                    return (this.foreignKey = false);
+                return (this.foreignKey = setupMetaField.foreignKeyIgnore());
+            }
+            return (this.foreignKey = true);
         }
 
         public Boolean isTable() {
@@ -185,7 +213,7 @@ public class MetaDataClasses {
                     this.length = column.length();
             }
             this.length = this.length == null ? 0 : this.length;
-            if (this.getDataType() == DataType.Double && this.length == 0)
+            if (this.getDataType() == DataType.Double && (this.length == 0 || this.length == 255))
                 this.length = 15;
             else if (this.getDataType() == DataType.String && this.length == 0)
                 this.length = -1;
@@ -209,53 +237,6 @@ public class MetaDataClasses {
                 this.ignored = this.field.isAnnotationPresent(Transient.class);
             ;
             return this.ignored;
-        }
-
-        public String getDefaultValue() {
-            var __return =
-                    this.defaultValue == null
-                            ? null
-                            : defaultValue.toString();
-            if (this.isPrimaryKey())
-                return __return;
-
-            if (__return == null) {
-                __return = switch (this.getDataType()) {
-                    case Double, Integer, BigInt -> "0";
-                    case String -> "''";
-                    case Boolean -> "false";
-//                    case Date -> null;
-//                    case DateTime -> null;
-//                    case Time -> null;
-//                    case Uuid -> null;
-//                    case Undefined -> null;
-                    default -> null;
-                };
-            }
-            return __return;
-        }
-
-        public String asSQLScript() {
-            var sqlType = MetaDataUtil.getSQLFieldTypeByClass(this.getDataType());
-            if (sqlType.isEmpty())
-                sqlType = String.format("[%s]", this.getFieldMetaType().getName());
-            var type = new StringBuilder(this.getName());
-
-            type
-                    .append(" ")
-                    .append(
-                            switch (this.getDataType()) {
-                                case Double -> String.format(sqlType, this.getLength(), this.getPrecision());
-                                case String -> String.format(sqlType, this.getLength());
-                                default -> sqlType;
-                            }
-                    );
-            if (!this.isNullable())
-                type.append(" not null");
-            var defaultValue = this.getDefaultValue();
-            if (defaultValue != null)
-                type.append(" default ").append(defaultValue);
-            return type.toString();
         }
     }
 
@@ -287,13 +268,6 @@ public class MetaDataClasses {
                 if (field.isPrimaryKey())
                     return field;
             return null;
-        }
-
-        private String getTablePK() {
-            for (var field : this.getFields())
-                if (field.isPrimaryKey())
-                    return field.getName();
-            return "";
         }
 
         private Table getAnTable() {
@@ -331,12 +305,12 @@ public class MetaDataClasses {
                     : String.format("%s.%s", schemaName, tableName).toLowerCase();
         }
 
-        public List<MetaField> getFieldsTable() {
+        public List<MetaField> getForeignKeyFields() {
             List<MetaField> fields = new ArrayList<>();
             this.getFields()
-                    .forEach(metaField -> {
-                        if (metaField.isTable())
-                            fields.add(metaField);
+                    .forEach(field -> {
+                        if (field.isForeignKey())
+                            fields.add(field);
                     });
             return fields;
         }
@@ -373,92 +347,6 @@ public class MetaDataClasses {
         public void clear() {
             listOfObject()
                     .forEach(List::clear);
-        }
-
-        @Override
-        public SetupClassesDB.ObjectBase makeSources() {
-            if (this.getFields() == null)
-                return this;
-
-            this.clear();
-
-            var tableName = this.getTableName();
-            var tableFullName = this.getTableFullName();
-            Function<List<String>, List<String>> tableDescAdd = new Function<List<String>, List<String>>() {
-                @Override
-                public List<String> apply(List<String> strings) {
-                    if (strings.isEmpty()) {
-                        strings.add(SQL_COMMAND_COMMENT);
-                        strings.add(SQL_COMMAND_COMMENT + "table name: " + tableFullName);
-                        strings.add(SQL_COMMAND_COMMENT);
-                    }
-                    return strings;
-                }
-            };
-            tableDescAdd
-                    .apply(this.drops)
-                    .add(String.format(FORMAT_DROP_TABLE, tableFullName));
-
-
-            List<MetaField> fields = new ArrayList<>();
-            Map<MetaField, String> fieldsComment = new HashMap<>();
-            for (var field : this.getFields()) {
-                if (field.isIgnored())
-                    continue;
-                fields.add(field);
-            }
-
-            for (int i = 0; i < fields.size(); i++) {
-                MetaField field = fields.get(i);
-                var fieldSource = field.asSQLScript();
-                if (i == 0) {
-                    tableDescAdd
-                            .apply(this.table)
-                            .add(String.format(FORMAT_CREATE_TABLE, tableFullName, fieldSource));
-                }
-                this.table.add(String.format(FORMAT_ALTER_TABLE_ADD_COLUMN, tableFullName, fieldSource));
-
-                var comment = field.getComment();
-                if (!comment.isEmpty()) {
-                    fieldsComment.put(field, comment);
-                }
-            }
-
-            if (!fieldsComment.isEmpty()) {
-                this.table.add(SQL_COMMAND_COMMENT + "comments");
-                fieldsComment.forEach((field, comment) -> {
-                    this.table.add(String.format("comment on column %s.%s is '%s';", tableFullName, field.getName(), comment));
-                });
-            }
-
-
-            var getTablePK = this.getTablePK();
-            if (!PrimitiveUtil.isEmpty(getTablePK)) {
-                var constraintName = String.format(FORMAT_CONSTRAINT_NAME_PK, tableName, getTablePK);
-                tableDescAdd
-                        .apply(this.constraintsPK)
-                        .add(String.format(FORMAT_TABLE_PK, tableFullName, constraintName, getTablePK));
-            }
-
-            var getFieldsTable = this.getFieldsTable();
-            if (!getFieldsTable.isEmpty()) {
-                if (this.constraintsFK.isEmpty())
-                    tableDescAdd.apply(this.constraintsFK);
-                this.getFieldsTable()
-                        .forEach(field -> {
-                            var refTable = field.asTable();
-                            refTable.setSchemaName(this.schemaName);//default schema name, no use to set getSchemaName()
-                            var refTableName = refTable.getTableName();
-                            var refTableFullName = refTable.getTableFullName();
-                            var refPKFieldName = refTable.getTablePK();
-                            var fkFieldName = field.getName().replace(",", "_");
-                            var constraintName = String.format(FORMAT_CONSTRAINT_NAME_FK, fkFieldName, refTableName, refPKFieldName);
-                            this.constraintsFK.add(String.format(FORMAT_TABLE_FK, tableFullName, constraintName, fkFieldName, refTableFullName, refPKFieldName));
-                        });
-            }
-
-
-            return this;
         }
     }
 

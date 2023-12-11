@@ -19,6 +19,7 @@ import java.util.Properties;
 
 public class DataSourceBase {
     @Autowired
+    @SuppressWarnings("unused")
     private Environment environment;
     //database
     public static final String H2 = "h2";
@@ -26,6 +27,7 @@ public class DataSourceBase {
     public static final String SQLSERVER = "sqlserver";
     public static final String ORACLE = "oracle";
     public static final String MYSQL = "mysql";
+    public static final String SERVICE = "service";
 
     //Method
     public static final String METHOD_MANAGER_FACTORY = "ManagerFactory";
@@ -42,6 +44,8 @@ public class DataSourceBase {
     public static final String BASE_PACKAGES_DEFAULT_ORACLE = BASE_PACKAGES_DEFAULT_REPOSITORY + ORACLE;
     public static final String BASE_PACKAGES_DEFAULT_MYSQL = BASE_PACKAGES_DEFAULT_REPOSITORY + MYSQL;
     public static final String BASE_PACKAGES_DEFAULT_SQLSERVER = BASE_PACKAGES_DEFAULT_REPOSITORY + SQLSERVER;
+
+    public static final String BASE_PACKAGES_DEFAULT_SERVICE = BASE_PACKAGES_DEFAULT_REPOSITORY + SERVICE;
     //hibernate
     public static final String HIBERNATE_SETTING = "hibernate.";
     public static final String HIBERNATE_SETTING_IMPLICIT_NAMING_STRATEGY = HIBERNATE_SETTING+"implicit_naming_strategy";
@@ -59,6 +63,7 @@ public class DataSourceBase {
     public static final String DS_POSTGRES = DS_BASE+POSTGRESQL;
     public static final String DS_SQLSERVER = DS_BASE+SQLSERVER;
     public static final String DS_ORACLE = DS_BASE+ORACLE;
+    public static final String DS_SERVICE = DS_BASE+SERVICE;
     private final String dbType;
 
     public String getDbType(){

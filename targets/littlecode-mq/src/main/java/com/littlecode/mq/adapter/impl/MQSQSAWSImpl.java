@@ -5,6 +5,7 @@ import com.littlecode.mq.adapter.MQAdapter;
 import com.littlecode.parsers.ExceptionBuilder;
 import com.littlecode.parsers.ObjectUtil;
 import com.littlecode.parsers.PrimitiveUtil;
+import com.littlecode.util.BeanUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
@@ -32,16 +33,16 @@ public class MQSQSAWSImpl extends MQAdapter {
         return MQ.Executor
                 .builder()
                 .listen(() -> {
-                    var queueFactory = new MQ.Factory(setting());
-                    var queueNameList = queueFactory.getBeanListString(MQ.MQ_BEAN_NAME_CONSUMER);
+                    //noinspection unchecked
+                    List<String> queueNameList = BeanUtil.of(context()).bean(MQ.MQ_BEAN_NAME_CONSUMER).as(List.class);
                     if (PrimitiveUtil.isEmpty(queueNameList))
-                        queueNameList = queueFactory.setting().getQueueNameConsumer();
+                        queueNameList = setting().getQueueNameConsumer();
 
                     if (PrimitiveUtil.isEmpty(queueNameList))
                         throw ExceptionBuilder.ofFrameWork("Invalid queue name");
 
                     for (var queueName : queueNameList)
-                        Listener.listen(this, queueFactory, queueName);
+                        Listener.listen(this, setting(), queueName);
                 })
                 .build();
     }
@@ -51,7 +52,7 @@ public class MQSQSAWSImpl extends MQAdapter {
                 .builder()
                 .dispatcherObject(task -> {
                     this.queueDispatcher = this.queueDispatcher==null
-                            ?new Dispatcher(this, new MQ.Factory(setting()))
+                            ?new Dispatcher( setting(), this)
                             :queueDispatcher;
                     return queueDispatcher.dispatcher(task);
                 })
@@ -149,16 +150,16 @@ public class MQSQSAWSImpl extends MQAdapter {
     @Configuration
     @RequiredArgsConstructor
     public static class Dispatcher {
+        private final MQ.Setting setting;
         private final MQSQSAWSImpl adapter;
-        private final MQ.Factory queueFactory;
         private List<String> queue;
 
         public List<String> queue() {
-            var queueNames = this.queue;
+            List<String> queueNames = this.queue;
+            if (PrimitiveUtil.isEmpty(queueNames))//noinspection unchecked
+                queueNames = BeanUtil.of(setting.getContext()).bean(MQ.MQ_BEAN_NAME_DISPATCHER).as(List.class);
             if (PrimitiveUtil.isEmpty(queueNames))
-                queueNames = queueFactory.getBeanListString(MQ.MQ_BEAN_NAME_DISPATCHER);
-            if (PrimitiveUtil.isEmpty(queueNames))
-                queueNames = this.queueFactory.setting().getQueueNameDispatchers();
+                queueNames = this.setting.getQueueNameDispatchers();
             return queueNames;
         }
 
@@ -209,7 +210,7 @@ public class MQSQSAWSImpl extends MQAdapter {
                 } catch (AwsServiceException | SdkClientException e) {
                     log.error("Queue:[{}], fail: {}, body: {}", queueName, e.getMessage(), message);
                     if (e instanceof QueueDoesNotExistException) {
-                        if (!queueFactory.setting().isAutoCreate())
+                        if (!setting.isAutoCreate())
                             throw ExceptionBuilder.of(e);
                         if (!adapter.queueCreate(sqsClient, queueName))
                             throw ExceptionBuilder.of(e);
@@ -228,7 +229,7 @@ public class MQSQSAWSImpl extends MQAdapter {
         private static final ExecutorService executorService = Executors.newSingleThreadExecutor();
         private static final ConcurrentMap<String, Future<?>> listeners = new ConcurrentHashMap<>();
         private final MQSQSAWSImpl adapter;
-        private final MQ.Factory queueFactory;
+        private final MQ.Setting setting;
         private final String queueName;
 
         @SuppressWarnings("unused")
@@ -238,10 +239,10 @@ public class MQSQSAWSImpl extends MQAdapter {
             aux.forEach((s, listener) -> listener.cancel(true));
         }
 
-        public static void listen(MQSQSAWSImpl adapter, MQ.Factory queueFactory, String queueName) {
+        public static void listen(MQSQSAWSImpl adapter, MQ.Setting setting, String queueName) {
             if (listeners.containsKey(queueName.toLowerCase()))
                 return;
-            Future<?> listener = executorService.submit(new Listener(adapter, queueFactory, queueName));
+            Future<?> listener = executorService.submit(new Listener(adapter, setting, queueName));
             listeners.put(queueName.toLowerCase(), listener);
         }
 
@@ -281,11 +282,11 @@ public class MQSQSAWSImpl extends MQAdapter {
         @Override
         public void run() {
             log.debug("Queue:[{}] started", this.queueName);
-            var queueExecutor = queueFactory.getBean(MQ.MQ_BEAN_RECEIVER, MQ.Executor.class);
+            var queueExecutor = BeanUtil.of(setting.getContext()).bean(MQ.MQ_BEAN_RECEIVER).getBean(MQ.Executor.class);
             if (queueExecutor == null)
                 throw ExceptionBuilder.ofFrameWork(String.format("Invalid %s", MQ.Executor.class.getName()));
-            var queueMaxNumber = queueFactory.setting().getQueueMaxNumber();
-            var queueIdleSleep = queueFactory.setting().getQueueIdleSleep();
+            var queueMaxNumber = setting.getQueueMaxNumber();
+            var queueIdleSleep = setting.getQueueIdleSleep();
 
             try (var sqsClient = adapter.newClient()) {
                 while (!this.adapter.queueExists(sqsClient, queueName)) {
@@ -317,7 +318,7 @@ public class MQSQSAWSImpl extends MQAdapter {
                             queueExec(queueExecutor, sqsClient, message, queueUrl);
                         } catch (Exception e) {
                             log.error(e.getMessage());
-                            if (this.queueFactory.setting().isStopOnFail())//se ativo em caso de falha vai para o loop
+                            if (this.setting.isStopOnFail())//se ativo em caso de falha vai para o loop
                                 break;
                         } finally {
                             log.debug("Queue: [{}], messageId: [{}], finished", queueName, message.messageId());

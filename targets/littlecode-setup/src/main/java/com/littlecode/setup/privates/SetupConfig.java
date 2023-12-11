@@ -1,5 +1,6 @@
 package com.littlecode.setup.privates;
 
+import com.littlecode.parsers.ExceptionBuilder;
 import com.littlecode.setup.Setup;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +13,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Slf4j
@@ -49,6 +51,42 @@ public class SetupConfig {
         } catch (Exception e) {
             return defaultValue;
         }
+    }
+
+    public <T>List<T> readEnvEnums(String env, Class<?> enumClass) {
+        return readEnvEnums(env, enumClass,null);
+    }
+
+
+    public <T> List<T> readEnvEnums(String env, Class<?> enumClass, List<T> defaultValue) {
+        if(enumClass==null)
+            throw ExceptionBuilder.ofFrameWork("Invalid enum: enum is null");
+        if(!enumClass.isEnum())
+            throw ExceptionBuilder.ofFrameWork("Invalid enum: %s is not enum type",enumClass.getName());
+
+        var enumList=enumClass.getEnumConstants();
+
+        List<T> __return = new ArrayList<>();
+        try {
+            var values = environment.getProperty(env, "").split(",");
+            for (String s : values) {
+                if (s == null || s.trim().isEmpty())
+                    continue;
+                for (var e : enumList) {
+                    var eName = e.toString();
+                    if (!eName.equalsIgnoreCase(s))
+                        continue;
+                    //noinspection unchecked
+                    __return.add((T) e);
+                }
+            }
+        } catch (Exception ignored){}
+        return !__return.isEmpty()
+                ?__return
+                :
+                defaultValue==null
+                        ?new ArrayList<>()
+                        :defaultValue;
     }
 
     public List<String> readEnvList(String env) {
@@ -94,11 +132,12 @@ public class SetupConfig {
     }
 
     public String getDefaultSchema() {
-        var schemaName = this.readEnv("jpa.properties.hibernate.default_schema").trim();
+        var schemaName = this.readEnv("spring.jpa.properties.hibernate.default_schema").trim();
         if (schemaName.trim().isEmpty())
             schemaName = this.readEnv("spring.datasource.schema").trim();
         if (schemaName.trim().isEmpty())
             schemaName = this.readEnv("service.datasource.schema").trim();
         return schemaName;
     }
+
 }

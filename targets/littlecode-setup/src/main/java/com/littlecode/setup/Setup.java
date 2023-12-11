@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.util.List;
 import java.util.function.Function;
 
+@SuppressWarnings("LombokGetterMayBeUsed")
 @Slf4j
 public class Setup {
     public static final String STP_CONFIGURE_BEAN_CONTEXT = "beanEasySetupEngineContext";
@@ -35,13 +36,14 @@ public class Setup {
                 log.debug("{}: auto start disabled", logPrefix);
                 return;
             }
-            log.debug("{}: executing", logPrefix);
+            log.info("{}: started", logPrefix);
+            log.info("{}: executing", logPrefix);
             (new SetupExecutor(setting)).execute();
-            log.debug("{}: executed", logPrefix);
+            log.info("{}: executed", logPrefix);
         } catch (Exception e) {
             log.error("{}: fail:{}", logPrefix, e.getMessage());
         } finally {
-            log.debug("{}: finished", logPrefix);
+            log.info("{}: finished", logPrefix);
         }
     }
 

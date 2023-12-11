@@ -8,9 +8,12 @@ import lombok.Getter;
 import org.mockito.Mockito;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
+import org.springframework.orm.jpa.vendor.Database;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 @Getter
 public class Factory {
@@ -75,6 +78,18 @@ public class Factory {
     }
 
     private void mockStaticEnvironment() {
+
+        Supplier<String> getDatabaseList=new Supplier<String>() {
+            @Override
+            public String get() {
+                return Stream.of(Database.values())
+                        .map(Object::toString)
+                        .reduce((obj1, obj2) -> obj1 + "," + obj2)
+                        .orElse("");
+            }
+        };
+
+
         mockEnvironment = Mockito.mock(Environment.class);
         var envList = List.of(
                 Map.of(
@@ -87,7 +102,7 @@ public class Factory {
                         "service.datasource.username", "user",
                         "service.datasource.password", "password",
 
-                        "jpa.properties.hibernate.default_schema", "schema_test",
+                        "spring.jpa.properties.hibernate.default_schema", "schema_test",
                         "spring.datasource.schema", "schema_test",
                         "service.datasource.schema", "schema_test"
                 ),
@@ -101,6 +116,7 @@ public class Factory {
                 ),
                 Map.of(
                         SetupSetting.env_database_target_auto_start, "true",
+                        SetupSetting.env_database_target_databases, getDatabaseList.get(),
                         SetupSetting.env_database_target_tags, "",
                         SetupSetting.env_database_target_auto_update, "true",
                         SetupSetting.env_database_target_model_scan, "true"
@@ -114,7 +130,10 @@ public class Factory {
                 )
         );
         envList.forEach(envs -> {
-            envs.forEach((env, value) -> Mockito.when(mockEnvironment.getProperty(env)).thenReturn(value));
+            envs.forEach((env, value) -> {
+                Mockito.when(mockEnvironment.getProperty(env)).thenReturn(value);
+                Mockito.when(mockEnvironment.getProperty(env,"")).thenReturn(value);
+            });
         });
     }
 

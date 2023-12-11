@@ -24,6 +24,7 @@ public class DataSourceTest {
         Assertions.assertNotNull(DataSourceBase.DS_POSTGRES);
         Assertions.assertNotNull(DataSourceBase.DS_SQLSERVER);
         Assertions.assertNotNull(DataSourceBase.DS_ORACLE);
+        Assertions.assertNotNull(DataSourceBase.DS_SERVICE);
     }
 
 

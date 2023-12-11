@@ -1,20 +1,94 @@
 package com.littlecode.setup.db.metadata.privates;
 
+import com.littlecode.parsers.ExceptionBuilder;
 import com.littlecode.parsers.PrimitiveUtil;
 import com.littlecode.setup.SetupSetting;
 import com.littlecode.setup.db.metadata.MetaDataClasses;
 import com.littlecode.setup.privates.SetupClassesDB;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.orm.jpa.vendor.Database;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.*;
 
 @Slf4j
 public class MetaDataEngineBase<T> {
     private final List<MetaDataClasses.MetaTable> sources = new ArrayList<>();
-    private final List<SetupClassesDB.StatementItem> statementItemList = new ArrayList<>();
 
     public final List<MetaDataClasses.MetaTable> getSources() {
         return this.sources;
+    }
+
+    public Connection getConnection() {
+        throw ExceptionBuilder.ofNoImplemented(this.getClass());
+    }
+
+    public Database databaseOf() {
+        if(getConnection()==null)
+            return null;
+        try {
+            return databaseOf(getConnection().getMetaData().getDatabaseProductName());
+        } catch (SQLException e) {
+            return Database.H2;
+        }
+    }
+
+    public Database databaseOf(String databaseEnumName) {
+        if(databaseEnumName==null || databaseEnumName.trim().isEmpty())
+            return null;
+        try {
+            return Database.valueOf(databaseEnumName);
+        } catch (Exception ex) {
+            for(var e:Database.values()){
+                if(e.name().equalsIgnoreCase(databaseEnumName))
+                    return e;
+            }
+        }
+        return null;
+    }
+
+
+    public SetupDdlInterface ddlInterface(Database database) {
+        if (database!=null) {
+            if (database.equals(Database.H2))
+                return new SetupDdlForH2();
+            else if (database.equals(Database.POSTGRESQL))
+                return new SetupDdlForH2();
+            else if (database.equals(Database.ORACLE))
+                return new SetupDdlForOracle();
+        }
+        return new SetupDdlForAnsi();
+    }
+
+    public SetupDdlInterface ddlInterface(String databaseEnumName) {
+        return ddlInterface(databaseOf(databaseEnumName));
+    }
+
+    public List<SetupDdlInterface> ddlInterface(Database[] databases) {
+        if(databases==null || databases.length==0)
+            return new ArrayList<>();
+        List<SetupDdlInterface> __return=new ArrayList<>();
+        for(var e:databases){
+            var i=this.ddlInterface(e.name());
+            if(i!=null)
+                __return.add(i);
+        }
+        return __return;
+    }
+    public List<SetupDdlInterface> ddlInterface(List<Database> databases) {
+        if(databases==null || databases.isEmpty())
+            return new ArrayList<>();
+        List<SetupDdlInterface> __return=new ArrayList<>();
+        for(var e:databases){
+            var i=this.ddlInterface(e.name());
+            if(i!=null)
+                __return.add(i);
+        }
+        return __return;
+    }
+    public SetupDdlInterface ddlInterface() {
+        return this.ddlInterface(databaseOf());
     }
 
     public SetupSetting getSetting() {
@@ -28,9 +102,23 @@ public class MetaDataEngineBase<T> {
         return (T) this;
     }
 
+    public final Map<Database,List<SetupClassesDB.StatementItem>> getStatements(List<Database> database){
+        if(database==null || database.isEmpty())
+            return new HashMap<>();
+
+        Map<Database,List<SetupClassesDB.StatementItem>> __return=new HashMap<>();
+
+        for(var e:database)
+            __return.put(e,getStatements(e));
+
+        return __return;
+    }
+
     public final List<SetupClassesDB.StatementItem> getStatements() {
-        if (!this.statementItemList.isEmpty())
-            return this.statementItemList;
+        return getStatements((Database)null);
+    }
+
+    public final List<SetupClassesDB.StatementItem> getStatements(Database database) {
 
         Map<SetupClassesDB.Target, SetupClassesDB.StatementItem> statementsMap = new HashMap<>();
 
@@ -39,20 +127,23 @@ public class MetaDataEngineBase<T> {
         if (!PrimitiveUtil.isEmpty(defaultSchema))
             schemaNames.add(defaultSchema);
 
+        var ddlInterface=this.ddlInterface(database);
+
+        if(ddlInterface==null)
+            throw ExceptionBuilder.ofFrameWork("Invalid database, %s",database);
+
         this.getSources()
                 .forEach(table -> {
-                    table.makeSources();
+                    ddlInterface
+                            .makeSources(table);
                     var name = table.getSchemaName().trim().toLowerCase();
                     if (!PrimitiveUtil.isEmpty(name) && !schemaNames.contains(name))
                         schemaNames.add(name);
-
                 });
-
 
         if (!schemaNames.isEmpty()) {
             Collections.sort(schemaNames);
             deduplicateLines(schemaNames);
-
 
             schemaNames.forEach(
                     schemaName -> {
@@ -67,12 +158,19 @@ public class MetaDataEngineBase<T> {
                                             .build()
                             );
                         }
-                        sttIn.getSource().add(MetaDataClasses.SQL_COMMAND_COMMENT);
-                        sttIn.getSource().add(MetaDataClasses.SQL_COMMAND_COMMENT + "schema name: " + schemaName);
-                        sttIn.getSource().add(MetaDataClasses.SQL_COMMAND_COMMENT);
-                        sttIn.getSource().add(String.format(MetaDataClasses.FORMAT_CREATE_SCHEMA, schemaName));
-                        sttIn.getSource().add(String.format(MetaDataClasses.FORMAT_SET_DEFAULT_SCHEMA, schemaName));
-                        sttIn.getSource().add(MetaDataClasses.FORMAT_EXTENSION_UUID);
+                        if (!ddlInterface.FORMAT_CREATE_SCHEMA().isEmpty()) {
+                            sttIn.getSource().add(ddlInterface.SQL_COMMAND_COMMENT());
+                            sttIn.getSource().add(ddlInterface.SQL_COMMAND_COMMENT() + "schema name: " + schemaName);
+                            sttIn.getSource().add(ddlInterface.SQL_COMMAND_COMMENT());
+                            sttIn.getSource().add(String.format(ddlInterface.FORMAT_CREATE_SCHEMA(), schemaName));
+                            sttIn.getSource().add(String.format(ddlInterface.FORMAT_SET_DEFAULT_SCHEMA(), schemaName));
+                        }
+                        if (!ddlInterface.SQL_DEFAULT_CMD().isEmpty()) {
+                            sttIn.getSource().add(ddlInterface.SQL_COMMAND_COMMENT());
+                            sttIn.getSource().add(ddlInterface.SQL_COMMAND_COMMENT() + "default command: ");
+                            sttIn.getSource().add(ddlInterface.SQL_COMMAND_COMMENT());
+                            sttIn.getSource().addAll(ddlInterface.SQL_DEFAULT_CMD());
+                        }
 
                         sttIn = statementsMap.get(SetupClassesDB.Target.Drops);
                         if (sttIn == null) {
@@ -85,10 +183,13 @@ public class MetaDataEngineBase<T> {
                                             .build()
                             );
                         }
-                        sttIn.getSource().add(MetaDataClasses.SQL_COMMAND_COMMENT);
-                        sttIn.getSource().add(MetaDataClasses.SQL_COMMAND_COMMENT + "schema name: " + schemaName);
-                        sttIn.getSource().add(MetaDataClasses.SQL_COMMAND_COMMENT);
-                        sttIn.getSource().add(String.format(MetaDataClasses.FORMAT_DROP_SCHEMA, schemaName));
+
+                        if (!ddlInterface.FORMAT_DROP_SCHEMA().isEmpty()) {
+                            sttIn.getSource().add(ddlInterface.SQL_COMMAND_COMMENT());
+                            sttIn.getSource().add(ddlInterface.SQL_COMMAND_COMMENT() + "schema name: " + schemaName);
+                            sttIn.getSource().add(ddlInterface.SQL_COMMAND_COMMENT());
+                            sttIn.getSource().add(String.format(ddlInterface.FORMAT_DROP_SCHEMA(), schemaName));
+                        }
                     });
         }
 
@@ -115,17 +216,17 @@ public class MetaDataEngineBase<T> {
                     });
 
                 });
-        statementItemList.clear();
+
+        List<SetupClassesDB.StatementItem> statementItemOut=new ArrayList<>();
         statementsMap.forEach((target, statementItem) -> {
             if (target.equals(SetupClassesDB.Target.Drops) && this.getSetting().getDatabase().getDDL().isSafeDrops())
                 return;
-            statementItemList.add(statementItem);
+            statementItemOut.add(statementItem);
         });
-        return this.statementItemList;
+        return statementItemOut;
     }
 
     public T clear() {
-        this.statementItemList.clear();
         this.sources.clear();
         //noinspection unchecked
         return (T) this;
@@ -137,8 +238,9 @@ public class MetaDataEngineBase<T> {
     }
 
     private void cleanup(List<String> lines) {
+        var ddlInterface=this.ddlInterface();
         for (var line : lines) {
-            if (!PrimitiveUtil.isEmpty(line) && !line.startsWith(MetaDataClasses.SQL_COMMAND_COMMENT))
+            if (!PrimitiveUtil.isEmpty(line) && !line.startsWith(ddlInterface.SQL_COMMAND_COMMENT()))
                 return;
         }
         lines.clear();
@@ -166,16 +268,19 @@ public class MetaDataEngineBase<T> {
                 ? null
                 : this.getSetting().getDatabase().getDDL();
         boolean isSafeDrops = ddlSetting == null || ddlSetting.isSafeDrops();
+
+        var ddlInterface=this.ddlInterface();
+
         drops.forEach(statement -> {
             if (!isSafeDrops) {
                 __return.add(statement);
                 return;
             }
 
-            if (statement.startsWith(MetaDataClasses.SQL_COMMAND_COMMENT))
+            if (statement.startsWith(ddlInterface.SQL_COMMAND_COMMENT()))
                 __return.add(statement);
             else
-                __return.add(MetaDataClasses.SQL_COMMAND_COMMENT + statement);
+                __return.add(ddlInterface.SQL_COMMAND_COMMENT() + statement);
         });
         return __return;
     }

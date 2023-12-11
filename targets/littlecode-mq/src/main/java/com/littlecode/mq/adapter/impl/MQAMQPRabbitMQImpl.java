@@ -5,6 +5,7 @@ import com.littlecode.mq.adapter.MQAdapter;
 import com.littlecode.parsers.ExceptionBuilder;
 import com.littlecode.parsers.ObjectUtil;
 import com.littlecode.parsers.PrimitiveUtil;
+import com.littlecode.util.BeanUtil;
 import com.littlecode.util.SystemUtil;
 import com.rabbitmq.client.*;
 import lombok.RequiredArgsConstructor;
@@ -56,16 +57,16 @@ public class MQAMQPRabbitMQImpl extends MQAdapter {
         return MQ.Executor
                 .builder()
                 .listen(() -> {
-                    var queueFactory = new MQ.Factory(setting());
-                    var queueNameList = queueFactory.getBeanListString(MQ.MQ_BEAN_NAME_CONSUMER);
+                    //noinspection unchecked
+                    List<String> queueNameList = BeanUtil.of(context()).bean(MQ.MQ_BEAN_NAME_CONSUMER).as(List.class);
                     if (PrimitiveUtil.isEmpty(queueNameList))
-                        queueNameList = queueFactory.setting().getQueueNameConsumer();
+                        queueNameList = setting().getQueueNameConsumer();
 
                     if (PrimitiveUtil.isEmpty(queueNameList))
                         throw ExceptionBuilder.ofFrameWork("Invalid queue name");
 
                     for (var queueName : queueNameList)
-                        Listener.listen(this, queueFactory, queueName);
+                        Listener.listen(this, setting(), queueName);
                 })
                 .build();
     }
@@ -76,7 +77,7 @@ public class MQAMQPRabbitMQImpl extends MQAdapter {
                 .dispatcherObject(task -> {
                     this.queueDispatcher =
                             (this.queueDispatcher==null)
-                                    ?new Dispatcher(this, new MQ.Factory(setting()))
+                                    ?new Dispatcher(setting(), this)
                                     :queueDispatcher;
                     return queueDispatcher.dispatcher(task);
                 })
@@ -134,8 +135,8 @@ public class MQAMQPRabbitMQImpl extends MQAdapter {
     @Configuration
     @RequiredArgsConstructor
     public static class Dispatcher {
+        private final MQ.Setting setting;
         private final MQAMQPRabbitMQImpl adapter;
-        private final MQ.Factory queueFactory;
         private List<String> queue;
         private Connection queueClient;
         private Channel channelDispatcher;
@@ -143,9 +144,10 @@ public class MQAMQPRabbitMQImpl extends MQAdapter {
         public List<String> queue() {
             var queueNames = this.queue;
             if (PrimitiveUtil.isEmpty(queueNames))
-                queueNames = queueFactory.getBeanListString(MQ.MQ_BEAN_NAME_DISPATCHER);
+                //noinspection unchecked
+                queueNames = BeanUtil.of(setting.getContext()).bean(MQ.MQ_BEAN_NAME_DISPATCHER).as(List.class);
             if (PrimitiveUtil.isEmpty(queueNames))
-                queueNames = this.queueFactory.setting().getQueueNameDispatchers();
+                queueNames = setting.getQueueNameDispatchers();
             return queueNames;
         }
 
@@ -207,7 +209,7 @@ public class MQAMQPRabbitMQImpl extends MQAdapter {
         private static final ExecutorService executorService = Executors.newSingleThreadExecutor();
         private static final ConcurrentMap<String, Future<?>> listeners = new ConcurrentHashMap<>();
         private final MQAMQPRabbitMQImpl rabbitMQ;
-        private final MQ.Factory queueFactory;
+        private final MQ.Setting setting;
         private final String queueName;
 
         @SuppressWarnings("unused")
@@ -217,10 +219,10 @@ public class MQAMQPRabbitMQImpl extends MQAdapter {
             aux.forEach((s, listener) -> listener.cancel(true));
         }
 
-        public static void listen(MQAMQPRabbitMQImpl rabbitMQ, MQ.Factory queueFactory, String queueName) {
+        public static void listen(MQAMQPRabbitMQImpl rabbitMQ, MQ.Setting setting, String queueName) {
             if (listeners.containsKey(queueName.toLowerCase()))
                 return;
-            Future<?> listener = executorService.submit(new Listener(rabbitMQ, queueFactory, queueName));
+            Future<?> listener = executorService.submit(new Listener(rabbitMQ, setting, queueName));
             listeners.put(queueName.toLowerCase(), listener);
         }
 
@@ -256,7 +258,7 @@ public class MQAMQPRabbitMQImpl extends MQAdapter {
         public void run() {
             String logPrefix=String.format("Queue:[%s]",queueName);
             log.debug("{} started", logPrefix);
-            var queueExecutor = queueFactory.getBean(MQ.MQ_BEAN_RECEIVER, MQ.Executor.class);
+            var queueExecutor = BeanUtil.of(setting.getContext()).bean(MQ.MQ_BEAN_RECEIVER).getBean(MQ.Executor.class);
             if (queueExecutor == null)
                 throw ExceptionBuilder.ofFrameWork(String.format("Invalid %s", MQ.Executor.class.getName()));
 
@@ -266,7 +268,7 @@ public class MQAMQPRabbitMQImpl extends MQAdapter {
                 var queueChannel = queueClient.createChannel();
                 while (!this.rabbitMQ.queueExists(queueChannel, queueName)) {
                     log.error("Queue: [{}], not found", queueName);
-                    sleep(queueFactory.setting().getQueueIdleSleep());
+                    sleep(setting.getQueueIdleSleep());
                 }
 
                 DeliverCallback deliverCallback = (consumerTag, delivery) -> {

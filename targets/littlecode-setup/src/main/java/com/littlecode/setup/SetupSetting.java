@@ -6,9 +6,11 @@ import com.littlecode.setup.privates.SetupConfig;
 import com.littlecode.util.SystemUtil;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.orm.jpa.vendor.Database;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,6 +25,7 @@ public class SetupSetting {
     public static final String env_database_auto_apply = "little-code.setup.database.auto-apply";
     public static final String env_database_auto_start = "little-code.setup.database.auto-start";
     public static final String env_database_target_auto_start = "little-code.setup.database.target.auto-start";
+    public static final String env_database_target_databases = "little-code.setup.database.target.databases";
     public static final String env_database_target_tags = "little-code.setup.database.target.tags";
     public static final String env_database_target_auto_update = "little-code.setup.database.target.auto-update";
     public static final String env_database_target_model_scan = "little-code.setup.database.target.model-scan";
@@ -37,7 +40,7 @@ public class SetupSetting {
     private static final Path SETUP_REPOSITORY_PATH = Path.of(SystemUtil.Env.USER_HOME.toString(), SETUP_NAME_BASE_PATH);
     private SetupConfig config;
     private SetupSetting.Started started;
-    private SetupSetting.Database database;
+    private DatabaseConfig database;
     private SetupSetting.Business business;
 
 
@@ -51,7 +54,16 @@ public class SetupSetting {
                 .builder()
                 .autoStart(Boolean.parseBoolean(config.readEnv(env_auto_start, "true")))
                 .build();
-        this.database = Database
+
+//        List<Database> databases=new ArrayList<>();
+//        for(var database:config.readEnvList(env_database_target_auto_start)){
+//            for(var e:Database.values()){
+//                if(e.name().equalsIgnoreCase(database))
+//                    databases.add(e);
+//            }
+//        }
+
+        this.database = DatabaseConfig
                 .builder()
                 .autoApply(config.readEnvBool(env_database_auto_apply, false))
                 .autoStart(config.readEnvBool(env_database_auto_start, this.started.isAutoStart()))
@@ -70,6 +82,7 @@ public class SetupSetting {
                         DatabaseTarget
                                 .builder()
                                 .autoStart(config.readEnvBool(env_database_target_auto_start, this.started.isAutoStart()))
+                                .databases(config.readEnvEnums(env_database_target_databases, Database.class))
                                 .tags(config.readEnvList(env_database_target_tags, SetupClassesDB.Target.toList()))
                                 .build()
                 )
@@ -96,7 +109,7 @@ public class SetupSetting {
     @Setter
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class Database {
+    public static class DatabaseConfig {
         private boolean autoApply;
         private boolean autoStart;
         private DatabaseTarget target;
@@ -111,6 +124,7 @@ public class SetupSetting {
     @NoArgsConstructor
     public static class DatabaseTarget {
         private boolean autoStart;
+        private List<Database> databases;
         private List<String> tags;
     }
 
@@ -132,7 +146,7 @@ public class SetupSetting {
         private boolean safeDrops;
 
         public void setPackageNames(Class<?> aClass) {
-            this.setPackageNames( (aClass==null) ?null :aClass.getPackageName() );
+            this.setPackageNames((aClass == null) ? null : aClass.getPackageName());
         }
 
         public void setPackageNames(String newValue) {
@@ -171,10 +185,10 @@ public class SetupSetting {
             if (PrimitiveUtil.isEmpty(appName))
                 appName = UUID.randomUUID().toString();
 
-            if(finalPath==null)
-                finalPath="";
+            if (finalPath == null)
+                finalPath = "";
 
-            return Path.of(SETUP_REPOSITORY_PATH.toString(), appName,finalPath ).toFile();
+            return Path.of(SETUP_REPOSITORY_PATH.toString(), appName, finalPath).toFile();
         }
 
 

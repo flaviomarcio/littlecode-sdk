@@ -16,6 +16,32 @@ import java.util.UUID;
 public class PrimitiveUtilTest {
 
     @Test
+    public void UI_toString() {
+        Boolean bool=true;
+        var dt=LocalDate.of(2000,1,3);
+        var tm=LocalTime.of(22,37,12);
+        Assertions.assertEquals(PrimitiveUtil.toString(bool), "true");
+        Assertions.assertEquals(PrimitiveUtil.toString(LocalDateTime.of(dt,tm)),"2000-01-03T22:37:12");
+        Assertions.assertEquals(PrimitiveUtil.toString(dt),"2000-01-03");
+        Assertions.assertEquals(PrimitiveUtil.toString(tm),"22:37:12");
+
+        Assertions.assertEquals(PrimitiveUtil.toString(10.125D),"10.125");
+        Assertions.assertEquals(PrimitiveUtil.toString(10.125D),"10.125");
+        Assertions.assertEquals(PrimitiveUtil.toString(10.12D),"10.12");
+
+        Assertions.assertEquals(PrimitiveUtil.toString(10.125),"10.125");
+        Assertions.assertEquals(PrimitiveUtil.toString(10.125),"10.125");
+        Assertions.assertEquals(PrimitiveUtil.toString(10.12),"10.12");
+        Assertions.assertEquals(PrimitiveUtil.toString(1),"1");
+        Assertions.assertEquals(PrimitiveUtil.toString(1000),"1000");
+        Assertions.assertEquals(PrimitiveUtil.toString(1L),"1");
+        Assertions.assertEquals(PrimitiveUtil.toString(1000L),"1000");
+
+        Assertions.assertEquals(PrimitiveUtil.toString("a"),"a");
+        Assertions.assertEquals(PrimitiveUtil.toString("test"),"test");
+    }
+
+    @Test
     public void UI_toUUID() {
         var uuid = UUID.fromString("c4ca4238-a0b9-2382-0dcc-509a6f75849b");
         var uuid_str = "c4ca4238a0b923820dcc509a6f75849b";
@@ -29,6 +55,9 @@ public class PrimitiveUtilTest {
         Assertions.assertEquals(PrimitiveUtil.toLong(""), 0);
         Assertions.assertEquals(PrimitiveUtil.toLong("100"), 100);
         Assertions.assertEquals(PrimitiveUtil.toLong("100.1"), 0);
+        Assertions.assertEquals(PrimitiveUtil.toLong(100L), 100L);
+        Assertions.assertEquals(PrimitiveUtil.toLong(true), 1);
+        Assertions.assertEquals(PrimitiveUtil.toLong(false), 0);
     }
 
     @Test
@@ -37,6 +66,9 @@ public class PrimitiveUtilTest {
         Assertions.assertEquals(PrimitiveUtil.toInt("100"), 100);
         Assertions.assertEquals(PrimitiveUtil.toInt("100.1"), 0);
         Assertions.assertEquals(PrimitiveUtil.toInt("9999999999999999999999999"), 0);
+        Assertions.assertEquals(PrimitiveUtil.toInt(100), 100);
+        Assertions.assertEquals(PrimitiveUtil.toInt(true), 1);
+        Assertions.assertEquals(PrimitiveUtil.toInt(false), 0);
     }
 
     @Test
@@ -71,6 +103,8 @@ public class PrimitiveUtilTest {
         Assertions.assertEquals(PrimitiveUtil.toDouble(240.225,3), 240.225);
         Assertions.assertEquals(PrimitiveUtil.toDouble(240.225,2), 240.23);
         Assertions.assertEquals(PrimitiveUtil.toDouble(240.23,2), 240.23);
+        Assertions.assertEquals(PrimitiveUtil.toDouble(true), 1);
+        Assertions.assertEquals(PrimitiveUtil.toDouble(false), 0);
     }
 
     @Test

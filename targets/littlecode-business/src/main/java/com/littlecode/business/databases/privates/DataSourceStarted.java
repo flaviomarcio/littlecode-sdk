@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
 @Configuration
+@SuppressWarnings("unused")
 public class DataSourceStarted {
 
     @Autowired
@@ -25,7 +26,6 @@ public class DataSourceStarted {
         return this.utilCoreConfig;
     }
 
-    @SuppressWarnings("unused")
     @Bean
     public DataSourceStarted dataSourceStarted(){
         return this;
