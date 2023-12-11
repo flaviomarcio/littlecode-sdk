@@ -2,25 +2,15 @@
 
 function repositoryClone(){
   cd ${1}
-  if [[ ${__quiet} == true ]]; then
-    git clone ${3} -q
-    cd ${2}
-    git checkout ${4} -q
-  else
-    git clone ${3}
-    cd ${2}
-    git checkout ${4}
-  fi
+  git clone ${3}
+  cd ${2}
+  git checkout ${4}
 }
 
 function repositoryBuild(){
   cd ${1}
   rm -rf ${1}/.git
-  if [[ ${__quiet} == true ]]; then
-    mvn help:evaluate -Dexpression=project.build.finalName -q
-  else
-    mvn help:evaluate -Dexpression=project.build.finalName 
-  fi
+  mvn install
 }
 
 function gitClone(){
@@ -70,23 +60,16 @@ function cloneQuest(){
 }
 
 function main(){
-  if [[ $(which u-env) != "" ]]; then
-    echo $(source gitGo)&>/dev/null
-  fi
-  if [[ ${__quiet} == true ]]; then
-    local __clone=1
+  source gitGo
+  cloneQuest
+  if [ ${__selector} -eq 0 ]; then
+    exit 0
+  elif [ ${__selector} -eq 1 ]; then
+    __clone=1
   else
-    cloneQuest
-    if [ ${__selector} -eq 0 ]; then
-      exit 0
-    elif [ ${__selector} -eq 1 ]; then
-      local __clone=1
-    else
-      local __clone=0
-    fi
-    echo ${__selector}
+    __clone=0
   fi
-
+  echo ${__selector}
   local cloneDir="${PWD}/targets"
   local RELEASE_0_0_1=release/0.0.1
   build ${__clone} "${cloneDir}" "littlecode-dependencies-java" ${RELEASE_0_0_1}
@@ -97,9 +80,5 @@ function main(){
   build ${__clone} "${cloneDir}" "littlecode-scheduler" ${RELEASE_0_0_1}
 }
 
-
-if [[ ${1} == "--quiet" || ${1} == "-q" ]]; then
-  export __quiet=true
-fi
 
 main
