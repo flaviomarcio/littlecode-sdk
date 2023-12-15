@@ -95,7 +95,7 @@ function main(){
   build ${__clone} "${cloneDir}" "littlecode-mq" ${RELEASE_0_0_1}
   build ${__clone} "${cloneDir}" "littlecode-business" ${RELEASE_0_0_1}
   build ${__clone} "${cloneDir}" "littlecode-scheduler" ${RELEASE_0_0_1}
-  build ${__clone} "${cloneDir}" "littlecode-cloud-s3.git" ${RELEASE_0_0_1}
+  build ${__clone} "${cloneDir}" "littlecode-cloud-s3" ${RELEASE_0_0_1}
 }
 
 
