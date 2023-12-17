@@ -17,9 +17,9 @@ function repositoryBuild(){
   cd ${1}
   rm -rf ${1}/.git
   if [[ ${__quiet} == true ]]; then
-    mvn install help:evaluate -Dexpression=project.build.finalName -q
+    mvn install -DskipTests -q
   else
-    mvn install help:evaluate -Dexpression=project.build.finalName 
+    mvn install -DskipTests
   fi
 }
 
