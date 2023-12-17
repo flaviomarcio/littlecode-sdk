@@ -88,6 +88,11 @@ function main(){
   fi
 
   local cloneDir="${PWD}/targets"
+
+  rm -rf ${HOME}/.m2/repository
+  rm -rf ${cloneDir}
+  mkdir -p ${cloneDir}  
+
   local RELEASE_0_0_1=release/0.0.1
   build ${__clone} "${cloneDir}" "littlecode-dependencies-java" ${RELEASE_0_0_1}
   build ${__clone} "${cloneDir}" "littlecode-utils-core" ${RELEASE_0_0_1}
