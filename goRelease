@@ -1,0 +1,5 @@
+#!/bin/bash
+
+source gitGo
+
+u-git-release-update
