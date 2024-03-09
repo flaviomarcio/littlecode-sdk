@@ -10,7 +10,7 @@ function projectList(){
   local __list=$(ls ${LITTLECODE_PATH} | sort)
 
   local __list="littlecode-core $(echo ${__list} | sed 's/littlecode-core//g')"
-  local __list="$(echo ${__list} | sed 's/littlecode-dependencies-java//g' | sort) littlecode-dependencies-java"
+  local __list="littlecode-dependencies-java $(echo ${__list} | sed 's/littlecode-dependencies-java//g')"
   local __list=(${__list})
 
   for __item in "${__list[@]}"
