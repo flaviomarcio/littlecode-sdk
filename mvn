@@ -17,7 +17,7 @@ function projectList(){
   echo ${__return}
 }
 
-function projectRunCmd(){
+function main(){
 
   local __list=($(projectList))
 
@@ -26,8 +26,19 @@ function projectRunCmd(){
     cd ${ROOT_DIR}
     cd ${__item}
     mvn ${MAVEN_ARGS}
+    # local __mvn_output=$(mvn ${MAVEN_ARGS} --quiet)
+    # local __mvn_check=$(echo ${__mvn_output} | grep ERROR)
+    # if [[ ${__mvn_check} != "" ]]; then
+    #   echo ${__mvn_output}
+    #   echR "    source build fail:"
+    #   echR "    ==============================  "
+    #   echR "    *******Maven build fail*******  "
+    #   echR "    *******Maven build fail*******  "
+    #   echR "    ==============================  "
+    #   printf "${__mvn_output}"
+    # fi
   done
 
 }
 
-projectRunCmd 
+main 
