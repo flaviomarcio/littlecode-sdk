@@ -16,6 +16,8 @@ function projectList(){
     local __return="${__return} ${LITTLECODE_PATH_SPRING}/${__item}"
   done
 
+  local __return="littlecode-utils-core $(echo ${__return} | sed 's/littlecode-utils-core//g' | sort)"
+
   echo ${__return}
 }
 
