@@ -52,10 +52,9 @@ function main()
       continue
     fi
     cd ${__temp_dir_branch}
-    git checkout ${__repo_branch}
+    git checkout ${__repo_branch} --quiet
     export MVN_SELECT=true
-    pwd
-    ./mvn clean install
+    export __local_build=$(./mvn clean install)
   done
 
   rm -rf ${__temp_dir}
