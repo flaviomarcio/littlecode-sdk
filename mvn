@@ -2,16 +2,16 @@
 
 export MAVEN_ARGS="$@"
 export ROOT_DIR=${PWD}
-export LITTLECODE_PATH=${ROOT_DIR}/littlecode
+export LITTLECODE_PATH_SPRING=${ROOT_DIR}/spring
 
 function projectList(){
 
   unset __return
-  local __list=($(ls ${LITTLECODE_PATH}))
+  local __list=($(ls ${LITTLECODE_PATH_SPRING}))
 
   for __item in "${__list[@]}"
   do
-    local __return="${__return} ${LITTLECODE_PATH}/${__item}"
+    local __return="${__return} ${LITTLECODE_PATH_SPRING}/${__item}"
   done
 
   echo ${__return}

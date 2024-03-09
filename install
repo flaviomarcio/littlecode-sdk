@@ -1,0 +1,51 @@
+#!/bin/bash
+
+export MAVEN_ARGS="$@"
+export ROOT_DIR=${PWD}
+export LITTLECODE_PATH=${ROOT_DIR}/littlecode
+
+function projectList(){
+
+  unset __return
+  local __list=($(ls ${LITTLECODE_PATH}))
+
+  for __item in "${__list[@]}"
+  do
+    local __return="${__return} ${LITTLECODE_PATH}/${__item}"
+  done
+
+  echo ${__return}
+}
+
+function projectRunCmd(){
+
+  local __repo_ssh=$(git config --list | grep remote.origin.url | awk -F= '{print $2}')
+  local __repo_branchs=($(git branch --remotes | sed '/HEAD/d' | sed '/master/d' | sed '/main/d' | sed 's/origin\///g'))
+  local __repo_name=$(basename ${__repo_ssh})
+
+  mkdir -p ${__temp_dir}
+  local __temp_dir="/tmp/littlecode.${RANDOM}/"
+  local __temp_dir_repo="${__temp_dir}/${__repo_name}"
+  cd ${__temp_dir}
+
+  git clone ${__repo_ssh} ${__repo_name}
+
+  if ! [[ -d ${__temp_dir_repo} ]]; then
+    return 0;
+  fi
+
+  for __repo_branch in "${__repo_branchs[@]}"
+  do
+    cd ${__temp_dir}
+    local __temp_dir_branch="${__temp_dir}/${__repo_branch}"
+    cp -rf ${__temp_dir_branch} ${__temp_dir_branch}
+
+    cd ${__repo_branch}
+    git checkout ${__repo_branch}
+    pwd
+    echo "./mvn clean install"
+  done
+
+}
+
+projectRunCmd 
