@@ -32,7 +32,7 @@ function main(){
     echC "  commands:"
     echY "    mvn ${MAVEN_ARGS} --quiet"
 
-    mvn ${MAVEN_ARGS} --quiet
+    echo $(mvn ${MAVEN_ARGS} --quiet)&>/dev/null
     # local __mvn_output=$(mvn ${MAVEN_ARGS} --quiet)
     # local __mvn_check=$(echo ${__mvn_output} | grep ERROR)
     # if [[ ${__mvn_check} != "" ]]; then

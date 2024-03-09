@@ -44,7 +44,7 @@ function main()
     fi
     cd ${__temp_dir_branch}
     git checkout ${__repo_branch} --quiet
-    export __local_build=$(./mvn clean install)
+    ./mvn clean install
   done
 
   rm -rf ${__temp_dir}
