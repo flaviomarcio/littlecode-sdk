@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. bash-lib.sh
+
 export MAVEN_ARGS="$@"
 export ROOT_DIR=${PWD}
 export LITTLECODE_PATH_SPRING=${ROOT_DIR}/spring
@@ -25,6 +27,11 @@ function main(){
   do
     cd ${ROOT_DIR}
     cd ${__item}
+
+    echM "Building $(basename ${__item})"
+    echC "  commands:"
+    echY "    mvn ${MAVEN_ARGS} --quiet"
+
     mvn ${MAVEN_ARGS} --quiet
     # local __mvn_output=$(mvn ${MAVEN_ARGS} --quiet)
     # local __mvn_check=$(echo ${__mvn_output} | grep ERROR)

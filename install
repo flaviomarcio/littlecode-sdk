@@ -1,10 +1,6 @@
 #!/bin/bash
 
-if [[ ${PERSON_BIN} == "" ]]; then
-  export PERSON_BIN=${HOME}/person-bin
-fi
-
-. ${PERSON_BIN}/pvt/lib.sh
+. bash-lib.sh
 
 function main()
 {
