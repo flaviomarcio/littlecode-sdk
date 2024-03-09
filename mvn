@@ -1,0 +1,34 @@
+#!/bin/bash
+
+export MAVEN_ARGS="$@"
+export ROOT_DIR=${PWD}
+export LITTLECODE_PATH=${ROOT_DIR}/littlecode
+
+function projectList(){
+
+  unset __return
+  local __list=($(ls ${LITTLECODE_PATH}))
+
+  for __item in "${__list[@]}"
+  do
+    local __return="${__return} ${LITTLECODE_PATH}/${__item}"
+  done
+
+  echo ${__return}
+}
+
+function projectRunCmd(){
+
+  local __list=($(projectList))
+
+  for __item in "${__list[@]}"
+  do
+    cd ${ROOT_DIR}
+    cd ${__item}
+    mvn ${MAVEN_ARGS}
+  done
+
+}
+
+#projectList
+projectRunCmd 
