@@ -8,7 +8,7 @@
         <version>3.2.3</version>
     </parent>
     <groupId>com.littlecode</groupId>
-    <artifactId>business</artifactId>
+    <artifactId>business-spring</artifactId>
     <version>1.0.0</version>
     <name>app</name>
     <description>Little code for business</description>
@@ -40,7 +40,7 @@
     <dependencies>
         <dependency>
             <groupId>com.littlecode</groupId>
-            <artifactId>util-core</artifactId>
+            <artifactId>core-spring</artifactId>
             <version>${littlecode.version}</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-validation -->

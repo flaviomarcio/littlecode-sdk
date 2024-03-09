@@ -1,0 +1,4 @@
+com/littlecode/cloud/s3/privates/S3Config.class
+com/littlecode/cloud/s3/S3Client.class
+com/littlecode/cloud/s3/S3Client$S3ClientBuilder.class
+com/littlecode/cloud/s3/started/S3Started.class
