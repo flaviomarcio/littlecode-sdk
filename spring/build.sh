@@ -9,7 +9,7 @@ function projectList(){
   unset __return
   local __list=$(ls ${LITTLECODE_PATH} | sort)
 
-  local __list="littlecode-utils-core $(echo ${__list} | sed 's/littlecode-utils-core//g')"
+  local __list="littlecode-core $(echo ${__list} | sed 's/littlecode-core//g')"
   local __list="$(echo ${__list} | sed 's/littlecode-dependencies-java//g' | sort) littlecode-dependencies-java"
   local __list=(${__list})
 
@@ -32,9 +32,14 @@ function main(){
   do
     cd ${ROOT_DIR}
     cd ${__item}
+
+    if ! [[ -d ${__item}  ]]; then
+      continue;
+    fi
+
     local __pom_file=${__item}/pom.xml
     if [[ -f ${__pom_file}  ]]; then
-      mvn ${MAVEN_ARGS}
+      mvn clean install
     fi
   done
 
