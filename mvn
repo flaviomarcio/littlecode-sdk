@@ -9,14 +9,18 @@ export LITTLECODE_PATH_SPRING=${ROOT_DIR}/spring
 function projectList(){
 
   unset __return
-  local __list=($(ls ${LITTLECODE_PATH_SPRING}))
+  local __list=$(ls ${LITTLECODE_PATH_SPRING} | sort)
+
+  local __list="littlecode-utils-core $(echo ${__list} | sed 's/littlecode-utils-core//g')"
+  local __list="$(echo ${__list} | sed 's/littlecode-dependencies-java//g' | sort) littlecode-dependencies-java"
+  local __list=(${__list})
 
   for __item in "${__list[@]}"
   do
     local __return="${__return} ${LITTLECODE_PATH_SPRING}/${__item}"
   done
 
-  local __return="littlecode-utils-core $(echo ${__return} | sed 's/littlecode-utils-core//g' | sort)"
+ 
 
   echo ${__return}
 }
@@ -34,7 +38,14 @@ function main(){
     echC "  commands:"
     echY "    mvn ${MAVEN_ARGS} --quiet"
 
-    echo $(mvn ${MAVEN_ARGS} --quiet)>/dev/null 2>&1
+    local __pom_file=${__item}/pom.xml
+
+    if ! [[ -f ${__pom_file}  ]]; then
+      echR "      pom.xml not found, pom: ${__pom_file}"
+    else
+      echo $(mvn ${MAVEN_ARGS} --quiet)>/dev/null 2>&1
+    fi
+
     # local __mvn_output=$(mvn ${MAVEN_ARGS} --quiet)
     # local __mvn_check=$(echo ${__mvn_output} | grep ERROR)
     # if [[ ${__mvn_check} != "" ]]; then
