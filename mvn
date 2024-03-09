@@ -25,7 +25,7 @@ function main(){
   do
     cd ${ROOT_DIR}
     cd ${__item}
-    mvn ${MAVEN_ARGS}
+    mvn ${MAVEN_ARGS} --quiet
     # local __mvn_output=$(mvn ${MAVEN_ARGS} --quiet)
     # local __mvn_check=$(echo ${__mvn_output} | grep ERROR)
     # if [[ ${__mvn_check} != "" ]]; then

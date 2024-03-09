@@ -29,23 +29,18 @@ function main()
     return 0;
   fi
   cd ${__temp_dir_repo}
-  echC "  branchs.......:"
+  echC "  Building branchs.......:"
   local __repo_branchs=($(git branch --remotes | sed '/HEAD/d' | sed '/master/d' | sed '/main/d' | sed 's/origin\///g' | grep release))
   for __repo_branch in "${__repo_branchs[@]}"
   do
-    echY "                 - ${__repo_branch}"
-  done
-
-  for __repo_branch in "${__repo_branchs[@]}"
-  do
+    echY "    Branch: ${__repo_branch}"
     cd ${__temp_dir}
     local __temp_dir_branch="${__temp_dir}/$(echo ${__repo_branch} | sed 's/\//-/g')"
-    echM "Building branch ${__repo_branch}"
-    echY "  commands:"
-    echY "    cp -rf ${__temp_dir_repo} ${__temp_dir_branch}"
-    echY "    cd ${__temp_dir_branch}"
-    echY "    git checkout ${__repo_branch} --quiet"
-    echY "    ./mvn clean install"
+    echY "      commands:"
+    echY "        - cp -rf ${__temp_dir_repo} ${__temp_dir_branch}"
+    echY "        - cd ${__temp_dir_branch}"
+    echY "        - git checkout ${__repo_branch} --quiet"
+    echY "        - ./mvn clean install"
 
     cp -rf ${__temp_dir_repo} ${__temp_dir_branch}
     if ! [[ -d ${__temp_dir_branch} ]]; then
@@ -53,7 +48,6 @@ function main()
     fi
     cd ${__temp_dir_branch}
     git checkout ${__repo_branch} --quiet
-    export MVN_SELECT=true
     export __local_build=$(./mvn clean install)
   done
 
