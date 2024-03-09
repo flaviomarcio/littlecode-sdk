@@ -20,8 +20,6 @@ function projectList(){
     local __return="${__return} ${LITTLECODE_PATH_SPRING}/${__item}"
   done
 
- 
-
   echo ${__return}
 }
 
