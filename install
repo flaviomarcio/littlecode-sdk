@@ -10,7 +10,6 @@ function main()
 {
   clear
   local __repo_ssh=$(git config --list | grep remote.origin.url | awk -F= '{print $2}')
-  local __repo_branchs=($(git branch --remotes | sed '/HEAD/d' | sed '/master/d' | sed '/main/d' | sed 's/origin\///g' | grep release))
   local __repo_name=$(basename ${__repo_ssh} | sed 's/\.git//g')
 
   local __temp_dir="/tmp/littlecode.${RANDOM}"
@@ -21,12 +20,6 @@ function main()
   echM "Installing ${__repo_ssh}"
   echC "  repository....: ${COLOR_YELLOW}${__repo_ssh}"
   echC "  repository-dir: ${COLOR_YELLOW}${__temp_dir_repo}"
-  echC "  branchs.......:"
-  for __repo_branch in "${__repo_branchs[@]}"
-  do
-    echY "                 - ${__repo_branch}"
-  done
-
   echC "  commands.....:"
   echY "    git clone ${__repo_ssh} ${__repo_name} --quiet"
 
@@ -35,6 +28,13 @@ function main()
   if ! [[ -d ${__temp_dir_repo} ]]; then
     return 0;
   fi
+  cd ${__temp_dir_repo}
+  echC "  branchs.......:"
+  local __repo_branchs=($(git branch --remotes | sed '/HEAD/d' | sed '/master/d' | sed '/main/d' | sed 's/origin\///g' | grep release))
+  for __repo_branch in "${__repo_branchs[@]}"
+  do
+    echY "                 - ${__repo_branch}"
+  done
 
   for __repo_branch in "${__repo_branchs[@]}"
   do
