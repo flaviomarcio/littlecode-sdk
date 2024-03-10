@@ -8,8 +8,8 @@
         <version>3.2.3</version>
     </parent>
     <groupId>com.littlecode</groupId>
-    <artifactId>business</artifactId>
-    <version>0.1.0</version>
+    <artifactId>business-spring</artifactId>
+    <version>1.0.0</version>
     <name>app</name>
     <description>Little code for business</description>
     <properties>
@@ -18,7 +18,7 @@
         <java.version>17</java.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <littlecode-version>0.1.0</littlecode-version>
+        <littlecode-version>1.0.0</littlecode-version>
         <commons-io-version>2.15.1</commons-io-version>
         <commons-lang3-version>3.14.0</commons-lang3-version>
         <jackson-version>2.16.1</jackson-version>
@@ -40,7 +40,7 @@
     <dependencies>
         <dependency>
             <groupId>com.littlecode</groupId>
-            <artifactId>util-core</artifactId>
+            <artifactId>core-spring</artifactId>
             <version>${littlecode-version}</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-validation -->
