@@ -8,8 +8,8 @@
         <version>3.2.3</version>
     </parent>
     <groupId>com.littlecode</groupId>
-    <artifactId>setup-spring</artifactId>
-    <version>1.0.0</version>
+    <artifactId>setup</artifactId>
+    <version>0.1.0</version>
     <name>app</name>
     <description>Little code setup app</description>
     <properties>
@@ -18,7 +18,7 @@
         <java.version>17</java.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <littlecode-version>1.0.0</littlecode-version>
+        <littlecode-version>0.1.0</littlecode-version>
         <commons-io-version>2.15.1</commons-io-version>
         <commons-lang3-version>3.14.0</commons-lang3-version>
         <HikariCP.version>5.1.0</HikariCP.version>
@@ -26,7 +26,6 @@
         <modelmapper-version>3.2.0</modelmapper-version>
         <reflections-version>0.10.2</reflections-version>
         <spring-boot-version>3.2.3</spring-boot-version>
-        <littlecode-version>1.0.0</littlecode-version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -51,7 +50,7 @@
     <dependencies>
         <dependency>
             <groupId>com.littlecode</groupId>
-            <artifactId>core-spring</artifactId>
+            <artifactId>util-core</artifactId>
             <version>${littlecode-version}</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test -->

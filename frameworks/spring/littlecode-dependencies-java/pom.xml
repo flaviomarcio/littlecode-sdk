@@ -8,8 +8,8 @@
         <version>3.2.3</version>
     </parent>
     <groupId>com.littlecode</groupId>
-    <artifactId>littlecode-dependencies-spring</artifactId>
-    <version>1.0.0</version>
+    <artifactId>littlecode-dependencies</artifactId>
+    <version>0.1.0</version>
     <packaging>pom</packaging>
     <url>https://github.com/flaviomarcio/littlecode-sdk-build</url>
     <name>littlecode-dependencies</name>
@@ -29,7 +29,7 @@
 <!--        </developer>-->
 <!--    </developers>-->
     <scm>
-        <url>https://github.com/flaviomarcio/littlecode-sdk-build</url>
+        <url>https://github.com/flaviomarcio/littlecode-sdk</url>
     </scm>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -63,7 +63,7 @@
             <dependency>
                 <groupId>com.fasterxml.jackson</groupId>
                 <artifactId>jackson-base</artifactId>
-                <version>2.15.2</version>
+                <version>${jackson-version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -109,7 +109,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson</groupId>
             <artifactId>jackson-base</artifactId>
-            <version>2.15.2</version>
+            <version>${jackson-version}</version>
             <type>pom</type>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core -->

@@ -8,8 +8,8 @@
         <version>3.2.3</version>
     </parent>
     <groupId>com.littlecode</groupId>
-    <artifactId>core-spring</artifactId>
-    <version>1.0.0</version>
+    <artifactId>util-core</artifactId>
+    <version>0.1.0</version>
     <url>https://github.com/flaviomarcio/littlecode-sdk-build</url>
     <name>littlecode-core</name>
     <description>Little code core</description>

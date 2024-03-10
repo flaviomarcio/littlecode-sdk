@@ -8,8 +8,8 @@
         <version>3.2.3</version>
     </parent>
     <groupId>com.littlecode</groupId>
-    <artifactId>cloud-mq-spring</artifactId>
-    <version>1.0.0</version>
+    <artifactId>mq</artifactId>
+    <version>0.1.0</version>
     <name>app</name>
     <description>Little code cloud message queue</description>
     <properties>
@@ -18,7 +18,7 @@
         <java.version>17</java.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <littlecode-version>1.0.0</littlecode-version>
+        <littlecode-version>0.1.0</littlecode-version>
         <commons-io-version>2.15.1</commons-io-version>
         <commons-lang3-version>3.14.0</commons-lang3-version>
         <jackson-version>2.15.2</jackson-version>
@@ -51,7 +51,7 @@
     <dependencies>
         <dependency>
             <groupId>com.littlecode</groupId>
-            <artifactId>core-spring</artifactId>
+            <artifactId>util-core</artifactId>
             <version>${littlecode-version}</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test -->
@@ -73,7 +73,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson</groupId>
             <artifactId>jackson-base</artifactId>
-            <version>2.15.2</version>
+            <version>${jackson-version}</version>
             <type>pom</type>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core -->

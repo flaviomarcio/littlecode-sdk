@@ -18,7 +18,7 @@
         ...
         <dependency>
             <groupId>com.littlecode</groupId>
-            <artifactId>core-spring</artifactId>
+            <artifactId>util-core</artifactId>
             <version>${littlecode-version}</version>
         </dependency>
         ...
