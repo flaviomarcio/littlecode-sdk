@@ -20,14 +20,6 @@
             <url>https://www.apache.org/licenses/LICENSE-2.0</url>
         </license>
     </licenses>
-<!--    <developers>-->
-<!--        <developer>-->
-<!--            <name>LittleCode</name>-->
-<!--            <email>little.code@littlecode.io</email>-->
-<!--            <organization>LittleCode</organization>-->
-<!--            <organizationUrl>https://www.littlecode.io</organizationUrl>-->
-<!--        </developer>-->
-<!--    </developers>-->
     <scm>
         <url>https://github.com/flaviomarcio/littlecode-sdk-build</url>
     </scm>
