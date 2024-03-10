@@ -8,8 +8,8 @@
         <version>3.2.3</version>
     </parent>
     <groupId>com.littlecode</groupId>
-    <artifactId>mq</artifactId>
-    <version>0.1.0</version>
+    <artifactId>cloud-mq-spring</artifactId>
+    <version>1.0.0</version>
     <name>app</name>
     <description>Little code cloud message queue</description>
     <properties>
