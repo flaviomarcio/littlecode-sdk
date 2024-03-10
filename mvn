@@ -4,21 +4,36 @@
 
 export MAVEN_ARGS="$@"
 export ROOT_DIR=${PWD}
-export LITTLECODE_PATH_SPRING=${ROOT_DIR}/spring
+export FRAMEWORKS_DIR=${ROOT_DIR}/frameworks
 
 function projectList(){
 
   unset __return
-  local __list=$(ls ${LITTLECODE_PATH_SPRING} | sort)
+  local __frameworks=(spring quarkus)
 
-  local __list="littlecode-core $(echo ${__list} | sed 's/littlecode-core//g')"
-  local __list="littlecode-dependencies-java $(echo ${__list} | sed 's/littlecode-dependencies-java//g')"
-  local __list=(${__list})
-
-  for __item in "${__list[@]}"
+  for __framework in "${__frameworks[@]}"
   do
-    local __return="${__return} ${LITTLECODE_PATH_SPRING}/${__item}"
+    local __framewor_dir="${FRAMEWORKS_DIR}/${__framework}"
+
+    if ! [[ -d ${__framewor_dir} ]]; then
+      continue;
+    fi
+
+    local __list=$(ls ${__framewor_dir} | sort)
+
+    local __list="littlecode-core $(echo ${__list} | sed 's/littlecode-core//g')"
+    local __list="littlecode-dependencies-java $(echo ${__list} | sed 's/littlecode-dependencies-java//g')"
+    local __list=(${__list})
+
+    for __item in "${__list[@]}"
+    do
+      local __item_dir=${__framewor_dir}/${__item}
+      if [[ -d ${__item_dir} ]]; then
+        local __return="${__return} ${__item_dir}"
+      fi
+    done
   done
+
 
   echo ${__return}
 }
@@ -60,3 +75,4 @@ function main(){
 }
 
 main 
+#projectList
