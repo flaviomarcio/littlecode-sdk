@@ -57,13 +57,6 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-            <!--            <dependency>-->
-            <!--                <groupId>com.littlecode</groupId>-->
-            <!--                <artifactId>littlecode-dependencies</artifactId>-->
-            <!--                <version>${littlecode-version}</version>-->
-            <!--                <type>pom</type>-->
-            <!--                <scope>import</scope>-->
-            <!--            </dependency>-->
         </dependencies>
     </dependencyManagement>
     <dependencies>
