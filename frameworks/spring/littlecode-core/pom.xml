@@ -28,7 +28,7 @@
         <java.version>17</java.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <littlecode.version>1.0.0</littlecode.version>
+        <littlecode-version>0.1.0</littlecode-version>
         <commons-io-version>2.15.1</commons-io-version>
         <commons-lang3-version>3.14.0</commons-lang3-version>
         <h2.version>2.2.220</h2.version>
@@ -60,7 +60,7 @@
             <!--            <dependency>-->
             <!--                <groupId>com.littlecode</groupId>-->
             <!--                <artifactId>littlecode-dependencies</artifactId>-->
-            <!--                <version>${littlecode.version}</version>-->
+            <!--                <version>${littlecode-version}</version>-->
             <!--                <type>pom</type>-->
             <!--                <scope>import</scope>-->
             <!--            </dependency>-->
