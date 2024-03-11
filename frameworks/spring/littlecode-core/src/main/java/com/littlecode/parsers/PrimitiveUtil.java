@@ -15,15 +15,17 @@ import java.util.UUID;
 
 public class PrimitiveUtil {
     private static final LocalDate MIN_LOCALDATE = LocalDate.of(1901, 1, 1);
-    private static final LocalTime MAX_LOCALTIME = LocalTime.of(23, 59, 59, 999);
+    //    private static final LocalTime MAX_LOCALTIME = LocalTime.of(23, 59, 59, 999);
     private static final LocalTime MIN_LOCALTIME = LocalTime.of(0, 0, 0, 0);
     private static final LocalDateTime MIN_LOCALDATETIME = LocalDateTime.of(MIN_LOCALDATE, MIN_LOCALTIME);
 
     private static final String FORMAT_DATE = "yyyy-MM-dd";
     private static final String FORMAT_DATE_SHORT = "yy-MM-dd";
     private static final String FORMAT_DATE_TIME = "yyyy-MM-dd'T'HH:mm:ss";
+    private static final String FORMAT_DATE_TIME_MS = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSS";
     private static final String FORMAT_DATE_TIME_SHORT = "yyyy-MM-dd'T'HH:mm";
     private static final String FORMAT_TIME = "HH:mm:ss";
+    private static final String FORMAT_TIME_MS = "HH:mm:ss.SSSSSSSSS";
     private static final String FORMAT_TIME_SHORT = "HH:mm";
     private static final int DOUBLE_PRECISION = 6;
 
@@ -149,10 +151,12 @@ public class PrimitiveUtil {
             var in = toString(v);
             var value = in == null ? "" : in.trim();
             String format;
-            if (value.length() == 8)
-                format = FORMAT_TIME;
-            else if (value.length() == 5)
+            if (value.length() == 5)
                 format = FORMAT_TIME_SHORT;
+            else if (value.length() == 8)
+                format = FORMAT_TIME;
+            else if (value.length() == 18)
+                format = FORMAT_TIME_MS;
             else
                 format = FORMAT_TIME;
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
@@ -171,6 +175,8 @@ public class PrimitiveUtil {
                 format = FORMAT_DATE_TIME;
             else if (value.length() == 16)//1901-01-01T00:00:00
                 format = FORMAT_DATE_TIME_SHORT;
+            else if (value.length() == 29)//1901-01-01T00:00:00
+                format = FORMAT_DATE_TIME_MS;
             else if (value.length() == 10)
                 format = FORMAT_DATE;
             else if (value.length() == 8)

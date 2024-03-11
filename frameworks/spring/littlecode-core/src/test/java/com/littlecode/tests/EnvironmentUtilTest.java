@@ -8,6 +8,9 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.env.Environment;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 
@@ -138,7 +141,128 @@ public class EnvironmentUtilTest {
         }
     }
 
+    @Test
+    public void UI_asDate() {
+        {//step 1
+            var environment = Mockito.mock(Environment.class);
+            var values = Map.of(
+                    "item.attr-0", LocalDate.of(1901, 1, 1).toString(),
+                    "item.attr-1", LocalDate.of(2500, 1, 1).toString(),
+                    "item.attr-2", LocalDate.now().toString()
 
+            );
+            values.forEach((k, v) -> {
+                Mockito.when(environment.getProperty(k)).thenReturn(String.valueOf(v));
+            });
+
+            values.forEach((k, v) -> {
+                        var eUtil = new EnvironmentUtil(environment);
+                        Assertions.assertEquals(eUtil.asDate(k), LocalDate.parse(v));
+                    }
+            );
+        }
+
+        {//step 2
+            var environment = Mockito.mock(Environment.class);
+            var values = Map.of(
+                    "item.attr-0", "1901-1-1",
+                    "item.attr-1", "2500-1-1",
+                    "item.attr-2", ""
+
+            );
+            values.forEach((k, v) -> {
+                Mockito.when(environment.getProperty(k)).thenReturn(String.valueOf(v));
+            });
+
+            values.forEach((k, v) -> {
+                        var eUtil = new EnvironmentUtil(environment);
+                        Assertions.assertNotEquals(eUtil.asDate(k), v);
+                    }
+            );
+        }
+    }
+
+    @Test
+    public void UI_asTime() {
+        {//step 1
+            var environment = Mockito.mock(Environment.class);
+            var values = Map.of(
+                    "item.attr-0", LocalTime.of(1, 1, 1).toString(),
+                    "item.attr-1", LocalTime.of(23, 59, 59).toString(),
+                    "item.attr-2", LocalTime.now().toString()
+
+            );
+            values.forEach((k, v) -> {
+                Mockito.when(environment.getProperty(k)).thenReturn(String.valueOf(v));
+            });
+
+            values.forEach((k, v) -> {
+                        var eUtil = new EnvironmentUtil(environment);
+                        Assertions.assertEquals(eUtil.asTime(k), LocalTime.parse(v));
+                    }
+            );
+        }
+
+        {//step 2
+            var environment = Mockito.mock(Environment.class);
+            var values = Map.of(
+                    "item.attr-0", "1.1.1",
+                    "item.attr-1", "2.2",
+                    "item.attr-2", ""
+
+            );
+            values.forEach((k, v) -> {
+                Mockito.when(environment.getProperty(k)).thenReturn(String.valueOf(v));
+            });
+
+            values.forEach((k, v) -> {
+                        var eUtil = new EnvironmentUtil(environment);
+                        Assertions.assertNull(eUtil.asTime(k));
+                    }
+            );
+        }
+    }
+
+    @Test
+    public void UI_asDateTime() {
+        {//step 1
+            var environment = Mockito.mock(Environment.class);
+            var values = Map.of(
+                    "item.attr-0", LocalDateTime.of(LocalDate.of(2500, 1, 1), LocalTime.of(1, 1, 1)).toString(),
+                    "item.attr-1", LocalDateTime.of(LocalDate.of(1901, 1, 1), LocalTime.now()).toString(),
+                    "item.attr-2", LocalDateTime.now().toString()
+
+            );
+            values.forEach((k, v) -> {
+                Mockito.when(environment.getProperty(k)).thenReturn(String.valueOf(v));
+            });
+
+            values.forEach((k, v) -> {
+                        var eUtil = new EnvironmentUtil(environment);
+                        Assertions.assertEquals(eUtil.asDateTime(k), LocalDateTime.parse(v));
+                    }
+            );
+        }
+
+        {//step 2
+            var environment = Mockito.mock(Environment.class);
+            var values = Map.of(
+                    "item.attr-0", "1.1.1",
+                    "item.attr-1", "2.2",
+                    "item.attr-2", ""
+
+            );
+            values.forEach((k, v) -> {
+                Mockito.when(environment.getProperty(k)).thenReturn(String.valueOf(v));
+            });
+
+            values.forEach((k, v) -> {
+                        var eUtil = new EnvironmentUtil(environment);
+                        Assertions.assertNull(eUtil.asDateTime(k));
+                    }
+            );
+        }
+    }
 
     @Test
     public void UI_asEnums() {
