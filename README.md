@@ -28,7 +28,12 @@ Litlecode aims to reduce the verbosity of frameworks, thus providing classes and
 
 ### Prerequisites
 - Spring
-    - [JDK - 17](https://openjdk.org/install/)  
+    - OS
+        - [Debian](https://www.debian.org/distrib/) **The best**
+        - [Ubuntu](https://ubuntu.com/) **The easy**
+        - [Mint](https://www.linuxmint.com/) **The persistent**
+        - [Windows-WSL2](https://learn.microsoft.com/pt-br/windows/wsl/install) **The ugly**
+    - [JDK - 17](https://openjdk.org/install/)
     - [Maven - 3](https://maven.apache.org)  
     - [Spring Boot - [3.2.x]](https://spring.io/)
     - [Spring Cloud - [3.2.x]](https://spring.io/)
@@ -74,3 +79,11 @@ Litlecode aims to reduce the verbosity of frameworks, thus providing classes and
     - [Maven - 3](https://maven.apache.org)  
     - [Spring Boot - [3.2.3]](https://spring.io/)
     - [Spring Cloud - [3.2.3]](https://spring.io/)
+
+## New releases
+New versions are always created when spring or quarkus framework versions are applied or new version of java
+  - ex:
+    - *spring* **3.2.2** release/0.0.0 
+    - *spring* **3.2.3** release/1.0.0 
+    - *java* **version 11** release/2.0.0 
+    - *java* **version 17** release/3.0.0 
