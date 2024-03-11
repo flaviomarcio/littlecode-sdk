@@ -30,7 +30,8 @@ public class EnvironmentUtil {
         if (environment == null)
             return null;
         try {
-            return environment.getProperty(env);
+            var value=environment.getProperty(env);
+            return value==null?null:value.trim();
         } catch (Exception e) {
             log.debug("fail: {}", e.getMessage());
             return null;

@@ -12,6 +12,50 @@ import org.springframework.core.env.Environment;
 public class EnvironmentUtilTest {
     @Test
     public void UI_asString() {
+        {//step 1
+            var environment= Mockito.mock(Environment.class);
+            Mockito.when(environment.getProperty("item.attr")).thenReturn(" itemA,itemB,itemC ");
+            var eUtil=new EnvironmentUtil(environment);
+            Assertions.assertNotNull(eUtil.asString("item.attr"));
+            Assertions.assertEquals(eUtil.asString("item.attr"),"itemA,itemB,itemC");
+        }
+        {//step 2
+            var environment= Mockito.mock(Environment.class);
+            Mockito.when(environment.getProperty("item.attr")).thenReturn(null);
+            var eUtil=new EnvironmentUtil(environment);
+            Assertions.assertNotNull(eUtil.asString("item.attr"));
+            Assertions.assertEquals(eUtil.asString("item.attr"),"");
+        }
+    }
+
+    @Test
+    public void UI_asBool() {
+        {//step 1
+            var environment= Mockito.mock(Environment.class);
+            Mockito.when(environment.getProperty("item.attr-1")).thenReturn("true");
+            Mockito.when(environment.getProperty("item.attr-2")).thenReturn("false");
+            var eUtil=new EnvironmentUtil(environment);
+            Assertions.assertTrue(eUtil.asBool("item.attr-1"));
+            Assertions.assertFalse(eUtil.asBool("item.attr-2"));
+        }
+
+        {//step 2
+            var environment= Mockito.mock(Environment.class);
+            Mockito.when(environment.getProperty("item.attr-1")).thenReturn("1");
+            Mockito.when(environment.getProperty("item.attr-2")).thenReturn("0");
+            var eUtil=new EnvironmentUtil(environment);
+            Assertions.assertTrue(eUtil.asBool("item.attr-1"));
+            Assertions.assertFalse(eUtil.asBool("item.attr-2"));
+        }
+
+        {//step 3
+            var environment= Mockito.mock(Environment.class);
+            Mockito.when(environment.getProperty("item.attr-1")).thenReturn("t");
+            Mockito.when(environment.getProperty("item.attr-2")).thenReturn("f");
+            var eUtil=new EnvironmentUtil(environment);
+            Assertions.assertTrue(eUtil.asBool("item.attr-1"));
+            Assertions.assertFalse(eUtil.asBool("item.attr-2"));
+        }
 
     }
 
