@@ -1,8 +1,10 @@
 package com.littlecode.setup;
 
+import ch.qos.logback.core.util.EnvUtil;
 import com.littlecode.parsers.PrimitiveUtil;
 import com.littlecode.setup.privates.SetupClassesDB;
 import com.littlecode.setup.privates.SetupConfig;
+import com.littlecode.util.EnvironmentUtil;
 import com.littlecode.util.SystemUtil;
 import lombok.*;
 import org.springframework.orm.jpa.vendor.Database;
@@ -14,22 +16,22 @@ import java.util.UUID;
 
 @Data
 public class SetupSetting {
-    public static final String env_auto_start = "little-code.setup.auto-start";
-    public static final String env_database_auto_apply = "little-code.setup.database.auto-apply";
-    public static final String env_database_auto_start = "little-code.setup.database.auto-start";
-    public static final String env_database_target_auto_start = "little-code.setup.database.target.auto-start";
-    public static final String env_database_target_databases = "little-code.setup.database.target.databases";
-    public static final String env_database_target_tags = "little-code.setup.database.target.tags";
-    public static final String env_database_target_auto_update = "little-code.setup.database.target.auto-update";
-    public static final String env_database_target_model_scan = "little-code.setup.database.target.model-scan";
-    public static final String env_database_ddl_auto_start = "little-code.setup.database.ddl.auto-start";
-    public static final String env_database_ddl_auto_save = "little-code.setup.database.ddl.auto-save";
-    public static final String env_database_ddl_safe_drops = "little-code.setup.database.ddl.safe-drops";
-    public static final String env_database_ddl_exporter_dir = "little-code.setup.database.ddl.exporter.dir";
-    public static final String env_database_ddl_package_names = "little-code.setup.database.ddl.package-names";
-    public static final String env_database_ddl_package_auto_scan = "little-code.setup.database.ddl.package-scan";
-    public static final String env_business_auto_start = "little-code.setup.business.auto-start";
-    private static final String SETUP_NAME_BASE_PATH = "littlecode.easy.setup/ddl";
+    public static final String env_auto_start = "littlecode.setup.auto-start";
+    public static final String env_database_auto_apply = "littlecode.setup.database.auto-apply";
+    public static final String env_database_auto_start = "littlecode.setup.database.auto-start";
+    public static final String env_database_target_auto_start = "littlecode.setup.database.target.auto-start";
+    public static final String env_database_target_databases = "littlecode.setup.database.target.databases";
+    public static final String env_database_target_tags = "littlecode.setup.database.target.tags";
+    public static final String env_database_target_auto_update = "littlecode.setup.database.target.auto-update";
+    public static final String env_database_target_model_scan = "littlecode.setup.database.target.model-scan";
+    public static final String env_database_ddl_auto_start = "littlecode.setup.database.ddl.auto-start";
+    public static final String env_database_ddl_auto_save = "littlecode.setup.database.ddl.auto-save";
+    public static final String env_database_ddl_safe_drops = "littlecode.setup.database.ddl.safe-drops";
+    public static final String env_database_ddl_exporter_dir = "littlecode.setup.database.ddl.exporter.dir";
+    public static final String env_database_ddl_package_names = "littlecode.setup.database.ddl.package-names";
+    public static final String env_database_ddl_package_auto_scan = "littlecode.setup.database.ddl.package-scan";
+    public static final String env_business_auto_start = "littlecode.setup.business.auto-start";
+    private static final String SETUP_NAME_BASE_PATH = "littlecode.setup/ddl";
     private static final Path SETUP_REPOSITORY_PATH = Path.of(SystemUtil.Env.USER_HOME.toString(), SETUP_NAME_BASE_PATH);
     private final SetupConfig config;
     private SetupSetting.Started started;
@@ -42,32 +44,33 @@ public class SetupSetting {
     }
 
     public void load() {
+        var envUtil=new EnvironmentUtil();
         this.started = Started
                 .builder()
-                .autoStart(Boolean.parseBoolean(config.readEnv(env_auto_start, "true")))
+                .autoStart(envUtil.asBool(env_auto_start, true))
                 .build();
 
         this.database = DatabaseConfig
                 .builder()
-                .autoApply(config.readEnvBool(env_database_auto_apply, false))
-                .autoStart(config.readEnvBool(env_database_auto_start, this.started.isAutoStart()))
+                .autoApply(envUtil.asBool(env_database_auto_apply, false))
+                .autoStart(envUtil.asBool(env_database_auto_start, this.started.isAutoStart()))
                 .DDL(
                         DatabaseDDL
                                 .builder()
-                                .autoStart(config.readEnvBool(env_database_ddl_auto_start, this.started.isAutoStart()))
-                                .autoSave(config.readEnvBool(env_database_ddl_auto_save, true))
-                                .safeDrops(config.readEnvBool(env_database_ddl_safe_drops, true))
-                                .exporterDirName(config.readEnv(env_database_ddl_exporter_dir))
-                                .packageNames(config.readEnv(env_database_ddl_package_names))
-                                .packageAutoScan(config.readEnvBool(env_database_ddl_package_auto_scan, true))
+                                .autoStart(envUtil.asBool(env_database_ddl_auto_start, this.started.isAutoStart()))
+                                .autoSave(envUtil.asBool(env_database_ddl_auto_save, true))
+                                .safeDrops(envUtil.asBool(env_database_ddl_safe_drops, true))
+                                .exporterDirName(envUtil.asString(env_database_ddl_exporter_dir))
+                                .packageNames(envUtil.asString(env_database_ddl_package_names))
+                                .packageAutoScan(envUtil.asBool(env_database_ddl_package_auto_scan, true))
                                 .build()
                 )
                 .target(
                         DatabaseTarget
                                 .builder()
-                                .autoStart(config.readEnvBool(env_database_target_auto_start, this.started.isAutoStart()))
+                                .autoStart(envUtil.asBool(env_database_target_auto_start, this.started.isAutoStart()))
                                 .databases(config.readEnvEnums(env_database_target_databases, Database.class))
-                                .tags(config.readEnvList(env_database_target_tags, SetupClassesDB.Target.toList()))
+                                .tags(envUtil.asListOfString(env_database_target_tags, SetupClassesDB.Target.toList()))
                                 .build()
                 )
                 .build();
