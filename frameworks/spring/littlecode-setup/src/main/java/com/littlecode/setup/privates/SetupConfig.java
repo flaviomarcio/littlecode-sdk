@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
 import java.sql.Connection;
@@ -47,94 +48,94 @@ public class SetupConfig {
         if (STATIC_ENVIRONMENT == null)
             STATIC_ENVIRONMENT = environment;
     }
-
-    public <T> T getBean(String beanName, Class<T> valueType) {
-        try {
-            return STATIC_APPLICATION_CONTEXT.getBean(beanName, valueType);
-        } catch (BeansException ignore) {
-            return null;
-        }
-    }
-
-    public String readEnv(String env) {
-        try {
-            var response = STATIC_ENVIRONMENT.getProperty(env);
-            return response == null ? "" : response.trim();
-        } catch (Exception e) {
-            return "";
-        }
-    }
-
-    public boolean readEnvBool(String env, Boolean defaultValue) {
-        return Boolean.parseBoolean(this.readEnv(env, defaultValue.toString()));
-    }
-
-    public String readEnv(String env, String defaultValue) {
-        try {
-            var response = this.readEnv(env);
-            return response.isEmpty() ? defaultValue : response;
-        } catch (Exception e) {
-            return defaultValue;
-        }
-    }
-
-    public <T> List<T> readEnvEnums(String env, Class<?> enumClass) {
-        return readEnvEnums(env, enumClass, null);
-    }
-
-
-    public <T> List<T> readEnvEnums(String env, Class<?> enumClass, List<T> defaultValue) {
-        if (enumClass == null)
-            throw ExceptionBuilder.ofFrameWork("Invalid enum: enum is null");
-        if (!enumClass.isEnum())
-            throw ExceptionBuilder.ofFrameWork("Invalid enum: %s is not enum type", enumClass.getName());
-
-        var enumList = enumClass.getEnumConstants();
-
-        List<T> __return = new ArrayList<>();
-        try {
-            var values = STATIC_ENVIRONMENT.getProperty(env, "").split(",");
-            for (String s : values) {
-                if (s == null || s.trim().isEmpty())
-                    continue;
-                for (var e : enumList) {
-                    var eName = e.toString();
-                    if (!eName.equalsIgnoreCase(s))
-                        continue;
-                    //noinspection unchecked
-                    __return.add((T) e);
-                }
-            }
-        } catch (Exception ignored) {
-        }
-        return !__return.isEmpty()
-                ? __return
-                :
-                defaultValue == null
-                        ? new ArrayList<>()
-                        : defaultValue;
-    }
-
-    public List<String> readEnvList(String env) {
-        try {
-            var values = List.of(STATIC_ENVIRONMENT.getProperty(env, "").split(","));
-            List<String> out = new ArrayList<>();
-            values.forEach(s -> {
-                if (s != null && !s.trim().isEmpty())
-                    out.add(s);
-            });
-            return out;
-        } catch (Exception e) {
-            return new ArrayList<>();
-        }
-    }
-
-    public List<String> readEnvList(String env, List<String> defaultValue) {
-        var response = this.readEnvList(env);
-        if (response == null || response.isEmpty())
-            return defaultValue == null ? new ArrayList<>() : defaultValue;
-        return response;
-    }
+//
+//    public <T> T getBean(String beanName, Class<T> valueType) {
+//        try {
+//            return STATIC_APPLICATION_CONTEXT.getBean(beanName, valueType);
+//        } catch (BeansException ignore) {
+//            return null;
+//        }
+//    }
+//
+//    public String readEnv(String env) {
+//        try {
+//            var response = STATIC_ENVIRONMENT.getProperty(env);
+//            return response == null ? "" : response.trim();
+//        } catch (Exception e) {
+//            return "";
+//        }
+//    }
+//
+//    public boolean readEnvBool(String env, Boolean defaultValue) {
+//        return Boolean.parseBoolean(this.readEnv(env, defaultValue.toString()));
+//    }
+//
+//    public String readEnv(String env, String defaultValue) {
+//        try {
+//            var response = this.readEnv(env);
+//            return response.isEmpty() ? defaultValue : response;
+//        } catch (Exception e) {
+//            return defaultValue;
+//        }
+//    }
+//
+//    public <T> List<T> readEnvEnums(String env, Class<?> enumClass) {
+//        return readEnvEnums(env, enumClass, null);
+//    }
+//
+//
+//    public <T> List<T> readEnvEnums(String env, Class<?> enumClass, List<T> defaultValue) {
+//        if (enumClass == null)
+//            throw ExceptionBuilder.ofFrameWork("Invalid enum: enum is null");
+//        if (!enumClass.isEnum())
+//            throw ExceptionBuilder.ofFrameWork("Invalid enum: %s is not enum type", enumClass.getName());
+//
+//        var enumList = enumClass.getEnumConstants();
+//
+//        List<T> __return = new ArrayList<>();
+//        try {
+//            var values = STATIC_ENVIRONMENT.getProperty(env, "").split(",");
+//            for (String s : values) {
+//                if (s == null || s.trim().isEmpty())
+//                    continue;
+//                for (var e : enumList) {
+//                    var eName = e.toString();
+//                    if (!eName.equalsIgnoreCase(s))
+//                        continue;
+//                    //noinspection unchecked
+//                    __return.add((T) e);
+//                }
+//            }
+//        } catch (Exception ignored) {
+//        }
+//        return !__return.isEmpty()
+//                ? __return
+//                :
+//                defaultValue == null
+//                        ? new ArrayList<>()
+//                        : defaultValue;
+//    }
+//
+//    public List<String> readEnvList(String env) {
+//        try {
+//            var values = List.of(STATIC_ENVIRONMENT.getProperty(env, "").split(","));
+//            List<String> out = new ArrayList<>();
+//            values.forEach(s -> {
+//                if (s != null && !s.trim().isEmpty())
+//                    out.add(s);
+//            });
+//            return out;
+//        } catch (Exception e) {
+//            return new ArrayList<>();
+//        }
+//    }
+//
+//    public List<String> readEnvList(String env, List<String> defaultValue) {
+//        var response = this.readEnvList(env);
+//        if (response == null || response.isEmpty())
+//            return defaultValue == null ? new ArrayList<>() : defaultValue;
+//        return response;
+//    }
 
     public Connection createConnection(Setup.ExecutorDataBase executorDataBase) {
         try {

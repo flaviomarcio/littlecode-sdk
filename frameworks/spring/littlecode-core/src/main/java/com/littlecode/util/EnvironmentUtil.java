@@ -1,6 +1,7 @@
 package com.littlecode.util;
 
 import com.littlecode.config.UtilCoreConfig;
+import com.littlecode.parsers.ExceptionBuilder;
 import com.littlecode.parsers.PrimitiveUtil;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +10,8 @@ import org.springframework.core.env.Environment;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Getter
@@ -27,7 +30,8 @@ public class EnvironmentUtil {
         if (environment == null)
             return null;
         try {
-            return environment.getProperty(env);
+            var value=environment.getProperty(env);
+            return value==null?null:value.trim();
         } catch (Exception e) {
             log.debug("fail: {}", e.getMessage());
             return null;
@@ -120,6 +124,124 @@ public class EnvironmentUtil {
         if (eValue == null)
             return defaultValue;
         return PrimitiveUtil.toDateTime(eValue);
+    }
+
+    public <T> List<T> asEnums(String env, Class<?> enumClass) {
+        return asEnums(env, enumClass, null);
+    }
+
+    public <T> List<T> asEnums(String env, Class<?> enumClass, List<T> defaultValue) {
+        if (enumClass == null)
+            throw ExceptionBuilder.ofFrameWork("Invalid enum: enum is null");
+        if (!enumClass.isEnum())
+            throw ExceptionBuilder.ofFrameWork("Invalid enum: %s is not enum type", enumClass.getName());
+
+        var enumList = enumClass.getEnumConstants();
+
+        List<T> __return = new ArrayList<>();
+        try {
+            var eValue=envValue(env);
+            if(eValue==null)
+                return defaultValue==null?new ArrayList<>():defaultValue;
+            var values = eValue.split(",");
+            for (String s : values) {
+                if (s == null || s.trim().isEmpty())
+                    continue;
+                for (var e : enumList) {
+                    var eName = e.toString();
+                    if (!eName.equalsIgnoreCase(s))
+                        continue;
+                    //noinspection unchecked
+                    __return.add((T) e);
+                }
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        return !__return.isEmpty()
+                ? __return
+                :
+                defaultValue == null
+                        ? new ArrayList<>()
+                        : defaultValue;
+    }
+
+    public List<String> asListOfString(String env) {
+        return this.asListOfString(env,null);
+    }
+
+    public List<String> asListOfString(String env, List<String> defaultValue) {
+        try {
+            var eValue = envValue(env);
+            if (eValue == null)
+                return defaultValue==null?new ArrayList<>():defaultValue;
+            var values = List.of(eValue.split(","));
+            List<String> out = new ArrayList<>();
+            values.forEach(s -> {
+                if (s != null && !s.trim().isEmpty())
+                    out.add(s);
+            });
+            if(out.isEmpty())
+                return defaultValue==null?new ArrayList<>():defaultValue;
+            return out;
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return defaultValue==null?new ArrayList<>():defaultValue;
+        }
+    }
+
+    public List<Long> asListOfLong(String env) {
+        return this.asListOfLong(env,null);
+    }
+
+    public List<Long> asListOfLong(String env, List<Long> defaultValue) {
+        try {
+            var eValue = envValue(env);
+            if (eValue == null)
+                return defaultValue==null?new ArrayList<>():defaultValue;
+            var values = List.of(eValue.split(","));
+            List<Long> out = new ArrayList<>();
+            values.forEach(s -> {
+                if (s != null && !s.trim().isEmpty()){
+                    var value=PrimitiveUtil.toLong(s);
+                    if(String.valueOf(value).equals(s))
+                        out.add(value);
+                }
+            });
+            if(out.isEmpty())
+                return defaultValue==null?new ArrayList<>():defaultValue;
+            return out;
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return defaultValue==null?new ArrayList<>():defaultValue;
+        }
+    }
+
+    public List<Integer> asListOfInt(String env) {
+        return this.asListOfInt(env,null);
+    }
+
+    public List<Integer> asListOfInt(String env, List<Integer> defaultValue) {
+        try {
+            var eValue = envValue(env);
+            if (eValue == null)
+                return defaultValue==null?new ArrayList<>():defaultValue;
+            var values = List.of(eValue.split(","));
+            List<Integer> out = new ArrayList<>();
+            values.forEach(s -> {
+                if (s != null && !s.trim().isEmpty()){
+                    var value=PrimitiveUtil.toInt(s);
+                    if(String.valueOf(value).equals(s))
+                        out.add(value);
+                }
+            });
+            if(out.isEmpty())
+                return defaultValue==null?new ArrayList<>():defaultValue;
+            return out;
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return defaultValue==null?new ArrayList<>():defaultValue;
+        }
     }
 
 }
