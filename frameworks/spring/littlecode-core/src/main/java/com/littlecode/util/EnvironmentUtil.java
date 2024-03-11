@@ -140,7 +140,10 @@ public class EnvironmentUtil {
 
         List<T> __return = new ArrayList<>();
         try {
-            var values = environment.getProperty(env, "").split(",");
+            var eValue=envValue(env);
+            if(eValue==null)
+                return defaultValue==null?new ArrayList<>():defaultValue;
+            var values = eValue.split(",");
             for (String s : values) {
                 if (s == null || s.trim().isEmpty())
                     continue;
@@ -152,7 +155,8 @@ public class EnvironmentUtil {
                     __return.add((T) e);
                 }
             }
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            log.error(e.getMessage());
         }
         return !__return.isEmpty()
                 ? __return
