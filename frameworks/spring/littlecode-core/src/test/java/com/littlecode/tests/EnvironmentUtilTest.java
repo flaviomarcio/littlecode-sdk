@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.env.Environment;
 
 import java.util.List;
+import java.util.Map;
 
 @ExtendWith(MockitoExtension.class)
 public class EnvironmentUtilTest {
@@ -59,6 +60,82 @@ public class EnvironmentUtilTest {
             Assertions.assertFalse(eUtil.asBool("item.attr-2"));
         }
 
+    }
+
+    @Test
+    public void UI_asDouble() {
+        {//step 1
+            var environment= Mockito.mock(Environment.class);
+            var values= Map.of(
+                    "item.attr-0",0D,
+                    "item.attr-1",1D,
+                    "item.attr-2",3.1,
+                    "item.attr-3",1000000D,
+                    "item.attr-4",1000000.25,
+                    "item.attr-5",-1000000.25
+
+            );
+            values.forEach((k, v) -> {
+                Mockito.when(environment.getProperty(k)).thenReturn(String.valueOf(v));
+            });
+
+            values.forEach((k, v) -> {
+                        var eUtil=new EnvironmentUtil(environment);
+                        Assertions.assertEquals(eUtil.asDouble(k),v);
+                    }
+            );
+
+        }
+    }
+
+    @Test
+    public void UI_asInt() {
+        {//step 1
+            var environment= Mockito.mock(Environment.class);
+            var values= Map.of(
+                    "item.attr-0",0,
+                    "item.attr-1",1,
+                    "item.attr-2",3,
+                    "item.attr-3",1000000,
+                    "item.attr-4",-1000000
+
+            );
+            values.forEach((k, v) -> {
+                Mockito.when(environment.getProperty(k)).thenReturn(String.valueOf(v));
+            });
+
+            values.forEach((k, v) -> {
+                        var eUtil=new EnvironmentUtil(environment);
+                        Assertions.assertEquals(eUtil.asInt(k),v);
+                    }
+            );
+
+        }
+    }
+
+    @Test
+    public void UI_asLong() {
+        {//step 1
+            var environment= Mockito.mock(Environment.class);
+            var values= Map.of(
+                    "item.attr-0",0L,
+                    "item.attr-1",1L,
+                    "item.attr-2",3L,
+                    "item.attr-3",1000000L,
+                    "item.attr-4",-1000000L
+
+            );
+            values.forEach((k, v) -> {
+                Mockito.when(environment.getProperty(k)).thenReturn(String.valueOf(v));
+            });
+
+            values.forEach((k, v) -> {
+                        var eUtil=new EnvironmentUtil(environment);
+                        Assertions.assertEquals(eUtil.asLong(k),v);
+                    }
+            );
+
+        }
     }
 
 
