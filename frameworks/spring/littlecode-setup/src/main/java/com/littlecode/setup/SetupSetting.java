@@ -1,10 +1,8 @@
 package com.littlecode.setup;
 
-import ch.qos.logback.core.util.EnvUtil;
 import com.littlecode.parsers.PrimitiveUtil;
 import com.littlecode.setup.privates.SetupClassesDB;
 import com.littlecode.setup.privates.SetupConfig;
-import com.littlecode.util.EnvironmentUtil;
 import com.littlecode.util.SystemUtil;
 import lombok.*;
 import org.springframework.orm.jpa.vendor.Database;
@@ -44,7 +42,7 @@ public class SetupSetting {
     }
 
     public void load() {
-        var envUtil=new EnvironmentUtil();
+        var envUtil = config.getEnvironmentUtil();
         this.started = Started
                 .builder()
                 .autoStart(envUtil.asBool(env_auto_start, true))
@@ -69,14 +67,14 @@ public class SetupSetting {
                         DatabaseTarget
                                 .builder()
                                 .autoStart(envUtil.asBool(env_database_target_auto_start, this.started.isAutoStart()))
-                                .databases(config.readEnvEnums(env_database_target_databases, Database.class))
+                                .databases(envUtil.asEnums(env_database_target_databases, Database.class))
                                 .tags(envUtil.asListOfString(env_database_target_tags, SetupClassesDB.Target.toList()))
                                 .build()
                 )
                 .build();
         this.business = Business
                 .builder()
-                .autoStart(config.readEnvBool(env_business_auto_start, this.started.isAutoStart()))
+                .autoStart(envUtil.asBool(env_business_auto_start, this.started.isAutoStart()))
                 .build();
     }
 
@@ -132,6 +130,7 @@ public class SetupSetting {
         @Getter
         private boolean safeDrops;
 
+        @SuppressWarnings("unused")
         public void setPackageNames(Class<?> aClass) {
             this.setPackageNames((aClass == null) ? null : aClass.getPackageName());
         }

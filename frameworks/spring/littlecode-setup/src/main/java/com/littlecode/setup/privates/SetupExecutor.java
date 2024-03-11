@@ -2,6 +2,7 @@ package com.littlecode.setup.privates;
 
 import com.littlecode.setup.Setup;
 import com.littlecode.setup.SetupSetting;
+import com.littlecode.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;
@@ -51,7 +52,12 @@ public class SetupExecutor {
                 return true;
             }
 
-            var executorDataBase = this.setting.getConfig().getBean(Setup.STP_CONFIGURE_BEAN_DATABASE, Setup.ExecutorDataBase.class);
+
+            //var executorDataBase = this.setting.getConfig().getBean(Setup.STP_CONFIGURE_BEAN_DATABASE, Setup.ExecutorDataBase.class);
+            var executorDataBase = BeanUtil
+                    .of(setting.getConfig().getContext())
+                    .bean(Setup.STP_CONFIGURE_BEAN_DATABASE)
+                    .getBean(Setup.ExecutorDataBase.class);
             if (executorDataBase == null) {
                 log.debug("{}skipped, executorDataBase is null", logPrefix);
                 return true;
@@ -99,7 +105,11 @@ public class SetupExecutor {
                 return true;
             }
 
-            var executorBusiness = this.config.getBean(Setup.STP_CONFIGURE_BEAN_BUSINESS, Setup.ExecutorBusiness.class);
+            //var executorBusiness = this.config.getBean(Setup.STP_CONFIGURE_BEAN_BUSINESS, Setup.ExecutorBusiness.class);
+            var executorBusiness = BeanUtil
+                    .of(setting.getConfig().getContext())
+                    .bean(Setup.STP_CONFIGURE_BEAN_BUSINESS)
+                    .getBean(Setup.ExecutorBusiness.class);
             if (executorBusiness == null) {
                 log.debug("{}skipped", logPrefix);
                 return true;
@@ -118,7 +128,11 @@ public class SetupExecutor {
     private Setup.ExecutorNotify executeNotify() {
         final String logPrefix = "execute:executeNotify: ";
         log.debug("{}executorNotify:: started", logPrefix);
-        var executorNotify = this.config.getBean(Setup.STP_CONFIGURE_BEAN_NOTIFY, Setup.ExecutorNotify.class);
+        //var executorNotify = this.config.getBean(Setup.STP_CONFIGURE_BEAN_NOTIFY, Setup.ExecutorNotify.class);
+        var executorNotify = BeanUtil
+                .of(setting.getConfig().getContext())
+                .bean(Setup.STP_CONFIGURE_BEAN_NOTIFY)
+                .getBean(Setup.ExecutorNotify.class);
         if (executorNotify == null)
             log.debug("{}executorNotify:: skipped, executorNotify is null", logPrefix);
         else
