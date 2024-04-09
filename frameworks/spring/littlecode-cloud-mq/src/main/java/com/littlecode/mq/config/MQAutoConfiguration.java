@@ -5,6 +5,8 @@ import com.littlecode.mq.adapter.MQAdapter;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.reflections.Reflections;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -12,6 +14,7 @@ import org.springframework.core.env.Environment;
 @Slf4j
 @Getter
 @Configuration
+@EnableAutoConfiguration(exclude = RabbitAutoConfiguration.class)
 public class MQAutoConfiguration {
     private final MQ mq;
 
