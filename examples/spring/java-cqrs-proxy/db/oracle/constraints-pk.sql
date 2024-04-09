@@ -1,0 +1,25 @@
+--;
+--table name: eportal.account_check_point;
+--;
+ALTER TABLE EPORTAL.ACCOUNT_CHECK_POINT
+    ADD CONSTRAINT PK__ACCOUNT_CHECK_POINT__0001 PRIMARY KEY (ID);
+--;
+--table name: eportal.account_check_point_rev;
+--;
+ALTER TABLE EPORTAL.ACCOUNT_CHECK_POINT_REV
+    ADD CONSTRAINT PK__ACCOUNT_CHECK_POINT__0004 PRIMARY KEY (ID);
+--;
+--table name: eportal.account_movement;
+--;
+ALTER TABLE EPORTAL.ACCOUNT_MOVEMENT
+    ADD CONSTRAINT PK__ACCOUNT_MOVEMENT_ID PRIMARY KEY (ID);
+--;
+--table name: eportal.account_movement_state;
+--;
+ALTER TABLE EPORTAL.ACCOUNT_MOVEMENT_STATE
+    ADD CONSTRAINT PK__ACCOUNT_MOVEMENT_STA_0008 PRIMARY KEY (ID);
+--;
+--table name: eportal.account_target;
+--;
+ALTER TABLE EPORTAL.ACCOUNT_TARGET
+    ADD CONSTRAINT PK__ACCOUNT_TARGET_ID PRIMARY KEY (ID);

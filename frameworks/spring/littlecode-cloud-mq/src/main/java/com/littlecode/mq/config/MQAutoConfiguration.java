@@ -7,7 +7,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.reflections.Reflections;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
@@ -17,6 +19,12 @@ import org.springframework.core.env.Environment;
 @EnableAutoConfiguration(exclude = RabbitAutoConfiguration.class)
 public class MQAutoConfiguration {
     private final MQ mq;
+
+    @Bean
+    @ConditionalOnMissingBean
+    public MQ createMQ(){
+        return new MQ();
+    }
 
     public MQAutoConfiguration(ApplicationContext applicationContext, Environment environment) {
         this.checkAdapters();

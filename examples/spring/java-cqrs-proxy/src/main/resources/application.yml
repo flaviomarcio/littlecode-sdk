@@ -1,0 +1,101 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+spring:
+  application:
+    name: app
+  main:
+    allow-bean-definition-overriding: true
+  jackson:
+    time-zone: America/Sao_Paulo
+    serialization:
+      fail-on-empty-beans: false
+    deserialization:
+      fail-on-unknown-properties: true
+    date-format: yyyy-MM-dd HH:mm:ss
+  jpa:
+    properties:
+      hibernate:
+        ddl-auto: none
+        default_schema:
+        format_sql: false
+        open-in-view: false
+        show_sql: false
+        use_sql_comments: false
+  datasource:
+    url: jdbc:postgresql://localhost:5432/services
+    username: services
+    password: services
+  config:
+    import:
+  cloud:
+    vault:
+      uri: http://localhost:8200
+      authentication: token
+      token: 00000000-0000-0000-0000-000000000000
+      app-role:
+        role-id:
+        secret-id:
+      enabled: false
+      connection-timeout: 5000
+      read-timeout: 5000
+      fail-fast: true
+
+  security:
+    user:
+      name: services
+      password: services
+
+logging:
+  level:
+    root: INFO
+  file:
+    name: /tmp/app.log
+
+springdoc:
+  swagger-ui:
+    disable-swagger-default-url: true
+    path: /swagger
+  info:
+    company: "Company"
+    product: "CRQS-Proxy"
+    title: "Serviço proxy para comandos"
+    description: "Serviço proxy para comandos"
+    version: "1.0.0"
+  servers:
+    dev:
+    stg:
+    prd:
+
+littlecode:
+  setup:
+    auto-start: false
+    database:
+      auto-apply: false
+      ddl:
+        safe-drops: true
+        auto-start: true
+        auto-save: true
+
+  mq:
+    engine: com.littlecode.mq.adapter.Amqp
+    auto-create: false
+    auto-start: false
+    stop-on-fail: true
+    idle-sleep: 5000
+    hostname: localhost
+    v-hostname: /
+    channel: 1
+    exchange:
+    port: 5672
+    region: us-east-1
+    name:
+      consumer: event_notify
+      dispatcher:
+    max-number: 10
+    client:
+      id: services
+      secret: services
+
+

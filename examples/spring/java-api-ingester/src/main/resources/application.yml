@@ -1,0 +1,88 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /
+logging:
+  level:
+    root: INFO
+  file:
+    name: /tmp/app.log
+spring:
+  application:
+    name: app
+  main:
+    allow-bean-definition-overriding: true
+  jackson:
+    time-zone: America/Sao_Paulo
+    serialization:
+      fail-on-empty-beans: false
+    deserialization:
+      fail-on-unknown-properties: true
+    date-format: yyyy-MM-dd HH:mm:ss
+  jpa:
+    properties:
+      hibernate:
+        hbm2ddl:
+          auto: none
+        default_schema: tools
+        format_sql: false
+        open-in-view: false
+        show_sql: false
+        use_sql_comments: false
+  datasource:
+    #driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:testdb
+    username:
+    password:
+  config:
+    import:
+  cloud:
+    vault:
+      uri: http://localhost:8200
+      authentication: token
+      token: 00000000-0000-0000-0000-000000000000
+      app-role:
+        role-id:
+        secret-id:
+      enabled: false
+      connection-timeout: 5000
+      read-timeout: 5000
+      fail-fast: true
+  security:
+    user:
+      name: services
+      password: services
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    operationsSorter: method
+    disable-swagger-default-url: true
+    path: /swagger-ui.html
+  info:
+    company: "Company"
+    product: "CRQS-Proxy"
+    title: "CRUD - Tools"
+    description: "Serviço para cadastro de ferramentas"
+    version: "1.0.0"
+  servers:
+    dev:
+    stg:
+    prd:
+
+littlecode:
+  setup:
+    auto-start: false
+    database:
+      auto-apply: false
+      ddl:
+        safe-drops: true
+        auto-start: true
+        auto-save: true
+
+
+app:
+  proxy:
+    enabled: true
+    state:
+      sent: "Sent"
