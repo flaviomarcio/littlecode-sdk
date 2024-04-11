@@ -9,6 +9,7 @@ import com.littlecode.util.BeanUtil;
 import com.rabbitmq.client.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.io.IOException;
@@ -373,5 +374,14 @@ public class MQAMQPRabbitMQImpl extends MQAdapter {
             }
             log.info("{} finished", logPrefix);
         }
+    }
+
+    @Configuration
+    public static class PrivateConfig{
+        @Bean
+        public AMQP.Connection rabbitConnectionFactory() {
+            return null;
+        }
+
     }
 }

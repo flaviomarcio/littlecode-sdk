@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.3</version>
+        <version>3.2.4</version>
     </parent>
     <groupId>com.littlecode</groupId>
     <artifactId>cloud-mq-spring</artifactId>
@@ -21,11 +21,11 @@
         <littlecode-version>1.0.0</littlecode-version>
         <commons-io-version>2.15.1</commons-io-version>
         <commons-lang3-version>3.14.0</commons-lang3-version>
-        <jackson-version>2.15.2</jackson-version>
+        <jackson-version>2.17.0</jackson-version>
         <modelmapper-version>3.2.0</modelmapper-version>
         <reflections-version>0.10.2</reflections-version>
-        <spring-boot-version>3.2.3</spring-boot-version>
-        <rabbitmq-client-amqp-version>5.20.0</rabbitmq-client-amqp-version>
+        <spring-boot-version>3.2.4</spring-boot-version>
+        <rabbitmq-client-amqp-version>5.21.0</rabbitmq-client-amqp-version>
         <amazon.awssdk-version>2.25.5</amazon.awssdk-version>
     </properties>
     <dependencyManagement>
@@ -54,21 +54,16 @@
             <artifactId>core-spring</artifactId>
             <version>${littlecode-version}</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-amqp -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-validation -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-validation</artifactId>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-amqp -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-amqp</artifactId>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson/jackson-base -->
         <dependency>

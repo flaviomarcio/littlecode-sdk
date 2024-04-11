@@ -2,11 +2,13 @@ package com.littlecode.mq.config;
 
 import com.littlecode.mq.MQ;
 import com.littlecode.mq.adapter.MQAdapter;
+import com.rabbitmq.client.AMQP;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.reflections.Reflections;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
+import org.springframework.boot.autoconfigure.amqp.CachingConnectionFactoryConfigurer;
+import org.springframework.boot.autoconfigure.amqp.RabbitConnectionFactoryBeanConfigurer;
+import org.springframework.boot.autoconfigure.amqp.RabbitProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -16,7 +18,6 @@ import org.springframework.core.env.Environment;
 @Slf4j
 @Getter
 @Configuration
-@EnableAutoConfiguration(exclude = RabbitAutoConfiguration.class)
 public class MQAutoConfiguration {
     private final MQ mq;
 
@@ -27,6 +28,7 @@ public class MQAutoConfiguration {
     }
 
     public MQAutoConfiguration(ApplicationContext applicationContext, Environment environment) {
+        System.setProperty("spring.autoconfigure.exclude", "org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration");
         this.checkAdapters();
         this.mq = new MQ(applicationContext, environment);
         if (this.mq.setting().isAutoStart())
@@ -48,5 +50,4 @@ public class MQAutoConfiguration {
         else
             log.debug("MQ.Adapters: " + adapters);
     }
-
 }
