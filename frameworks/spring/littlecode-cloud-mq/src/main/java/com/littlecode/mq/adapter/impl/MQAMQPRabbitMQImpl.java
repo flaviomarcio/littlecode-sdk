@@ -163,14 +163,11 @@ public class MQAMQPRabbitMQImpl extends MQAdapter {
     }
 
     @Slf4j
-    @Configuration
     @RequiredArgsConstructor
     public static class Dispatcher {
         private final MQ.Setting setting;
         private final MQAMQPRabbitMQImpl adapter;
         private List<String> queue;
-//        private Connection queueClient;
-//        private Channel queueChannel;
 
         public List<String> queue() {
             var queueNames = this.queue;

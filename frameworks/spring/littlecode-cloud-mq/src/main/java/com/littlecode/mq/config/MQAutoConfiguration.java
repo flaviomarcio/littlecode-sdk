@@ -28,7 +28,6 @@ public class MQAutoConfiguration {
     }
 
     public MQAutoConfiguration(ApplicationContext applicationContext, Environment environment) {
-        System.setProperty("spring.autoconfigure.exclude", "org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration");
         this.checkAdapters();
         this.mq = new MQ(applicationContext, environment);
         if (this.mq.setting().isAutoStart())
