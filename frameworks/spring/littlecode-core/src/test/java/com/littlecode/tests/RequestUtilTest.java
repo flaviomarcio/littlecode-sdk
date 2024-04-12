@@ -8,7 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 public class RequestUtilTest {
 
     @Test
-    public void UT_000_CHECK_establishmentBy() {
+    public void UT_000_CHECK() {
 
     }
 

@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.3</version>
+        <version>3.2.4</version>
     </parent>
     <groupId>com.littlecode</groupId>
     <artifactId>setup-spring</artifactId>
@@ -25,7 +25,7 @@
         <jackson-version>2.16.1</jackson-version>
         <modelmapper-version>3.2.0</modelmapper-version>
         <reflections-version>0.10.2</reflections-version>
-        <spring-boot-version>3.2.3</spring-boot-version>
+        <spring-boot-version>3.2.4</spring-boot-version>
     </properties>
     <dependencyManagement>
         <dependencies>

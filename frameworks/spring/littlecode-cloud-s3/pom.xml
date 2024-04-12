@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.3</version>
+        <version>3.2.4</version>
     </parent>
     <groupId>com.littlecode</groupId>
     <artifactId>cloud-s3-spring</artifactId>
@@ -23,7 +23,7 @@
         <commons-lang3-version>3.14.0</commons-lang3-version>
         <jackson-version>2.16.1</jackson-version>
         <modelmapper-version>3.2.0</modelmapper-version>
-        <spring-boot-version>3.2.3</spring-boot-version>
+        <spring-boot-version>3.2.4</spring-boot-version>
         <amazon.awssdk-version>2.25.5</amazon.awssdk-version>
         <amazon.awssdk-s3-version>1.12.675</amazon.awssdk-s3-version>
         <littlecode-version>1.0.0</littlecode-version>

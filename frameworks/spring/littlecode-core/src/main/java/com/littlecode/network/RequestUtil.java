@@ -404,6 +404,19 @@ public class RequestUtil {
             }
         }
 
+        private <T> T writeObject(Object src, Class<T> classOfT) {
+            var objectMapper = UtilCoreConfig.newObjectMapper(FILE_FORMAT_DEFAULT);
+
+            try {
+                var jsonSrc=objectMapper.writeValueAsString(src);
+                return objectMapper.readValue(jsonSrc, classOfT);
+            } catch (JsonProcessingException e) {
+                if (this.request.printOnFail())
+                    log.error(e.getMessage());
+                return null;
+            }
+        }
+
         public boolean isOK() {
             return status == 200 || status == 201 || status == 202;
         }
@@ -429,6 +442,25 @@ public class RequestUtil {
             if (object == null && this.request.exceptionOnFail())
                 throw new RequestException(objectClass);
             return object;
+        }
+
+        public <T> List<T> bodyAsList(Class<T> objectClass) {
+            var __object = jsonToObject(body, Object.class);
+            if(__object == null)
+                return new ArrayList<>();
+
+            if(__object instanceof List){
+                List<T> __return=new ArrayList<>();
+                for(var src:(List<T>) __object){
+                    __return.add(writeObject(src,objectClass));
+                }
+                return __return;
+            }
+            var __return=writeObject(__object, objectClass);
+            return __return==null
+                    ?new ArrayList<>()
+                    :List.of(__return);
+
         }
     }
 
