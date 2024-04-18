@@ -19,14 +19,12 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <littlecode-version>1.0.0</littlecode-version>
-        <commons-io-version>2.15.1</commons-io-version>
-        <commons-lang3-version>3.14.0</commons-lang3-version>
         <jackson-version>2.17.0</jackson-version>
         <modelmapper-version>3.2.0</modelmapper-version>
         <reflections-version>0.10.2</reflections-version>
         <spring-boot-version>3.2.4</spring-boot-version>
         <rabbitmq-client-amqp-version>5.21.0</rabbitmq-client-amqp-version>
-        <amazon.awssdk-version>2.25.5</amazon.awssdk-version>
+        <amazon.awssdk-version>2.25.32</amazon.awssdk-version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -101,18 +99,6 @@
             <groupId>org.modelmapper</groupId>
             <artifactId>modelmapper</artifactId>
             <version>${modelmapper-version}</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>${commons-io-version}</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>${commons-lang3-version}</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.reflections/reflections -->
         <dependency>

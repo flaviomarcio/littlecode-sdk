@@ -5,7 +5,6 @@ import com.littlecode.util.SystemUtil;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.io.IOUtils;
 
 import java.io.File;
 import java.net.URI;
@@ -16,6 +15,7 @@ import java.util.UUID;
 
 @Builder
 public class PathUtil {
+    private static final String DIR_SEPARATOR=String.valueOf(File.separatorChar);
     public final List<String> pathParts = new ArrayList<>();
     @Getter
     @Setter
@@ -187,7 +187,7 @@ public class PathUtil {
                         return;
                     s = s.trim();
                     if (!s.isEmpty())
-                        path.append(IOUtils.DIR_SEPARATOR).append(s);
+                        path.append(DIR_SEPARATOR).append(s);
                 });
         var finalPath = path.toString().trim();
         return Path.of(finalPath);

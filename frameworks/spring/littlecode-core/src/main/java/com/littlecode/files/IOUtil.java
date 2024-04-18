@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -24,11 +23,19 @@ import java.util.Objects;
 @Setter
 @Slf4j
 public class IOUtil {
+    private static final int CR = 13;
+    private static final int DEFAULT_BUFFER_SIZE = 8192;
+    private static final String DIR_SEPARATOR=String.valueOf(File.separatorChar);
+    private static final String DIR_SEPARATOR_DOUBLE = DIR_SEPARATOR + DIR_SEPARATOR;
+    private static final char DIR_SEPARATOR_UNIX = '/';
+    private static final char DIR_SEPARATOR_WINDOWS = '\\';
+    private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
+
+    public static final int EOF = -1;
+    public static final int LF = 10;
     private static String STRING_CLASS_NAME = String.class.getName();
     private static String PATH_CLASS_NAME = Path.class.getName();
     private static String PREFIX_TEMP_FILE = "tmp";
-    private static String DIR_SEPARATOR = String.valueOf(IOUtils.DIR_SEPARATOR);
-    private static String DIR_SEPARATOR_DOUBLE = DIR_SEPARATOR + DIR_SEPARATOR;
     private Object target;
 
     public static IOUtil target(Object target) {
@@ -128,10 +135,7 @@ public class IOUtil {
     }
 
     public static String extension(Object target) {
-        var baseName = baseName(target);
-        if (baseName == null)
-            return "";
-        var extSplit = baseName.toString().split("\\.");
+        var extSplit = baseName(target).split("\\.");
         if (extSplit.length <= 1)
             return "";
         return extSplit[extSplit.length - 1].trim();
@@ -221,6 +225,7 @@ public class IOUtil {
     }
 
     public static void writeLines(File file, List<String> lines) {
+        final int LF = 10;
         if (file == null)
             throw new FrameworkException("Destine file is null");
         var basePath = IOUtil.target(file).basePath();
@@ -237,7 +242,7 @@ public class IOUtil {
         try (FileWriter writer = new FileWriter(file)) {
             for (var line : lines) {
                 writer.write(line);
-                writer.write(IOUtils.LF);
+                writer.write(LF);
             }
             writer.flush();
         } catch (IOException e) {
@@ -285,7 +290,7 @@ public class IOUtil {
                     throw new FrameworkException(String.format("File no accessible: %s", file.toString()));
             }
             FileWriter fileWriter = new FileWriter(file);
-            fileWriter.write(Arrays.toString(IOUtils.EMPTY_BYTE_ARRAY));
+            fileWriter.write(Arrays.toString(EMPTY_BYTE_ARRAY));
             fileWriter.close();
             return file.exists();
         } catch (IOException e) {
