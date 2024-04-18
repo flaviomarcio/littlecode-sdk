@@ -34,10 +34,11 @@
         <h2.version>2.2.220</h2.version>
         <HikariCP.version>5.0.0</HikariCP.version>
         <jackson-version>2.15.2</jackson-version>
-        <modelmapper-version>3.1.1</modelmapper-version>
+        <modelmapper-version>3.2.0</modelmapper-version>
         <reflections-version>0.10.2</reflections-version>
         <snakeyaml-version>2.2</snakeyaml-version>
         <spring-boot-version>3.2.4</spring-boot-version>
+        <lombok.version>1.18.32</lombok.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -80,8 +81,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.30</version>
-            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.modelmapper/modelmapper -->
         <dependency>
@@ -89,18 +89,6 @@
             <artifactId>modelmapper</artifactId>
             <version>${modelmapper-version}</version>
         </dependency>
-<!--        &lt;!&ndash; https://mvnrepository.com/artifact/commons-io/commons-io &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>commons-io</groupId>-->
-<!--            <artifactId>commons-io</artifactId>-->
-<!--            <version>${commons-io-version}</version>-->
-<!--        </dependency>-->
-<!--        &lt;!&ndash; https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>org.apache.commons</groupId>-->
-<!--            <artifactId>commons-lang3</artifactId>-->
-<!--            <version>${commons-lang3-version}</version>-->
-<!--        </dependency>-->
         <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson/jackson-base -->
         <dependency>
             <groupId>com.fasterxml.jackson</groupId>
