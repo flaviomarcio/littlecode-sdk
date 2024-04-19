@@ -1,5 +1,6 @@
 package com.littlecode.jpa.datasource;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.cfg.AvailableSettings;
 import org.springframework.core.env.Environment;
@@ -16,16 +17,10 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class DSFactory{
     private final Environment environment;
+    @Getter
     private final Database database;
+    @Getter
     private final String[] packages;
-
-    public Database getDatabase(){
-        return database;
-    }
-
-    public String[] getPackages(){
-        return this.packages;
-    }
 
     public HibernateJpaVendorAdapter makeVendorAdapter() {
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
@@ -50,8 +45,8 @@ public class DSFactory{
 
     public DataSource makeDataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        var __dbType=this.getDatabase().name().toLowerCase();
         if(this.getDatabase()!=null){
+            var __dbType=this.getDatabase().name().toLowerCase();
             dataSource.setUrl(environment.getProperty(String.format("spring.datasource.%s.url",__dbType)));
             dataSource.setUsername(environment.getProperty(String.format("spring.datasource.%s.username",__dbType)));
             dataSource.setPassword(environment.getProperty(String.format("spring.datasource.%s.password",__dbType)));
