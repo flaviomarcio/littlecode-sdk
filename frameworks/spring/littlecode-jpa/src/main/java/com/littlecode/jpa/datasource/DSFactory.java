@@ -1,7 +1,7 @@
 package com.littlecode.jpa.datasource;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.cfg.AvailableSettings;
 import org.springframework.core.env.Environment;
@@ -13,6 +13,7 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
+import java.util.Arrays;
 import java.util.Map;
 
 @Slf4j
@@ -28,13 +29,13 @@ public class DSFactory {
         this.environment = environment;
         this.database = database;
         this.packages = packages;
-        log.info("Using database {}", database);
-        log.info("Using packages {}", packages);
+        internalLog("Using database {}", "constructor", database);
+        internalLog("Using packages {}", "constructor", packages);
     }
 
     public HibernateJpaVendorAdapter makeVendorAdapter() {
         internalLog("   makeVendorAdapter", "started");
-        internalLog("       database", getDatabase() == null ? "undefined" : getDatabase().name());
+        internalLog("       database", getDatabase().toString());
         try {
             HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
             vendorAdapter.setDatabase(getDatabase());
@@ -45,7 +46,7 @@ public class DSFactory {
     }
 
     public LocalContainerEntityManagerFactoryBean makeEntityManagerFactory() {
-        internalLog("makeEntityManagerFactory", "started");
+        internalLog("makeEntityManagerFactory", "","started");
         try {
             LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
             em.setDataSource(makeDataSource());
@@ -60,7 +61,7 @@ public class DSFactory {
             em.setJpaPropertyMap(properties);
             return em;
         } finally {
-            internalLog("makeEntityManagerFactory", "finished", packages);
+            internalLog("makeEntityManagerFactory", "","finished");
         }
     }
 
@@ -68,45 +69,40 @@ public class DSFactory {
         internalLog("   makeDataSource", "started");
         try {
             DriverManagerDataSource dataSource = new DriverManagerDataSource();
-            if (this.getDatabase() == null)
-                internalLog("makeDataSource", "database is null");
-            else {
+            var __env_dbType = this.getDatabase().name().toLowerCase();
+            var __env_url = String.format("spring.datasource.%s.url", __env_dbType);
+            var __env_username = String.format("spring.datasource.%s.username", __env_dbType);
+            var __env_password = String.format("spring.datasource.%s.password", __env_dbType);
+            var __env_schema = String.format("spring.datasource.%s.schema", __env_dbType);
 
-                var __env_dbType = this.getDatabase().name().toLowerCase();
-                var __env_url = String.format("spring.datasource.%s.url", __env_dbType);
-                var __env_username = String.format("spring.datasource.%s.username", __env_dbType);
-                var __env_password = String.format("spring.datasource.%s.password", __env_dbType);
-                var __env_schema = String.format("spring.datasource.%s.schema", __env_dbType);
+            internalLog("       env", "");
+            internalLog("           ", "env.dbType", __env_dbType);
+            internalLog("           ", "env.url", __env_url);
+            internalLog("           ", "env.username", __env_username);
+            internalLog("           ", "env.password", __env_password);
+            internalLog("           ", "env.schema", __env_schema);
 
-                internalLog("       env", "");
-                internalLog("           ", "env.dbType", __env_dbType);
-                internalLog("           ", "env.url", __env_url);
-                internalLog("           ", "env.username", __env_username);
-                internalLog("           ", "env.password", __env_password);
-                internalLog("           ", "env.schema", __env_schema);
+            var __dbType = this.getDatabase().name().toLowerCase();
+            var __url = environment.getProperty(String.format("spring.datasource.%s.url", __env_dbType));
+            var __username = environment.getProperty(String.format("spring.datasource.%s.username", __env_dbType));
+            var __password = environment.getProperty(String.format("spring.datasource.%s.password", __env_dbType));
+            var __schema = environment.getProperty(String.format("spring.datasource.%s.schema", __env_dbType));
 
-                var __dbType = this.getDatabase().name().toLowerCase();
-                var __url = environment.getProperty(String.format("spring.datasource.%s.url", __env_dbType));
-                var __username = environment.getProperty(String.format("spring.datasource.%s.username", __env_dbType));
-                var __password = environment.getProperty(String.format("spring.datasource.%s.password", __env_dbType));
-                var __schema = environment.getProperty(String.format("spring.datasource.%s.schema", __env_dbType));
+            internalLog("       value", "");
+            internalLog("           ", "value.dbType ", __dbType);
+            internalLog("           ", "value.url", __url);
+            internalLog("           ", "value.username", __username);
+            internalLog("           ", "value.password", __password);
+            internalLog("           ", "value.schema", __schema);
 
-                internalLog("       value", "");
-                internalLog("           ", "value.dbType ", __dbType);
-                internalLog("           ", "value.url", __url);
-                internalLog("           ", "value.username", __username);
-                internalLog("           ", "value.password", __password);
-                internalLog("           ", "value.schema", __schema);
-
-                dataSource.setUrl(__url);
-                dataSource.setUsername(__username);
-                dataSource.setPassword(__password);
-                dataSource.setSchema(__schema);
-            }
+            dataSource.setUrl(__url);
+            dataSource.setUsername(__username);
+            dataSource.setPassword(__password);
+            dataSource.setSchema(__schema);
             return dataSource;
 
         } finally {
-            internalLog("   makeDataSource", "finished", packages);
+            internalLog("   makeDataSource", "finished", (Object) packages);
         }
     }
 
@@ -116,8 +112,18 @@ public class DSFactory {
         return transactionManager;
     }
 
-    private static void internalLog(String method, String format, Object... args) {
-        log.debug(("{} - " + format + ": {}"), method, args);
+    private static void internalLog(String method, String subMethod) {
+        log.debug(method, method, subMethod);
+    }
+
+    private static void internalLog(String method, String subMethod, Object... args) {
+        var __prefix=String.format("%s - %s",subMethod, method);
+        log.debug("{} - {}", __prefix, Arrays.toString(args));
+    }
+
+    private static void internalLog(String method, String subMethod, String... args) {
+        var __prefix=String.format("%s - %s",subMethod, method);
+        log.debug("{} - {}", __prefix, Arrays.toString(args));
     }
 }
 
