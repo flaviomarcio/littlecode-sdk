@@ -11,7 +11,6 @@ import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.littlecode.exceptions.FrameworkException;
-import com.littlecode.exceptions.UnknownException;
 import com.littlecode.files.FileFormat;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -64,7 +63,7 @@ public class UtilCoreConfig {
         if (CONTEXT == null) {
             var msg = String.format("Use to configure context %s.setApplicationContext(...)", UtilCoreConfig.class);
             log.error(msg);
-            throw new UnknownException(String.format("Invalid context: %s", aClass));
+            throw new FrameworkException(String.format("Invalid context: %s", aClass));
         }
         return CONTEXT;
     }
@@ -81,7 +80,7 @@ public class UtilCoreConfig {
         if (ENVIRONMENT == null) {
             var msg = String.format("Use to configure context %s.setEnvironment(...)", UtilCoreConfig.class);
             log.error(msg);
-            throw new UnknownException(String.format("Invalid environment: %s", aClass));
+            throw new FrameworkException(String.format("Invalid environment: %s", aClass));
         }
         return ENVIRONMENT;
     }
@@ -145,7 +144,6 @@ public class UtilCoreConfig {
     }
 
     @Bean
-    @SuppressWarnings("unused")
     public ApplicationContext applicationContext() {
         //noinspection AccessStaticViaInstance
         return this.CONTEXT;

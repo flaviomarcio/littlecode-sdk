@@ -80,18 +80,16 @@ public class SettingUtilTest {
             Assertions.assertTrue(IOUtil.target(setting.getSettingFile()).exists());
         }
 
-        settingFiles
-                .forEach(
-                        (fileFormat, settingFile) ->
-                        {
-                            var setting = makeSetting(fileFormat);
-                            setting
-                                    .fileFormat(fileFormat)
-                                    .setSettingFile(settingFile);
-                            Assertions.assertDoesNotThrow(() -> setting.load());
-                            Assertions.assertTrue(IOUtil.exists(setting.getSettingFile()));
-                        }
-                );
+        for (Map.Entry<FileFormat, File> entry : settingFiles.entrySet()) {
+            FileFormat fileFormat = entry.getKey();
+            File settingFile = entry.getValue();
+            var setting = makeSetting(fileFormat);
+            setting
+                    .fileFormat(fileFormat)
+                    .setSettingFile(settingFile);
+            Assertions.assertDoesNotThrow(() -> setting.load());
+            Assertions.assertTrue(IOUtil.exists(setting.getSettingFile()));
+        }
     }
 
     @Getter

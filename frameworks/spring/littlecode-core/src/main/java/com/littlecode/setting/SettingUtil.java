@@ -7,7 +7,6 @@ import com.littlecode.files.IOUtil;
 import com.littlecode.parsers.ObjectUtil;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
@@ -68,22 +67,18 @@ public class SettingUtil<T> {
         return Optional.ofNullable(ObjectUtil.createFromString(aClass, bytes, fileFormat));
     }
 
-    public static <T> T save(T object, File file, FileFormat fileFormat) {
-        if (file == null)
-            throw new FrameworkException("SettingFile is null");
-        try {
-            var basePath = IOUtil.target(file).basePath();
-            if (!IOUtil.target(basePath).createDir().exists())
-                throw new FrameworkException(String.format("Base path no exists :%s", basePath));
-            file = (file.exists())
-                    ? file
-                    : parseExtension(file, fileFormat);
-            var objectMapper = UtilCoreConfig.newObjectMapper(fileFormat);
-            objectMapper.writeValue(file, object);
-            return object;
-        } catch (IOException e) {
-            throw new FrameworkException(e);
+    public static boolean save(Object object, File file, FileFormat fileFormat) {
+        if (object != null && file != null) {
+            try {
+                file = (file.exists())
+                        ? file
+                        : parseExtension(file, fileFormat);
+                var objectMapper = UtilCoreConfig.newObjectMapper(fileFormat);
+                objectMapper.writeValue(file, object);
+            } catch (Exception ignore) {
+            }
         }
+        return false;
     }
 
     public final FileFormat getFileFormat() {
@@ -137,28 +132,27 @@ public class SettingUtil<T> {
     }
 
     public T load(File file, FileFormat fileFormat) {
-        if (file == null)
-            throw new FrameworkException("SettingFile is null");
-        file = file.exists()
-                ? file
-                : parseExtension(file, fileFormat);
+        if (file != null) {
+            file = file.exists()
+                    ? file
+                    : parseExtension(file, fileFormat);
 
-        var newValues = load(file, this.getClass(), fileFormat);
-        ObjectUtil.update(this, newValues, fileFormat);
-        //noinspection unchecked
+            var newValues = load(file, this.getClass(), fileFormat);
+            if (newValues.isPresent())
+                ObjectUtil.update(this, newValues.get(), fileFormat);
+        }
         return (T) this;
     }
 
-    public T save() {
+    public boolean save() {
         return this.save(this.getSettingFile());
     }
 
-    public T save(File file) {
+    public boolean save(File file) {
         return save(file, this.getFileFormat());
     }
 
-    public T save(File file, FileFormat fileFormat) {
-        //noinspection unchecked
+    public boolean save(File file, FileFormat fileFormat) {
         return save((T) this, file, fileFormat);
     }
 

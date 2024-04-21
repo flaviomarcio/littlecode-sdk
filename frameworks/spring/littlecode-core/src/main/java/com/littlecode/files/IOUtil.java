@@ -11,10 +11,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -39,118 +39,106 @@ public class IOUtil {
     private Object target;
 
     public static IOUtil target(Object target) {
+        if (target == null)
+            throw new FrameworkException("target is null");
         return IOUtil.builder().target(target).build();
     }
-
     public static String toString(Object target) {
-        if (target == null)
-            return "";
-        else if (target.getClass().getTypeName().equals(STRING_CLASS_NAME))
-            return ((String) target).trim();
-        else if (target.getClass().getTypeName().equals(PATH_CLASS_NAME))
-            return ((Path) target).toString();
-        else //NOTE Classes File, URI, URL, Object contains toString()
-            return target.toString().trim();
+        if (target != null) {
+            if (target instanceof String)
+                return target.toString();
+            else if (target instanceof Path)
+                return target.toString();
+            else if (target instanceof URI)
+                return target.toString();
+            else if (target instanceof File)
+                return ((File) target).getAbsolutePath();
+        }
+        return "";
     }
-
     public static Path toPath(Object target) {
-        return Path.of(toString(target));
+        var str = IOUtil.toString(target);
+        return str.isEmpty() ? null : Path.of(str);
     }
-
     public static File toFile(Object target) {
-        return toPath(target).toFile();
+        var str = IOUtil.toString(target);
+        return str.isEmpty() ? null : new File(str);
     }
 
-    public static boolean isEmpty(String value) {
-        return value == null || value.trim().isEmpty();
+    public static boolean isEmpty(Object target) {
+        return IOUtil.toString(target).isEmpty();
     }
-
     public static String[] split(Object target) {
-        return toString(target).split(DIR_SEPARATOR);
+        var str = IOUtil.toString(target);
+        return str.isEmpty() ? new String[0] : str.split(DIR_SEPARATOR);
     }
-
     public static boolean isFile(Object target) {
-        return toFile(target).isFile();
+        return new File(IOUtil.toString(target)).isFile();
     }
-
     public static boolean isDirectory(Object target) {
-        return toFile(target).isDirectory();
+        return new File(IOUtil.toString(target)).isDirectory();
     }
-
     public static boolean exists(Object target) {
-        return toFile(target).exists();
+        final var file = IOUtil.toFile(target);
+        return file != null && file.exists();
     }
-
-    @SuppressWarnings("UnusedReturnValue")
     public static boolean delete(Object target) {
-        var file = toFile(target);
-        if (!file.exists())
-            return false;
-        if (!file.canWrite())
-            return false;
-        if (file.isFile())
-            return file.delete();
-
-        boolean __return = true;
-        for (var itemFile : Objects.requireNonNull(file.listFiles())) {
-            if (!delete(itemFile))
-                __return = false;
+        final var file = IOUtil.toFile(target);
+        if (file != null) {
+            if (file.exists() && file.isFile())
+                return file.delete();
+            else {
+                try {
+                    boolean __return = true;
+                    for (var itemFile : Objects.requireNonNull(file.listFiles())) {
+                        if (!IOUtil.delete(itemFile))
+                            __return = false;
+                    }
+                    return __return && file.delete();
+                } catch (Exception ignored) {
+                }
+            }
         }
-        return __return && file.delete();
+        return false;
     }
-
     public static File newFile(Object... args) {
-        if (args == null || args.length == 0)
-            throw new FrameworkException("Invalid args");
-        var fileParty = new StringBuilder();
-        for (var arg : args) {
-            var str = toString(arg);
-            if (isEmpty(str))
-                continue;
-            fileParty
-                    .append(DIR_SEPARATOR)
-                    .append(str);
+        if (args != null) {
+            var fileParty = new StringBuilder();
+            for (var o : args) {
+                fileParty
+                        .append(DIR_SEPARATOR)
+                        .append(IOUtil.toString(o));
+            }
+            String fileName = fileParty.toString();
+            while (fileName.contains(DIR_SEPARATOR_DOUBLE))
+                fileName = fileName.replace(DIR_SEPARATOR_DOUBLE, DIR_SEPARATOR);
+            return new File(fileName);
         }
-        String fileName = fileParty.toString();
-        while (fileName.contains(DIR_SEPARATOR_DOUBLE))
-            fileName = fileName.replace(DIR_SEPARATOR_DOUBLE, DIR_SEPARATOR);
-        return Path.of(fileName).toFile();
+        return null;
     }
-
-    public static boolean createFile(Object target) {
-        var file = toFile(target);
-        if (file.exists()) {
-            if (file.isDirectory())
-                return false;
-            return file.isFile();
-        }
-        return createFileEmpty(file);
-    }
-
     public static boolean createDir(Object target) {
-        var file = toFile(target);
-        if (file.exists())
-            return file.isDirectory();
-        return file.mkdirs();
+        var file = IOUtil.toFile(target);
+        return (file != null) && (
+                (file.exists() && file.isDirectory()) || file.mkdirs()
+        );
     }
-
     public static String extension(Object target) {
-        var extSplit = baseName(target).split("\\.");
-        if (extSplit.length <= 1)
-            return "";
-        return extSplit[extSplit.length - 1].trim();
+        if (target != null) {
+            var extSplit = IOUtil.baseName(target).split("\\.");
+            return
+                    (extSplit.length <= 1)
+                            ? ""
+                            : extSplit[extSplit.length - 1].trim();
+        }
+        return "";
     }
-
     public static String baseName(Object target) {
-        var list = split(target);
+        var list = IOUtil.split(target);
         var baseName = (list.length == 0) ? "" : list[list.length - 1];
-        return baseName == null
-                ? ""
-                : baseName.trim();
+        return baseName;
     }
-
     public static File basePath(Object target) {
-        var list = split(target);
+        var list = IOUtil.split(target);
         if (list.length == 0)
             return null;
         var out = new StringBuilder();
@@ -164,112 +152,71 @@ public class IOUtil {
         }
         return new File(out.toString().trim());
     }
-
     public static String readAll(Object target) {
-        File updateFile = null;
-        //noinspection ConstantValue
-        if (target.getClass().equals(Path.class))
-            updateFile = ((Path) target).toFile();
-        else if (target.getClass().equals(File.class))
-            updateFile = (File) target;
-        else if (target.getClass().equals(String.class)) {
-            var file = Path.of(((String) target).trim()).toFile();
-            if (file.exists() && file.isFile())
-                updateFile = file;
-        }
-        if (updateFile == null || !updateFile.exists() || !updateFile.isFile())
-            return "";
-
-        try (var inputStream = new FileInputStream(updateFile)) {
-            StringBuilder str = new StringBuilder();
-            int content;
-            while ((content = inputStream.read()) != -1)
-                str.append((char) content);
-            return str.toString().trim();
-        } catch (IOException e) {
-            System.out.print(e.getMessage());
-            return "";
-        }
-    }
-
-    public static List<String> readLines(File target) {
-        if (target == null || !target.exists() || !target.isFile())
-            return new ArrayList<>();
-        try {
-            return Files.readAllLines(target.toPath());
-        } catch (IOException e) {
-            return new ArrayList<>();
-        }
-    }
-
-    public static void writeAll(File file, String body) {
-        if (file == null)
-            throw new FrameworkException("Destine file is null");
-        var basePath = IOUtil.target(file).basePath();
-
-        if (file.exists() && file.isDirectory())
-            throw new FrameworkException(String.format("Destine file is a directory :%s", file));
-
-        if (!IOUtil.target(basePath).createDir().exists())
-            throw new FrameworkException(String.format("Base path no exists :%s", basePath));
-
-        if (file.exists() && !file.delete())
-            throw new FrameworkException(String.format("No remove file :%s", file));
-
-        try (FileWriter writer = new FileWriter(file)) {
-            writer.write(body);
-            writer.flush();
-        } catch (IOException e) {
-            throw new FrameworkException(e);
-        }
-    }
-
-    public static void writeLines(File file, List<String> lines) {
-        final int LF = 10;
-        if (file == null)
-            throw new FrameworkException("Destine file is null");
-        var basePath = IOUtil.target(file).basePath();
-
-        if (file.exists() && file.isDirectory())
-            throw new FrameworkException(String.format("Destine file is a directory :%s", file));
-
-        if (!IOUtil.target(basePath).createDir().exists())
-            throw new FrameworkException(String.format("Base path no exists :%s", basePath));
-
-        if (file.exists() && !file.delete())
-            throw new FrameworkException(String.format("No remove file :%s", file));
-
-        try (FileWriter writer = new FileWriter(file)) {
-            for (var line : lines) {
-                writer.write(line);
-                writer.write(LF);
+        var file = IOUtil.toFile(target);
+        if (file != null) {
+            try {
+                var inputStream = new FileInputStream(file);
+                var bytes = new String(inputStream.readAllBytes());
+                inputStream.close();
+                return bytes;
+            } catch (Exception ignored) {
             }
-            writer.flush();
-        } catch (IOException e) {
-            throw new FrameworkException(e);
         }
+        return "";
     }
 
+    public static List<String> readLines(Object target) {
+        var file = IOUtil.toPath(target);
+        if (file != null) {
+            try {
+                return Files.readAllLines(file);
+            } catch (Exception ignored) {
+            }
+        }
+        return new ArrayList<>();
+    }
+
+    public static boolean writeAll(File file, String body) {
+        if (body != null && file != null && !file.isDirectory()) {
+            if (file.exists())
+                file.delete();
+            try (FileWriter writer = new FileWriter(file)) {
+                writer.write(body);
+                writer.flush();
+                writer.close();
+                return true;
+            } catch (Exception ignored) {
+            }
+        }
+        return false;
+    }
+
+    public static boolean writeLines(File file, List<String> lines) {
+        StringBuilder str = null;
+        if (lines != null) {
+            str = new StringBuilder();
+            for (var v : lines)
+                if (v != null)
+                    str.append(v).append("\n");
+        }
+        return str != null && IOUtil.writeAll(file, str.toString());
+    }
     public static File tempDir() {
         return SystemUtil.Env.JAVA_TEMP_DIR.toFile();
     }
-
     public static File createFileTemp() {
         return createFileTemp(PREFIX_TEMP_FILE, "", null);
     }
-
     public static File createFileTemp(String prefix) {
         return createFileTemp(prefix, null, null);
     }
-
     public static File createFileTemp(String prefix, String suffix) {
         return createFileTemp(prefix, suffix, null);
     }
-
     public static File createFileTemp(File directory) {
         return createFileTemp(null, null, directory);
     }
-
     public static File createFileTemp(String prefix, String suffix, File directory) {
         try {
             return File.createTempFile(
@@ -281,99 +228,77 @@ public class IOUtil {
         }
     }
 
-    public static boolean createFileEmpty(File file) {
-        try {
-            if (file.exists()) {
-                if (!file.canWrite())
-                    throw new FrameworkException(String.format("File no accessible: %s", file.toString()));
-                if (!file.delete())
-                    throw new FrameworkException(String.format("File no accessible: %s", file.toString()));
+    public static boolean createFile(Object target) {
+        var file = IOUtil.toFile(target);
+        if (file != null) {
+            try (FileWriter fileWriter = new FileWriter(file)) {
+                fileWriter.write("");
+                fileWriter.flush();
+                fileWriter.close();
+                return file.exists();
+            } catch (Exception ignored) {
             }
-            FileWriter fileWriter = new FileWriter(file);
-            fileWriter.write(Arrays.toString(EMPTY_BYTE_ARRAY));
-            fileWriter.close();
-            return file.exists();
-        } catch (IOException e) {
-            log.error(e.getMessage());
-            return false;
         }
+        return false;
     }
 
+    @Override
     public String toString() {
-        return toString(this.getTarget());
+        return IOUtil.toString(this.getTarget());
     }
-
     public Path toPath() {
-        return toPath(this.getTarget());
+        return IOUtil.toPath(this.getTarget());
     }
-
     public File toFile() {
-        return toFile(this.getTarget());
+        return IOUtil.toFile(this.getTarget());
     }
-
     public boolean isEmpty() {
-        return isEmpty(toString());
+        return IOUtil.isEmpty(this.getTarget());
     }
-
     public String[] split() {
-        return split(this.getTarget());
+        return IOUtil.split(this.getTarget());
     }
-
     public boolean isFile() {
-        return isFile(this.getTarget());
+        return IOUtil.isFile(this.getTarget());
     }
-
     public boolean isDirectory() {
-        return isDirectory(this.getTarget());
+        return IOUtil.isDirectory(this.getTarget());
     }
-
     public boolean exists() {
-        return exists(this.getTarget());
+        return IOUtil.exists(this.getTarget());
     }
 
-    public IOUtil delete() {
-        delete(this.getTarget());
-        return this;
+    public boolean delete() {
+        return IOUtil.delete(this.getTarget());
     }
-
     public boolean createFile() {
-        return createFile(this.getTarget());
+        return IOUtil.createFile(this.getTarget());
     }
 
-    public IOUtil createDir() {
-        if (!createDir(this.getTarget()))
-            log.error("No create directory: {}", toString(this.getTarget()));
-        return this;
+    public boolean createDir() {
+        return IOUtil.createDir(this.getTarget());
     }
-
     public String extension() {
-        return extension(this.getTarget());
+        return IOUtil.extension(this.getTarget());
     }
-
     public String baseName() {
-        return baseName(this.getTarget());
+        return IOUtil.baseName(this.getTarget());
     }
-
     public File basePath() {
-        return basePath(this.getTarget());
+        return IOUtil.basePath(this.getTarget());
     }
-
     public String readAll() {
-        return readAll(this.toFile());
+        return IOUtil.readAll(this.toFile());
     }
-
     public List<String> readLines() {
-        return readLines(this.toFile());
+        return IOUtil.readLines(this.toFile());
     }
 
-    public IOUtil writeAll(String body) {
-        writeAll(this.toFile(), body);
-        return this;
+    public boolean writeAll(String body) {
+        return IOUtil.writeAll(this.toFile(), body);
     }
 
-    public IOUtil writeLines(List<String> lines) {
-        writeLines(this.toFile(), lines);
-        return this;
+    public boolean writeLines(List<String> lines) {
+        return IOUtil.writeLines(this.toFile(), lines);
     }
-
 }

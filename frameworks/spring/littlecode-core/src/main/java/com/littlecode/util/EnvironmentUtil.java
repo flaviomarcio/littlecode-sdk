@@ -1,7 +1,7 @@
 package com.littlecode.util;
 
 import com.littlecode.config.UtilCoreConfig;
-import com.littlecode.parsers.ExceptionBuilder;
+import com.littlecode.exceptions.FrameworkException;
 import com.littlecode.parsers.PrimitiveUtil;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -23,19 +23,22 @@ public class EnvironmentUtil {
     }
 
     public EnvironmentUtil(Environment environment) {
+        if (environment == null)
+            throw new FrameworkException("environment is null");
         this.environment = environment;
     }
 
-    private String envValue(String env) {
-        if (environment == null)
-            return null;
-        try {
-            var value=environment.getProperty(env);
-            return value==null?null:value.trim();
-        } catch (Exception e) {
-            log.debug("fail: {}", e.getMessage());
-            return null;
+    public String envValue(String env) {
+        if (env != null && !env.isEmpty()) {
+            try {
+                var eValue = environment.getProperty(env);
+                return eValue == null || eValue.isEmpty()
+                        ? null
+                        : eValue;
+            } catch (Exception ignored) {
+            }
         }
+        return null;
     }
 
     public String asString(String env) {
@@ -44,9 +47,9 @@ public class EnvironmentUtil {
 
     public String asString(String env, String defaultValue) {
         var eValue = envValue(env);
-        if (eValue == null)
-            return defaultValue == null ? "" : defaultValue;
-        return eValue;
+        return (eValue == null)
+                ? defaultValue == null ? null : defaultValue.trim()
+                : eValue.trim();
     }
 
     public boolean asBool(String env) {
@@ -55,9 +58,9 @@ public class EnvironmentUtil {
 
     public boolean asBool(String env, boolean defaultValue) {
         var eValue = envValue(env);
-        if (eValue == null)
-            return defaultValue;
-        return PrimitiveUtil.toBool(eValue);
+        return (eValue == null)
+                ? defaultValue :
+                PrimitiveUtil.toBool(eValue);
     }
 
     public double asDouble(String env) {
@@ -66,9 +69,9 @@ public class EnvironmentUtil {
 
     public double asDouble(String env, double defaultValue) {
         var eValue = envValue(env);
-        if (eValue == null)
-            return defaultValue;
-        return PrimitiveUtil.toDouble(eValue);
+        return (eValue == null)
+                ? defaultValue
+                : PrimitiveUtil.toDouble(eValue);
     }
 
     public int asInt(String env) {
@@ -77,9 +80,9 @@ public class EnvironmentUtil {
 
     public int asInt(String env, int defaultValue) {
         var eValue = envValue(env);
-        if (eValue == null)
-            return defaultValue;
-        return PrimitiveUtil.toInt(eValue);
+        return (eValue == null)
+                ? defaultValue
+                : PrimitiveUtil.toInt(eValue);
     }
 
     public long asLong(String env) {
@@ -88,9 +91,9 @@ public class EnvironmentUtil {
 
     public long asLong(String env, long defaultValue) {
         var eValue = envValue(env);
-        if (eValue == null)
-            return defaultValue;
-        return PrimitiveUtil.toInt(eValue);
+        return (eValue == null)
+                ? defaultValue
+                : PrimitiveUtil.toLong(eValue);
     }
 
     public LocalDate asDate(String env) {
@@ -99,9 +102,9 @@ public class EnvironmentUtil {
 
     public LocalDate asDate(String env, LocalDate defaultValue) {
         var eValue = envValue(env);
-        if (eValue == null)
-            return defaultValue;
-        return PrimitiveUtil.toDate(eValue);
+        return (eValue == null)
+                ? defaultValue
+                : PrimitiveUtil.toDate(eValue);
     }
 
     public LocalTime asTime(String env) {
@@ -110,9 +113,9 @@ public class EnvironmentUtil {
 
     public LocalTime asTime(String env, LocalTime defaultValue) {
         var eValue = envValue(env);
-        if (eValue == null)
-            return defaultValue;
-        return PrimitiveUtil.toTime(eValue);
+        return (eValue == null)
+                ? defaultValue
+                : PrimitiveUtil.toTime(eValue);
     }
 
     public LocalDateTime asDateTime(String env) {
@@ -121,9 +124,9 @@ public class EnvironmentUtil {
 
     public LocalDateTime asDateTime(String env, LocalDateTime defaultValue) {
         var eValue = envValue(env);
-        if (eValue == null)
-            return defaultValue;
-        return PrimitiveUtil.toDateTime(eValue);
+        return (eValue == null)
+                ? defaultValue
+                : PrimitiveUtil.toDateTime(eValue);
     }
 
     public <T> List<T> asEnums(String env, Class<?> enumClass) {
@@ -131,63 +134,44 @@ public class EnvironmentUtil {
     }
 
     public <T> List<T> asEnums(String env, Class<?> enumClass, List<T> defaultValue) {
-        if (enumClass == null)
-            throw ExceptionBuilder.ofFrameWork("Invalid enum: enum is null");
-        if (!enumClass.isEnum())
-            throw ExceptionBuilder.ofFrameWork("Invalid enum: %s is not enum type", enumClass.getName());
-
-        var enumList = enumClass.getEnumConstants();
-
-        List<T> __return = new ArrayList<>();
-        try {
+        if (enumClass != null && enumClass.isEnum()) {
+            var enumList = enumClass.getEnumConstants();
+            List<T> __return = new ArrayList<>();
             var eValue=envValue(env);
-            if(eValue==null)
-                return defaultValue==null?new ArrayList<>():defaultValue;
-            var values = eValue.split(",");
-            for (String s : values) {
-                if (s == null || s.trim().isEmpty())
-                    continue;
-                for (var e : enumList) {
-                    var eName = e.toString();
-                    if (!eName.equalsIgnoreCase(s))
-                        continue;
-                    //noinspection unchecked
-                    __return.add((T) e);
+            if (eValue != null) {
+                var values = eValue.split(",");
+                for (String s : values) {
+                    if (s != null && !s.trim().isEmpty()) {
+                        for (var e : enumList) {
+                            var eName = e.toString();
+                            if (eName.equalsIgnoreCase(s))
+                                __return.add((T) e);
+                        }
+                    }
                 }
+                if (!__return.isEmpty())
+                    return __return;
             }
-        } catch (Exception e) {
-            log.error(e.getMessage());
         }
-        return !__return.isEmpty()
-                ? __return
-                :
-                defaultValue == null
-                        ? new ArrayList<>()
-                        : defaultValue;
-    }
-
-    public List<String> asListOfString(String env) {
-        return this.asListOfString(env,null);
+        return defaultValue == null ? new ArrayList<>() : defaultValue;
     }
 
     public List<String> asListOfString(String env, List<String> defaultValue) {
-        try {
-            var eValue = envValue(env);
-            if (eValue == null)
-                return defaultValue==null?new ArrayList<>():defaultValue;
+        var eValue = envValue(env);
+        if (eValue != null && !eValue.trim().isEmpty()) {
             var values = List.of(eValue.split(","));
             List<String> out = new ArrayList<>();
-            values.forEach(s -> {
+            for (var s : values) {
                 if (s != null && !s.trim().isEmpty())
                     out.add(s);
-            });
-            if(out.isEmpty())
-                return defaultValue==null?new ArrayList<>():defaultValue;
+            }
             return out;
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            return defaultValue==null?new ArrayList<>():defaultValue;
         }
+        return defaultValue == null ? new ArrayList<>() : defaultValue;
+    }
+
+    public List<String> asListOfString(String env) {
+        return this.asListOfString(env, null);
     }
 
     public List<Long> asListOfLong(String env) {
@@ -195,53 +179,33 @@ public class EnvironmentUtil {
     }
 
     public List<Long> asListOfLong(String env, List<Long> defaultValue) {
-        try {
-            var eValue = envValue(env);
-            if (eValue == null)
-                return defaultValue==null?new ArrayList<>():defaultValue;
+        var eValue = envValue(env);
+        if (eValue != null && !eValue.trim().isEmpty()) {
             var values = List.of(eValue.split(","));
             List<Long> out = new ArrayList<>();
-            values.forEach(s -> {
-                if (s != null && !s.trim().isEmpty()){
-                    var value=PrimitiveUtil.toLong(s);
-                    if(String.valueOf(value).equals(s))
-                        out.add(value);
-                }
-            });
-            if(out.isEmpty())
-                return defaultValue==null?new ArrayList<>():defaultValue;
+            for (var s : values)
+                out.add(PrimitiveUtil.toLong(s));
             return out;
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            return defaultValue==null?new ArrayList<>():defaultValue;
         }
-    }
-
-    public List<Integer> asListOfInt(String env) {
-        return this.asListOfInt(env,null);
+        return defaultValue == null ? new ArrayList<>() : defaultValue;
     }
 
     public List<Integer> asListOfInt(String env, List<Integer> defaultValue) {
-        try {
-            var eValue = envValue(env);
-            if (eValue == null)
-                return defaultValue==null?new ArrayList<>():defaultValue;
+        var eValue = envValue(env);
+        if (eValue != null && !eValue.trim().isEmpty()) {
             var values = List.of(eValue.split(","));
             List<Integer> out = new ArrayList<>();
-            values.forEach(s -> {
-                if (s != null && !s.trim().isEmpty()){
-                    var value=PrimitiveUtil.toInt(s);
-                    if(String.valueOf(value).equals(s))
-                        out.add(value);
-                }
-            });
-            if(out.isEmpty())
-                return defaultValue==null?new ArrayList<>():defaultValue;
+            for (String s : values) {
+                if (s != null && !s.trim().isEmpty())
+                    out.add(PrimitiveUtil.toInt(s));
+            }
             return out;
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            return defaultValue==null?new ArrayList<>():defaultValue;
         }
+        return defaultValue == null ? new ArrayList<>() : defaultValue;
+    }
+
+    public List<Integer> asListOfInt(String env) {
+        return this.asListOfInt(env, null);
     }
 
 }

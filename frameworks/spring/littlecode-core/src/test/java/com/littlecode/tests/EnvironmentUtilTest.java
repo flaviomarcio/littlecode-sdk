@@ -1,5 +1,7 @@
 package com.littlecode.tests;
 
+import com.littlecode.config.UtilCoreConfig;
+import com.littlecode.exceptions.FrameworkException;
 import com.littlecode.util.EnvironmentUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -16,6 +18,45 @@ import java.util.Map;
 
 @ExtendWith(MockitoExtension.class)
 public class EnvironmentUtilTest {
+
+    @Test
+    public void UI_envValue() {
+        {//step 1
+            var environment = Mockito.mock(Environment.class);
+            Map.of("item.attr", "itemA,itemB,itemC")
+                    .forEach((k, v) -> {
+                        Mockito.when(environment.containsProperty("item.attr")).thenReturn(true);
+                        Mockito.when(environment.getProperty("item.attr")).thenReturn("itemA,itemB,itemC");
+                    });
+
+            Assertions.assertThrows(FrameworkException.class, () -> new EnvironmentUtil(null));
+            Assertions.assertDoesNotThrow(() -> new EnvironmentUtil(environment));
+            var eUtil = new EnvironmentUtil(environment);
+
+            UtilCoreConfig.setEnvironment(null);
+            Assertions.assertThrows(FrameworkException.class, () -> new EnvironmentUtil());
+            UtilCoreConfig.setEnvironment(environment);
+            Assertions.assertDoesNotThrow(() -> new EnvironmentUtil());
+
+            Assertions.assertNotNull(eUtil.getEnvironment());
+
+            Assertions.assertDoesNotThrow(() -> eUtil.envValue(""));
+            Assertions.assertDoesNotThrow(() -> eUtil.envValue(" "));
+            Assertions.assertDoesNotThrow(() -> eUtil.envValue(null));
+            Assertions.assertDoesNotThrow(() -> eUtil.envValue("item.attr"));
+            Assertions.assertDoesNotThrow(() -> eUtil.envValue("item.attr"), "0,1,2");
+            Assertions.assertDoesNotThrow(() -> eUtil.envValue("item.attr"), "itemA,itemB,itemC");
+
+            Assertions.assertNull(eUtil.envValue(""));
+            Assertions.assertNull(eUtil.envValue(" "));
+            Assertions.assertNull(eUtil.envValue(null));
+
+            Assertions.assertNull(eUtil.envValue("item.attrx"));
+            Assertions.assertNotNull(eUtil.envValue("item.attr"), "itemA,itemB,itemC");
+        }
+    }
+
+
     @Test
     public void UI_asString() {
         {//step 1
@@ -29,13 +70,25 @@ public class EnvironmentUtilTest {
             var environment= Mockito.mock(Environment.class);
             Mockito.when(environment.getProperty("item.attr")).thenReturn(null);
             var eUtil=new EnvironmentUtil(environment);
-            Assertions.assertNotNull(eUtil.asString("item.attr"));
-            Assertions.assertEquals(eUtil.asString("item.attr"),"");
+            Assertions.assertNull(eUtil.asString("item.attr"));
+            Assertions.assertNotNull(eUtil.asString("item.attr", "teste"));
+            Assertions.assertEquals(eUtil.asString("item.attr", ""), "");
+            Assertions.assertEquals(eUtil.asString("item.attr", "teste"), "teste");
         }
     }
 
     @Test
     public void UI_asBool() {
+
+        {//step 0
+            var eUtilSingle = new EnvironmentUtil(Mockito.mock(Environment.class));
+            Assertions.assertDoesNotThrow(() -> eUtilSingle.asBool("key.test"));
+            Assertions.assertDoesNotThrow(() -> eUtilSingle.asBool("key.test", true));
+            Assertions.assertEquals(eUtilSingle.asBool("key.test"), false);
+            Assertions.assertEquals(eUtilSingle.asBool("key.test", true), true);
+            Assertions.assertEquals(eUtilSingle.asBool("key.test", false), false);
+        }
+
         {//step 1
             var environment= Mockito.mock(Environment.class);
             Mockito.when(environment.getProperty("item.attr-1")).thenReturn("true");
@@ -67,6 +120,13 @@ public class EnvironmentUtilTest {
 
     @Test
     public void UI_asDouble() {
+        {//step 0
+            var eUtilSingle = new EnvironmentUtil(Mockito.mock(Environment.class));
+            Assertions.assertDoesNotThrow(() -> eUtilSingle.asDouble("key.test"));
+            Assertions.assertDoesNotThrow(() -> eUtilSingle.asDouble("key.test", 1005));
+            Assertions.assertEquals(eUtilSingle.asDouble("key.test"), 0);
+            Assertions.assertEquals(eUtilSingle.asDouble("key.test", 1005), 1005);
+        }
         {//step 1
             var environment= Mockito.mock(Environment.class);
             var values= Map.of(
@@ -93,6 +153,15 @@ public class EnvironmentUtilTest {
 
     @Test
     public void UI_asInt() {
+
+        {//step 0
+            var eUtilSingle = new EnvironmentUtil(Mockito.mock(Environment.class));
+            Assertions.assertDoesNotThrow(() -> eUtilSingle.asInt("key.test"));
+            Assertions.assertDoesNotThrow(() -> eUtilSingle.asInt("key.test", 1005));
+            Assertions.assertEquals(eUtilSingle.asInt("key.test"), 0);
+            Assertions.assertEquals(eUtilSingle.asInt("key.test", 1005), 1005);
+        }
+
         {//step 1
             var environment= Mockito.mock(Environment.class);
             var values= Map.of(
@@ -118,6 +187,13 @@ public class EnvironmentUtilTest {
 
     @Test
     public void UI_asLong() {
+        {//step 0
+            var eUtilSingle = new EnvironmentUtil(Mockito.mock(Environment.class));
+            Assertions.assertDoesNotThrow(() -> eUtilSingle.asLong("key.test"));
+            Assertions.assertDoesNotThrow(() -> eUtilSingle.asLong("key.test", 1005));
+            Assertions.assertEquals(eUtilSingle.asLong("key.test"), 0);
+            Assertions.assertEquals(eUtilSingle.asLong("key.test", 1005), 1005);
+        }
         {//step 1
             var environment= Mockito.mock(Environment.class);
             var values= Map.of(
@@ -132,6 +208,7 @@ public class EnvironmentUtilTest {
                 Mockito.when(environment.getProperty(k)).thenReturn(String.valueOf(v));
             });
 
+
             values.forEach((k, v) -> {
                         var eUtil=new EnvironmentUtil(environment);
                         Assertions.assertEquals(eUtil.asLong(k),v);
@@ -143,6 +220,16 @@ public class EnvironmentUtilTest {
 
     @Test
     public void UI_asDate() {
+
+        {//step 0
+            var eUtilSingle = new EnvironmentUtil(Mockito.mock(Environment.class));
+            Assertions.assertDoesNotThrow(() -> eUtilSingle.asDate("key.test"));
+            Assertions.assertDoesNotThrow(() -> eUtilSingle.asDate("key.test", LocalDate.now()));
+            Assertions.assertNull(eUtilSingle.asDate("key.test"));
+            Assertions.assertNotNull(eUtilSingle.asDate("key.test", LocalDate.now()));
+            Assertions.assertEquals(eUtilSingle.asDate("key.test", LocalDate.now()), LocalDate.now());
+        }
+
         {//step 1
             var environment = Mockito.mock(Environment.class);
             var values = Map.of(
@@ -164,6 +251,7 @@ public class EnvironmentUtilTest {
 
         {//step 2
             var environment = Mockito.mock(Environment.class);
+
             var values = Map.of(
                     "item.attr-0", "1901-1-1",
                     "item.attr-1", "2500-1-1",
@@ -174,16 +262,29 @@ public class EnvironmentUtilTest {
                 Mockito.when(environment.getProperty(k)).thenReturn(String.valueOf(v));
             });
 
-            values.forEach((k, v) -> {
-                        var eUtil = new EnvironmentUtil(environment);
-                        Assertions.assertNotEquals(eUtil.asDate(k), v);
-                    }
-            );
+            for (Map.Entry<String, String> entry : values.entrySet()) {
+                String k = entry.getKey();
+                String v = entry.getValue();
+                var eUtil = new EnvironmentUtil(environment);
+                Assertions.assertDoesNotThrow(() -> eUtil.asDate(k), v);
+                Assertions.assertNotEquals(eUtil.asDate(k), v);
+            }
         }
     }
 
     @Test
     public void UI_asTime() {
+
+        {//step 0
+            var eUtilSingle = new EnvironmentUtil(Mockito.mock(Environment.class));
+            Assertions.assertDoesNotThrow(() -> eUtilSingle.asTime("key.test"));
+            Assertions.assertDoesNotThrow(() -> eUtilSingle.asTime("key.test", LocalTime.now()));
+            Assertions.assertNull(eUtilSingle.asTime("key.test"));
+            Assertions.assertNotNull(eUtilSingle.asTime("key.test", LocalTime.now()));
+            var tm = LocalTime.now();
+            Assertions.assertEquals(eUtilSingle.asTime("key.test", tm), tm);
+        }
+
         {//step 1
             var environment = Mockito.mock(Environment.class);
             var values = Map.of(
@@ -225,23 +326,46 @@ public class EnvironmentUtilTest {
 
     @Test
     public void UI_asDateTime() {
+
+        {//step 0
+            var eUtilSingle = new EnvironmentUtil(Mockito.mock(Environment.class));
+            Assertions.assertDoesNotThrow(() -> eUtilSingle.asDateTime("key.test"));
+            Assertions.assertDoesNotThrow(() -> eUtilSingle.asDateTime("key.test", LocalDateTime.now()));
+            Assertions.assertNull(eUtilSingle.asDateTime("key.test"));
+            Assertions.assertNotNull(eUtilSingle.asDateTime("key.test", LocalDateTime.now()));
+            var dt = LocalDateTime.now();
+            Assertions.assertEquals(eUtilSingle.asDateTime("key.test", dt), dt);
+        }
+
+
         {//step 1
+            var dtLst = Map.of(
+                    "item.attr-0", LocalDateTime.of(LocalDate.of(1901, 1, 1), LocalTime.of(23, 59, 59, 999000001)),
+                    "item.attr-1", LocalDateTime.of(LocalDate.of(1901, 1, 1), LocalTime.of(23, 59, 59)),
+                    "item.attr-2", LocalDateTime.of(LocalDate.of(1901, 1, 1), LocalTime.of(23, 59)),
+                    "item.attr-3", LocalDateTime.of(LocalDate.of(1901, 1, 1), LocalTime.of(23, 0, 0))
+            );
+
             var environment = Mockito.mock(Environment.class);
             var values = Map.of(
-                    "item.attr-0", LocalDateTime.of(LocalDate.of(2500, 1, 1), LocalTime.of(1, 1, 1)).toString(),
-                    "item.attr-1", LocalDateTime.of(LocalDate.of(1901, 1, 1), LocalTime.now()).toString(),
-                    "item.attr-2", LocalDateTime.now().toString()
-
+                    "item.attr-0", "1901-01-01T23:59:59.999000001",
+                    "item.attr-1", "1901-01-01T23:59:59",
+                    "item.attr-2", "1901-01-01T23:59",
+                    "item.attr-3", "1901-01-01T23"
             );
             values.forEach((k, v) -> {
-                Mockito.when(environment.getProperty(k)).thenReturn(String.valueOf(v));
+                Mockito.when(environment.getProperty(k)).thenReturn(v);
             });
 
-            values.forEach((k, v) -> {
-                        var eUtil = new EnvironmentUtil(environment);
-                        Assertions.assertEquals(eUtil.asDateTime(k), LocalDateTime.parse(v));
-                    }
-            );
+            int iDt = 0;
+            for (Map.Entry<String, String> entry : values.entrySet()) {
+                String k = entry.getKey();
+                var eUtil = new EnvironmentUtil(environment);
+                var vConvert = eUtil.asDateTime(k);
+                var vCheck = dtLst.get(k);
+                Assertions.assertEquals(vConvert, vCheck);
+                ++iDt;
+            }
         }
 
         {//step 2
@@ -256,11 +380,11 @@ public class EnvironmentUtilTest {
                 Mockito.when(environment.getProperty(k)).thenReturn(String.valueOf(v));
             });
 
-            values.forEach((k, v) -> {
-                        var eUtil = new EnvironmentUtil(environment);
-                        Assertions.assertNull(eUtil.asDateTime(k));
-                    }
-            );
+            for (Map.Entry<String, String> entry : values.entrySet()) {
+                String k = entry.getKey();
+                var eUtil = new EnvironmentUtil(environment);
+                Assertions.assertNull(eUtil.asDateTime(k));
+            }
         }
     }
 
@@ -324,6 +448,20 @@ public class EnvironmentUtilTest {
 
     @Test
     public void UI_asListOfString() {
+        {//step 0
+            var eUtilSingle = new EnvironmentUtil(Mockito.mock(Environment.class));
+            Assertions.assertDoesNotThrow(() -> eUtilSingle.asListOfString("key.test"));
+            Assertions.assertDoesNotThrow(() -> eUtilSingle.asListOfString("key.test", List.of("itemA", "itemB", "itemC")));
+            Assertions.assertTrue(eUtilSingle.asListOfString("key.test").isEmpty());
+            Assertions.assertNotNull(eUtilSingle.asListOfString("key.test", List.of("itemA", "itemB", "itemC")));
+            var list = eUtilSingle.asListOfString("item.listx", List.of("itemA", "itemB", "itemC"));
+            Assertions.assertNotNull(list);
+            Assertions.assertEquals(list.size(), 3);
+            Assertions.assertTrue(list.contains("itemA"));
+            Assertions.assertTrue(list.contains("itemB"));
+            Assertions.assertTrue(list.contains("itemC"));
+        }
+
         {//step 1
             var environment= Mockito.mock(Environment.class);
             Mockito.when(environment.getProperty("item.list")).thenReturn("itemA,itemB,itemC");
@@ -334,6 +472,15 @@ public class EnvironmentUtilTest {
             Assertions.assertTrue(list.contains("itemA"));
             Assertions.assertTrue(list.contains("itemB"));
             Assertions.assertTrue(list.contains("itemC"));
+
+            list = eUtil.asListOfString("item.listxx");
+            Assertions.assertNotNull(list);
+            Assertions.assertEquals(list.size(), 0);
+            Assertions.assertFalse(list.contains("itemA"));
+            Assertions.assertFalse(list.contains("itemB"));
+            Assertions.assertFalse(list.contains("itemC"));
+
+
         }
 
         {//step 2
@@ -367,6 +514,20 @@ public class EnvironmentUtilTest {
 
     @Test
     public void UI_asListOfLong() {
+        {//step 0
+            var eUtilSingle = new EnvironmentUtil(Mockito.mock(Environment.class));
+            Assertions.assertDoesNotThrow(() -> eUtilSingle.asListOfLong("key.test"));
+            Assertions.assertDoesNotThrow(() -> eUtilSingle.asListOfLong("key.test", List.of(1L, 2L, 3L)));
+            Assertions.assertTrue(eUtilSingle.asListOfLong("key.test").isEmpty());
+            Assertions.assertNotNull(eUtilSingle.asListOfLong("key.test", List.of(1L, 2L, 3L)));
+            var list = eUtilSingle.asListOfLong("item.listx", List.of(1L, 2L, 3L));
+            Assertions.assertNotNull(list);
+            Assertions.assertEquals(list.size(), 3);
+            Assertions.assertTrue(list.contains(1L));
+            Assertions.assertTrue(list.contains(2L));
+            Assertions.assertTrue(list.contains(3L));
+        }
+
         {//step 1
             var environment= Mockito.mock(Environment.class);
             Mockito.when(environment.getProperty("item.list")).thenReturn("1,2,3");
@@ -377,6 +538,13 @@ public class EnvironmentUtilTest {
             Assertions.assertTrue(list.contains(1L));
             Assertions.assertTrue(list.contains(2L));
             Assertions.assertTrue(list.contains(3L));
+
+            list = eUtil.asListOfLong("item.listxx");
+            Assertions.assertNotNull(list);
+            Assertions.assertEquals(list.size(), 0);
+            Assertions.assertFalse(list.contains(1L));
+            Assertions.assertFalse(list.contains(2L));
+            Assertions.assertFalse(list.contains(3L));
         }
 
         {//step 2
@@ -399,19 +567,32 @@ public class EnvironmentUtilTest {
 
         {//step 4
             var environment= Mockito.mock(Environment.class);
-            Mockito.when(environment.getProperty("item.list")).thenReturn(", ,itemC,1,2,3");
+            Mockito.when(environment.getProperty("item.list")).thenReturn("9,1,5");
             var eUtil=new EnvironmentUtil(environment);
             var list=eUtil.asListOfLong("item.list");
             Assertions.assertNotNull(list);
             Assertions.assertEquals(list.size(),3);
-            Assertions.assertTrue(list.contains(1L));
-            Assertions.assertTrue(list.contains(2L));
-            Assertions.assertTrue(list.contains(3L));
+            Assertions.assertTrue(list.contains(5L));
+            Assertions.assertFalse(list.contains(2L));
         }
     }
 
     @Test
     public void UI_asListOfInt() {
+        {//step 0
+            var eUtilSingle = new EnvironmentUtil(Mockito.mock(Environment.class));
+            Assertions.assertDoesNotThrow(() -> eUtilSingle.asListOfInt("key.test"));
+            Assertions.assertDoesNotThrow(() -> eUtilSingle.asListOfInt("key.test", List.of(1, 2, 3)));
+            Assertions.assertTrue(eUtilSingle.asListOfInt("key.test").isEmpty());
+            Assertions.assertNotNull(eUtilSingle.asListOfInt("key.test", List.of(1, 2, 3)));
+            var list = eUtilSingle.asListOfInt("item.listx", List.of(1, 2, 3));
+            Assertions.assertNotNull(list);
+            Assertions.assertEquals(list.size(), 3);
+            Assertions.assertTrue(list.contains(1));
+            Assertions.assertTrue(list.contains(2));
+            Assertions.assertTrue(list.contains(3));
+        }
+
         {//step 1
             var environment= Mockito.mock(Environment.class);
             Mockito.when(environment.getProperty("item.list")).thenReturn("1,2,3");
@@ -442,17 +623,6 @@ public class EnvironmentUtilTest {
             Assertions.assertEquals(list.size(),0);
         }
 
-        {//step 4
-            var environment= Mockito.mock(Environment.class);
-            Mockito.when(environment.getProperty("item.list")).thenReturn(", ,itemC,1,2,3");
-            var eUtil=new EnvironmentUtil(environment);
-            var list=eUtil.asListOfInt("item.list");
-            Assertions.assertNotNull(list);
-            Assertions.assertEquals(list.size(),3);
-            Assertions.assertTrue(list.contains(1));
-            Assertions.assertTrue(list.contains(2));
-            Assertions.assertTrue(list.contains(3));
-        }
     }
 
 }
