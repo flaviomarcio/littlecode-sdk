@@ -3,7 +3,6 @@ package com.littlecode.jpa.datasource;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy;
-import org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl;
 import org.hibernate.cfg.AvailableSettings;
 import org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy;
 import org.springframework.core.env.Environment;
@@ -64,6 +63,7 @@ public class DSFactory {
         em.setPackagesToScan(getPackages());
         em.setJpaVendorAdapter(makeVendorAdapter());
         em.setJpaPropertyMap(makeDefaultProperties());
+        em.afterPropertiesSet();
         return em;
     }
 
@@ -93,9 +93,7 @@ public class DSFactory {
     }
 
     private void __property__add(final Map<String,String> properties, final String property, String defaultValue){
-        final var keys=property.split("\\.");
-        final var __ds_env=keys[keys.length-1].toLowerCase();
-        var __ds_value = __property__get(__ds_env).trim();
+        var __ds_value = __property__get(property).trim();
         if(__ds_value.isEmpty() && defaultValue!=null)
             __ds_value=defaultValue;
         if(!__ds_value.trim().isEmpty())
