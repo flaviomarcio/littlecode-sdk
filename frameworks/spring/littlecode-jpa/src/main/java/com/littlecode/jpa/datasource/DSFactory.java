@@ -48,10 +48,10 @@ public class DSFactory {
         for(var env: hibernate_envs)
             __property__add(properties, env);
 
-//        if(!properties.containsKey(AvailableSettings.PHYSICAL_NAMING_STRATEGY))
-//            __property__add(properties, AvailableSettings.PHYSICAL_NAMING_STRATEGY, CamelCaseToUnderscoresNamingStrategy.class.getCanonicalName());
-//        if(!properties.containsKey(AvailableSettings.IMPLICIT_NAMING_STRATEGY))
-//            __property__add(properties, AvailableSettings.IMPLICIT_NAMING_STRATEGY, SpringImplicitNamingStrategy.class.getCanonicalName());
+        if(!properties.containsKey(AvailableSettings.PHYSICAL_NAMING_STRATEGY))
+            __property__add(properties, AvailableSettings.PHYSICAL_NAMING_STRATEGY, CamelCaseToUnderscoresNamingStrategy.class.getCanonicalName());
+        if(!properties.containsKey(AvailableSettings.IMPLICIT_NAMING_STRATEGY))
+            __property__add(properties, AvailableSettings.IMPLICIT_NAMING_STRATEGY, SpringImplicitNamingStrategy.class.getCanonicalName());
 
         //PhysicalNamingStrategyStandardImpl.INSTANCE.
 
