@@ -85,14 +85,14 @@ public class DSFactory {
         __property__add(properties, property, null);
     }
 
-    private void __property__add(final Map<String,String> properties, String property, String defaultValue){
+    private void __property__add(final Map<String,String> properties, final String property, String defaultValue){
         final var keys=property.split("\\.");
         final var __ds_env=keys[keys.length-1].toLowerCase();
         var __ds_value = __property__get(__ds_env).trim();
         if(__ds_value.isEmpty() && defaultValue!=null)
             __ds_value=defaultValue;
         if(!__ds_value.trim().isEmpty())
-            properties.put(__ds_env, __ds_value);
+            properties.put(property, __ds_value);
     }
 
     private String __property__get(String property){
