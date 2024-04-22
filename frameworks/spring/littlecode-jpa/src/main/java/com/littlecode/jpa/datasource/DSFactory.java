@@ -3,6 +3,7 @@ package com.littlecode.jpa.datasource;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy;
+import org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl;
 import org.hibernate.cfg.AvailableSettings;
 import org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy;
 import org.springframework.core.env.Environment;
@@ -46,10 +47,14 @@ public class DSFactory {
         var hibernate_envs= List.of(AvailableSettings.DIALECT,AvailableSettings.SHOW_SQL,AvailableSettings.FORMAT_SQL,AvailableSettings.USE_SQL_COMMENTS,AvailableSettings.PHYSICAL_NAMING_STRATEGY,AvailableSettings.IMPLICIT_NAMING_STRATEGY);
         for(var env: hibernate_envs)
             __property__add(properties, env);
-        if(!properties.containsKey(AvailableSettings.PHYSICAL_NAMING_STRATEGY))
-            __property__add(properties, AvailableSettings.PHYSICAL_NAMING_STRATEGY, CamelCaseToUnderscoresNamingStrategy.class.getCanonicalName());
-        if(!properties.containsKey(AvailableSettings.IMPLICIT_NAMING_STRATEGY))
-            __property__add(properties, AvailableSettings.IMPLICIT_NAMING_STRATEGY, SpringImplicitNamingStrategy.class.getCanonicalName());
+
+//        if(!properties.containsKey(AvailableSettings.PHYSICAL_NAMING_STRATEGY))
+//            __property__add(properties, AvailableSettings.PHYSICAL_NAMING_STRATEGY, CamelCaseToUnderscoresNamingStrategy.class.getCanonicalName());
+//        if(!properties.containsKey(AvailableSettings.IMPLICIT_NAMING_STRATEGY))
+//            __property__add(properties, AvailableSettings.IMPLICIT_NAMING_STRATEGY, SpringImplicitNamingStrategy.class.getCanonicalName());
+
+        //PhysicalNamingStrategyStandardImpl.INSTANCE.
+
         return properties;
     }
 
