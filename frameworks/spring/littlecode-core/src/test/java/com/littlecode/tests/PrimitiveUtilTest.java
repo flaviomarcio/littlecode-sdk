@@ -321,6 +321,7 @@ public class PrimitiveUtilTest {
 
     @Test
     public void UI_toBool() {
+        Assertions.assertFalse(PrimitiveUtil.toBool((String) null));
         Assertions.assertTrue(PrimitiveUtil.toBool("true"));
         Assertions.assertFalse(PrimitiveUtil.toBool("false"));
         Assertions.assertTrue(PrimitiveUtil.toBool("1"));
@@ -340,14 +341,20 @@ public class PrimitiveUtilTest {
         Assertions.assertTrue(PrimitiveUtil.isEmpty((LocalDateTime) null));
         Assertions.assertTrue(PrimitiveUtil.isEmpty((List) null));
         Assertions.assertTrue(PrimitiveUtil.isEmpty((UUID) null));
+        Assertions.assertTrue(PrimitiveUtil.isEmpty((String) null));
         Assertions.assertTrue(PrimitiveUtil.isEmpty((URI) null));
         Assertions.assertTrue(PrimitiveUtil.isEmpty((Path) null));
-        Assertions.assertTrue(PrimitiveUtil.isEmpty((String) null));
 
         Assertions.assertTrue(PrimitiveUtil.isEmpty(TEST_MIN_LOCALDATETIME));
         Assertions.assertTrue(PrimitiveUtil.isEmpty(TEST_MIN_LOCALDATE));
         Assertions.assertTrue(PrimitiveUtil.isEmpty(TEST_MIN_LOCALDATE));
 
+        Assertions.assertTrue(PrimitiveUtil.isEmpty((UUID) null));
+        Assertions.assertTrue(PrimitiveUtil.isEmpty((String) null));
+        Assertions.assertTrue(PrimitiveUtil.isEmpty((URI) null));
+        Assertions.assertTrue(PrimitiveUtil.isEmpty((Path) null));
+        Assertions.assertTrue(PrimitiveUtil.isEmpty(Path.of("")));
+        Assertions.assertTrue(PrimitiveUtil.isEmpty(URI.create("")));
         Assertions.assertTrue(PrimitiveUtil.isEmpty(""));
         Assertions.assertTrue(PrimitiveUtil.isEmpty(" "));
         Assertions.assertTrue(PrimitiveUtil.isEmpty(0));
@@ -355,8 +362,17 @@ public class PrimitiveUtilTest {
         Assertions.assertTrue(PrimitiveUtil.isEmpty(0L));
         Assertions.assertTrue(PrimitiveUtil.isEmpty(0.00));
         Assertions.assertTrue(PrimitiveUtil.isEmpty(0D));
-        Assertions.assertTrue(PrimitiveUtil.isEmpty(Path.of("")));
-        Assertions.assertTrue(PrimitiveUtil.isEmpty(URI.create("")));
+
+
+        Assertions.assertFalse(PrimitiveUtil.isEmpty(UUID.randomUUID()));
+        Assertions.assertFalse(PrimitiveUtil.isEmpty("...."));
+        Assertions.assertFalse(PrimitiveUtil.isEmpty(URI.create("/tmp/teste")));
+        Assertions.assertFalse(PrimitiveUtil.isEmpty(Path.of("/tmp/teste")));
+        Assertions.assertFalse(PrimitiveUtil.isEmpty(1));
+        Assertions.assertFalse(PrimitiveUtil.isEmpty(List.of("....")));
+        Assertions.assertFalse(PrimitiveUtil.isEmpty(1L));
+        Assertions.assertFalse(PrimitiveUtil.isEmpty(0.12));
+        Assertions.assertFalse(PrimitiveUtil.isEmpty(2D));
     }
 
     @Test

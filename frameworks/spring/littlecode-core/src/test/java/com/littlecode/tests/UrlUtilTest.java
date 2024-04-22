@@ -23,6 +23,7 @@ public class UrlUtilTest {
     @Test
     public void UT_pathMaker() {
         UrlUtil.setContextPath("");
+        Assertions.assertDoesNotThrow(() -> UrlUtil.pathMaker("/path/method"));
         Assertions.assertEquals(UrlUtil.pathMaker("/path/method"), "/path/method");
 
         UrlUtil.setContextPath("/api");

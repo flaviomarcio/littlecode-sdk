@@ -16,6 +16,22 @@ import java.time.LocalDate;
 public class ExceptionBuilderTest {
     @Test
     public void UT_CHECK_OF_CLASS() {
+        Assertions.assertDoesNotThrow(() -> {
+            ExceptionBuilder.builder().build();
+        });
+
+        Assertions.assertDoesNotThrow(() -> {
+            new ExceptionBuilder();
+        });
+
+        Assertions.assertDoesNotThrow(() -> ExceptionBuilder.builder().build());
+        Assertions.assertDoesNotThrow(() -> new ExceptionBuilder());
+
+        var exceptionBuilder = new ExceptionBuilder();
+        Assertions.assertNotNull(exceptionBuilder.getType());
+        Assertions.assertNull(exceptionBuilder.getArgs());
+        Assertions.assertNull(exceptionBuilder.getTarget());
+
         Assertions.assertThrows(RuntimeException.class, () -> {
             try {
                 Integer.parseInt("A");
@@ -53,6 +69,9 @@ public class ExceptionBuilderTest {
         });
         Assertions.assertThrows(ParserException.class, () -> {
             throw ExceptionBuilder.ofParser(Object.class);
+        });
+        Assertions.assertThrows(InvalidException.class, () -> {
+            throw ExceptionBuilder.ofInvalid(Object.class);
         });
         Assertions.assertThrows(UnknownException.class, () -> {
             throw ExceptionBuilder.ofUnknown(Object.class);
@@ -203,6 +222,9 @@ public class ExceptionBuilderTest {
         });
         Assertions.assertThrows(NotFoundException.class, () -> {
             throw ExceptionBuilder.ofNotFound(Object.class, "test");
+        });
+        Assertions.assertThrows(NoContentException.class, () -> {
+            throw ExceptionBuilder.ofNoContent(Object.class, "test");
         });
         Assertions.assertThrows(ParserException.class, () -> {
             throw ExceptionBuilder.ofParser(Object.class, "test");

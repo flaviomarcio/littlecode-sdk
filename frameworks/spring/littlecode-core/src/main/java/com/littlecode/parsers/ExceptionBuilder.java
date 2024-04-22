@@ -5,7 +5,6 @@ import com.littlecode.exceptions.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,54 +12,56 @@ import java.util.List;
 
 @Builder
 @Getter
-@Setter
 @AllArgsConstructor
 public class ExceptionBuilder {
 
-    private Type type;
-    private Object target;
-    private Object[] args;
+    private final Type type;
+    private final Object target;
+    private final Object[] args;
 
-    @SuppressWarnings("unused")
     public ExceptionBuilder() {
         this.type = Type.Default;
+        this.target = null;
+        this.args = null;
     }
 
     private static Object[] argsClean(final Object[] args) {
-        if (args == null || args.length == 0) {
-            return new Object[0];
+        if (args != null) {
+            List<Object> list = new ArrayList<>();
+            for (var o : List.of(args)) {
+                if (!o.toString().trim().isEmpty())
+                    list.add(o.toString());
+            }
+            return list.isEmpty() ? new Object[0] : list.toArray();
         }
-        List<Object> list = new ArrayList<>();
-        List.of(args)
-                .forEach(o -> {
-                    if (o == null || o.toString().trim().isEmpty())
-                        return;
-                    list.add(o);
-                });
-        return list.isEmpty() ? new Object[0] : list.toArray();
+        return null;
     }
 
     private static String targetClean(Object target) {
-        if (target == null)
-            return "";
-        return target.toString().trim();
+        return (target != null)
+                ?target.toString().trim()
+                :"";
     }
 
     public static String makeMessage(Type typeIn, Object targetIn, Object... argsIn) {
-        var args = argsClean(argsIn);
         var target = targetClean(targetIn);
-        var type = typeIn.name();
+        if(argsIn!=null){
+            var args = argsClean(argsIn);
+            var type = typeIn.name();
 
-        if (target.isEmpty() && args.length == 0)
-            return String.format("[%s]: fail", type);
+            if(target!=null){
+                if (target.isEmpty() && args.length == 0)
+                    return String.format("[%s]: fail", type);
 
-        if (target.contains("%s") && args.length > 0)
-            return String.format("[%s]: %s", type, String.format(target, args));
+                if (target.contains("%s") && args.length > 0)
+                    return String.format("[%s]: %s", type, String.format(target, args));
 
-        if (!target.isEmpty() && args.length > 0)
-            return String.format("[%s]: %s, %s", type, target, Arrays.toString(args));
-
-        return String.format("[%s]: %s", type, target);
+                if (!target.isEmpty() && args!=null)
+                    return String.format("[%s]: %s, %s", type, target, args);
+                return String.format("[%s]: %s", type, target);
+            }
+        }
+        return "";
     }
 
     public static RuntimeException of(Exception e) {
@@ -208,7 +209,6 @@ public class ExceptionBuilder {
         return of(Type.Network, eClass);
     }
 
-    //Class<?>,message
     public static RuntimeException ofDefault(Class<?> eClass, String message) {
         return of(Type.Default, eClass, message);
     }
@@ -336,15 +336,6 @@ public class ExceptionBuilder {
 
     public static RuntimeException ofNetwork(String format, Object... args) {
         return of(Type.Network, format, args);
-    }
-
-    void setArgs(Object[] args) {
-        this.args = args;
-    }
-
-    @SuppressWarnings("unused")
-    void setArgs(List<Object> args) {
-        setArgs(args.toArray());
     }
 
     private String makeMessage() {

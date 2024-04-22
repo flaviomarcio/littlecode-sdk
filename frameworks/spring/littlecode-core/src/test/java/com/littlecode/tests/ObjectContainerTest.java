@@ -44,8 +44,8 @@ public class ObjectContainerTest {
             var container = ObjectContainer.of(objectCheck);
             Assertions.assertNotNull(container.asObject(ObjectCheck.class));
             Assertions.assertNotNull(container.asObject(ObjectCheck.class.getName()));
-            Assertions.assertThrows(FrameworkException.class, () -> container.asObject(ObjectCheck.class.getSimpleName()));
-            Assertions.assertThrows(FrameworkException.class, () -> container.asObject(ObjectCheck.class.toString()));
+            Assertions.assertDoesNotThrow(() -> container.asObject(ObjectCheck.class.getSimpleName()));
+            Assertions.assertDoesNotThrow(() -> container.asObject(ObjectCheck.class.toString()));
             Assertions.assertDoesNotThrow(ObjectContainer::classDictionaryClear);
             Assertions.assertDoesNotThrow(() -> ObjectContainer.classDictionaryRegister(ObjectCheck.class));
             Assertions.assertNotNull(container.getType());

@@ -47,124 +47,36 @@ public class ObjectUtil {
     }
 
     public static String classToName(Object o) {
-        if (o == null)
-            return "";
-        if (o.getClass().equals(String.class))
-            return (String) o;
-        if (o.getClass().equals(Class.class)) {
-            var aClass = ((Class<?>) o);
-            return aClass.getName();
+        if (o != null){
+            if (o.getClass().equals(String.class))
+                return (String) o;
+            if (o.getClass().equals(Class.class)) {
+                var aClass = ((Class<?>) o);
+                return aClass.getName();
+            }
+            else if (o.getClass().isEnum())
+                return o.toString();
         }
-        if (o.getClass().isEnum())
-            return o.toString();
         return "";
     }
-
-    @SuppressWarnings("unused")
-    private static List<Class<?>> getClassesBySorted(Set<Class<?>> classes) {
-        if (classes == null || classes.isEmpty())
-            return new ArrayList<>();
-        List<Class<?>> __return = new ArrayList<>(classes);
-        __return
-                .sort(new Comparator<Class<?>>() {
-                    @Override
-                    public int compare(Class<?> aClass1, Class<?> aClass2) {
-                        return aClass1.getName().toLowerCase().compareTo(aClass2.getName().toLowerCase());
-                    }
-                });
-        return new ArrayList<>();
-    }
-
-    public static Class<?> getClassByName(Object classType) {
-        var className = classToName(classType);
-        if (className.isEmpty())
-            return null;
-        try {
-            return Class.forName(className);
-        } catch (ClassNotFoundException e) {
-            return null;
-        }
-    }
-
-    public static List<Class<?>> getClassesByInherits(Class<?> classType) {
-        //noinspection IfStatementWithIdenticalBranches
-        if (classType == null)
-            return new ArrayList<>();
-        return new ArrayList<>();
-//        try {
-//            var reflections = new Reflections();
-//            return getClassesBySorted(
-//                    new HashSet<>(
-//                            reflections.getSubTypesOf(classType)
-//                    )
-//            );
-//        } catch (Exception e) {
-//            log.error(e.getMessage());
-//            return new ArrayList<>();
-//        }
-    }
-
-    public static List<Class<?>> getClassesByAnnotation(Class<? extends Annotation> annotationClass) {
-        //noinspection IfStatementWithIdenticalBranches
-        if (annotationClass == null)
-            return new ArrayList<>();
-        return new ArrayList<>();
-//        try {
-//            var reflections = new Reflections(Thread.currentThread().getContextClassLoader());
-//            return getClassesBySorted(
-//                    new HashSet<>(
-//                            reflections.getTypesAnnotatedWith(annotationClass,true)
-//                    )
-//            );
-//        } catch (Exception e) {
-//            log.error(e.getMessage());
-//            return new ArrayList<>();
-//        }
-    }
-
-//    public static List<Class<?>> getClassesByPackage(String packageName) {
-//        if (packageName == null || packageName.trim().isEmpty())
-//            return new ArrayList<>();
 //
-//        //noinspection rawtypes
-//        BiFunction<String,String,Class<?>> getClass=new BiFunction<String, String, Class<?>>() {
-//            @Override
-//            public Class apply(String className, String packageName) {
-//                try {
-//                    return Class.forName(packageName + "."
-//                            + className.substring(0, className.lastIndexOf('.')));
-//                } catch (ClassNotFoundException e) {
-//                    log.error(e.getMessage());
-//                }
-//                return null;
-//            }
-//        };
-//
-//        try {
-//            InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream(packageName.replaceAll("[.]", "/"));
-//            if(stream==null)
-//                return new ArrayList<>();
-//            BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-//            Set<Class<?>> classes=new HashSet<>();
-//            for(var o:reader.lines().toArray()){
-//                var line=o.toString();
-//                if(!line.endsWith(".class"))
-//                    continue;
-//                var c=getClass.apply(line,packageName);
-//                if(c!=null)
-//                    classes.add(c);
-//            }
-//            return getClassesBySorted(classes);
-//        } catch (Exception e) {
-//            log.error(e.getMessage());
-//            return new ArrayList<>();
+//    private static List<Class<?>> getClassesBySorted(Set<Class<?>> classes) {
+//        if (classes != null && !classes.isEmpty()){
+//            List<Class<?>> __return = new ArrayList<>(classes);
+//            __return
+//                    .sort(new Comparator<Class<?>>() {
+//                        @Override
+//                        public int compare(Class<?> aClass1, Class<?> aClass2) {
+//                            return aClass1.getName().toLowerCase().compareTo(aClass2.getName().toLowerCase());
+//                        }
+//                    });
 //        }
+//        return new ArrayList<>();
 //    }
 
     public static void clear(Object object) {
-        if (object == null)
-            throw new FrameworkException("Invalid object");
-        update(object, ObjectUtil.create(object.getClass()));
+        if (object != null)
+            update(object, ObjectUtil.create(object.getClass()));
     }
 
     public static void update(Object object, Object newValues) {
@@ -172,21 +84,17 @@ public class ObjectUtil {
     }
 
     public static void update(Object object, Object newValues, FileFormat fileFormat) {
-        if (object == null)
-            throw new FrameworkException("Invalid object");
-
-        if (newValues == null)
-            throw new FrameworkException("Invalid new values");
-
-        try {
-            var updateBytes = IOUtil.readAll(newValues).trim();
-            var updateValues = updateBytes.isEmpty()
-                    ? newValues
-                    : ObjectUtil.createFromString(object.getClass(), updateBytes);
-            var objectMapper = UtilCoreConfig.newObjectMapper(fileFormat);
-            objectMapper.updateValue(object, updateValues);
-        } catch (JsonMappingException e) {
-            throw new FrameworkException(e);
+        if (object != null && newValues != null) {
+            try {
+                var updateBytes = IOUtil.readAll(newValues).trim();
+                var updateValues = updateBytes.isEmpty()
+                        ? newValues
+                        : ObjectUtil.createFromString(object.getClass(), updateBytes);
+                var objectMapper = UtilCoreConfig.newObjectMapper(fileFormat);
+                objectMapper.updateValue(object, updateValues);
+            } catch (JsonMappingException e) {
+                throw new FrameworkException(e);
+            }
         }
     }
 

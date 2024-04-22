@@ -161,10 +161,10 @@ public class ObjectContainer {
     @Transient
     public <T> T asObject(Object valueType) {
         Class<?> aClass = ObjectContainer.classByName(valueType);
-        if (aClass == null)
-            throw ExceptionBuilder.ofFrameWork("Class not found");
-        var o = ObjectUtil.createFromString(aClass, this.asString());
-        //noinspection unchecked
-        return (T) o;
+        if (aClass != null){
+            var o = ObjectUtil.createFromString(aClass, this.asString());
+            return (T) o;
+        }
+        return null;
     }
 }

@@ -1,5 +1,7 @@
 package com.littlecode.parsers;
 
+import lombok.experimental.UtilityClass;
+
 import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -16,6 +18,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
+@UtilityClass
 public class PrimitiveUtil {
     private static final int DECIMAL_DEFAULT_PRECISION = 6;
     private static final LocalDate MIN_LOCALDATE = LocalDate.of(1901, 1, 1);
@@ -38,6 +41,7 @@ public class PrimitiveUtil {
     private static final DateTimeFormatter FORMATTER_DATE_SHORT = DateTimeFormatter.ofPattern(FORMAT_DATE_SHORT);
     private static final DateTimeFormatter FORMATTER_TIME = DateTimeFormatter.ofPattern(FORMAT_TIME);
     private static final DateTimeFormatter FORMATTER_TIME_MS = DateTimeFormatter.ofPattern(FORMAT_TIME_MS);
+    private static final DateTimeFormatter FORMATTER_TIME_SHORT = DateTimeFormatter.ofPattern(FORMAT_TIME_SHORT);
     private static final DateTimeFormatter FORMATTER_DATETIME_MS = DateTimeFormatter.ofPattern(FORMAT_DATETIME_MS);
     private static final DateTimeFormatter FORMATTER_DATETIME = DateTimeFormatter.ofPattern(FORMAT_DATE_TIME);
     private static final DateTimeFormatter FORMATTER_DATETIME_SHORT = DateTimeFormatter.ofPattern(FORMAT_DATETIME_SHORT);
@@ -197,7 +201,7 @@ public class PrimitiveUtil {
                 var formatter = switch (value.length()) {
                     case 18, 17, 16, 15, 14, 13, 12 -> FORMATTER_TIME_MS;//00:00:00.000000000
                     case 8 -> FORMATTER_TIME;//00:00:00
-                    case 5 -> FORMATTER_DATETIME_SHORT;//00:00
+                    case 5 -> FORMATTER_TIME_SHORT;//00:00
                     default -> null;
                 };
                 if (formatter != null)
@@ -306,6 +310,7 @@ public class PrimitiveUtil {
                 ? FORMATTER_DATETIME_MS.format(v)
                 : "";
     }
+
     public static boolean isEmpty(String v) {
         return (v == null || v.trim().isEmpty());
     }
@@ -337,20 +342,25 @@ public class PrimitiveUtil {
     public static boolean isEmpty(double v) {
         return (v == 0);
     }
+
     public static boolean isEmpty(LocalDate v) {
         return (v == null || v.equals(MIN_LOCALDATE));
     }
+
     public static boolean isEmpty(LocalTime v) {
         return (v == null || v.equals(MIN_LOCALTIME));
     }
+
     public static boolean isEmpty(LocalDateTime v) {
         return (v == null || v.equals(MIN_LOCALDATETIME));
     }
+
     public static boolean inRange(final double value, final double begin, final double end) {
         if (value == begin && begin == end)
             return true;
         return (value >= begin && value <= end);
     }
+
     public static boolean inRange(final LocalDate value, final LocalDate begin, final LocalDate end) {
         if ((value == null) || (begin == null && end == null))
             return false;
@@ -368,37 +378,27 @@ public class PrimitiveUtil {
                         (value.equals(valueB) || value.isBefore(valueB))
                 ;
     }
-    public static boolean inRange(final LocalTime value, final LocalTime begin, final LocalTime end) {
-        if ((value == null) || (begin == null && end == null))
-            return false;
 
-        var valueA = begin;
-        var valueB = end;
-
-        if (valueA == null)
-            valueA = valueB;
-        else if (valueB == null)
-            valueB = valueA;
-
-        return
-                (value.equals(valueA) || value.isAfter(valueA)) &&
-                        (value.equals(valueB) || value.isBefore(valueB))
-                ;
+    public static boolean inRange(final LocalTime value, LocalTime begin, LocalTime end) {
+        if (begin != null || end != null)
+            if (value != null) {
+                if (begin == null)
+                    begin = end;
+                else if (end == null)
+                    end = begin;
+                return (value.equals(begin) || value.isAfter(begin)) && (value.equals(end) || value.isBefore(end));
+            }
+        return false;
     }
-    public static boolean inRange(final LocalDateTime value, final LocalDateTime begin, final LocalDateTime end) {
-        if ((value == null) || (begin == null && end == null))
-            return false;
 
-        var valueA = begin;
-        var valueB = end;
-
-        if (valueA == null)
-            valueA = valueB;
-        else if (valueB == null)
-            valueB = valueA;
-        return
-                (value.equals(valueA) || value.isAfter(valueA)) &&
-                        (value.equals(valueB) || value.isBefore(valueB))
-                ;
+    public static boolean inRange(final LocalDateTime value, LocalDateTime begin, LocalDateTime end) {
+        if ((value != null) && (begin != null || end != null)) {
+            if (begin == null)
+                begin = end;
+            else if (end == null)
+                end = begin;
+            return (value.equals(begin) || value.isAfter(begin)) && (value.equals(end) || value.isBefore(end));
+        }
+        return false;
     }
 }

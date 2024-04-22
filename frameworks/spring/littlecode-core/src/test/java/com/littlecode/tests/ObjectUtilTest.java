@@ -227,19 +227,6 @@ public class ObjectUtilTest {
 
     }
 
-    @Test
-    public void UT_000_CHECK_CLASSES() {
-        Assertions.assertNotNull(ObjectUtil.getClassByName(ObjectCheckType.class.getName()));
-        Assertions.assertNotNull(ObjectUtil.getClassByName(ObjectCheck.class.getName()));
-        Assertions.assertNull(ObjectUtil.getClassByName("abc.1234.c4"));
-
-        Assertions.assertNotNull(ObjectUtil.getClassesByAnnotation(AnnTest.class));
-        Assertions.assertNotNull(ObjectUtil.getClassesByInherits(ObjectBase.class));
-
-//        Assertions.assertFalse(ObjectUtil.getClassesByAnnotation(AnnTest.class).isEmpty());
-//        Assertions.assertFalse(ObjectUtil.getClassesByInherits(ObjectBase.class).isEmpty());
-    }
-
     private enum ObjectCheckType {
         Type1
     }
