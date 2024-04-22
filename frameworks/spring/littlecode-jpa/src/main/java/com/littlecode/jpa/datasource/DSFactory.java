@@ -12,7 +12,8 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -23,86 +24,53 @@ public class DSFactory {
     @Getter
     private final String[] packages;
 
+    private final String __ds_base_path;
 
-    public DSFactory(Environment environment, Database database, String[] packages) {
+    public DSFactory(final Environment environment, final Database database, final String[] packages) {
         this.environment = environment;
         this.database = database;
         this.packages = packages;
-        internalLog("Using database {}", "constructor", database);
-        internalLog("Using packages {}", "constructor", packages);
+        this.__ds_base_path=String.format("spring.datasource.%s", database.name().toLowerCase());
     }
 
     public HibernateJpaVendorAdapter makeVendorAdapter() {
-        internalLog("   makeVendorAdapter", "started");
-        internalLog("       database", getDatabase().toString());
-        try {
-            HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-            vendorAdapter.setDatabase(getDatabase());
-            return vendorAdapter;
-        } finally {
-            internalLog("   makeVendorAdapter", "finished");
-        }
+        HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+        vendorAdapter.setDatabase(getDatabase());
+        return vendorAdapter;
+    }
+
+    public Map<String,String> makeDefaultProperties() {
+        Map<String,String> properties=new HashMap<>();
+        var hibernate_envs= List.of(AvailableSettings.DIALECT,AvailableSettings.SHOW_SQL,AvailableSettings.FORMAT_SQL,AvailableSettings.USE_SQL_COMMENTS,AvailableSettings.PHYSICAL_NAMING_STRATEGY,AvailableSettings.IMPLICIT_NAMING_STRATEGY);
+        for(var env: hibernate_envs)
+            __property__add(properties, env);
+        __property__add(properties, AvailableSettings.PHYSICAL_NAMING_STRATEGY, org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy.class.getCanonicalName());
+        __property__add(properties, AvailableSettings.IMPLICIT_NAMING_STRATEGY, org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyHbmImpl.class.getCanonicalName());
+        return properties;
     }
 
     public LocalContainerEntityManagerFactoryBean makeEntityManagerFactory() {
-        internalLog("makeEntityManagerFactory", "","started");
-        try {
-            LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
-            em.setDataSource(makeDataSource());
-            em.setPackagesToScan(getPackages());
-            em.setJpaVendorAdapter(makeVendorAdapter());
-
-            Map<String, Object> properties = Map.of(
-                    AvailableSettings.PHYSICAL_NAMING_STRATEGY, org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy.class.getCanonicalName(),
-                    AvailableSettings.IMPLICIT_NAMING_STRATEGY, org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyHbmImpl.class.getCanonicalName()
-            );
-
-            em.setJpaPropertyMap(properties);
-            return em;
-        } finally {
-            internalLog("makeEntityManagerFactory", "","finished");
-        }
+        LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
+        em.setDataSource(makeDataSource());
+        em.setPackagesToScan(getPackages());
+        em.setJpaVendorAdapter(makeVendorAdapter());
+        em.setJpaPropertyMap(makeDefaultProperties());
+        return em;
     }
 
     public DataSource makeDataSource() {
-        internalLog("   makeDataSource", "started");
-        try {
-            DriverManagerDataSource dataSource = new DriverManagerDataSource();
-            var __env_dbType = this.getDatabase().name().toLowerCase();
-            var __env_url = String.format("spring.datasource.%s.url", __env_dbType);
-            var __env_username = String.format("spring.datasource.%s.username", __env_dbType);
-            var __env_password = String.format("spring.datasource.%s.password", __env_dbType);
-            var __env_schema = String.format("spring.datasource.%s.schema", __env_dbType);
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        var __url = __property__get("url");
+        var __username = __property__get("username");
+        var __password = __property__get("password");
+        var __schema = __property__get("schema");
 
-            internalLog("       env", "");
-            internalLog("           ", "env.dbType", __env_dbType);
-            internalLog("           ", "env.url", __env_url);
-            internalLog("           ", "env.username", __env_username);
-            internalLog("           ", "env.password", __env_password);
-            internalLog("           ", "env.schema", __env_schema);
+        dataSource.setUrl(__url);
+        dataSource.setUsername(__username);
+        dataSource.setPassword(__password);
+        dataSource.setSchema(__schema);
+        return dataSource;
 
-            var __dbType = this.getDatabase().name().toLowerCase();
-            var __url = environment.getProperty(String.format("spring.datasource.%s.url", __env_dbType));
-            var __username = environment.getProperty(String.format("spring.datasource.%s.username", __env_dbType));
-            var __password = environment.getProperty(String.format("spring.datasource.%s.password", __env_dbType));
-            var __schema = environment.getProperty(String.format("spring.datasource.%s.schema", __env_dbType));
-
-            internalLog("       value", "");
-            internalLog("           ", "value.dbType ", __dbType);
-            internalLog("           ", "value.url", __url);
-            internalLog("           ", "value.username", __username);
-            internalLog("           ", "value.password", __password);
-            internalLog("           ", "value.schema", __schema);
-
-            dataSource.setUrl(__url);
-            dataSource.setUsername(__username);
-            dataSource.setPassword(__password);
-            dataSource.setSchema(__schema);
-            return dataSource;
-
-        } finally {
-            internalLog("   makeDataSource", "finished", (Object) packages);
-        }
     }
 
     public PlatformTransactionManager makeTransactionManager() {
@@ -111,13 +79,23 @@ public class DSFactory {
         return transactionManager;
     }
 
-    private static void internalLog(String method, String subMethod, Object... args) {
-        var __prefix=String.format("%s - %s",subMethod, method);
-        log.debug("{} - {}", __prefix, Arrays.toString(args));
+    private void __property__add(final Map<String,String> properties, String property){
+        __property__add(properties, property, null);
     }
 
-    private static void internalLog(String method, String subMethod, String... args) {
-        var __prefix=String.format("%s - %s",subMethod, method);
-        log.debug("{} - {}", __prefix, Arrays.toString(args));
+    private void __property__add(final Map<String,String> properties, String property, String defaultValue){
+        final var keys=property.split("\\.");
+        final var __ds_env=keys[keys.length-1].toLowerCase();
+        var __ds_value = __property__get(__ds_env).trim();
+        if(__ds_value.isEmpty() && defaultValue!=null)
+            __ds_value=defaultValue;
+        if(!__ds_value.trim().isEmpty())
+            properties.put(__ds_env, __ds_value);
+    }
+
+    private String __property__get(String property){
+        property = String.format("%s.%s", __ds_base_path, property);
+        final var __ds_value = environment.getProperty(property,"");
+        return __ds_value==null?"":__ds_value;
     }
 }
