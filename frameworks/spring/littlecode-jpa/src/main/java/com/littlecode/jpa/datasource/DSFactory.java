@@ -44,8 +44,10 @@ public class DSFactory {
         var hibernate_envs= List.of(AvailableSettings.DIALECT,AvailableSettings.SHOW_SQL,AvailableSettings.FORMAT_SQL,AvailableSettings.USE_SQL_COMMENTS,AvailableSettings.PHYSICAL_NAMING_STRATEGY,AvailableSettings.IMPLICIT_NAMING_STRATEGY);
         for(var env: hibernate_envs)
             __property__add(properties, env);
-        __property__add(properties, AvailableSettings.PHYSICAL_NAMING_STRATEGY, org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy.class.getCanonicalName());
-        __property__add(properties, AvailableSettings.IMPLICIT_NAMING_STRATEGY, org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyHbmImpl.class.getCanonicalName());
+        if(!properties.containsKey(AvailableSettings.PHYSICAL_NAMING_STRATEGY))
+            __property__add(properties, AvailableSettings.PHYSICAL_NAMING_STRATEGY, org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy.class.getCanonicalName());
+        if(!properties.containsKey(AvailableSettings.IMPLICIT_NAMING_STRATEGY))
+            __property__add(properties, AvailableSettings.IMPLICIT_NAMING_STRATEGY, org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyHbmImpl.class.getCanonicalName());
         return properties;
     }
 
