@@ -41,28 +41,12 @@ public class DSFactory {
         return vendorAdapter;
     }
 
-    public Map<String,String> makeDefaultProperties() {
-        Map<String,String> properties=new HashMap<>();
-        var hibernate_envs= List.of(AvailableSettings.DIALECT,AvailableSettings.SHOW_SQL,AvailableSettings.FORMAT_SQL,AvailableSettings.USE_SQL_COMMENTS,AvailableSettings.PHYSICAL_NAMING_STRATEGY,AvailableSettings.IMPLICIT_NAMING_STRATEGY);
-        for(var env: hibernate_envs)
-            __property__add(properties, env);
-
-        if(!properties.containsKey(AvailableSettings.PHYSICAL_NAMING_STRATEGY))
-            __property__add(properties, AvailableSettings.PHYSICAL_NAMING_STRATEGY, CamelCaseToUnderscoresNamingStrategy.class.getCanonicalName());
-        if(!properties.containsKey(AvailableSettings.IMPLICIT_NAMING_STRATEGY))
-            __property__add(properties, AvailableSettings.IMPLICIT_NAMING_STRATEGY, SpringImplicitNamingStrategy.class.getCanonicalName());
-
-        //PhysicalNamingStrategyStandardImpl.INSTANCE.
-
-        return properties;
-    }
-
     public LocalContainerEntityManagerFactoryBean makeEntityManagerFactory() {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(makeDataSource());
         em.setPackagesToScan(getPackages());
         em.setJpaVendorAdapter(makeVendorAdapter());
-        em.setJpaPropertyMap(makeDefaultProperties());
+        em.setJpaPropertyMap(__make_default_properties());
         em.afterPropertiesSet();
         return em;
     }
@@ -104,5 +88,21 @@ public class DSFactory {
         property = String.format("%s.%s", __ds_base_path, property);
         final var __ds_value = environment.getProperty(property,"");
         return __ds_value==null?"":__ds_value;
+    }
+
+    private Map<String,String> __make_default_properties() {
+        Map<String,String> properties=new HashMap<>();
+        var hibernate_envs= List.of(AvailableSettings.DIALECT,AvailableSettings.SHOW_SQL,AvailableSettings.FORMAT_SQL,AvailableSettings.USE_SQL_COMMENTS,AvailableSettings.PHYSICAL_NAMING_STRATEGY,AvailableSettings.IMPLICIT_NAMING_STRATEGY);
+        for(var env: hibernate_envs)
+            __property__add(properties, env);
+
+        if(!properties.containsKey(AvailableSettings.PHYSICAL_NAMING_STRATEGY))
+            __property__add(properties, AvailableSettings.PHYSICAL_NAMING_STRATEGY, CamelCaseToUnderscoresNamingStrategy.class.getCanonicalName());
+        if(!properties.containsKey(AvailableSettings.IMPLICIT_NAMING_STRATEGY))
+            __property__add(properties, AvailableSettings.IMPLICIT_NAMING_STRATEGY, SpringImplicitNamingStrategy.class.getCanonicalName());
+
+        //PhysicalNamingStrategyStandardImpl.INSTANCE.
+
+        return properties;
     }
 }
