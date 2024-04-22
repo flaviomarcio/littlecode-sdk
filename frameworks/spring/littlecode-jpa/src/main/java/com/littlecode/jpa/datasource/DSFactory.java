@@ -1,6 +1,5 @@
 package com.littlecode.jpa.datasource;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.cfg.AvailableSettings;
@@ -112,10 +111,6 @@ public class DSFactory {
         return transactionManager;
     }
 
-    private static void internalLog(String method, String subMethod) {
-        log.debug(method, method, subMethod);
-    }
-
     private static void internalLog(String method, String subMethod, Object... args) {
         var __prefix=String.format("%s - %s",subMethod, method);
         log.debug("{} - {}", __prefix, Arrays.toString(args));
@@ -126,4 +121,3 @@ public class DSFactory {
         log.debug("{} - {}", __prefix, Arrays.toString(args));
     }
 }
-
