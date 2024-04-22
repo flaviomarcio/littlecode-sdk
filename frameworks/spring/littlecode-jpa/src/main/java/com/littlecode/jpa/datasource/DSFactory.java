@@ -2,7 +2,9 @@ package com.littlecode.jpa.datasource;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy;
 import org.hibernate.cfg.AvailableSettings;
+import org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -45,9 +47,9 @@ public class DSFactory {
         for(var env: hibernate_envs)
             __property__add(properties, env);
         if(!properties.containsKey(AvailableSettings.PHYSICAL_NAMING_STRATEGY))
-            __property__add(properties, AvailableSettings.PHYSICAL_NAMING_STRATEGY, org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy.class.getCanonicalName());
+            __property__add(properties, AvailableSettings.PHYSICAL_NAMING_STRATEGY, CamelCaseToUnderscoresNamingStrategy.class.getCanonicalName());
         if(!properties.containsKey(AvailableSettings.IMPLICIT_NAMING_STRATEGY))
-            __property__add(properties, AvailableSettings.IMPLICIT_NAMING_STRATEGY, org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyHbmImpl.class.getCanonicalName());
+            __property__add(properties, AvailableSettings.IMPLICIT_NAMING_STRATEGY, SpringImplicitNamingStrategy.class.getCanonicalName());
         return properties;
     }
 
