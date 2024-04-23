@@ -75,7 +75,7 @@ public class MQ {
         return adapter;
     }
 
-    public Message.Response dispatcher(MQ.Message.Task task) {
+    private Message.Response internalDispatcher(MQ.Message.Task task) {
         var adapter = adapterCreate();
         Executor executor = adapter.beanQueueDispatcherObject();
         if (executor == null)
@@ -83,12 +83,12 @@ public class MQ {
         return executor.getDispatcherObject().accept(task);
     }
 
-    @SuppressWarnings("unused")
     public Message.Response dispatcher(Object task) {
-        return this.dispatcher(MQ.Message.Task.of(task));
+        if(task instanceof Message.Task)
+            return this.dispatcher(task);
+        return this.internalDispatcher(MQ.Message.Task.of(task));
     }
 
-    @SuppressWarnings("unused")
     public Message.Response dispatcher(String message) {
         return this.dispatcher(Message.Task.of(null, message));
     }
@@ -373,6 +373,7 @@ public class MQ {
         @Getter
         @Setter
         @AllArgsConstructor
+        @NoArgsConstructor
         public static class Task {
             private Object type;
             private String messageId;
