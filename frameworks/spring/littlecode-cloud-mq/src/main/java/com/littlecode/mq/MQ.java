@@ -84,7 +84,7 @@ public class MQ {
     }
 
     public Message.Response dispatcher(Object task) {
-        if(task instanceof Message.Task)
+        if (task instanceof Message.Task)
             return this.dispatcher(task);
         return this.internalDispatcher(MQ.Message.Task.of(task));
     }

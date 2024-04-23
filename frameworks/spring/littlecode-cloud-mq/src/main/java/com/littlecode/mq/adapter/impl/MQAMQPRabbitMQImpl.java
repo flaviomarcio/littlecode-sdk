@@ -374,7 +374,7 @@ public class MQAMQPRabbitMQImpl extends MQAdapter {
     }
 
     @Configuration
-    public static class PrivateConfig{
+    public static class PrivateConfig {
         @Bean
         public AMQP.Connection rabbitConnectionFactory() {
             return null;
