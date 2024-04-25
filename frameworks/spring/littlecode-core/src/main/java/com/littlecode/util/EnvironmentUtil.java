@@ -47,7 +47,7 @@ public class EnvironmentUtil {
     public String asString(String env, String defaultValue) {
         var eValue = envValue(env);
         return (eValue == null)
-                ?defaultValue==null?"":defaultValue
+                ?PrimitiveUtil.toString(defaultValue)
                 :eValue;
     }
 
@@ -57,9 +57,7 @@ public class EnvironmentUtil {
 
     public boolean asBool(String env, boolean defaultValue) {
         var eValue = envValue(env);
-        return (eValue == null)
-                ?defaultValue
-                :PrimitiveUtil.toBool(eValue);
+        return (eValue != null && PrimitiveUtil.toBool(eValue)) || defaultValue;
     }
 
     public double asDouble(String env) {
@@ -128,7 +126,7 @@ public class EnvironmentUtil {
                 :PrimitiveUtil.toDateTime(eValue);
     }
 
-    public <T> T asEnum(String env, T defaultValue, Class<?> enumClass) {
+    public <T> T asEnum(String env, Class<?> enumClass, T defaultValue) {
         if (enumClass != null && enumClass.isEnum()){
             var enumList = enumClass.getEnumConstants();
             var eValue=envValue(env);
@@ -143,7 +141,7 @@ public class EnvironmentUtil {
     }
 
     public <T> T asEnum(String env, Class<?> enumClass) {
-        return this.asEnum(env, null, enumClass);
+        return this.asEnum(env, enumClass, null);
     }
 
     public <T> List<T> asEnums(String env, Class<?> enumClass) {

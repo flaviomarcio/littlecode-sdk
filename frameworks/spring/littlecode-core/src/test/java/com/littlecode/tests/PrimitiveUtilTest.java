@@ -26,7 +26,7 @@ public class PrimitiveUtilTest {
         var dt = LocalDate.of(2000, 1, 3);
         var tm = LocalTime.of(22, 37, 12);
         Assertions.assertEquals(PrimitiveUtil.toString(bool), "true");
-        Assertions.assertEquals(PrimitiveUtil.toString(LocalDateTime.of(dt, tm)), "2000-01-03T22:37:12");
+        Assertions.assertEquals(PrimitiveUtil.toString(LocalDateTime.of(dt, tm)), "2000-01-03T22:37:12.000000000");
         Assertions.assertEquals(PrimitiveUtil.toString(dt), "2000-01-03");
         Assertions.assertEquals(PrimitiveUtil.toString(tm), "22:37:12");
 
@@ -185,7 +185,7 @@ public class PrimitiveUtilTest {
         Assertions.assertFalse(PrimitiveUtil.isEmpty(tmNull));
 
         //noinspection ConstantValue
-        Assertions.assertTrue(PrimitiveUtil.isEmpty(object = null));
+        Assertions.assertTrue(PrimitiveUtil.isEmpty((Object)null));
         Assertions.assertTrue(PrimitiveUtil.isEmpty(""));
         Assertions.assertTrue(PrimitiveUtil.isEmpty(0));
         Assertions.assertTrue(PrimitiveUtil.isEmpty(0L));
@@ -220,20 +220,26 @@ public class PrimitiveUtilTest {
 
         List<Check<LocalDate>> listDate = List.of(
                 new Check<>(curDate, curDate, curDate, true),
-                new Check<>(curDate, null, curDate, true),
-                new Check<>(curDate, curDate, null, true),
+                new Check<>(curDate, curDate.minusDays(1), curDate, true),
+                new Check<>(curDate, curDate, curDate.plusDays(1), true),
+                new Check<>(curDate, null, curDate, false),
+                new Check<>(curDate, curDate, null, false),
                 new Check<>(null, null, null, false),
                 new Check<>(curDate, curDate.plusDays(1), curDate, false),
                 new Check<>(curDate, curDate, curDate.minusDays(1), false)
         );
-        for (var check : listDate)
+        for (var check : listDate){
+            Assertions.assertDoesNotThrow(()->PrimitiveUtil.inRange(check.v, check.begin, check.end));
             Assertions.assertEquals(PrimitiveUtil.inRange(check.v, check.begin, check.end), check.r);
+        }
 
         var curTime = LocalTime.now();
         List<Check<LocalTime>> listTime = List.of(
                 new Check<>(curTime, curTime, curTime, true),
-                new Check<>(curTime, null, curTime, true),
-                new Check<>(curTime, curTime, null, true),
+                new Check<>(curTime, curTime.minusMinutes(1), curTime, true),
+                new Check<>(curTime, curTime, curTime.plusSeconds(1), true),
+                new Check<>(curTime, null, curTime, false),
+                new Check<>(curTime, curTime, null, false),
                 new Check<>(null, null, null, false),
                 new Check<>(curTime, curTime.plusMinutes(1), curTime, false),
                 new Check<>(curTime, curTime, curTime.minusMinutes(1), false)
@@ -244,8 +250,10 @@ public class PrimitiveUtilTest {
         var curDateTime = LocalDateTime.of(curDate, curTime);
         List<Check<LocalDateTime>> listDateTime = List.of(
                 new Check<>(curDateTime, curDateTime, curDateTime, true),
-                new Check<>(curDateTime, null, curDateTime, true),
-                new Check<>(curDateTime, curDateTime, null, true),
+                new Check<>(curDateTime, curDateTime.minusSeconds(1), curDateTime, true),
+                new Check<>(curDateTime, curDateTime, curDateTime.plusSeconds(1), true),
+                new Check<>(curDateTime, null, curDateTime, false),
+                new Check<>(curDateTime, curDateTime, null, false),
                 new Check<>(null, null, null, false),
                 new Check<>(curDateTime, curDateTime.plusDays(1), curDateTime, false),
                 new Check<>(curDateTime, curDateTime, curDateTime.minusDays(1), false)

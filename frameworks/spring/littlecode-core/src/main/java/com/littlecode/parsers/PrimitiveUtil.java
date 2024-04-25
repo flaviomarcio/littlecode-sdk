@@ -1,8 +1,12 @@
 package com.littlecode.parsers;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
+import java.net.URI;
+import java.net.URL;
+import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.time.LocalDate;
@@ -244,94 +248,34 @@ public class PrimitiveUtil {
     }
 
     public static boolean inRange(final double value, final double begin, final double end) {
-        if (value == begin && begin == end)
-            return true;
-
         return (value >= begin && value <= end);
     }
 
     public static boolean inRange(final LocalDate value, final LocalDate begin, final LocalDate end) {
-        if ((value == null) || (begin == null && end == null))
-            return false;
-
-        var valueA = begin;
-        var valueB = end;
-
-        if (valueA == null)
-            valueA = valueB;
-        else if (valueB == null)
-            valueB = valueA;
-
-        return
-                (value.equals(valueA) || value.isAfter(valueA)) &&
-                        (value.equals(valueB) || value.isBefore(valueB))
-                ;
+        return ((value != null) && (begin != null && end != null)) && (!value.isBefore(begin) && !value.isAfter(end));
     }
 
     public static boolean inRange(final LocalTime value, final LocalTime begin, final LocalTime end) {
-        if ((value == null) || (begin == null && end == null))
-            return false;
-
-        var valueA = begin;
-        var valueB = end;
-
-        if (valueA == null)
-            valueA = valueB;
-        else if (valueB == null)
-            valueB = valueA;
-
-        return
-                (value.equals(valueA) || value.isAfter(valueA)) &&
-                        (value.equals(valueB) || value.isBefore(valueB))
-                ;
+        return ((value != null) && (begin != null && end != null)) && (!value.isBefore(begin) && !value.isAfter(end));
     }
 
     public static boolean inRange(final LocalDateTime value, final LocalDateTime begin, final LocalDateTime end) {
-        if ((value == null) || (begin == null && end == null))
-            return false;
-
-        var valueA = begin;
-        var valueB = end;
-
-        if (valueA == null)
-            valueA = valueB;
-        else if (valueB == null)
-            valueB = valueA;
-
-
-        return
-                (value.equals(valueA) || value.isAfter(valueA)) &&
-                        (value.equals(valueB) || value.isBefore(valueB))
-                ;
+        return ((value != null) && (begin != null && end != null)) && (!value.isBefore(begin) && !value.isAfter(end));
     }
 
     public static String toString(Object v) {
-        if (v == null)
-            return "";
-        else if (v.getClass().equals(String.class))
-            return ((String) v).trim();
-        else if (v.getClass().equals(Class.class))
-            return ((Class<?>) v).getName();
-        else if (v.getClass().equals(Boolean.class))
-            return ((Boolean) v).toString();
-        else if (v.getClass().equals(Double.class))
-            return formatDouble((Double) v);
-        else if (v.getClass().equals(Integer.class) || v.getClass().equals(Long.class) || v.getClass().equals(BigInteger.class))
-            return String.valueOf(v);
-        else if (v.getClass().equals(LocalDateTime.class)) {
-            var d = (LocalDateTime) v;
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(FORMAT_DATE_TIME);
-            return formatter.format(d);
-        } else if (v.getClass().equals(LocalDate.class)) {
-            var d = (LocalDate) v;
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(FORMAT_DATE);
-            return formatter.format(d);
-        } else if (v.getClass().equals(LocalTime.class)) {
-            var d = (LocalTime) v;
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(FORMAT_TIME);
-            return formatter.format(d);
+        if (v != null){
+            if (v instanceof String)
+                return ((String) v);
+            else if (v instanceof UUID || v instanceof URI || v instanceof Path || v instanceof URL)
+                return v.toString();
+            else if (v instanceof File)
+                return ((File)v).getAbsolutePath();
+            else if (v instanceof Class)
+                return ((Class<?>) v).getName();
+            return v.toString().trim();
         }
-        return v.toString().trim();
+        return "";
     }
 
     public static String toString(int v) {
@@ -346,8 +290,36 @@ public class PrimitiveUtil {
         return formatDouble(v);
     }
 
+    public static String toString(BigDecimal v) {
+        return formatDouble(v==null?0D:v.doubleValue());
+    }
+
     public static String toString(boolean v) {
         return String.valueOf(v);
+    }
+
+    public static String toString(LocalDate v) {
+        if(v!=null){
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(FORMAT_DATE);
+            return formatter.format(v);
+        }
+        return "";
+    }
+
+    public static String toString(LocalTime v) {
+        if(v!=null){
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(FORMAT_TIME);
+            return formatter.format(v);
+        }
+        return "";
+    }
+
+    public static String toString(LocalDateTime v) {
+        if(v!=null){
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(FORMAT_DATE_TIME_MS);
+            return formatter.format(v);
+        }
+        return "";
     }
 
 
