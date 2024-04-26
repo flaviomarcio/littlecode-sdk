@@ -1,6 +1,7 @@
 package com.littlecode.mq.adapter;
 
 import com.littlecode.mq.MQ;
+import com.littlecode.mq.config.MQSetting;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -20,13 +21,7 @@ public class MQAdapter {
         return this.mq;
     }
 
-    public ApplicationContext context() {
-        if (this.setting() == null)
-            return null;
-        return this.mq.setting().getContext();
-    }
-
-    public MQ.Setting setting() {
+    public MQSetting setting() {
         if (this.mq == null)
             return null;
         return this.mq.setting();

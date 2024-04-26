@@ -38,53 +38,35 @@ import java.util.Objects;
 @Configuration
 public class UtilCoreConfig {
     public static final FileFormat FILE_FORMAT_DEFAULT = FileFormat.JSON;
-    private static ApplicationContext CONTEXT;
-    private static Environment ENVIRONMENT;
+    private static ApplicationContext STATIC_CONTEXT;
+    private static Environment STATIC_ENVIRONMENT;
 
     public UtilCoreConfig(ApplicationContext applicationContext, Environment environment) {
         setApplicationContext(applicationContext);
         setEnvironment(environment);
     }
 
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean isConfigured() {
-        return CONTEXT != null && ENVIRONMENT != null;
+        return STATIC_CONTEXT != null && STATIC_ENVIRONMENT != null;
     }
 
-    @SuppressWarnings("unused")
     public static ApplicationContext getApplicationContext() {
-        return getApplicationContext(UtilCoreConfig.class);
+        return STATIC_CONTEXT;
     }
 
     public static void setApplicationContext(ApplicationContext context) {
-        CONTEXT = context;
+        STATIC_CONTEXT = context;
     }
 
-    public static ApplicationContext getApplicationContext(Class<?> aClass) {
-        if (CONTEXT == null) {
-            var msg = String.format("Use to configure context %s.setApplicationContext(...)", UtilCoreConfig.class);
-            log.error(msg);
-            throw new UnknownException(String.format("Invalid context: %s", aClass));
-        }
-        return CONTEXT;
-    }
 
     public static Environment getEnvironment() {
-        return getEnvironment(UtilCoreConfig.class);
+        return STATIC_ENVIRONMENT;
     }
 
     public static void setEnvironment(Environment environment) {
-        ENVIRONMENT = environment;
+        STATIC_ENVIRONMENT = environment;
     }
 
-    public static Environment getEnvironment(Class<?> aClass) {
-        if (ENVIRONMENT == null) {
-            var msg = String.format("Use to configure context %s.setEnvironment(...)", UtilCoreConfig.class);
-            log.error(msg);
-            throw new UnknownException(String.format("Invalid environment: %s", aClass));
-        }
-        return ENVIRONMENT;
-    }
 
     private static JsonFactory getFactoryFromFileFormat(FileFormat fileFormat) {
         if (fileFormat == FileFormat.YML)
@@ -148,7 +130,7 @@ public class UtilCoreConfig {
     @SuppressWarnings("unused")
     public ApplicationContext applicationContext() {
         //noinspection AccessStaticViaInstance
-        return this.CONTEXT;
+        return this.STATIC_CONTEXT;
     }
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)

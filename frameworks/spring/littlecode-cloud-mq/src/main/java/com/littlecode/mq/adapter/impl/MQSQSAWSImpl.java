@@ -2,6 +2,7 @@ package com.littlecode.mq.adapter.impl;
 
 import com.littlecode.mq.MQ;
 import com.littlecode.mq.adapter.MQAdapter;
+import com.littlecode.mq.config.MQSetting;
 import com.littlecode.parsers.ExceptionBuilder;
 import com.littlecode.parsers.ObjectUtil;
 import com.littlecode.parsers.PrimitiveUtil;
@@ -148,11 +149,10 @@ public class MQSQSAWSImpl extends MQAdapter {
     }
 
     @Slf4j
-    @Configuration
     @RequiredArgsConstructor
     public static class Dispatcher {
-        private final MQ.Setting setting;
-        private final MQSQSAWSImpl adapter;
+        private final MQSetting setting;
+        private MQSQSAWSImpl adapter;
         private List<String> queue;
 
         public List<String> queue() {
@@ -164,7 +164,6 @@ public class MQSQSAWSImpl extends MQAdapter {
             return queueNames;
         }
 
-        @SuppressWarnings("unused")
         public Dispatcher queue(List<String> queueName) {
             this.queue = queueName;
             return this;
@@ -230,7 +229,7 @@ public class MQSQSAWSImpl extends MQAdapter {
         private static final ExecutorService executorService = Executors.newSingleThreadExecutor();
         private static final ConcurrentMap<String, Future<?>> listeners = new ConcurrentHashMap<>();
         private final MQSQSAWSImpl adapter;
-        private final MQ.Setting setting;
+        private final MQSetting setting;
         private final String queueName;
 
         @SuppressWarnings("unused")
@@ -240,7 +239,7 @@ public class MQSQSAWSImpl extends MQAdapter {
             aux.forEach((s, listener) -> listener.cancel(true));
         }
 
-        public static void listen(MQSQSAWSImpl adapter, MQ.Setting setting, String queueName) {
+        public static void listen(MQSQSAWSImpl adapter, MQSetting setting, String queueName) {
             if (listeners.containsKey(queueName.toLowerCase()))
                 return;
             Future<?> listener = executorService.submit(new Listener(adapter, setting, queueName));

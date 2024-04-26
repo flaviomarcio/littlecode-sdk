@@ -15,11 +15,12 @@ import org.springframework.core.env.Environment;
 @Getter
 @Configuration
 public class MQAutoConfiguration {
+    private final MQSetting mqSetting;
     private final MQ mq;
 
-    public MQAutoConfiguration(ApplicationContext applicationContext, Environment environment) {
+    public MQAutoConfiguration(MQSetting mqSetting) {
         this.checkAdapters();
-        this.mq = new MQ(applicationContext, environment);
+        this.mq = new MQ(mqSetting);
         if (this.mq.setting().isAutoStart())
             this.mq.listen();
     }
@@ -27,7 +28,7 @@ public class MQAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public MQ createMQ() {
-        return new MQ();
+        return new MQ(mqSetting);
     }
 
     private void checkAdapters() {

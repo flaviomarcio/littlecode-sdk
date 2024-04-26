@@ -37,7 +37,7 @@ public class SystemUtil {
         public static String getProperty(String propertyName, String defaultValue) {
             if (propertyName == null)
                 return "";
-            var environment = UtilCoreConfig.getEnvironment(SystemUtil.class);
+            var environment = UtilCoreConfig.getEnvironment();
             try {
                 var value = (defaultValue != null)
                         ? environment.getProperty(propertyName, defaultValue)

@@ -35,16 +35,16 @@ public class MQAMQPRabbitMQImpl extends MQAdapter {
         super(mq);
     }
 
-    private static Connection newClient(MQ.Setting setting) {
-        var accessKey = PrimitiveUtil.isEmpty(setting.getClientId()) ? DEFAULT_USERNAME : setting.getClientId();
-        var secretKey = PrimitiveUtil.isEmpty(setting.getClientSecret()) ? DEFAULT_PASSWORD : setting.getClientSecret();
+    private static Connection newClient(MQSetting setting) {
+        var queueUsername = PrimitiveUtil.isEmpty(setting.getClientId()) ? DEFAULT_USERNAME : setting.getClientId();
+        var queuePassword = PrimitiveUtil.isEmpty(setting.getClientSecret()) ? DEFAULT_PASSWORD : setting.getClientSecret();
         var queueVHostName = PrimitiveUtil.isEmpty(setting.getVHostName()) ? "/" : setting.getVHostName();
         var queueHostName = PrimitiveUtil.isEmpty(setting.getHostName()) ? DEFAULT_LOCALHOST : setting.getHostName();
         var queuePort = setting.getPort() <= 0 ? DEFAULT_PORT : setting.getPort();
         try {
             var factory = new ConnectionFactory();
-            factory.setUsername(accessKey);
-            factory.setPassword(secretKey);
+            factory.setUsername(queueUsername);
+            factory.setPassword(queuePassword);
             factory.setVirtualHost(queueVHostName);
             factory.setHost(queueHostName);
             factory.setPort(queuePort);
@@ -53,7 +53,7 @@ public class MQAMQPRabbitMQImpl extends MQAdapter {
             factory.setNetworkRecoveryInterval(setting.getRecoveryInterval() * 1000);
             return factory.newConnection();
         } catch (IOException | TimeoutException e) {
-            log.error("host: {}, port: {}, vHost: {}, error: fail on connect, ex:{}", queueHostName, queuePort, queueVHostName, e.getMessage());
+            log.error("host: {}, port: {}, vHost: {}, vUsername: {}, error: fail on connect, ex:{}", queueHostName, queuePort, queueVHostName, queueUsername, e.getMessage());
         }
         return null;
     }
@@ -165,7 +165,7 @@ public class MQAMQPRabbitMQImpl extends MQAdapter {
     @Slf4j
     @RequiredArgsConstructor
     public static class Dispatcher {
-        private final MQ.Setting setting;
+        private final MQSetting setting;
         private final MQAMQPRabbitMQImpl adapter;
         private List<String> queue;
 
@@ -242,14 +242,14 @@ public class MQAMQPRabbitMQImpl extends MQAdapter {
     @RequiredArgsConstructor
     public static class Listener {
         private final MQAMQPRabbitMQImpl rabbitMQ;
-        private final MQ.Setting setting;
+        private final MQSetting setting;
         private final String queueName;
         private final int queueConsumer;
         private Connection queueClient = null;
         private Channel queueChannel = null;
         private MQ.Executor queueExecutor = null;
 
-        public static Listener from(MQAMQPRabbitMQImpl rabbitMQ, MQ.Setting setting, String queueName, int queueConsumer) {
+        public static Listener from(MQAMQPRabbitMQImpl rabbitMQ, MQSetting setting, String queueName, int queueConsumer) {
             return new Listener(rabbitMQ, setting, queueName, queueConsumer);
         }
 

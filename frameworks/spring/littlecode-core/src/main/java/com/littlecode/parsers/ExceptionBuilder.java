@@ -147,7 +147,6 @@ public class ExceptionBuilder {
         return of(Type.Network, message);
     }
 
-    //Class<?>
     public static RuntimeException ofArithmetical(Class<?> eClass) {
         return of(Type.Arithmetical, eClass);
     }

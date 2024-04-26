@@ -19,17 +19,15 @@ public class EnvironmentUtil {
     private final Environment environment;
 
     public EnvironmentUtil() {
-        try{
-            this.environment = UtilCoreConfig.getEnvironment();
-        } catch (Exception e) {
-            throw ExceptionBuilder.ofFrameWork("UtilCoreConfig.getEnvironment() is null");
-        }
+        this.environment = UtilCoreConfig.getEnvironment();
+        if(this.environment == null)
+            throw ExceptionBuilder.ofFrameWork("environment is null");
     }
 
     public EnvironmentUtil(Environment environment) {
-        if(environment == null)
-            throw ExceptionBuilder.ofFrameWork("environment is null");
         this.environment = environment;
+        if(this.environment == null)
+            throw ExceptionBuilder.ofFrameWork("environment is null");
     }
 
     public String envValue(String env) {

@@ -1,15 +1,21 @@
 package com.littlecode.mq;
 
+import com.littlecode.config.UtilCoreConfig;
 import com.littlecode.containers.ObjectContainer;
 import com.littlecode.mq.adapter.MQAdapter;
+import com.littlecode.mq.config.MQSetting;
 import com.littlecode.parsers.ExceptionBuilder;
 import com.littlecode.parsers.HashUtil;
 import com.littlecode.parsers.ObjectUtil;
 import com.littlecode.parsers.PrimitiveUtil;
+import com.littlecode.privates.CoreUtilAutoConfiguration;
 import com.littlecode.util.BeanUtil;
+import com.littlecode.util.EnvironmentUtil;
 import lombok.*;
+import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -23,33 +29,19 @@ import java.util.UUID;
 
 @Slf4j
 @Service
-@AllArgsConstructor
+@Data
+@RequiredArgsConstructor
 public class MQ {
     public static final String MQ_BEAN_NAME_DISPATCHER = "littleCodeMqBeanNameDispatcher";
     public static final String MQ_BEAN_NAME_CONSUMER = "littleCodeMqBeanNameConsumer";
     public static final String MQ_BEAN_RECEIVER = "littleCodeMqBeanReceiver";
     public static final String MQ_BEAN_CONFIGURER = "littleCodeMqBeanConfigurer";
-    private final Setting setting;
+    private final MQSetting setting;
     private MQAdapter adapter = null;
 
-    public MQ() {
-        this.setting = new Setting();
-    }
-
-    public MQ(Setting setting) {
-        this.setting = setting;
-    }
-
-    public MQ(ApplicationContext applicationContext, Environment environment) {
-        this.setting = new Setting(applicationContext, environment);
-    }
-
-    public Setting setting() {
-        return setting.load();
-    }
 
     public MQ queueName(String queueName) {
-        this.setting().setQueueName(queueName);
+        this.setting.setQueueName(queueName);
         return this;
     }
 
@@ -58,7 +50,7 @@ public class MQ {
             return this.adapter;
 
         var configurer = BeanUtil
-                .of(setting.getContext())
+                .of(UtilCoreConfig.getApplicationContext())
                 .bean(MQ.MQ_BEAN_CONFIGURER)
                 .getBean(MQ.Configurer.class);
         if (configurer != null)
@@ -101,7 +93,6 @@ public class MQ {
         executor.getListen().accept();
     }
 
-
     @FunctionalInterface
     public interface Method {
         void accept();
@@ -123,7 +114,7 @@ public class MQ {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class Configurer {
-        private MethodArg<Setting> configurer;
+        private MethodArg<MQSetting> configurer;
     }
 
     @Builder
@@ -138,237 +129,9 @@ public class MQ {
         private MethodReturn<Message.Response, String> dispatcherString;
     }
 
-    public static class Setting {
-        private static final String env_mq_engine = "littlecode.mq.engine";
-        private static final String env_mq_auto_create = "littlecode.mq.auto-create";
-        private static final String env_mq_auto_start = "littlecode.mq.auto-start";
-        private static final String env_mq_stop_on_fail = "littlecode.mq.stop-on-fail";
-        private static final String env_mq_hostname = "littlecode.mq.hostname";
-        private static final String env_mq_v_hostname = "littlecode.mq.v-hostname";
-        private static final String env_mq_consumers = "littlecode.mq.consumers";
-        private static final String env_mq_channel = "littlecode.mq.channel";
-        private static final String env_mq_exchange = "littlecode.mq.exchange";
-        private static final String env_mq_port = "littlecode.mq.port";
-        private static final String env_mq_url = "littlecode.mq.url";
-        private static final String env_mq_region = "littlecode.mq.region";
-        private static final String env_mq_name = "littlecode.mq.name";
-        private static final String env_mq_name_consumer = "littlecode.mq.name.consumer";
-        private static final String env_mq_name_dispatcher = "littlecode.mq.name.dispatcher";
-        private static final String env_mq_recovery_interval = "littlecode.mq.recovery-time";
-        private static final String env_mq_max_number = "littlecode.mq.max-number";
-        private static final String env_mq_idle_sleep = "littlecode.mq.idle-sleep";
-        private static final String env_mq_idle_keep_alive = "littlecode.mq.keep-alive";
-        private static final String env_client_id = "littlecode.mq.client.id";
-        private static final String env_client_secret = "littlecode.mq.client.secret";
-        private static ApplicationContext STATIC_APPLICATION_CONTEXT;
-        private static Environment STATIC_ENVIRONMENT;
-        private boolean loaded = false;
-        private ApplicationContext context;
-        private Environment environment;
-        @Getter
-        @Setter
-        private String engine;
-        @Getter
-        @Setter
-        private boolean autoCreate;
-        @Getter
-        @Setter
-        private boolean autoStart;
-        @Getter
-        @Setter
-        private boolean stopOnFail;
-        @Getter
-        @Setter
-        private String hostName;
-        @Getter
-        @Setter
-        private String vHostName;
-        @Setter
-        private int recoveryInterval;
-        @Setter
-        private int queueConsumers;
-        @Getter
-        @Setter
-        private String queueChannel;
-        @Getter
-        @Setter
-        private String queueExchange;
-        @Getter
-        @Setter
-        private int port;
-        @Getter
-        @Setter
-        private String url;
-        @Setter
-        private int heartbeat;
-        @Getter
-        @Setter
-        private String clientId;
-        @Getter
-        @Setter
-        private String clientSecret;
-        @Getter
-        private List<String> queueName;
-        @Setter
-        private List<String> queueNameConsumer;
-        @Getter
-        @Setter
-        private List<String> queueNameDispatcher;
-        @Getter
-        @Setter
-        private String queueRegion;
-        @Setter
-        private int queueMaxNumber;
-        @Setter
-        private int queueIdleSleep;
-
-
-        public Setting() {
-            configure(STATIC_APPLICATION_CONTEXT, STATIC_ENVIRONMENT);
-        }
-
-        public Setting(ApplicationContext context, Environment environment) {
-            configure(context, environment);
-        }
-
-        public ApplicationContext getContext() {
-            if (this.context == null)
-                return STATIC_APPLICATION_CONTEXT;
-            return this.context;
-        }
-
-        public Environment getEnvironment() {
-            if (this.environment == null)
-                return STATIC_ENVIRONMENT;
-            return this.environment;
-        }
-
-        private void configure(ApplicationContext context, Environment environment) {
-            this.context = context;
-            this.environment = environment;
-            if (Setting.STATIC_APPLICATION_CONTEXT == null)
-                Setting.STATIC_APPLICATION_CONTEXT = context;
-            if (Setting.STATIC_ENVIRONMENT == null)
-                Setting.STATIC_ENVIRONMENT = environment;
-            this.load();
-        }
-
-
-        public String readEnv(String env, String defaultValue) {
-            try {
-                return getEnvironment().getProperty(env, defaultValue);
-            } catch (Exception e) {
-                return defaultValue;
-            }
-        }
-
-        public List<String> readEnvList(String env) {
-            try {
-                var values = List.of(getEnvironment().getProperty(env, "").split(","));
-                List<String> out = new ArrayList<>();
-                values.forEach(s -> {
-                    if (s != null && !s.trim().isEmpty())
-                        out.add(s);
-                });
-                return out;
-            } catch (Exception e) {
-                return new ArrayList<>();
-            }
-        }
-
-        public String readEnv(String env) {
-            return this.readEnv(env, "");
-        }
-
-        private Setting load() {
-            if (loaded)
-                return this;
-            this.engine = readEnv(env_mq_engine, "amqp");
-            this.autoCreate = PrimitiveUtil.toBool(readEnv(env_mq_auto_create, "false"));
-            this.autoStart = PrimitiveUtil.toBool(readEnv(env_mq_auto_start, "false"));
-            this.stopOnFail = PrimitiveUtil.toBool(readEnv(env_mq_stop_on_fail, "true"));
-            this.hostName = readEnv(env_mq_hostname);
-            this.vHostName = readEnv(env_mq_v_hostname);
-            this.port = PrimitiveUtil.toInt(readEnv(env_mq_port));
-            this.url = readEnv(env_mq_url);
-            this.heartbeat = PrimitiveUtil.toInt(getEnvironment().getProperty(env_mq_idle_keep_alive, "30"));
-            this.recoveryInterval = PrimitiveUtil.toInt(getEnvironment().getProperty(env_mq_recovery_interval, "10"));
-            this.clientId = readEnv(env_client_id);
-            this.clientSecret = readEnv(env_client_secret);
-            this.queueConsumers = PrimitiveUtil.toInt(readEnv(env_mq_consumers));
-            this.queueChannel = readEnv(env_mq_channel);
-            this.queueExchange = readEnv(env_mq_exchange);
-            this.queueRegion = readEnv(env_mq_region);
-            this.queueName = readEnvList(env_mq_name);
-            this.queueNameConsumer = readEnvList(env_mq_name_consumer);
-            this.queueNameDispatcher = readEnvList(env_mq_name_dispatcher);
-            this.queueMaxNumber = PrimitiveUtil.toInt(getEnvironment().getProperty(env_mq_max_number, "1"));
-            this.queueIdleSleep = PrimitiveUtil.toInt(getEnvironment().getProperty(env_mq_idle_sleep, "1000"));
-            this.loaded = true;
-            return this;
-        }
-
-        public int getHeartbeat() {
-            if (this.heartbeat <= 0)
-                return this.heartbeat = 30;
-            return this.heartbeat;
-        }
-
-
-        public int getRecoveryInterval() {
-            if (this.recoveryInterval <= 0)
-                return this.recoveryInterval = 60;
-            return this.recoveryInterval;
-        }
-
-        @SuppressWarnings("unused")
-        public void setQueueName(final List<String> queueName) {
-            this.queueName = queueName;
-        }
-
-        public void setQueueName(final String queueName) {
-            if (PrimitiveUtil.isEmpty(queueName))
-                this.queueName.clear();
-            else
-                this.queueName = List.of(queueName);
-        }
-
-        public List<String> getQueueNameConsumer() {
-            if (!PrimitiveUtil.isEmpty(this.queueName))
-                return this.queueName;
-            if (!PrimitiveUtil.isEmpty(this.queueNameConsumer))
-                return this.queueNameConsumer;
-            return new ArrayList<>();
-        }
-
-        public List<String> getQueueNameDispatchers() {
-            if (!PrimitiveUtil.isEmpty(this.queueName))
-                return this.queueName;
-            if (!PrimitiveUtil.isEmpty(this.queueNameDispatcher))
-                return this.queueNameDispatcher;
-            return new ArrayList<>();
-        }
-
-        public int getQueueConsumers() {
-            if (queueConsumers <= 0)
-                return queueConsumers = 1;
-            return queueConsumers;
-        }
-
-        public int getQueueMaxNumber() {
-            if (queueMaxNumber <= 0)
-                return queueMaxNumber = 10;
-            return queueMaxNumber;
-        }
-
-        public int getQueueIdleSleep() {
-            if (queueIdleSleep <= 0)
-                return 1000;
-            return queueIdleSleep;
-        }
-    }
-
+    @UtilityClass
     public static class Message {
+
         @Builder
         @Getter
         @Setter
@@ -473,5 +236,4 @@ public class MQ {
             private UUID checksum;
         }
     }
-
 }
