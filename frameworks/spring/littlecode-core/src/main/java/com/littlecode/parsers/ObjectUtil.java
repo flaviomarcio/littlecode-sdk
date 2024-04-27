@@ -389,40 +389,31 @@ public class ObjectUtil {
 
     public static synchronized Map<String, String> toMapOfString(final Object o) {
         if (o != null) {
-            if (o.getClass().equals(String.class)) {
+            if(o instanceof String string) {
                 try {
                     var mapper = UtilCoreConfig.newObjectMapper(FILE_FORMAT_DEFAULT);
-                    return mapper.readValue((String) o, Map.class);
-                } catch (Exception e) {
+                    return mapper.readValue(string, Map.class);
+                } catch (Exception ignored) {
                 }
-                return new HashMap<>();
+            }
+            else{
+                Map<String, String> fieldValues = new HashMap<>();
+                for (Field field : toFieldsList(o.getClass())) {
+                    field.setAccessible(true);
+                    try {
+                        var oGet = field.get(o);
+                        if (oGet != null)
+                            fieldValues.put(field.getName(), "");
+                        else if (oGet.getClass().isPrimitive() || oGet.getClass().isEnum() || PRIMITIVE_CLASSES.contains(field.getGenericType().getTypeName()))
+                            fieldValues.put(field.getName(), oGet.toString());
+                        else if (oGet.getClass().isLocalClass())
+                            fieldValues.put(field.getName(), toString(oGet));
+                    } catch (Exception ignored) {
+                    }
+                }
+                return fieldValues;
             }
 
-
-            Map<String, String> fieldValues = new HashMap<>();
-            toFieldsList(o.getClass())
-                    .forEach(field -> {
-                        field.setAccessible(true);
-                        try {
-                            var oGet = field.get(o);
-                            if (oGet == null) {
-                                fieldValues.put(field.getName(), "");
-                                return;
-                            }
-
-                            if (oGet.getClass().isPrimitive() || oGet.getClass().isEnum() || PRIMITIVE_CLASSES.contains(field.getGenericType().getTypeName())) {
-                                fieldValues.put(field.getName(), oGet.toString());
-                                return;
-                            }
-
-                            if (oGet.getClass().isLocalClass())
-                                fieldValues.put(field.getName(), toString(oGet));
-
-                        } catch (Exception e) {
-                            throw new FrameworkException(e.getMessage());
-                        }
-                    });
-            return fieldValues;
         }
         return new HashMap<>();
     }
