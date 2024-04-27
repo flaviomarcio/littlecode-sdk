@@ -6,11 +6,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.io.File;
+import java.net.URI;
+import java.net.URL;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @ExtendWith(MockitoExtension.class)
 public class PrimitiveUtilTest {
@@ -22,18 +25,35 @@ public class PrimitiveUtilTest {
 
     @Test
     public void UI_toString() {
-        Boolean bool = true;
+
         var dt = LocalDate.of(2000, 1, 3);
         var tm = LocalTime.of(22, 37, 12);
-        Assertions.assertEquals(PrimitiveUtil.toString(bool), "true");
+        Assertions.assertDoesNotThrow(() -> new PrimitiveUtil());
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString(LocalDateTime.now()));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString(LocalDate.now()));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString(LocalTime.now()));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString(new Object()));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString((Object)null));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString(true));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString(false));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString(10L));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString(10.1D));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString(10));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString(""));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString((String) null));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString(new File("/tmp/test")));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString(UUID.randomUUID()));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString(URI.create("http://localhost:8080")));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString(new URL("http://localhost:8080")));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString(Path.of("http://localhost:8080")));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString(Object.class));
+
         Assertions.assertEquals(PrimitiveUtil.toString(LocalDateTime.of(dt, tm)), "2000-01-03T22:37:12.000000000");
         Assertions.assertEquals(PrimitiveUtil.toString(dt), "2000-01-03");
         Assertions.assertEquals(PrimitiveUtil.toString(tm), "22:37:12");
-
         Assertions.assertEquals(PrimitiveUtil.toString(10.125D), "10.125");
         Assertions.assertEquals(PrimitiveUtil.toString(10.125D), "10.125");
         Assertions.assertEquals(PrimitiveUtil.toString(10.12D), "10.12");
-
         Assertions.assertEquals(PrimitiveUtil.toString(10.125), "10.125");
         Assertions.assertEquals(PrimitiveUtil.toString(10.125), "10.125");
         Assertions.assertEquals(PrimitiveUtil.toString(10.12), "10.12");
@@ -41,9 +61,19 @@ public class PrimitiveUtilTest {
         Assertions.assertEquals(PrimitiveUtil.toString(1000), "1000");
         Assertions.assertEquals(PrimitiveUtil.toString(1L), "1");
         Assertions.assertEquals(PrimitiveUtil.toString(1000L), "1000");
+        Assertions.assertEquals(PrimitiveUtil.toString(true), "true");
+        Assertions.assertEquals(PrimitiveUtil.toString(false), "false");
+        Assertions.assertEquals(PrimitiveUtil.toString((String) null), "");
+        Assertions.assertEquals(PrimitiveUtil.toString((LocalTime) null), "");
+        Assertions.assertEquals(PrimitiveUtil.toString((LocalDateTime) null), "");
+        Assertions.assertEquals(PrimitiveUtil.toString((LocalDate) null), "");
+        Assertions.assertEquals(PrimitiveUtil.toString((File) null), "");
+        Assertions.assertEquals(PrimitiveUtil.toString((UUID) null), "");
+        Assertions.assertEquals(PrimitiveUtil.toString((Path) null), "");
+        Assertions.assertEquals(PrimitiveUtil.toString((URI) null), "");
+        Assertions.assertEquals(PrimitiveUtil.toString((URL) null), "");
+        Assertions.assertEquals(PrimitiveUtil.toString((Class<?>) null), "");
 
-        Assertions.assertEquals(PrimitiveUtil.toString("a"), "a");
-        Assertions.assertEquals(PrimitiveUtil.toString("test"), "test");
     }
 
     @Test
@@ -57,23 +87,21 @@ public class PrimitiveUtilTest {
 
     @Test
     public void UI_toLong() {
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toLong(""));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toLong(null));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toLong("100"));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toLong("100.1"));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toLong(true));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toLong(false));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toLong(1.5));
+
         Assertions.assertEquals(PrimitiveUtil.toLong(""), 0);
+        Assertions.assertEquals(PrimitiveUtil.toLong(null), 0);
         Assertions.assertEquals(PrimitiveUtil.toLong("100"), 100);
         Assertions.assertEquals(PrimitiveUtil.toLong("100.1"), 0);
-        Assertions.assertEquals(PrimitiveUtil.toLong(100L), 100L);
         Assertions.assertEquals(PrimitiveUtil.toLong(true), 1);
         Assertions.assertEquals(PrimitiveUtil.toLong(false), 0);
-    }
-
-    @Test
-    public void UI_asLong() {
-        Assertions.assertEquals(PrimitiveUtil.asLong(""), 0);
-        Assertions.assertEquals(PrimitiveUtil.asLong("100"), 100);
-        Assertions.assertEquals(PrimitiveUtil.asLong("100.1"), 100);
-        Assertions.assertEquals(PrimitiveUtil.asLong("999999999"), 999999999);
-        Assertions.assertEquals(PrimitiveUtil.asLong(100), 100);
-        Assertions.assertEquals(PrimitiveUtil.asLong(true), 1);
-        Assertions.assertEquals(PrimitiveUtil.asLong(false), 0);
+        Assertions.assertEquals(PrimitiveUtil.toLong(1.5), 1);
     }
 
     @Test
@@ -83,20 +111,10 @@ public class PrimitiveUtilTest {
         Assertions.assertEquals(PrimitiveUtil.toInt("100.1"), 0);
         Assertions.assertEquals(PrimitiveUtil.toInt("9999999999999999999999999"), 0);
         Assertions.assertEquals(PrimitiveUtil.toInt(100), 100);
+        Assertions.assertEquals(PrimitiveUtil.toInt(100.1), 100);
         Assertions.assertEquals(PrimitiveUtil.toInt(true), 1);
         Assertions.assertEquals(PrimitiveUtil.toInt(false), 0);
     }
-
-    @Test
-    public void UI_asInt() {
-        Assertions.assertEquals(PrimitiveUtil.asInt(""), 0);
-        Assertions.assertEquals(PrimitiveUtil.asInt("100"), 100);
-        Assertions.assertEquals(PrimitiveUtil.asInt("100.1"), 100);
-        Assertions.assertEquals(PrimitiveUtil.asInt(100), 100);
-        Assertions.assertEquals(PrimitiveUtil.asInt(true), 1);
-        Assertions.assertEquals(PrimitiveUtil.asInt(false), 0);
-    }
-
 
     @Test
     public void UI_toDouble() {
@@ -164,6 +182,14 @@ public class PrimitiveUtilTest {
         Assertions.assertFalse(PrimitiveUtil.toBool("false"));
         Assertions.assertTrue(PrimitiveUtil.toBool("1"));
         Assertions.assertFalse(PrimitiveUtil.toBool("0"));
+        Assertions.assertTrue(PrimitiveUtil.toBool(1));
+        Assertions.assertFalse(PrimitiveUtil.toBool(0));
+        Assertions.assertTrue(PrimitiveUtil.toBool(1D));
+        Assertions.assertFalse(PrimitiveUtil.toBool(0D));
+        Assertions.assertTrue(PrimitiveUtil.toBool(1L));
+        Assertions.assertFalse(PrimitiveUtil.toBool(0L));
+        Assertions.assertTrue(PrimitiveUtil.toBool(1.00));
+        Assertions.assertFalse(PrimitiveUtil.toBool(0.00));
     }
 
     @Test
@@ -173,6 +199,8 @@ public class PrimitiveUtilTest {
         var d_tNull = LocalDateTime.now();
         var dtNull = LocalDate.now();
         var tmNull = LocalTime.now();
+        var list = new ArrayList<>();
+        var map = new HashMap<>();
 
         //noinspection ConstantValue
         Assertions.assertFalse(PrimitiveUtil.isEmpty(object));
@@ -183,6 +211,12 @@ public class PrimitiveUtilTest {
         Assertions.assertFalse(PrimitiveUtil.isEmpty(d_tNull));
         Assertions.assertFalse(PrimitiveUtil.isEmpty(dtNull));
         Assertions.assertFalse(PrimitiveUtil.isEmpty(tmNull));
+        Assertions.assertFalse(PrimitiveUtil.isEmpty(List.of(UUID.randomUUID())));
+        Assertions.assertFalse(PrimitiveUtil.isEmpty(Map.of(UUID.randomUUID().toString(), UUID.randomUUID().toString())));
+        Assertions.assertTrue(PrimitiveUtil.isEmpty(list));
+        Assertions.assertTrue(PrimitiveUtil.isEmpty(map));
+        Assertions.assertTrue(PrimitiveUtil.isEmpty((List) null));
+        Assertions.assertTrue(PrimitiveUtil.isEmpty((Map) null));
 
         //noinspection ConstantValue
         Assertions.assertTrue(PrimitiveUtil.isEmpty((Object)null));

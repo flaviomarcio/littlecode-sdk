@@ -41,9 +41,7 @@ public class ExceptionBuilder {
     }
 
     private static String targetClean(Object target) {
-        if (target == null)
-            return "";
-        return target.toString().trim();
+        return (target == null) ? "" : target.toString().trim();
     }
 
     public static String makeMessage(Type typeIn, Object targetIn, Object... argsIn) {
@@ -69,6 +67,10 @@ public class ExceptionBuilder {
 
     public static RuntimeException of(Object target) {
         return ExceptionBuilder.builder().type(Type.Default).target(target).build().create();
+    }
+
+    public static RuntimeException of(Type type) {
+        return ExceptionBuilder.builder().type(type).target(null).build().create();
     }
 
     public static RuntimeException of(Type type, Object target) {
@@ -337,13 +339,12 @@ public class ExceptionBuilder {
         return of(Type.Network, format, args);
     }
 
-    void setArgs(Object[] args) {
+    public void setArgs(Object[] args) {
         this.args = args;
     }
 
-    @SuppressWarnings("unused")
-    void setArgs(List<Object> args) {
-        setArgs(args.toArray());
+    public void setArgs(List<Object> args) {
+        setArgs(args == null || args.isEmpty() ? null : args.toArray());
     }
 
     private String makeMessage() {

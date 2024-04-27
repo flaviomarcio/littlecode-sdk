@@ -1,49 +1,39 @@
 package com.littlecode.mq.config;
 
+import com.littlecode.config.UtilCoreConfig;
 import com.littlecode.mq.MQ;
 import com.littlecode.mq.adapter.MQAdapter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.reflections.Reflections;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
 
-@Slf4j
-@Getter
-@Configuration
+@Data
 public class MQAutoConfiguration {
-    private final MQSetting mqSetting;
     private final MQ mq;
+    @Value("${littlecode.mq.auto-start:false}")
+    private boolean autoStart;
 
-    public MQAutoConfiguration(MQSetting mqSetting) {
-        this.checkAdapters();
-        this.mq = new MQ(mqSetting);
-        if (this.mq.setting().isAutoStart())
-            this.mq.listen();
+    public MQAutoConfiguration(MQ mq, ApplicationContext applicationContext, Environment environment) {
+        UtilCoreConfig.setApplicationContext(applicationContext);
+        UtilCoreConfig.setEnvironment(environment);
+        if(mq==null)
+            throw new NullPointerException("Invalid "+MQ.class.getCanonicalName());
+        this.mq = mq;
+        this.start();
     }
 
-    @Bean
-    @ConditionalOnMissingBean
-    public MQ createMQ() {
-        return new MQ(mqSetting);
-    }
-
-    private void checkAdapters() {
-        var reflections = new Reflections(MQAdapter.class.getPackageName());
-        var scanClasses = reflections.getTypesAnnotatedWith(MQAdapter.Indicator.class);
-        var adapters = new StringBuilder();
-        scanClasses
-                .forEach(aClass -> {
-                    if (!adapters.isEmpty())
-                        adapters.append(", ");
-                    adapters.append(aClass.getName());
-                });
-        if (adapters.isEmpty())
-            log.debug("MQ.Adapters: no adapters found");
-        else
-            log.debug("MQ.Adapters: " + adapters);
+    public void start(){
+        if(autoStart)
+            mq.listen();
     }
 }

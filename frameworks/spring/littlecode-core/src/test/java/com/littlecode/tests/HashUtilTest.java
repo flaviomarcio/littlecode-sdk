@@ -10,14 +10,32 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)
 public class HashUtilTest {
+
+    @Test
+    public void UT_readBytes() throws IOException {
+        var file = File.createTempFile("tmp", UUID.randomUUID().toString());
+        try (FileWriter writer = new FileWriter(file)) {
+            writer.write("test");
+            writer.flush();
+        } catch (IOException e) {
+            throw new FrameworkException(e);
+        }
+
+        Assertions.assertDoesNotThrow(() ->
+                HashUtil.readBytes(null)
+        );
+        File finalFile = file;
+        Assertions.assertDoesNotThrow(() -> HashUtil.readBytes(new FileInputStream(finalFile)));
+        Assertions.assertEquals(HashUtil.readBytes(null), "");
+        Assertions.assertEquals(HashUtil.readBytes(new FileInputStream(finalFile)), "test");
+        Assertions.assertNotNull(HashUtil.readBytes(new FileInputStream(finalFile)));
+        Assertions.assertNotNull(HashUtil.readBytes(null));
+    }
     @Test
     public void UT_toUuid() {
         String bytesOut = "c4ca4238a0b923820dcc509a6f75849b";
@@ -28,7 +46,7 @@ public class HashUtilTest {
     }
 
     @Test
-    public void UT_toMd5() {
+    public void UT_toMd5() throws IOException {
         String bytesIn = "1";
         String bytesOut = "c4ca4238a0b923820dcc509a6f75849b";
         UUID uuidOut = UUID.fromString("c4ca4238-a0b9-2382-0dcc-509a6f75849b");
@@ -37,6 +55,19 @@ public class HashUtilTest {
         Assertions.assertTrue(HashUtil.isUuid(bytesOut));
         Assertions.assertNotNull(HashUtil.formatStringToMd5(bytesOut));
         Assertions.assertThrows(ParserException.class, () -> HashUtil.formatStringToMd5(bytesIn));
+        Assertions.assertDoesNotThrow(() -> HashUtil.formatStringToMd5((String) null));
+        Assertions.assertDoesNotThrow(() -> HashUtil.formatStringToMd5((StringBuilder) null));
+
+        Assertions.assertDoesNotThrow(() -> HashUtil.toMd5(bytesIn));
+        Assertions.assertDoesNotThrow(() -> HashUtil.toMd5((Object) null));
+        Assertions.assertDoesNotThrow(() -> HashUtil.toMd5((String) null));
+        Assertions.assertDoesNotThrow(() -> HashUtil.toMd5((InputStream) null));
+
+        Assertions.assertDoesNotThrow(() -> HashUtil.toMd5Uuid(bytesIn));
+        Assertions.assertDoesNotThrow(() -> HashUtil.toMd5Uuid((Object) null));
+        Assertions.assertDoesNotThrow(() -> HashUtil.toMd5Uuid((String) null));
+        Assertions.assertDoesNotThrow(() -> HashUtil.toMd5Uuid((InputStream) null));
+        Assertions.assertDoesNotThrow(() -> HashUtil.toMd5Uuid(new Object()));
 
         Assertions.assertEquals(HashUtil.toMd5(bytesIn), bytesOut);
         Assertions.assertEquals(HashUtil.toMd5("%s", bytesIn), bytesOut);
@@ -44,6 +75,9 @@ public class HashUtilTest {
         Assertions.assertEquals(HashUtil.toMd5Uuid("%s", bytesIn), uuidOut);
         Assertions.assertEquals(HashUtil.toMd5Uuid(bytesOut), uuidOut);
         Assertions.assertEquals(HashUtil.toMd5Uuid("%s", bytesOut), uuidOut);
+        Assertions.assertNull(HashUtil.toMd5Uuid((Object) null));
+        Assertions.assertNull(HashUtil.toMd5Uuid((String) null));
+        Assertions.assertNull(HashUtil.toMd5Uuid((InputStream) null));
 
         var md5Object = ObjectCheck.builder().id(uuidOut).build();
         if (md5Object != null) {

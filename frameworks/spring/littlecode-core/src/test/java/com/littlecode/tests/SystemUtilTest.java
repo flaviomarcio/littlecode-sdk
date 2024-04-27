@@ -3,7 +3,6 @@ package com.littlecode.tests;
 import com.littlecode.config.UtilCoreConfig;
 import com.littlecode.util.SystemUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -23,13 +22,9 @@ public class SystemUtilTest {
     private static final String PROPERTY_B_VALUE = "b-test-0";
     private static final String PROPERTY_C = "c-test-1.c-test-2.c-test-3";
     private static final String PROPERTY_C_VALUE = "c-test-0";
-    private static ApplicationContext originalApplicationContext;
-    private static Environment originalEnvironment;
 
     @BeforeAll
     public static void beforeAll() {
-        originalApplicationContext = !UtilCoreConfig.isConfigured() ? null : UtilCoreConfig.getApplicationContext();
-        originalEnvironment = !UtilCoreConfig.isConfigured() ? null : UtilCoreConfig.getEnvironment();
 
         var applicationContext = Mockito.mock(ApplicationContext.class);
         var environment = Mockito.mock(Environment.class);
@@ -45,14 +40,11 @@ public class SystemUtilTest {
         UtilCoreConfig.setEnvironment(environment);
     }
 
-    @AfterAll
-    public static void afterAll() {
-        UtilCoreConfig.setApplicationContext(originalApplicationContext);
-        UtilCoreConfig.setEnvironment(originalEnvironment);
-    }
-
     @Test
     public void UT_CHECK_ENV_PUBLIC() {
+        Assertions.assertDoesNotThrow(() -> new SystemUtil());
+        Assertions.assertDoesNotThrow(() -> SystemUtil.sleep(1));
+        Assertions.assertDoesNotThrow(() -> SystemUtil.sleep(0));
         Assertions.assertNotNull(SystemUtil.Env.JAVA_TEMP_DIR);
         Assertions.assertNotNull(SystemUtil.Env.JAVA_LIBRARY_PATH);
         Assertions.assertNotNull(SystemUtil.Env.OS_NAME);
@@ -64,11 +56,19 @@ public class SystemUtilTest {
         Assertions.assertNotNull(SystemUtil.Env.USER_DIR);
         Assertions.assertNotNull(SystemUtil.Env.JAVA_HOME);
         Assertions.assertNotNull(SystemUtil.Env.APP_NAME);
+        Assertions.assertNotNull(SystemUtil.Env.getAppName());
     }
 
     @Test
     public void UT_CHECK_ENV_GET() {
 
+        Assertions.assertDoesNotThrow(() -> SystemUtil.Env.getProperty(null));
+        Assertions.assertDoesNotThrow(() -> SystemUtil.Env.getProperty(null, null));
+        Assertions.assertDoesNotThrow(() -> SystemUtil.Env.getProperty(PROPERTY_A));
+        Assertions.assertDoesNotThrow(() -> SystemUtil.Env.getProperty(PROPERTY_A, PROPERTY_A_VALUE));
+
+
+        Assertions.assertEquals(SystemUtil.Env.getProperty(null), "");
         Assertions.assertEquals(SystemUtil.Env.getProperty(PROPERTY_A), PROPERTY_A_VALUE);
         Assertions.assertEquals(SystemUtil.Env.getProperty(PROPERTY_A, PROPERTY_A_VALUE), PROPERTY_A_VALUE);
         Assertions.assertEquals(SystemUtil.Env.getProperty(PROPERTY_A, ""), PROPERTY_A_VALUE);

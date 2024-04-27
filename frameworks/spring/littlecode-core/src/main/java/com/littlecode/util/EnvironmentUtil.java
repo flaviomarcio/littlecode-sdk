@@ -30,12 +30,15 @@ public class EnvironmentUtil {
             throw ExceptionBuilder.ofFrameWork("environment is null");
     }
 
+    public String envValue(String env, String defaultValue) {
+        return
+                (environment.containsProperty(env))
+                        ? environment.getProperty(env).trim()
+                        : defaultValue;
+    }
+
     public String envValue(String env) {
-        if(environment.containsProperty(env)){
-            var value=environment.getProperty(env);
-            return value==null?null:value.trim();
-        }
-        return null;
+        return this.envValue(env, null);
     }
 
     public String asString(String env) {
@@ -44,9 +47,9 @@ public class EnvironmentUtil {
 
     public String asString(String env, String defaultValue) {
         var eValue = envValue(env);
-        return (eValue == null)
-                ?PrimitiveUtil.toString(defaultValue)
-                :eValue;
+        return (eValue != null)
+                ? eValue
+                : defaultValue == null ? "" : defaultValue;
     }
 
     public boolean asBool(String env) {
@@ -55,7 +58,7 @@ public class EnvironmentUtil {
 
     public boolean asBool(String env, boolean defaultValue) {
         var eValue = envValue(env);
-        return (eValue != null && PrimitiveUtil.toBool(eValue)) || defaultValue;
+        return (PrimitiveUtil.toBool(eValue)) || defaultValue;
     }
 
     public double asDouble(String env) {
@@ -63,10 +66,7 @@ public class EnvironmentUtil {
     }
 
     public double asDouble(String env, double defaultValue) {
-        var eValue = envValue(env);
-        return (eValue == null)
-                ?defaultValue
-                :PrimitiveUtil.toDouble(eValue);
+        return PrimitiveUtil.toDouble(envValue(env, String.valueOf(defaultValue)));
     }
 
     public int asInt(String env) {
@@ -74,10 +74,7 @@ public class EnvironmentUtil {
     }
 
     public int asInt(String env, int defaultValue) {
-        var eValue = envValue(env);
-        return (eValue == null)
-                ?defaultValue
-                :PrimitiveUtil.toInt(eValue);
+        return PrimitiveUtil.toInt(envValue(env, String.valueOf(defaultValue)));
     }
 
     public long asLong(String env) {
@@ -85,60 +82,48 @@ public class EnvironmentUtil {
     }
 
     public long asLong(String env, long defaultValue) {
-        var eValue = envValue(env);
-        return (eValue == null)
-                ?defaultValue
-                :PrimitiveUtil.toInt(eValue);
+        return PrimitiveUtil.toLong(envValue(env, String.valueOf(defaultValue)));
     }
 
     public LocalDate asDate(String env) {
-        return this.asDate(env, null);
+        return PrimitiveUtil.toDate(envValue(env));
     }
 
     public LocalDate asDate(String env, LocalDate defaultValue) {
-        var eValue = envValue(env);
-        return (eValue == null)
-                ?defaultValue
-                :PrimitiveUtil.toDate(eValue);
+        return PrimitiveUtil.toDate(envValue(env, PrimitiveUtil.toString(defaultValue)));
     }
 
     public LocalTime asTime(String env) {
-        return this.asTime(env, null);
+        return PrimitiveUtil.toTime(envValue(env));
     }
 
     public LocalTime asTime(String env, LocalTime defaultValue) {
-        var eValue = envValue(env);
-        return (eValue == null)
-                ?defaultValue
-                :PrimitiveUtil.toTime(eValue);
+        return PrimitiveUtil.toTime(envValue(env, PrimitiveUtil.toString(defaultValue)));
     }
 
     public LocalDateTime asDateTime(String env) {
-        return this.asDateTime(env, null);
+        return PrimitiveUtil.toDateTime(envValue(env));
     }
 
     public LocalDateTime asDateTime(String env, LocalDateTime defaultValue) {
-        var eValue = envValue(env);
-        return (eValue == null)
-                ?defaultValue
-                :PrimitiveUtil.toDateTime(eValue);
+        return PrimitiveUtil.toDateTime(envValue(env, PrimitiveUtil.toString(defaultValue)));
     }
 
-    public <T> T asEnum(String env, Class<?> enumClass, T defaultValue) {
+    public <T> T asEnum(String env, Class<T> enumClass, T defaultValue) {
         if (enumClass != null && enumClass.isEnum()){
             var enumList = enumClass.getEnumConstants();
             var eValue=envValue(env);
             if(eValue!=null){
                 for (var e : enumList) {
                     if (eValue.equalsIgnoreCase(e.toString()))
-                        return (T)e;
+                        return e;
                 }
             }
         }
         return defaultValue;
     }
 
-    public <T> T asEnum(String env, Class<?> enumClass) {
+    public <T> T asEnum(String env, Class<T> enumClass) {
         return this.asEnum(env, enumClass, null);
     }
 

@@ -5,6 +5,7 @@ import com.littlecode.util.BeanUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.concurrent.Executors;
 
 @Slf4j
 @RequiredArgsConstructor
+@Service
 public class SchedulerRunner implements Runnable {
     private static final ExecutorService EXECUTOR_SERVICE = Executors.newSingleThreadExecutor();
 

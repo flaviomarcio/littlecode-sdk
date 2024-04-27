@@ -46,10 +46,14 @@ public class EnvironmentUtilTest {
             Mockito.when(environment.containsProperty("item.attr.x")).thenReturn(false);
             var eUtil=new EnvironmentUtil(environment);
             Assertions.assertDoesNotThrow(()->eUtil.envValue("item.attr.x"));
+            Assertions.assertDoesNotThrow(() -> eUtil.envValue("item.attr.x", "x"));
+            Assertions.assertDoesNotThrow(() -> eUtil.envValue("item.attr.x", null));
             Assertions.assertDoesNotThrow(()->eUtil.envValue("item.attr"));
             Assertions.assertDoesNotThrow(()->eUtil.envValue("item.attr"),"itemA,itemB,itemC");
 
             Assertions.assertNull(eUtil.envValue("item.attr.x"));
+            Assertions.assertNotNull(eUtil.envValue("item.attr.x", "x"));
+            Assertions.assertEquals(eUtil.envValue("item.attr.x", "x"), "x");
             Assertions.assertNotNull(eUtil.envValue("item.attr"));
             Assertions.assertEquals(eUtil.envValue("item.attr"),"itemA,itemB,itemC");
         }
@@ -69,12 +73,15 @@ public class EnvironmentUtilTest {
             Assertions.assertDoesNotThrow(()->eUtil.asString("item.attr.x"),"itemA,itemB,itemC");
             Assertions.assertDoesNotThrow(()->eUtil.asString(null));
             Assertions.assertDoesNotThrow(()->eUtil.asString(null,null));
-
-            Assertions.assertNotNull(eUtil.asString("item.attr.x"));
-            Assertions.assertEquals(eUtil.asString("item.attr.x"),"");
+            Assertions.assertDoesNotThrow(() -> eUtil.asString("item.attr.x", null));
 
             Assertions.assertNotNull(eUtil.asString("item.attr"));
             Assertions.assertEquals(eUtil.asString("item.attr"),"itemA,itemB,itemC");
+            Assertions.assertNotNull(eUtil.asString("item.attr.x"));
+            Assertions.assertEquals(eUtil.asString("item.attr.x"), "");
+            Assertions.assertNotNull(eUtil.asString("item.attr.x", null));
+            Assertions.assertEquals(eUtil.asString("item.attr.x", null), "");
+            Assertions.assertEquals(eUtil.asString("item.attr.x", "a"), "a");
             Assertions.assertEquals(eUtil.asString(null),"");
         }
         {//step 2
@@ -143,12 +150,12 @@ public class EnvironmentUtilTest {
         {//step 1
             var environment= Mockito.mock(Environment.class);
             var values= Map.of(
-                    "item.attr-0","0",
-                    "item.attr-1","1",
-                    "item.attr-2","3.1",
-                    "item.attr-3","1000000D",
-                    "item.attr-4","1000000.25",
-                    "item.attr-5","-1000000.25"
+                    "item.attr-0", 0D,
+                    "item.attr-1", 1D,
+                    "item.attr-2", 3.1D,
+                    "item.attr-3", 1000000D,
+                    "item.attr-4", 1000000.25D,
+                    "item.attr-5", -1000000.25D
 
             );
             for (var entry : values.entrySet()) {
@@ -162,10 +169,28 @@ public class EnvironmentUtilTest {
                 String k = entry.getKey();
                 var v = entry.getValue();
                 var eUtil = new EnvironmentUtil(environment);
-                Assertions.assertEquals(eUtil.asDouble(k), PrimitiveUtil.toDouble(v));
+                Assertions.assertDoesNotThrow(() -> eUtil.asDouble(k));
+                Assertions.assertDoesNotThrow(() -> eUtil.asDouble(k, 0));
+
+                Assertions.assertEquals(eUtil.asDouble(k), v);
+                Assertions.assertEquals(eUtil.asDouble(k, 0), v);
             }
+        }
+
+        {//step 2
+            var eUtil = new EnvironmentUtil(Mockito.mock(Environment.class));
+            Assertions.assertDoesNotThrow(() -> eUtil.asDouble(null));
+            Assertions.assertDoesNotThrow(() -> eUtil.asDouble("teste.1234"));
+            Assertions.assertDoesNotThrow(() -> eUtil.asDouble("teste.1234", 0D));
+            Assertions.assertDoesNotThrow(() -> eUtil.asDouble(null, 0D));
+
+            Assertions.assertEquals(eUtil.asDouble("teste.1234"), 0D);
+            Assertions.assertEquals(eUtil.asDouble(null), 0D);
+            Assertions.assertEquals(eUtil.asDouble("teste.1234", 0), 0D);
+            Assertions.assertEquals(eUtil.asDouble(null, 0), 0D);
 
         }
+
     }
 
     @Test
@@ -267,13 +292,20 @@ public class EnvironmentUtilTest {
                 Mockito.when(environment.getProperty(key)).thenReturn(value);
                 Mockito.when(environment.containsProperty(key)).thenReturn(true);
             }
+            Mockito.when(environment.containsProperty("")).thenReturn(false);
+            Mockito.when(environment.containsProperty(null)).thenReturn(false);
 
             for (var entry : values.entrySet()) {
                 String k = entry.getKey();
                 var v = entry.getValue();
                 var eUtil = new EnvironmentUtil(environment);
                 Assertions.assertDoesNotThrow(()->eUtil.asDate(k));
+                Assertions.assertDoesNotThrow(() -> eUtil.asDate(k, LocalDate.now()));
+                Assertions.assertDoesNotThrow(() -> eUtil.asDate(k, null));
                 Assertions.assertEquals(eUtil.asDate(k).toString(), v);
+                Assertions.assertEquals(eUtil.asDate("", LocalDate.now()), LocalDate.now());
+                Assertions.assertEquals(eUtil.asDate("", null), null);
+                Assertions.assertEquals(eUtil.asDate(null, null), null);
             }
         }
     }
@@ -300,7 +332,8 @@ public class EnvironmentUtilTest {
                 var v = entry.getValue();
                 var eUtil = new EnvironmentUtil(environment);
                 Assertions.assertDoesNotThrow(()->eUtil.asTime(k));
-                Assertions.assertEquals(eUtil.asTime(k).toString(), v);
+                Assertions.assertDoesNotThrow(() -> eUtil.asTime(k, null));
+                Assertions.assertEquals(eUtil.asTime(k, null).toString(), v);
             }
         }
     }
@@ -327,7 +360,9 @@ public class EnvironmentUtilTest {
                 var v = entry.getValue();
                 var eUtil = new EnvironmentUtil(environment);
                 Assertions.assertDoesNotThrow(()->eUtil.asDateTime(k));
+                Assertions.assertDoesNotThrow(() -> eUtil.asDateTime(k, null));
                 Assertions.assertEquals(eUtil.asDateTime(k).toString(), v);
+                Assertions.assertEquals(eUtil.asDateTime(k, null).toString(), v);
             }
         }
     }
@@ -353,16 +388,14 @@ public class EnvironmentUtilTest {
             Assertions.assertDoesNotThrow(()->eUtil.asEnum("item.attr.ZZZ", TypeTest.class));
             Assertions.assertDoesNotThrow(()->eUtil.asEnum("item.attr.ZZZ", Object.class));
             Assertions.assertDoesNotThrow(()->eUtil.asEnum("item.attr.ZZZ", null));
-            Assertions.assertDoesNotThrow(()->eUtil.asEnum("item.attr.ZZZ", null, List.of(TypeTest.enumA,TypeTest.enumC)));
-            Assertions.assertDoesNotThrow(()->eUtil.asEnum("item.attr.ZZZ", TypeTest.class, List.of(TypeTest.enumA,TypeTest.enumC)));
+            Assertions.assertDoesNotThrow(() -> eUtil.asEnum("item.attr.ZZZ", null, TypeTest.enumA));
+            Assertions.assertDoesNotThrow(() -> eUtil.asEnum("item.attr.ZZZ", TypeTest.class, TypeTest.enumA));
 
             Assertions.assertNull(eUtil.asEnum("item.attr.ZZZ", TypeTest.class));
             Assertions.assertNull(eUtil.asEnum("item.attr.ZZZ", Object.class));
             Assertions.assertNull(eUtil.asEnum("item.attr.ZZZ", null));
-            Assertions.assertTrue(eUtil.asEnum("item.attr.ZZZ", null, List.of(TypeTest.enumA,TypeTest.enumC)).contains(TypeTest.enumA));
-            Assertions.assertTrue(eUtil.asEnum("item.attr.ZZZ", TypeTest.class, List.of(TypeTest.enumA,TypeTest.enumC)).contains(TypeTest.enumA));
-            Assertions.assertTrue(eUtil.asEnum("item.attr.ZZZ", TypeTest.class, List.of(TypeTest.enumA,TypeTest.enumC)).contains(TypeTest.enumC));
-            Assertions.assertFalse(eUtil.asEnum("item.attr.ZZZ", TypeTest.class, List.of(TypeTest.enumA,TypeTest.enumC)).contains(TypeTest.enumB));
+            Assertions.assertEquals(eUtil.asEnum("item.attr.ZZZ", null, TypeTest.enumA), TypeTest.enumA);
+            Assertions.assertEquals(eUtil.asEnum("item.attr.ZZZ", TypeTest.class, TypeTest.enumA), TypeTest.enumA);
 
             for (var e : TypeTest.values()) {
                 var k = String.format("attr.%s", e.toString().toLowerCase());

@@ -10,8 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
 import java.lang.annotation.Annotation;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
@@ -47,124 +45,53 @@ public class ObjectUtil {
     }
 
     public static String classToName(Object o) {
-        if (o == null)
-            return "";
-        if (o.getClass().equals(String.class))
-            return (String) o;
-        if (o.getClass().equals(Class.class)) {
-            var aClass = ((Class<?>) o);
-            return aClass.getName();
+        if (o != null) {
+            if (o instanceof String)
+                return (String) o;
+            else if (o instanceof Class<?> aClass)
+                return aClass.getName();
+            else if (o.getClass().isEnum())
+                return o.toString();
         }
-        if (o.getClass().isEnum())
-            return o.toString();
         return "";
     }
 
-    @SuppressWarnings("unused")
     private static List<Class<?>> getClassesBySorted(Set<Class<?>> classes) {
-        if (classes == null || classes.isEmpty())
-            return new ArrayList<>();
-        List<Class<?>> __return = new ArrayList<>(classes);
-        __return
-                .sort(new Comparator<Class<?>>() {
-                    @Override
-                    public int compare(Class<?> aClass1, Class<?> aClass2) {
-                        return aClass1.getName().toLowerCase().compareTo(aClass2.getName().toLowerCase());
-                    }
-                });
+        if (classes != null && !classes.isEmpty()) {
+            List<Class<?>> __return = new ArrayList<>(classes);
+            __return
+                    .sort(new Comparator<Class<?>>() {
+                        @Override
+                        public int compare(Class<?> aClass1, Class<?> aClass2) {
+                            return aClass1.getName().toLowerCase().compareTo(aClass2.getName().toLowerCase());
+                        }
+                    });
+        }
         return new ArrayList<>();
     }
 
     public static Class<?> getClassByName(Object classType) {
         var className = classToName(classType);
-        if (className.isEmpty())
-            return null;
-        try {
-            return Class.forName(className);
-        } catch (ClassNotFoundException e) {
-            return null;
+        if (!className.isEmpty()) {
+            try {
+                return Class.forName(className);
+            } catch (ClassNotFoundException ignored) {
+            }
         }
+        return null;
     }
 
     public static List<Class<?>> getClassesByInherits(Class<?> classType) {
-        //noinspection IfStatementWithIdenticalBranches
-        if (classType == null)
-            return new ArrayList<>();
         return new ArrayList<>();
-//        try {
-//            var reflections = new Reflections();
-//            return getClassesBySorted(
-//                    new HashSet<>(
-//                            reflections.getSubTypesOf(classType)
-//                    )
-//            );
-//        } catch (Exception e) {
-//            log.error(e.getMessage());
-//            return new ArrayList<>();
-//        }
     }
 
     public static List<Class<?>> getClassesByAnnotation(Class<? extends Annotation> annotationClass) {
-        //noinspection IfStatementWithIdenticalBranches
-        if (annotationClass == null)
-            return new ArrayList<>();
         return new ArrayList<>();
-//        try {
-//            var reflections = new Reflections(Thread.currentThread().getContextClassLoader());
-//            return getClassesBySorted(
-//                    new HashSet<>(
-//                            reflections.getTypesAnnotatedWith(annotationClass,true)
-//                    )
-//            );
-//        } catch (Exception e) {
-//            log.error(e.getMessage());
-//            return new ArrayList<>();
-//        }
     }
 
-//    public static List<Class<?>> getClassesByPackage(String packageName) {
-//        if (packageName == null || packageName.trim().isEmpty())
-//            return new ArrayList<>();
-//
-//        //noinspection rawtypes
-//        BiFunction<String,String,Class<?>> getClass=new BiFunction<String, String, Class<?>>() {
-//            @Override
-//            public Class apply(String className, String packageName) {
-//                try {
-//                    return Class.forName(packageName + "."
-//                            + className.substring(0, className.lastIndexOf('.')));
-//                } catch (ClassNotFoundException e) {
-//                    log.error(e.getMessage());
-//                }
-//                return null;
-//            }
-//        };
-//
-//        try {
-//            InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream(packageName.replaceAll("[.]", "/"));
-//            if(stream==null)
-//                return new ArrayList<>();
-//            BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-//            Set<Class<?>> classes=new HashSet<>();
-//            for(var o:reader.lines().toArray()){
-//                var line=o.toString();
-//                if(!line.endsWith(".class"))
-//                    continue;
-//                var c=getClass.apply(line,packageName);
-//                if(c!=null)
-//                    classes.add(c);
-//            }
-//            return getClassesBySorted(classes);
-//        } catch (Exception e) {
-//            log.error(e.getMessage());
-//            return new ArrayList<>();
-//        }
-//    }
-
     public static void clear(Object object) {
-        if (object == null)
-            throw new FrameworkException("Invalid object");
-        update(object, ObjectUtil.create(object.getClass()));
+        if (object != null)
+            update(object, ObjectUtil.create(object.getClass()));
     }
 
     public static void update(Object object, Object newValues) {
@@ -191,61 +118,63 @@ public class ObjectUtil {
     }
 
     public static synchronized Field toFieldByName(Class<?> tClass, String fieldName) {
-        if (fieldName == null || tClass == null)
-            return null;
-        fieldName = fieldName.trim().toLowerCase();
-        Field[] fieldList = tClass.getDeclaredFields();
-        for (Field field : fieldList) {
-            if (field.getName().toLowerCase().equals(fieldName)) {
-                field.setAccessible(true);
-                return field;
+        if (fieldName != null && tClass != null) {
+            fieldName = fieldName.trim().toLowerCase();
+            Field[] fieldList = tClass.getDeclaredFields();
+            for (Field field : fieldList) {
+                if (field.getName().toLowerCase().equals(fieldName)) {
+                    field.setAccessible(true);
+                    return field;
+                }
             }
         }
         return null;
     }
 
     public static synchronized Field toFieldByAnnotation(Class<?> tClass, Class<? extends Annotation> annotationClass) {
-        if (tClass == null || annotationClass == null)
-            return null;
-        Field[] fieldList = tClass.getDeclaredFields();
-        for (Field field : fieldList)
-            if (field.isAnnotationPresent(annotationClass))
-                return field;
+        if (tClass != null && annotationClass != null) {
+            Field[] fieldList = tClass.getDeclaredFields();
+            for (Field field : fieldList)
+                if (field.isAnnotationPresent(annotationClass))
+                    return field;
+        }
         return null;
     }
 
     public static synchronized List<Field> toFieldsByAnnotation(Class<?> tClass, Class<? extends Annotation> annotationClass) {
-        if (tClass == null || annotationClass == null)
-            return null;
-        List<Field> __return = new ArrayList<>();
-        Field[] fieldList = tClass.getDeclaredFields();
-        for (Field field : fieldList)
-            if (field.isAnnotationPresent(annotationClass))
-                __return.add(field);
-        return __return;
+        if (tClass != null && annotationClass != null) {
+            List<Field> __return = new ArrayList<>();
+            Field[] fieldList = tClass.getDeclaredFields();
+            for (Field field : fieldList)
+                if (field.isAnnotationPresent(annotationClass))
+                    __return.add(field);
+            return __return;
+        }
+        return new ArrayList<>();
     }
 
     public static synchronized Field toFieldByType(Class<?> tClass, Class<?> typeClass) {
-        if (tClass == null || typeClass == null)
-            return null;
-        Field[] fieldList = tClass.getDeclaredFields();
-        for (Field field : fieldList) {
-            if (field.getType().equals(typeClass))
-                return field;
+        if (tClass != null && typeClass != null) {
+            Field[] fieldList = tClass.getDeclaredFields();
+            for (Field field : fieldList) {
+                if (field.getType().equals(typeClass))
+                    return field;
+            }
         }
         return null;
     }
 
     public static synchronized List<Field> toFieldsByType(Class<?> tClass, Class<?> typeClass) {
-        if (tClass == null || typeClass == null)
-            return null;
-        List<Field> __return = new ArrayList<>();
-        Field[] fieldList = tClass.getDeclaredFields();
-        for (Field field : fieldList) {
-            if (field.getType().equals(typeClass))
-                __return.add(field);
+        if (tClass != null && typeClass != null) {
+            List<Field> __return = new ArrayList<>();
+            Field[] fieldList = tClass.getDeclaredFields();
+            for (Field field : fieldList) {
+                if (field.getType().equals(typeClass))
+                    __return.add(field);
+            }
+            return __return;
         }
-        return __return;
+        return new ArrayList<>();
     }
 
     public static synchronized <T> List<Field> toFieldsList(Class<T> tClass) {
@@ -261,11 +190,9 @@ public class ObjectUtil {
     }
 
     public static synchronized List<Field> toFieldsList(Object o) {
-        if (o == null)
-            return new ArrayList<>();
-        if (PRIMITIVE_CLASSES.contains(o.getClass().getName()))
-            return new ArrayList<>();
-        return toFieldsList(o.getClass());
+        if (o != null && !PRIMITIVE_CLASSES.contains(o.getClass().getName()))
+            return toFieldsList(o.getClass());
+        return new ArrayList<>();
     }
 
     public static synchronized Map<String, Field> toFieldsMap(Class<?> tClass) {
@@ -276,9 +203,9 @@ public class ObjectUtil {
     }
 
     public static synchronized Map<String, Field> toFieldsMap(final Object o) {
-        if (o == null)
-            return new HashMap<>();
-        return toFieldsMap(o.getClass());
+        if (o != null)
+            return toFieldsMap(o.getClass());
+        return new HashMap<>();
     }
 
     public static synchronized boolean equal(final Object a, final Object b) {
@@ -309,44 +236,42 @@ public class ObjectUtil {
     }
 
     public static <T> T createWithArgsConstructor(Class<?> aClass, Object... initArgs) {
-        if (initArgs == null || initArgs.length == 0)
-            return create(aClass);
-        try {
-            for (var constructor : aClass.getConstructors()) {
-                final var types = constructor.getParameterTypes();
-                if (types.length != initArgs.length)
-                    continue;
-                int iArg = 0;
-                for (var type : types) {
-                    var arg = initArgs[iArg++];
-                    if (!arg.getClass().equals(type)) {
-                        constructor = null;
-                        break;
+        if (initArgs != null && initArgs.length > 0) {
+            try {
+                for (var constructor : aClass.getConstructors()) {
+                    final var types = constructor.getParameterTypes();
+                    if (types.length != initArgs.length)
+                        continue;
+                    int iArg = 0;
+                    for (var type : types) {
+                        var arg = initArgs[iArg++];
+                        if (!arg.getClass().equals(type)) {
+                            constructor = null;
+                            break;
+                        }
                     }
+
+                    if (constructor == null)
+                        continue;
+                    constructor.setAccessible(true);
+
+                    return (T) constructor.newInstance(initArgs);
                 }
 
-                if (constructor == null)
-                    continue;
-                constructor.setAccessible(true);
-                //noinspection unchecked
-                return (T) constructor.newInstance(initArgs);
+            } catch (InvocationTargetException | InstantiationException | IllegalAccessException ignored) {
             }
-
-        } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
-            log.error(e.getMessage());
             return null;
         }
-        return null;
+        return create(aClass);
     }
 
     public static <T> T createFromString(Class<T> aClass, String src, FileFormat fileFormat) {
         var mapper = UtilCoreConfig.newObjectMapper(fileFormat);
         try {
             return mapper.readValue(src, aClass);
-        } catch (JsonProcessingException e) {
-            log.error(e.getMessage());
-            return null;
+        } catch (JsonProcessingException ignored) {
         }
+        return null;
     }
 
     public static <T> T createFromString(Class<T> aClass, String src) {
@@ -356,17 +281,17 @@ public class ObjectUtil {
     public static <T> T createFromFile(Class<T> aClass, File file) {
         try {
             return createFromStream(aClass, new FileInputStream(file));
-        } catch (FileNotFoundException e) {
-            return null;
+        } catch (FileNotFoundException ignored) {
         }
+        return null;
     }
 
     public static <T> T createFromStream(Class<T> aClass, InputStream stream) {
         try {
             return createFromString(aClass, new String(stream.readAllBytes()), FILE_FORMAT_DEFAULT);
-        } catch (IOException e) {
-            return null;
+        } catch (IOException ignored) {
         }
+        return null;
     }
 
     public static <T> T createFromJSON(Class<T> claClass, String values) {
@@ -444,15 +369,15 @@ public class ObjectUtil {
     public static String toString(Object o, FileFormat fileFormat) {
         if (o == null)
             return "";
-        if (o.getClass().equals(String.class))
+        if (o instanceof String)
             return (String) o;
+
         try {
             var mapper = UtilCoreConfig.newObjectMapper(fileFormat);
             return mapper.writeValueAsString(o);
-        } catch (JsonProcessingException e) {
-            log.error(e.getMessage());
-            return "";
+        } catch (JsonProcessingException ignored) {
         }
+        return "";
     }
 
     @Deprecated(since = "use function ObjectUtil.toString")
@@ -461,72 +386,72 @@ public class ObjectUtil {
     }
 
     public static synchronized Map<String, Object> toMapObject(final Object o) {
-        if (o == null)
-            return new HashMap<>();
+        if (o != null) {
+            if (o.getClass().equals(String.class)) {
+                Map<String, Object> fieldValues = new HashMap<>();
+                var mapValues = toMapOfString(o.toString());
+                //noinspection CollectionAddAllCanBeReplacedWithConstructor
+                fieldValues.putAll(mapValues);
+                return fieldValues;
+            } else if (PRIMITIVE_CLASSES.contains(o.getClass().getName())) {
+                return new HashMap<>();
+            } else {
+                Map<String, Object> fieldValues = new HashMap<>();
+                toFieldsList(o.getClass())
+                        .forEach(field -> {
+                            field.setAccessible(true);
+                            try {
+                                fieldValues.put(field.getName(), field.get(o));
+                            } catch (IllegalAccessException e) {
+                                throw new FrameworkException(e);
+                            }
+                        });
+                return fieldValues;
+            }
+        }
+        return new HashMap<>();
+    }
 
-        if (o.getClass().equals(String.class)) {
-            Map<String, Object> fieldValues = new HashMap<>();
-            var mapValues = toMapOfString(o.toString());
-            //noinspection CollectionAddAllCanBeReplacedWithConstructor
-            fieldValues.putAll(mapValues);
-            return fieldValues;
-        } else if (PRIMITIVE_CLASSES.contains(o.getClass().getName())) {
-            return new HashMap<>();
-        } else {
-            Map<String, Object> fieldValues = new HashMap<>();
+    public static synchronized Map<String, String> toMapOfString(final Object o) {
+        if (o != null) {
+            if (o.getClass().equals(String.class)) {
+                try {
+                    var mapper = UtilCoreConfig.newObjectMapper(FILE_FORMAT_DEFAULT);
+                    //noinspection unchecked
+                    return mapper.readValue((String) o, Map.class);
+                } catch (JsonProcessingException e) {
+                    log.error(e.getMessage());
+                }
+                return new HashMap<>();
+            }
+
+
+            Map<String, String> fieldValues = new HashMap<>();
             toFieldsList(o.getClass())
                     .forEach(field -> {
                         field.setAccessible(true);
                         try {
-                            fieldValues.put(field.getName(), field.get(o));
+                            var oGet = field.get(o);
+                            if (oGet == null) {
+                                fieldValues.put(field.getName(), "");
+                                return;
+                            }
+
+                            if (oGet.getClass().isPrimitive() || oGet.getClass().isEnum() || PRIMITIVE_CLASSES.contains(field.getGenericType().getTypeName())) {
+                                fieldValues.put(field.getName(), oGet.toString());
+                                return;
+                            }
+
+                            if (oGet.getClass().isLocalClass())
+                                fieldValues.put(field.getName(), toString(oGet));
+
                         } catch (IllegalAccessException e) {
                             throw new FrameworkException(e);
                         }
                     });
             return fieldValues;
         }
-    }
-
-    public static synchronized Map<String, String> toMapOfString(final Object o) {
-        if (o == null)
-            return new HashMap<>();
-
-        if (o.getClass().equals(String.class)) {
-            try {
-                var mapper = UtilCoreConfig.newObjectMapper(FILE_FORMAT_DEFAULT);
-                //noinspection unchecked
-                return mapper.readValue((String) o, Map.class);
-            } catch (JsonProcessingException e) {
-                log.error(e.getMessage());
-            }
-            return new HashMap<>();
-        }
-
-
-        Map<String, String> fieldValues = new HashMap<>();
-        toFieldsList(o.getClass())
-                .forEach(field -> {
-                    field.setAccessible(true);
-                    try {
-                        var oGet = field.get(o);
-                        if (oGet == null) {
-                            fieldValues.put(field.getName(), "");
-                            return;
-                        }
-
-                        if (oGet.getClass().isPrimitive() || oGet.getClass().isEnum() || PRIMITIVE_CLASSES.contains(field.getGenericType().getTypeName())) {
-                            fieldValues.put(field.getName(), oGet.toString());
-                            return;
-                        }
-
-                        if (oGet.getClass().isLocalClass())
-                            fieldValues.put(field.getName(), toString(oGet));
-
-                    } catch (IllegalAccessException e) {
-                        throw new FrameworkException(e);
-                    }
-                });
-        return fieldValues;
+        return new HashMap<>();
     }
 
 
@@ -536,10 +461,6 @@ public class ObjectUtil {
 
     public static UUID toMd5Uuid(Object o) {
         return HashUtil.toMd5Uuid(o);
-    }
-
-    @Retention(RetentionPolicy.RUNTIME)
-    private @interface PrivateScanClasses {
     }
 
 }

@@ -28,9 +28,8 @@ import java.util.List;
 import java.util.UUID;
 
 @Slf4j
-@Service
-@Data
-@RequiredArgsConstructor
+@Component
+@Getter
 public class MQ {
     public static final String MQ_BEAN_NAME_DISPATCHER = "littleCodeMqBeanNameDispatcher";
     public static final String MQ_BEAN_NAME_CONSUMER = "littleCodeMqBeanNameConsumer";
@@ -39,6 +38,15 @@ public class MQ {
     private final MQSetting setting;
     private MQAdapter adapter = null;
 
+    public MQ(MQSetting setting) {
+        if(setting==null)
+            throw new NullPointerException("setting is null");
+        this.setting = setting;
+    }
+
+    public MQSetting setting(){
+        return this.setting;
+    }
 
     public MQ queueName(String queueName) {
         this.setting.setQueueName(queueName);
@@ -57,40 +65,37 @@ public class MQ {
             configurer.configurer.accept(this.setting);
 
         var engine = setting.getEngine();
-        if (PrimitiveUtil.isEmpty(engine))
-            throw ExceptionBuilder.ofNotFound(String.format("Invalid [%s] name", MQAdapter.class.getName()));
+        if (engine==null || engine.trim().isEmpty())
+            throw ExceptionBuilder.ofFrameWork(String.format("Invalid [%s] name", MQAdapter.class.getName()));
         var aClass = ObjectUtil.getClassByName(engine);
         this.adapter = ObjectUtil.createWithArgsConstructor(aClass, this);
         if (adapter == null)
-            throw ExceptionBuilder.ofNotFound(String.format("Invalid [%s] name: [%s]", MQAdapter.class.getName(), engine));
+            throw ExceptionBuilder.ofFrameWork(String.format("Invalid [%s] name: [%s]", MQAdapter.class.getName(), engine));
 
         return adapter;
     }
 
     private Message.Response internalDispatcher(MQ.Message.Task task) {
         var adapter = adapterCreate();
-        Executor executor = adapter.beanQueueDispatcherObject();
-        if (executor == null)
-            throw ExceptionBuilder.ofNoImplemented(String.format("Invalid listenStart method by %s", adapter.getClass().getName()));
-        return executor.getDispatcherObject().accept(task);
+        return adapter
+                .beanQueueDispatcherObject()
+                .getDispatcherObject().accept(task);
     }
 
     public Message.Response dispatcher(Object task) {
-        if (task instanceof Message.Task)
-            return this.dispatcher(task);
         return this.internalDispatcher(MQ.Message.Task.of(task));
     }
 
-    public Message.Response dispatcher(String message) {
-        return this.dispatcher(Message.Task.of(null, message));
+    public Message.Response dispatcher(Message.Task task) {
+        return this.internalDispatcher(task);
     }
 
     public void listen() {
         var adapter = this.adapterCreate();
-        Executor executor = adapter.listenStart();
-        if (executor == null)
-            throw ExceptionBuilder.ofNoImplemented(String.format("Invalid listenStart method by %s", adapter.getClass().getName()));
-        executor.getListen().accept();
+        adapter
+                .listenStart()
+                .getListen()
+                .accept();
     }
 
     @FunctionalInterface
@@ -109,7 +114,6 @@ public class MQ {
     }
 
     @Builder
-    @Component
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
@@ -118,7 +122,6 @@ public class MQ {
     }
 
     @Builder
-    @Component
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
@@ -129,12 +132,11 @@ public class MQ {
         private MethodReturn<Message.Response, String> dispatcherString;
     }
 
-    @UtilityClass
+    @NoArgsConstructor
     public static class Message {
 
         @Builder
-        @Getter
-        @Setter
+        @Data
         @AllArgsConstructor
         @NoArgsConstructor
         public static class Task {
@@ -169,18 +171,15 @@ public class MQ {
             }
 
             public boolean canType(Object type) {
-                if (type == null || this.getType() == null)
-                    return false;
+                if (type != null && this.getType() != null){
+                    var eA = ObjectUtil.classToName(type);
+                    var eB = ObjectUtil.classToName(getType());
+                    if (eA.equals(eB))
+                        return true;
 
-                var eA = ObjectUtil.classToName(type);
-                var eB = ObjectUtil.classToName(getType());
-                if (eA.equals(eB))
-                    return true;
-
-                var of = ObjectContainer.classDictionaryByName(eA);
-                //noinspection RedundantIfStatement
-                if (of != null)
-                    return true;
+                    var of = ObjectContainer.classDictionaryByName(eA);
+                    return (of != null);
+                }
                 return false;
             }
 
@@ -229,7 +228,9 @@ public class MQ {
 
         @Builder
         @Getter
-        public static class Response implements Serializable {
+        @AllArgsConstructor
+        @NoArgsConstructor
+        public static class Response{
             private String messageId;
             private LocalDateTime dt;
             @Setter

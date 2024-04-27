@@ -33,8 +33,6 @@ public class IOUtil {
 
     public static final int EOF = -1;
     public static final int LF = 10;
-    private static String STRING_CLASS_NAME = String.class.getName();
-    private static String PATH_CLASS_NAME = Path.class.getName();
     private static String PREFIX_TEMP_FILE = "tmp";
     private Object target;
 
@@ -43,14 +41,15 @@ public class IOUtil {
     }
 
     public static String toString(Object target) {
-        if (target == null)
-            return "";
-        else if (target.getClass().getTypeName().equals(STRING_CLASS_NAME))
-            return ((String) target).trim();
-        else if (target.getClass().getTypeName().equals(PATH_CLASS_NAME))
-            return ((Path) target).toString();
-        else //NOTE Classes File, URI, URL, Object contains toString()
-            return target.toString().trim();
+        if (target != null) {
+            if (target instanceof String)
+                return ((String) target).trim();
+            else if (target instanceof Path)
+                return ((Path) target).toString();
+            else
+                return target.toString().trim();
+        }
+        return "";
     }
 
     public static Path toPath(Object target) {
@@ -81,7 +80,6 @@ public class IOUtil {
         return toFile(target).exists();
     }
 
-    @SuppressWarnings("UnusedReturnValue")
     public static boolean delete(Object target) {
         var file = toFile(target);
         if (!file.exists())

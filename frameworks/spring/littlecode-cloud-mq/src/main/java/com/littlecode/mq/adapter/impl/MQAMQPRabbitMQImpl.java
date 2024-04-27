@@ -2,6 +2,7 @@ package com.littlecode.mq.adapter.impl;
 
 import com.littlecode.mq.MQ;
 import com.littlecode.mq.adapter.MQAdapter;
+import com.littlecode.mq.config.MQSetting;
 import com.littlecode.parsers.ExceptionBuilder;
 import com.littlecode.parsers.ObjectUtil;
 import com.littlecode.parsers.PrimitiveUtil;
@@ -75,21 +76,31 @@ public class MQAMQPRabbitMQImpl extends MQAdapter {
         this.listenStop();
         return MQ.Executor
                 .builder()
+                .dispatcherString(new MQ.MethodReturn<MQ.Message.Response, String>() {
+                    @Override
+                    public MQ.Message.Response accept(String var1) {
+                        return null;
+                    }
+                })
+                .dispatcherObject(new MQ.MethodReturn<MQ.Message.Response, MQ.Message.Task>() {
+                    @Override
+                    public MQ.Message.Response accept(MQ.Message.Task var1) {
+                        return null;
+                    }
+                })
                 .listen(() -> {
                     this.listenStop();
-                    //noinspection unchecked
-                    List<String> queueNameList = BeanUtil.of(context()).bean(MQ.MQ_BEAN_NAME_CONSUMER).as(List.class);
-                    if (PrimitiveUtil.isEmpty(queueNameList))
-                        queueNameList = setting().getQueueNameConsumer();
+                    List<String> queueNameList = BeanUtil.of(MQ.MQ_BEAN_NAME_CONSUMER).as(List.class);
+                    if (queueNameList==null || queueNameList.isEmpty())
+                        queueNameList = setting().getQueueNameConsumers();
 
-                    if (PrimitiveUtil.isEmpty(queueNameList))
-                        throw ExceptionBuilder.ofFrameWork("Invalid queue name");
-
-                    for (var queueName : queueNameList) {
-                        for (int consumer = 1; consumer <= this.setting().getQueueConsumers(); consumer++) {
-                            var listener = Listener.from(this, setting(), queueName, consumer);
-                            this.listenerHashMap.put(listener.getName(), listener);
-                            listener.start();
+                    if (queueNameList!=null && !queueNameList.isEmpty()){
+                        for (var queueName : queueNameList) {
+                            for (int consumer = 1; consumer <= this.setting().getQueueConsumers(); consumer++) {
+                                var listener = Listener.from(this, setting(), queueName, consumer);
+                                this.listenerHashMap.put(listener.getName(), listener);
+                                listener.start();
+                            }
                         }
                     }
                 })
@@ -111,6 +122,12 @@ public class MQAMQPRabbitMQImpl extends MQAdapter {
                                     ? new Dispatcher(setting(), this)
                                     : queueDispatcher;
                     return queueDispatcher.dispatcher(task);
+                })
+                .listen(new MQ.Method() {
+                    @Override
+                    public void accept() {
+
+                    }
                 })
                 .build();
     }
@@ -150,7 +167,6 @@ public class MQAMQPRabbitMQImpl extends MQAdapter {
         }
     }
 
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean queueCreate(final Channel channelDispatcher, final String queueName) {
 //        if (this.queueExists(channelDispatcher, queueName))
 //            return true;
@@ -173,16 +189,10 @@ public class MQAMQPRabbitMQImpl extends MQAdapter {
             var queueNames = this.queue;
             if (PrimitiveUtil.isEmpty(queueNames))
                 //noinspection unchecked
-                queueNames = BeanUtil.of(setting.getContext()).bean(MQ.MQ_BEAN_NAME_DISPATCHER).as(List.class);
+                queueNames = BeanUtil.of(MQ.MQ_BEAN_NAME_DISPATCHER).as(List.class);
             if (PrimitiveUtil.isEmpty(queueNames))
                 queueNames = setting.getQueueNameDispatchers();
             return queueNames;
-        }
-
-        @SuppressWarnings("unused")
-        public Dispatcher queue(List<String> queueName) {
-            this.queue = queueName;
-            return this;
         }
 
         public MQ.Message.Response dispatcher(Object o) {
@@ -192,13 +202,6 @@ public class MQAMQPRabbitMQImpl extends MQAdapter {
             var message = ObjectUtil.toString(o);
             if (message == null || message.trim().isEmpty())
                 throw ExceptionBuilder.ofFrameWork("Invalid object body");
-            return this.internalDispatcher(message);
-        }
-
-        @SuppressWarnings("unused")
-        public MQ.Message.Response dispatcher(String message) {
-            if (message == null || message.trim().isEmpty())
-                throw ExceptionBuilder.ofFrameWork("Invalid message");
             return this.internalDispatcher(message);
         }
 
@@ -273,11 +276,13 @@ public class MQAMQPRabbitMQImpl extends MQAdapter {
             var task = MQ.Message.Task.from(messageBody);
             task.setMessageId(String.valueOf(deliveryTag));
 
-            if (this.queueExecutor == null)
-                queueExecutor = BeanUtil.of(setting.getContext()).bean(MQ.MQ_BEAN_RECEIVER).getBean(MQ.Executor.class);
-
-            if (queueExecutor == null)
-                throw ExceptionBuilder.ofFrameWork(String.format("Invalid %s", MQ.Executor.class.getName()));
+            if (queueExecutor == null || queueExecutor.getReceived()==null){
+                try {
+                    queueChannel.basicNack(deliveryTag, false, true);//redireciona a mensagem novamente para fila
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
 
             boolean ack = false;
             try {
@@ -362,23 +367,20 @@ public class MQAMQPRabbitMQImpl extends MQAdapter {
 
         public void start() {
             var logPrefix = String.format("Queue:[%s]", queueName);
-            int loop = 0;
-            log.info("{} started", logPrefix);
-            try {
-                this.internalRun(String.format("%s-%04d: ", logPrefix, ++loop));
-            } catch (Exception e) {
-                log.error("{} {}", logPrefix, e.getMessage());
+            try{
+                if(queueExecutor==null)
+                    return;
+                int loop = 0;
+                log.info("{} started", logPrefix);
+                try {
+                    this.internalRun(String.format("%s-%04d: ", logPrefix, ++loop));
+                } catch (Exception e) {
+                    log.error("{} {}", logPrefix, e.getMessage());
+                }
+            }finally {
+                log.info("{} finished", logPrefix);
             }
-            log.info("{} finished", logPrefix);
         }
     }
 
-    @Configuration
-    public static class PrivateConfig {
-        @Bean
-        public AMQP.Connection rabbitConnectionFactory() {
-            return null;
-        }
-
-    }
 }

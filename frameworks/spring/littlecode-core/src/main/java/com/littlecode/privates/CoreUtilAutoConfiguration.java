@@ -1,14 +1,12 @@
 package com.littlecode.privates;
 
 import com.littlecode.config.UtilCoreConfig;
-import lombok.Getter;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
 
-@Getter
 @Configuration
 public class CoreUtilAutoConfiguration {
     private static ApplicationContext STATIC_CONTEXT;

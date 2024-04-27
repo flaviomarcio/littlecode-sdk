@@ -2,7 +2,6 @@ package com.littlecode.parsers;
 
 import java.io.File;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.net.URI;
 import java.net.URL;
@@ -15,11 +14,11 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
 
 public class PrimitiveUtil {
     private static final LocalDate MIN_LOCALDATE = LocalDate.of(1901, 1, 1);
-    //    private static final LocalTime MAX_LOCALTIME = LocalTime.of(23, 59, 59, 999);
     private static final LocalTime MIN_LOCALTIME = LocalTime.of(0, 0, 0, 0);
     private static final LocalDateTime MIN_LOCALDATETIME = LocalDateTime.of(MIN_LOCALDATE, MIN_LOCALTIME);
 
@@ -37,11 +36,7 @@ public class PrimitiveUtil {
         return HashUtil.toUuid(v);
     }
 
-    private static String formatDouble(Double d) {
-        return formatDouble(d, DOUBLE_PRECISION);
-    }
-
-    private static String formatDouble(Double v, @SuppressWarnings("SameParameterValue") int precision) {
+    private static String formatDouble(Double v, int precision) {
         var d = (v == null) ? 0 : v;
         var format = precision <= 0
                 ? "#"
@@ -50,73 +45,60 @@ public class PrimitiveUtil {
         return (new DecimalFormat(format, symbols)).format(d);
     }
 
-    public static long toLong(Object v) {
-        try {
-            if (v == null)
-                return 0;
-            if (v.getClass().equals(Boolean.class))
-                return Boolean.parseBoolean(toString(v)) ? 1 : 0;
-            var in = toString(v);
-            return Long.parseLong(in);
-        } catch (Exception e) {
-            return 0;
-        }
+    private static String formatDouble(Double d) {
+        return formatDouble(d, DOUBLE_PRECISION);
     }
 
-    public static long asLong(Object v) {
-        try {
-            if (v == null)
-                return 0;
-            if (v.getClass().equals(Boolean.class))
-                return Boolean.parseBoolean(toString(v)) ? 1 : 0;
-            var in = toDouble(v);
-            return (long) in;
-        } catch (Exception e) {
-            return 0;
-        }
-    }
-
-    public static int toInt(Object v) {
-        try {
-            if (v == null)
-                return 0;
-            if (v.getClass().equals(Boolean.class))
-                return Boolean.parseBoolean(toString(v)) ? 1 : 0;
-            var in = toString(v);
-            return Integer.parseInt(in);
-        } catch (Exception e) {
-            return 0;
-        }
-    }
-
-    public static int asInt(Object v) {
-        try {
-            if (v == null)
-                return 0;
-            if (v.getClass().equals(Boolean.class))
-                return Boolean.parseBoolean(toString(v)) ? 1 : 0;
-            var in = toDouble(v);
-            return (int) toDouble(in);
-        } catch (Exception e) {
-            return 0;
-        }
-    }
-
-    public static double toDouble(Object v) {
-        try {
-            if (v == null)
-                return 0;
-            if (v.getClass().equals(Boolean.class))
-                return Boolean.parseBoolean(toString(v)) ? 1 : 0;
-            else if (v.getClass().equals(Double.class))
-                return (double) v;
-            else {
-                var in = toString(v);
-                return Double.parseDouble(in);
+    public static long toLong(String v) {
+        if (v != null) {
+            try {
+                return Long.parseLong(v);
+            } catch (Exception ignored) {
             }
-        } catch (Exception e) {
-            return 0;
         }
+        return 0;
+    }
+
+    public static long toLong(boolean v) {
+        return v ? 1 : 0;
+    }
+
+    public static long toLong(double v) {
+        return (long) v;
+    }
+
+    public static int toInt(String v) {
+        if (v != null) {
+            try {
+                return Integer.parseInt(v);
+            } catch (Exception ignored) {
+            }
+        }
+        return 0;
+    }
+
+    public static int toInt(double v) {
+        return (int) v;
+    }
+
+    public static int toInt(long v) {
+        return (int) v;
+    }
+
+    public static int toInt(boolean v) {
+        return v ? 1 : 0;
+    }
+
+    public static double toDouble(String v) {
+        try {
+            return Double.parseDouble(v);
+        } catch (Exception ignored) {
+        }
+        return 0;
+    }
+
+    public static int toDouble(boolean v) {
+        return v ? 1 : 0;
     }
 
     public static double toDouble(Double v, int precision) {
@@ -132,103 +114,97 @@ public class PrimitiveUtil {
         return toDouble(d, precision);
     }
 
-    public static LocalDate toDate(Object v) {
-        try {
-            var in = toString(v);
-            var value = in == null ? "" : in.trim();
-            String format;
-            if (value.length() == 10)
-                format = FORMAT_DATE;
-            else if (value.length() == 8)
-                format = FORMAT_TIME_SHORT;
-            else
-                format = FORMAT_DATE;
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
-            return LocalDate.parse(value, formatter);
-        } catch (Exception e) {
-            return null;
+    public static LocalDate toDate(String v) {
+        if (v != null) {
+            try {
+                var value = v.trim();
+                String format;
+                if (value.length() == 10)
+                    format = FORMAT_DATE;
+                else if (value.length() == 8)
+                    format = FORMAT_TIME_SHORT;
+                else
+                    format = FORMAT_DATE;
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+                return LocalDate.parse(value, formatter);
+            } catch (Exception ignored) {
+            }
         }
+        return null;
     }
 
-    public static LocalTime toTime(Object v) {
-        try {
-            var in = toString(v);
-            var value = in == null ? "" : in.trim();
-            String format;
-            if (value.length() == 5)
-                format = FORMAT_TIME_SHORT;
-            else if (value.length() == 8)
-                format = FORMAT_TIME;
-            else if (value.length() == 18)
-                format = FORMAT_TIME_MS;
-            else
-                format = FORMAT_TIME;
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
-            return LocalTime.parse(value, formatter);
-        } catch (Exception e) {
-            return null;
+    public static LocalTime toTime(String v) {
+        if (v != null) {
+            try {
+                var value = v.trim();
+                String format;
+                if (value.length() == 5)
+                    format = FORMAT_TIME_SHORT;
+                else if (value.length() == 8)
+                    format = FORMAT_TIME;
+                else if (value.length() == 18)
+                    format = FORMAT_TIME_MS;
+                else
+                    format = FORMAT_TIME;
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+                return LocalTime.parse(value, formatter);
+            } catch (Exception ignored) {
+            }
         }
+        return null;
     }
 
-    public static LocalDateTime toDateTime(Object v) {
-        try {
-            var in = toString(v);
-            var value = (in == null) ? "" : in.trim();
-            String format;
-            if (value.length() == 19)
-                format = FORMAT_DATE_TIME;
-            else if (value.length() == 16)//1901-01-01T00:00:00
-                format = FORMAT_DATE_TIME_SHORT;
-            else if (value.length() == 29)//1901-01-01T00:00:00
-                format = FORMAT_DATE_TIME_MS;
-            else if (value.length() == 10)
-                format = FORMAT_DATE;
-            else if (value.length() == 8)
-                format = FORMAT_DATE_SHORT;
-            else
-                format = FORMAT_DATE_TIME;
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
-            return LocalDateTime.parse(value, formatter);
-        } catch (Exception e) {
-            return null;
+    public static LocalDateTime toDateTime(String v) {
+        if (v != null) {
+            try {
+                var value = v.trim();
+                String format;
+                if (value.length() == 19)
+                    format = FORMAT_DATE_TIME;
+                else if (value.length() == 16)//1901-01-01T00:00:00
+                    format = FORMAT_DATE_TIME_SHORT;
+                else if (value.length() == 29)//1901-01-01T00:00:00
+                    format = FORMAT_DATE_TIME_MS;
+                else if (value.length() == 10)
+                    format = FORMAT_DATE;
+                else if (value.length() == 8)
+                    format = FORMAT_DATE_SHORT;
+                else
+                    format = FORMAT_DATE_TIME;
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+                return LocalDateTime.parse(value, formatter);
+            } catch (Exception ignored) {
+            }
         }
+        return null;
     }
 
-    public static boolean toBool(Object v) {
-        var in = toString(v);
-        if (in == null)
-            return false;
-        in = in.trim().toLowerCase();
-        if (in.equals("0") || in.equals("f"))
-            return false;
-        if (in.equals("1") || in.equals("t"))
-            return true;
-        try {
-            var value = in.trim().toLowerCase();
-            return Boolean.parseBoolean(value);
-        } catch (Exception e) {
-            return false;
+    public static boolean toBool(String v) {
+        if (v != null) {
+            var in = v.trim().toLowerCase();
+            return in.equals("true") || in.equals("1") || in.equals("t");
         }
+        return false;
+    }
+
+    public static boolean toBool(double v) {
+        return v == 1;
     }
 
     public static boolean isEmpty(String v) {
         return (v == null || v.trim().isEmpty());
     }
 
-    public static boolean isEmpty(List<String> v) {
+    public static boolean isEmpty(List<?> v) {
         return (v == null || v.isEmpty());
     }
 
-    public static boolean isEmpty(Integer v) {
-        return (v == null || v == 0);
+    public static boolean isEmpty(Map<?, ?> v) {
+        return (v == null || v.isEmpty());
     }
 
-    public static boolean isEmpty(Long v) {
-        return (v == null || v == 0);
-    }
-
-    public static boolean isEmpty(Double v) {
-        return (v == null || v == 0);
+    public static boolean isEmpty(double v) {
+        return (v == 0);
     }
 
     public static boolean isEmpty(LocalDate v) {
@@ -264,18 +240,35 @@ public class PrimitiveUtil {
     }
 
     public static String toString(Object v) {
-        if (v != null){
-            if (v instanceof String)
-                return ((String) v);
-            else if (v instanceof UUID || v instanceof URI || v instanceof Path || v instanceof URL)
-                return v.toString();
-            else if (v instanceof File)
-                return ((File)v).getAbsolutePath();
-            else if (v instanceof Class)
-                return ((Class<?>) v).getName();
-            return v.toString().trim();
-        }
-        return "";
+        return ObjectUtil.toString(v);
+    }
+
+    public static String toString(String v) {
+        return v == null ? "" : v;
+    }
+
+    public static String toString(Class<?> v) {
+        return v == null ? "" : v.getName();
+    }
+
+    public static String toString(UUID v) {
+        return v == null ? "" : v.toString();
+    }
+
+    public static String toString(Path v) {
+        return v == null ? "" : v.toString();
+    }
+
+    public static String toString(URI v) {
+        return v == null ? "" : v.toString();
+    }
+
+    public static String toString(URL v) {
+        return v == null ? "" : v.toString();
+    }
+
+    public static String toString(File v) {
+        return v == null ? "" : v.getAbsolutePath();
     }
 
     public static String toString(int v) {
@@ -290,20 +283,15 @@ public class PrimitiveUtil {
         return formatDouble(v);
     }
 
-    public static String toString(BigDecimal v) {
-        return formatDouble(v==null?0D:v.doubleValue());
-    }
-
     public static String toString(boolean v) {
-        return String.valueOf(v);
+        return v ? "true" : "false";
     }
 
     public static String toString(LocalDate v) {
-        if(v!=null){
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(FORMAT_DATE);
-            return formatter.format(v);
-        }
-        return "";
+        if (v == null)
+            return "";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(FORMAT_DATE);
+        return formatter.format(v);
     }
 
     public static String toString(LocalTime v) {

@@ -12,7 +12,7 @@ public class SystemUtil {
     public static void sleep(long millis) {
         try {
             Thread.sleep(millis);
-        } catch (InterruptedException ignored) {
+        } catch (Exception ignored) {
         }
     }
 
@@ -35,32 +35,32 @@ public class SystemUtil {
         }
 
         public static String getProperty(String propertyName, String defaultValue) {
-            if (propertyName == null)
-                return "";
-            var environment = UtilCoreConfig.getEnvironment();
-            try {
-                var value = (defaultValue != null)
-                        ? environment.getProperty(propertyName, defaultValue)
-                        : environment.getProperty(propertyName);
-                if (!PrimitiveUtil.isEmpty(value))
-                    return value.trim();
-                value = environment.getProperty(propertyName);
-                if (!PrimitiveUtil.isEmpty(value))
-                    return value.trim();
-            } catch (Exception ignored) {
-            }
+            if (propertyName != null) {
+                var environment = UtilCoreConfig.getEnvironment();
+                try {
+                    var value = (defaultValue != null)
+                            ? environment.getProperty(propertyName, defaultValue)
+                            : environment.getProperty(propertyName);
+                    if (!PrimitiveUtil.isEmpty(value))
+                        return value.trim();
+                    value = environment.getProperty(propertyName);
+                    if (!PrimitiveUtil.isEmpty(value))
+                        return value.trim();
+                } catch (Exception ignored) {
+                }
 
-            try {
-                var value = (defaultValue != null)
-                        ? System.getProperty(propertyName, defaultValue)
-                        : System.getProperty(propertyName);
-                if (!PrimitiveUtil.isEmpty(value))
-                    return value.trim();
+                try {
+                    var value = (defaultValue != null)
+                            ? System.getProperty(propertyName, defaultValue)
+                            : System.getProperty(propertyName);
+                    if (!PrimitiveUtil.isEmpty(value))
+                        return value.trim();
 
-                value = System.getProperty(propertyName);
-                if (!PrimitiveUtil.isEmpty(value))
-                    return value.trim();
-            } catch (Exception ignored) {
+                    value = System.getProperty(propertyName);
+                    if (!PrimitiveUtil.isEmpty(value))
+                        return value.trim();
+                } catch (Exception ignored) {
+                }
             }
             return defaultValue == null ? "" : defaultValue.trim();
         }

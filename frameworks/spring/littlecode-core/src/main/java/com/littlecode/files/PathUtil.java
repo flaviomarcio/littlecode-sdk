@@ -62,26 +62,27 @@ public class PathUtil {
     }
 
     public static List<File> listFiles(Path target) {
-        if (target == null)
-            return new ArrayList<>();
-        return listFiles(target.toFile());
+        return target == null
+                ? new ArrayList<>()
+                : listFiles(target.toFile());
     }
 
     public static List<File> listFiles(File target) {
-        if (target == null || !target.exists() || !target.isDirectory())
-            return new ArrayList<>();
-        File[] files = target.listFiles();
+        if (target != null && target.exists() && target.isDirectory()) {
+            File[] files = target.listFiles();
 
-        if (files == null)
-            return new ArrayList<>();
-        List<File> __return = new ArrayList<>();
-        for (File itemFile : files) {
-            if (itemFile.isDirectory())
-                __return.addAll(listFiles(itemFile.toPath()));
-            else
-                __return.add(itemFile.toPath().toFile());
+            if (files == null)
+                return new ArrayList<>();
+            List<File> __return = new ArrayList<>();
+            for (File itemFile : files) {
+                if (itemFile.isDirectory())
+                    __return.addAll(listFiles(itemFile.toPath()));
+                else
+                    __return.add(itemFile.toPath().toFile());
+            }
+            return __return;
         }
-        return __return;
+        return new ArrayList<>();
     }
 
     public static int countFiles(Path target) {
@@ -89,21 +90,22 @@ public class PathUtil {
     }
 
     public static int countFiles(File target) {
-        if (target == null || !target.exists() || !target.isDirectory())
-            return 0;
-        File[] files = target.listFiles();
+        if (target != null && target.exists() && target.isDirectory()) {
+            File[] files = target.listFiles();
 
-        if (files == null)
-            return 0;
+            if (files == null)
+                return 0;
 
-        int __return = 0;
-        for (File file : files) {
-            if (file.isDirectory())
-                __return += countFiles(file.toPath());
-            else
-                ++__return;
+            int __return = 0;
+            for (File file : files) {
+                if (file.isDirectory())
+                    __return += countFiles(file.toPath());
+                else
+                    ++__return;
+            }
+            return __return;
         }
-        return __return;
+        return 0;
     }
 
     public static Path fileName(Path directory, Object fileName) {
@@ -111,50 +113,34 @@ public class PathUtil {
     }
 
     public static boolean exists(Path target) {
-        return target.toFile().exists();
+        return target != null && target.toFile().exists();
     }
 
     public static void mkDir(Path target) {
-        if (target == null)
-            return;
-        mkDir(target.toFile());
-
+        if (target != null)
+            mkDir(target.toFile());
     }
 
     public static void mkDir(File target) {
-        if (target == null)
-            return;
-        if (target.exists()) {
-            if (target.isFile())
-                throw new FrameworkException("file is a directory: " + target);
-            return;
+        if (target != null) {
+            if (target.exists()) {
+                if (target.isFile())
+                    throw new FrameworkException("file is a directory: " + target);
+                return;
+            }
+            if (!target.mkdirs())
+                throw new FrameworkException("No create paths: " + target);
         }
-
-        if (!target.mkdirs())
-            throw new FrameworkException("No create paths: " + target);
     }
 
     public static void rmDir(Path path) {
-        if (path == null)
-            return;
-        rmDir(path.toFile());
+        if (path != null)
+            rmDir(path.toFile());
     }
 
     public static void rmDir(File file) {
-        if (file == null)
-            return;
-        if (!file.exists())
-            return;
-        if (!file.delete())
+        if (file != null && file.exists() && !file.delete())
             throw new FrameworkException("No delete file: " + file);
-//        var list=listFiles(directory);
-//        list
-//                .forEach(file ->{
-//                            if(!file.delete())
-//                                throw new FrameworkException("No delete file: "+ file.toString());
-//                        }
-//
-//                );
     }
 
     public PathUtil clear() {

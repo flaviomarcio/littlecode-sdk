@@ -24,7 +24,7 @@ public class SetupDdlForOracle extends SetupDdlForAnsi {
     @Override
     public String fieldDefault(MetaDataClasses.MetaField field) {
         if (field.getDataType().equals(MetaDataClasses.DataType.Boolean))
-            return String.valueOf(PrimitiveUtil.toInt(field.getDefaultValue()));
+            return String.valueOf(PrimitiveUtil.toInt((int)field.getDefaultValue()));
         return super.fieldDefault(field);
     }
 

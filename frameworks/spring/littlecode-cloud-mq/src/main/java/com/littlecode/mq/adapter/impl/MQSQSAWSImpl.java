@@ -35,16 +35,26 @@ public class MQSQSAWSImpl extends MQAdapter {
         return MQ.Executor
                 .builder()
                 .listen(() -> {
-                    //noinspection unchecked
-                    List<String> queueNameList = BeanUtil.of(context()).bean(MQ.MQ_BEAN_NAME_CONSUMER).as(List.class);
-                    if (PrimitiveUtil.isEmpty(queueNameList))
-                        queueNameList = setting().getQueueNameConsumer();
+                    List<String> queueNameList = BeanUtil.of(MQ.MQ_BEAN_NAME_CONSUMER).as(List.class);
+                    if (queueNameList==null || queueNameList.isEmpty())
+                        queueNameList = setting().getQueueNameConsumers();
 
-                    if (PrimitiveUtil.isEmpty(queueNameList))
-                        throw ExceptionBuilder.ofFrameWork("Invalid queue name");
-
-                    for (var queueName : queueNameList)
-                        Listener.listen(this, setting(), queueName);
+                    if (queueNameList!=null && !queueNameList.isEmpty()){
+                        for (var queueName : queueNameList)
+                            Listener.listen(this, setting(), queueName);
+                    }
+                })
+                .dispatcherString(new MQ.MethodReturn<MQ.Message.Response, String>() {
+                    @Override
+                    public MQ.Message.Response accept(String var1) {
+                        return null;
+                    }
+                })
+                .dispatcherObject(new MQ.MethodReturn<MQ.Message.Response, MQ.Message.Task>() {
+                    @Override
+                    public MQ.Message.Response accept(MQ.Message.Task var1) {
+                        return null;
+                    }
                 })
                 .build();
     }
@@ -54,10 +64,23 @@ public class MQSQSAWSImpl extends MQAdapter {
                 .builder()
                 .dispatcherObject(task -> {
                     this.queueDispatcher = this.queueDispatcher == null
-                            ? new Dispatcher(setting(), this)
+                            ? new Dispatcher(setting())
                             : queueDispatcher;
                     return queueDispatcher.dispatcher(task);
                 })
+                .received(new MQ.MethodArg<MQ.Message.Task>() {
+                    @Override
+                    public void accept(MQ.Message.Task var1) {
+
+                    }
+                })
+                .dispatcherString(new MQ.MethodReturn<MQ.Message.Response, String>() {
+                    @Override
+                    public MQ.Message.Response accept(String var1) {
+                        return null;
+                    }
+                })
+
                 .build();
     }
 
@@ -158,7 +181,7 @@ public class MQSQSAWSImpl extends MQAdapter {
         public List<String> queue() {
             List<String> queueNames = this.queue;
             if (PrimitiveUtil.isEmpty(queueNames))//noinspection unchecked
-                queueNames = BeanUtil.of(setting.getContext()).bean(MQ.MQ_BEAN_NAME_DISPATCHER).as(List.class);
+                queueNames = BeanUtil.of(MQ.MQ_BEAN_NAME_DISPATCHER).as(List.class);
             if (PrimitiveUtil.isEmpty(queueNames))
                 queueNames = this.setting.getQueueNameDispatchers();
             return queueNames;
@@ -282,53 +305,56 @@ public class MQSQSAWSImpl extends MQAdapter {
         @Override
         public void run() {
             log.debug("Queue:[{}] started", this.queueName);
-            var queueExecutor = BeanUtil.of(setting.getContext()).bean(MQ.MQ_BEAN_RECEIVER).getBean(MQ.Executor.class);
-            if (queueExecutor == null)
-                throw ExceptionBuilder.ofFrameWork(String.format("Invalid %s", MQ.Executor.class.getName()));
-            var queueMaxNumber = setting.getQueueMaxNumber();
-            var queueIdleSleep = setting.getQueueIdleSleep();
+            try{
+                var queueExecutor = BeanUtil.of(MQ.MQ_BEAN_RECEIVER).getBean(MQ.Executor.class);
+                if (queueExecutor != null)
+                    return;
+                var queueMaxNumber = setting.getQueueMaxNumber();
+                var queueIdleSleep = setting.getQueueIdleSleep();
 
-            try (var sqsClient = adapter.newClient()) {
-                while (!this.adapter.queueExists(sqsClient, queueName)) {
-                    log.error("Queue: [{}], not found", queueName);
-                    sleep(queueIdleSleep);
-                }
-                var queueUrl = sqsClient.getQueueUrl(GetQueueUrlRequest.builder().queueName(queueName).build()).queueUrl();
-                log.debug("Queue: [{}], Listen, url: [{}], queueMaxNumber: [{}]", queueName, queueUrl, queueMaxNumber);
-
-                while (!Thread.currentThread().isInterrupted()) {
-
-                    var messageList =
-                            sqsClient.receiveMessage(
-                                    ReceiveMessageRequest
-                                            .builder()
-                                            .queueUrl(queueUrl)
-                                            .maxNumberOfMessages(queueMaxNumber)/*message number*/
-                                            .build()
-                            );
-
-                    if (messageList.messages().isEmpty()) {
-                        log.debug("Queue: [{}], idle", queueName);
+                try (var sqsClient = adapter.newClient()) {
+                    while (!this.adapter.queueExists(sqsClient, queueName)) {
+                        log.error("Queue: [{}], not found", queueName);
                         sleep(queueIdleSleep);
-                        continue;
                     }
+                    var queueUrl = sqsClient.getQueueUrl(GetQueueUrlRequest.builder().queueName(queueName).build()).queueUrl();
+                    log.debug("Queue: [{}], Listen, url: [{}], queueMaxNumber: [{}]", queueName, queueUrl, queueMaxNumber);
 
-                    for (Message message : messageList.messages())
-                        try {
-                            queueExec(queueExecutor, sqsClient, message, queueUrl);
-                        } catch (Exception e) {
-                            log.error(e.getMessage());
-                            if (this.setting.isStopOnFail())//se ativo em caso de falha vai para o loop
-                                break;
-                        } finally {
-                            log.debug("Queue: [{}], messageId: [{}], finished", queueName, message.messageId());
+                    while (!Thread.currentThread().isInterrupted()) {
+
+                        var messageList =
+                                sqsClient.receiveMessage(
+                                        ReceiveMessageRequest
+                                                .builder()
+                                                .queueUrl(queueUrl)
+                                                .maxNumberOfMessages(queueMaxNumber)/*message number*/
+                                                .build()
+                                );
+
+                        if (messageList.messages().isEmpty()) {
+                            log.debug("Queue: [{}], idle", queueName);
+                            sleep(queueIdleSleep);
+                            continue;
                         }
+
+                        for (Message message : messageList.messages())
+                            try {
+                                queueExec(queueExecutor, sqsClient, message, queueUrl);
+                            } catch (Exception e) {
+                                log.error(e.getMessage());
+                                if (this.setting.isStopOnFail())//se ativo em caso de falha vai para o loop
+                                    break;
+                            } finally {
+                                log.debug("Queue: [{}], messageId: [{}], finished", queueName, message.messageId());
+                            }
+                    }
+                } catch (AwsServiceException | SdkClientException e) {
+                    throw ExceptionBuilder.of(e);
                 }
-            } catch (AwsServiceException | SdkClientException e) {
-                throw ExceptionBuilder.of(e);
-            } finally {
+            }finally {
                 log.debug("Queue:[{}] finished", this.queueName);
             }
+
         }
     }
 }

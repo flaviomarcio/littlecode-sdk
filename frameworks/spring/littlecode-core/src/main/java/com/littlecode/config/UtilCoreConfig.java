@@ -10,8 +10,6 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.littlecode.exceptions.FrameworkException;
-import com.littlecode.exceptions.UnknownException;
 import com.littlecode.files.FileFormat;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -32,7 +30,6 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @Slf4j
 @Configuration
@@ -46,10 +43,6 @@ public class UtilCoreConfig {
         setEnvironment(environment);
     }
 
-    public static boolean isConfigured() {
-        return STATIC_CONTEXT != null && STATIC_ENVIRONMENT != null;
-    }
-
     public static ApplicationContext getApplicationContext() {
         return STATIC_CONTEXT;
     }
@@ -57,7 +50,6 @@ public class UtilCoreConfig {
     public static void setApplicationContext(ApplicationContext context) {
         STATIC_CONTEXT = context;
     }
-
 
     public static Environment getEnvironment() {
         return STATIC_ENVIRONMENT;
@@ -67,17 +59,18 @@ public class UtilCoreConfig {
         STATIC_ENVIRONMENT = environment;
     }
 
-
-    private static JsonFactory getFactoryFromFileFormat(FileFormat fileFormat) {
-        if (fileFormat == FileFormat.YML)
-            return new YAMLFactory();
-        if (fileFormat == FileFormat.JSON)
-            return new JsonFactory();
-        if (fileFormat == FileFormat.XML)
-            return new XmlFactory();
-        if (fileFormat == FileFormat.PROPS)
-            return new JavaPropsFactory();
-        throw new FrameworkException("Invalid factory");
+    public static JsonFactory getFactoryFromFileFormat(FileFormat fileFormat) {
+        if (fileFormat != null) {
+            switch (fileFormat) {
+                case YML:
+                    return new YAMLFactory();
+                case PROPS:
+                    return new JavaPropsFactory();
+                case XML:
+                    return new XmlFactory();
+            }
+        }
+        return new JsonFactory();
     }
 
     private static ObjectMapper getObjectMapperFromFileFormat(FileFormat fileFormat) {
@@ -87,10 +80,6 @@ public class UtilCoreConfig {
             return mapper;
         }
         return new ObjectMapper(getFactoryFromFileFormat(fileFormat));
-//            var mapper = new ObjectMapper(getFactoryFromFileFormat(fileFormat));
-//            mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-//            mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
-//            return mapper;
     }
 
     public static ObjectMapper newObjectMapper(FileFormat fileFormat, Map<SerializationFeature, Boolean> serialization, Map<DeserializationFeature, Boolean> deserialization) {
@@ -127,64 +116,62 @@ public class UtilCoreConfig {
     }
 
     @Bean
-    @SuppressWarnings("unused")
     public ApplicationContext applicationContext() {
-        //noinspection AccessStaticViaInstance
-        return this.STATIC_CONTEXT;
+        return STATIC_CONTEXT;
     }
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
-    private static class ObjectConverter {
+    public static class ObjectConverter {
 
         private static final String FORMAT_DATE = "yyyy-MM-dd";
         private static final String FORMAT_TIME = "HH:mm:ss";
         private static final String FORMAT_DATETIME = "yyyy-MM-dd'T'HH:mm:ss";
-        private static final Converter<String, LocalDate> toLocalDate = new AbstractConverter<String, LocalDate>() {
+        public static final Converter<String, LocalDate> toLocalDate = new AbstractConverter<String, LocalDate>() {
             @Override
             protected LocalDate convert(String source) {
-                if (Objects.nonNull(source) && !source.trim().isEmpty())
-                    return LocalDate.parse(source, DateTimeFormatter.ofPattern(FORMAT_DATE));
-                return null;
+                return (source == null)
+                        ? null
+                        : LocalDate.parse(source, DateTimeFormatter.ofPattern(FORMAT_DATE));
             }
         };
-        private static final Converter<LocalDate, String> toLocalDateString = new AbstractConverter<LocalDate, String>() {
+        public static final Converter<LocalDate, String> toLocalDateString = new AbstractConverter<LocalDate, String>() {
             @Override
             protected String convert(LocalDate source) {
-                if (Objects.nonNull(source))
-                    return source.format(DateTimeFormatter.ofPattern(FORMAT_DATE));
-                return null;
+                return (source == null)
+                        ? null
+                        : source.format(DateTimeFormatter.ofPattern(FORMAT_DATE));
             }
         };
-        private static final Converter<String, LocalTime> toLocalTime = new AbstractConverter<String, LocalTime>() {
+        public static final Converter<String, LocalTime> toLocalTime = new AbstractConverter<String, LocalTime>() {
             @Override
             protected LocalTime convert(String source) {
-                if (Objects.nonNull(source) && !source.trim().isEmpty())
-                    return LocalTime.parse(source, DateTimeFormatter.ofPattern(FORMAT_TIME));
-                return null;
+                return (source == null)
+                        ? null
+                        : LocalTime.parse(source, DateTimeFormatter.ofPattern(FORMAT_TIME));
             }
         };
-        private static final Converter<LocalTime, String> toLocalTimeString = new AbstractConverter<LocalTime, String>() {
+        public static final Converter<LocalTime, String> toLocalTimeString = new AbstractConverter<LocalTime, String>() {
             @Override
             protected String convert(LocalTime source) {
-                if (Objects.nonNull(source))
-                    return source.format(DateTimeFormatter.ofPattern(FORMAT_TIME));
-                return null;
+                return (source == null)
+                        ? null
+                        : source.format(DateTimeFormatter.ofPattern(FORMAT_TIME));
             }
         };
-        private static final Converter<String, LocalDateTime> toLocalDateTime = new AbstractConverter<String, LocalDateTime>() {
+        public static final Converter<String, LocalDateTime> toLocalDateTime = new AbstractConverter<String, LocalDateTime>() {
             @Override
             protected LocalDateTime convert(String source) {
-                if (Objects.nonNull(source) && !source.trim().isEmpty())
-                    return LocalDateTime.parse(source, DateTimeFormatter.ofPattern(FORMAT_DATETIME));
-                return null;
+                return (source == null)
+                        ? null
+                        : LocalDateTime.parse(source, DateTimeFormatter.ofPattern(FORMAT_DATETIME));
             }
         };
-        private static final Converter<LocalDateTime, String> toLocalDateTimeString = new AbstractConverter<LocalDateTime, String>() {
+        public static final Converter<LocalDateTime, String> toLocalDateTimeString = new AbstractConverter<LocalDateTime, String>() {
             @Override
             protected String convert(LocalDateTime source) {
-                if (Objects.nonNull(source))
-                    return source.format(DateTimeFormatter.ofPattern(FORMAT_DATETIME));
-                return null;
+                return (source == null)
+                        ? null
+                        : source.format(DateTimeFormatter.ofPattern(FORMAT_DATETIME));
             }
         };
 

@@ -10,12 +10,54 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
 public class ExceptionBuilderTest {
+
+    @Test
+    public void UT_CHECK_SET() {
+        Assertions.assertDoesNotThrow(() -> ExceptionBuilder.builder().build().setArgs((List<Object>) null));
+        Assertions.assertDoesNotThrow(() -> ExceptionBuilder.builder().build().setArgs(new Object[0]));
+        Assertions.assertDoesNotThrow(() -> ExceptionBuilder.builder().build().setType(null));
+        Assertions.assertDoesNotThrow(() -> ExceptionBuilder.builder().build().setType(ExceptionBuilder.Type.NoContent));
+
+        var eBuilder = ExceptionBuilder.builder().build();
+        eBuilder.setArgs((List<Object>) null);
+        Assertions.assertNull(eBuilder.getArgs());
+        eBuilder.setArgs(new Object[0]);
+        Assertions.assertNotNull(eBuilder.getArgs());
+        eBuilder.setType(null);
+        Assertions.assertNull(eBuilder.getType());
+        eBuilder.setType(ExceptionBuilder.Type.NoContent);
+        Assertions.assertNotNull(eBuilder.getType());
+        Assertions.assertEquals(eBuilder.getType(), ExceptionBuilder.Type.NoContent);
+
+    }
+
     @Test
     public void UT_CHECK_OF_CLASS() {
+        Assertions.assertThrows(RuntimeException.class, () -> {
+            throw ExceptionBuilder.of(new Object());
+        });
+        Assertions.assertThrows(RuntimeException.class, () -> {
+            throw ExceptionBuilder.of(new RuntimeException());
+        });
+        Assertions.assertThrows(FrameworkException.class, () -> {
+            throw ExceptionBuilder.of(ExceptionBuilder.Type.FrameWork);
+        });
+        Assertions.assertThrows(FrameworkException.class, () -> {
+            throw ExceptionBuilder.of(ExceptionBuilder.Type.FrameWork, "teste");
+        });
+        Assertions.assertThrows(FrameworkException.class, () -> {
+            throw ExceptionBuilder.of(ExceptionBuilder.Type.FrameWork, "teste", "teste");
+        });
+    }
+
+
+    @Test
+    public void UT_CHECK_OF_TYPE() {
         Assertions.assertThrows(RuntimeException.class, () -> {
             try {
                 Integer.parseInt("A");
@@ -53,6 +95,9 @@ public class ExceptionBuilderTest {
         });
         Assertions.assertThrows(ParserException.class, () -> {
             throw ExceptionBuilder.ofParser(Object.class);
+        });
+        Assertions.assertThrows(InvalidException.class, () -> {
+            throw ExceptionBuilder.ofInvalid(Object.class);
         });
         Assertions.assertThrows(UnknownException.class, () -> {
             throw ExceptionBuilder.ofUnknown(Object.class);
@@ -203,6 +248,9 @@ public class ExceptionBuilderTest {
         });
         Assertions.assertThrows(NotFoundException.class, () -> {
             throw ExceptionBuilder.ofNotFound(Object.class, "test");
+        });
+        Assertions.assertThrows(NoContentException.class, () -> {
+            throw ExceptionBuilder.ofNoContent(Object.class, "test");
         });
         Assertions.assertThrows(ParserException.class, () -> {
             throw ExceptionBuilder.ofParser(Object.class, "test");
