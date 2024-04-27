@@ -5,13 +5,12 @@ import com.littlecode.config.UtilCoreConfig;
 import com.littlecode.exceptions.FrameworkException;
 import com.littlecode.files.FileFormat;
 import com.littlecode.parsers.ObjectUtil;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.URI;
 import java.net.http.HttpClient;
+import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
@@ -28,7 +27,7 @@ public class RequestUtil {
     private URI privateUri;
     private String privatePath;
     private final Map<String, String> privateHeaders=new HashMap<>();
-    private Response response;
+    private final Response response= new Response(this);
     private String body;
     private boolean privatePrintOnFail;
     private boolean privateExceptionOnFail;
@@ -38,12 +37,9 @@ public class RequestUtil {
     }
 
     public String toString() {
-        if (this.response == null)
-            return super.toString();
-        if (this.response.isOK())
-            return super.toString();
-
-        return response.toString();
+        return (this.response.isOK())
+                ?""
+                :response.toString();
     }
 
     public RequestUtil build() {
@@ -75,22 +71,27 @@ public class RequestUtil {
         this.privateMethod = Method.GET;
         this.privateHeaders.clear();
         this.body = null;
-        this.response = null;
+        this.response.clear();
         this.privateOnSuccessful = null;
         this.privateOnFail = null;
         return this;
     }
 
     private List<String> printMake() {
-        List<String> str = new ArrayList<>();
-        str.add(String.format("curl -i -X %s \\", this.method().name()));
-        this.headers().forEach((key, value) -> {
-            str.add(String.format("             --header '%s: %s' \\", key, value));
-        });
-        str.add(String.format("             --location '%s' \\", this.url()));
-        if (this.method() == Method.POST || this.method() == Method.PUT)
-            str.add(String.format("             --data '%s' ", this.body()));
-        return str;
+        var method=this.method();
+        if(method!=null){
+            List<String> str = new ArrayList<>();
+            str.add(String.format("curl -i -X %s \\", method.name().toUpperCase()));
+            this.headers().forEach((key, value) -> {
+                str.add(String.format("             --header '%s: %s' \\", key, value));
+            });
+            str.add(String.format("             --location '%s' \\", this.url()));
+            if (method == Method.POST || method == Method.PUT)
+                str.add(String.format("             --data '%s' ", this.body()));
+            return str;
+        }
+        return new ArrayList<>();
+
     }
 
     public RequestUtil print() {
@@ -258,7 +259,6 @@ public class RequestUtil {
     }
 
     public RequestUtil call() {
-        response = null;
         var requestBody = (this.body() == null || this.body.trim().isEmpty())
                 ? HttpRequest.BodyPublishers.noBody()
                 : HttpRequest.BodyPublishers.ofString(this.body());
@@ -315,13 +315,12 @@ public class RequestUtil {
             HttpRequest request = requestBuilder.build();
 
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            this.response = new Response.ResponseBuilder()
-                    .request(this)
-                    .body(response.body())
-                    .status(response.statusCode())
-                    .headers(response.headers().map())
-                    .url(response.uri().toURL().toString())
-                    .build();
+
+            this.response.setBody(response.body());
+            this.response.setStatus(response.statusCode());
+            this.response.getHeaders().clear();
+            this.response.getHeaders().putAll(response.headers().map());
+            this.response.setUrl(response.uri().toURL().toString());
             if (privateOnSuccessful != null) {
                 try {
                     privateOnSuccessful.execute();
@@ -330,10 +329,8 @@ public class RequestUtil {
                 }
             }
         } catch (Throwable e) {
-            response = new Response.ResponseBuilder()
-                    .status(-1)
-                    .reasonPhrase(e.getMessage())
-                    .build();
+            response.setStatus(-1);
+            response.setReasonPhrase(e.getMessage());
             if (privateOnFail != null) {
                 try {
                     privateOnFail.execute();
@@ -369,22 +366,35 @@ public class RequestUtil {
         void execute() throws Throwable;
     }
 
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
+    @Data
+    @RequiredArgsConstructor
     public static class Response {
 
+        private final RequestUtil request;
         private String url;
-
-        private Map<String, List<String>> headers;
-
-        private int status;
-
+        private final Map<String, List<String>> headers=new HashMap<>();
+        private int status=-1;
         private String body;
-
         private String reasonPhrase;
 
-        private RequestUtil request;
+        public void clear(){
+            this.url="";
+            this.status=-1;
+            this.body=null;
+            this.reasonPhrase=null;
+        }
+
+//        public void setHeaders(Map<String, List<String>> headers){
+//            headers.clear();
+//            headers.putAll(headers);
+//        }
+
+        public void setHeaders(Map<String, String> headers){
+            this.headers.clear();
+            headers.forEach((k, v) -> {
+                this.headers.put(k,List.of(v));
+            });
+        }
 
         public String toString() {
             if (!this.isOK()){
@@ -424,21 +434,19 @@ public class RequestUtil {
             return ObjectUtil.createFromString(objectClass,body);
         }
 
-        public <T> List<T> bodyAsList(Class<T> objectClass) {
+        public <T> List<?> bodyAsList(Class<T> objectClass) {
             if(objectClass!=null){
                 var __object = ObjectUtil.createFromObject(Object.class,body);
                 if(__object != null){
-                    if(__object instanceof List){
+                    if(__object instanceof List list){
                         List<T> __return=new ArrayList<>();
-                        for(var src:(List<?>) __object){
+                        for(var src:list)
                             __return.add(ObjectUtil.createFromObject(objectClass,src));
-                        }
                         return __return;
                     }
                     var __return=ObjectUtil.createFromObject(objectClass,__object);
-                    return __return==null
-                            ?new ArrayList<>()
-                            :List.of(__return);
+                    if(__return!=null)
+                        return (List<?>) __return;
                 }
             }
             return null;

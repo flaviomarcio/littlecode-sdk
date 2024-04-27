@@ -15,9 +15,16 @@ public class RequestUtilTest {
 
     @Test
     public void UT_000_CHECK_RESPONSE() {
-        Assertions.assertDoesNotThrow(()-> RequestUtil.Response.builder().status(-1).build());
-        Assertions.assertDoesNotThrow(()->new RequestUtil.Response());
-        var response=new RequestUtil.Response();
+        Assertions.assertDoesNotThrow(()-> new RequestUtil.Response(null));
+        var response=(new RequestUtil()).response();
+        response.setStatus(-1);
+        Assertions.assertDoesNotThrow(response::toString);
+        response.setStatus(200);
+        Assertions.assertDoesNotThrow(response::toString);
+        response.setStatus(201);
+        Assertions.assertDoesNotThrow(response::toString);
+        response.setStatus(202);
+        Assertions.assertDoesNotThrow(response::toString);
         Assertions.assertDoesNotThrow(response::isOK);
         Assertions.assertDoesNotThrow(response::status);
         Assertions.assertDoesNotThrow(response::reasonPhrase);
@@ -44,6 +51,7 @@ public class RequestUtilTest {
         Assertions.assertDoesNotThrow(request::DELETE);
         Assertions.assertDoesNotThrow(() -> request.method());
         Assertions.assertDoesNotThrow(() -> request.method(RequestUtil.Method.POST));
+        Assertions.assertDoesNotThrow(() -> request.method(null));
         Assertions.assertDoesNotThrow(() -> request.uri());
         Assertions.assertDoesNotThrow(() -> request.uri("https://littlecode.com"));
         Assertions.assertDoesNotThrow(() -> request.uri(URI.create("https://littlecode.com")));
