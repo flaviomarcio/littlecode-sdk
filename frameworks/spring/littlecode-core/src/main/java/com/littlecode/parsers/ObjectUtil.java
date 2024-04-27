@@ -75,7 +75,7 @@ public class ObjectUtil {
         if (!className.isEmpty()) {
             try {
                 return Class.forName(className);
-            } catch (ClassNotFoundException ignored) {
+            } catch (Exception ignored) {
             }
         }
         return null;
@@ -226,13 +226,10 @@ public class ObjectUtil {
         try {
             var c = classType.getConstructor();
             c.setAccessible(true);
-            //noinspection unchecked
             return (T) c.newInstance();
-        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException |
-                 IllegalAccessException e) {
-            log.error(e.getMessage());
-            return null;
+        } catch (Exception e) {
         }
+        return null;
     }
 
     public static <T> T createWithArgsConstructor(Class<?> aClass, Object... initArgs) {
@@ -258,7 +255,7 @@ public class ObjectUtil {
                     return (T) constructor.newInstance(initArgs);
                 }
 
-            } catch (InvocationTargetException | InstantiationException | IllegalAccessException ignored) {
+            } catch (Exception ignored) {
             }
             return null;
         }
@@ -269,7 +266,7 @@ public class ObjectUtil {
         var mapper = UtilCoreConfig.newObjectMapper(fileFormat);
         try {
             return mapper.readValue(src, aClass);
-        } catch (JsonProcessingException ignored) {
+        } catch (Exception ignored) {
         }
         return null;
     }
@@ -281,7 +278,7 @@ public class ObjectUtil {
     public static <T> T createFromFile(Class<T> aClass, File file) {
         try {
             return createFromStream(aClass, new FileInputStream(file));
-        } catch (FileNotFoundException ignored) {
+        } catch (Exception ignored) {
         }
         return null;
     }
@@ -289,7 +286,7 @@ public class ObjectUtil {
     public static <T> T createFromStream(Class<T> aClass, InputStream stream) {
         try {
             return createFromString(aClass, new String(stream.readAllBytes()), FILE_FORMAT_DEFAULT);
-        } catch (IOException ignored) {
+        } catch (Exception ignored) {
         }
         return null;
     }
@@ -311,55 +308,38 @@ public class ObjectUtil {
     }
 
     public static <T> T createFromValues(Class<T> aClass, final Map<String, Object> srcValues) {
-        if (aClass == null) {
-            log.debug("No aClass");
-            return null;
-        }
-        if (srcValues == null || srcValues.isEmpty()) {
-            log.debug("No source values to write class [{}]", aClass.getName());
-            return null;
-        }
-        var fieldsNew = toFieldsList(aClass);
-        if (fieldsNew.isEmpty()) {
-            log.debug("No fields from [{}]", aClass.getName());
-            return null;
-        }
+        if (aClass!=null && srcValues != null && !srcValues.isEmpty()) {
+            var fieldsNew = toFieldsList(aClass);
+            if (!fieldsNew.isEmpty()) {
+                Map<String, Field> fieldsWriter = new HashMap<>();
+                fieldsNew.forEach(field -> fieldsWriter.put(field.getName().toLowerCase(), field));
+                if (!fieldsWriter.isEmpty()) {
+                    Map<String, Object> finaMapValues = new HashMap<>();
 
-        Map<String, Field> fieldsWriter = new HashMap<>();
-        fieldsNew.forEach(field -> fieldsWriter.put(field.getName().toLowerCase(), field));
-        if (fieldsWriter.isEmpty()) {
-            log.debug("No fields to write from class [{}]", aClass.getName());
-            return null;
-        }
-
-        Map<String, Object> finaMapValues = new HashMap<>();
-
-        srcValues.forEach((fieldName, fieldValue) -> {
-            try {
-                var fieldWrite = fieldsWriter.get(fieldName.trim().toLowerCase());
-                if (fieldWrite == null)
-                    return;
-                finaMapValues.put(fieldWrite.getName(), fieldValue);
-            } catch (Exception e) {
-                log.error(e.getMessage());
+                    for (Map.Entry<String, Object> entry : srcValues.entrySet()) {
+                        String fieldName = entry.getKey();
+                        Object fieldValue = entry.getValue();
+                        try {
+                            var fieldWrite = fieldsWriter.get(fieldName.trim().toLowerCase());
+                            if (fieldWrite != null)
+                                finaMapValues.put(fieldWrite.getName(), fieldValue);
+                        } catch (Exception ignored) {
+                        }
+                    }
+                    return UtilCoreConfig.newModelMapper().map(finaMapValues, aClass);
+                }
             }
-        });
-        return UtilCoreConfig.newModelMapper().map(finaMapValues, aClass);
+        }
+        return null;
     }
 
     public static <T> T createFromObject(Class<T> aClass, Object objectSrc) {
-        if (aClass == null) {
-            log.debug("No aClass");
-            return null;
+        if (aClass != null && objectSrc != null) {
+            var objectValues = toMapObject(objectSrc);
+            if (!objectValues.isEmpty())
+                return createFromValues(aClass, objectValues);
         }
-        if (objectSrc == null) {
-            log.debug("No object source to write class [{}]", aClass.getName());
-            return null;
-        }
-        var objectValues = toMapObject(objectSrc);
-        if (objectValues.isEmpty())
-            return null;
-        return createFromValues(aClass, objectValues);
+        return null;
     }
 
     public static String toString(Object o) {
@@ -375,7 +355,7 @@ public class ObjectUtil {
         try {
             var mapper = UtilCoreConfig.newObjectMapper(fileFormat);
             return mapper.writeValueAsString(o);
-        } catch (JsonProcessingException ignored) {
+        } catch (Exception ignored) {
         }
         return "";
     }
@@ -417,10 +397,8 @@ public class ObjectUtil {
             if (o.getClass().equals(String.class)) {
                 try {
                     var mapper = UtilCoreConfig.newObjectMapper(FILE_FORMAT_DEFAULT);
-                    //noinspection unchecked
                     return mapper.readValue((String) o, Map.class);
-                } catch (JsonProcessingException e) {
-                    log.error(e.getMessage());
+                } catch (Exception e) {
                 }
                 return new HashMap<>();
             }
@@ -445,7 +423,7 @@ public class ObjectUtil {
                             if (oGet.getClass().isLocalClass())
                                 fieldValues.put(field.getName(), toString(oGet));
 
-                        } catch (IllegalAccessException e) {
+                        } catch (Exception e) {
                             throw new FrameworkException(e);
                         }
                     });

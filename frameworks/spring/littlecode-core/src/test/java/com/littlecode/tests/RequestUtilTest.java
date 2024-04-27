@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Map;
 
 @ExtendWith(MockitoExtension.class)
@@ -16,6 +17,15 @@ public class RequestUtilTest {
     public void UT_000_CHECK_RESPONSE() {
         Assertions.assertDoesNotThrow(()-> RequestUtil.Response.builder().status(-1).build());
         Assertions.assertDoesNotThrow(()->new RequestUtil.Response());
+        var response=new RequestUtil.Response();
+        Assertions.assertDoesNotThrow(response::isOK);
+        Assertions.assertDoesNotThrow(response::status);
+        Assertions.assertDoesNotThrow(response::reasonPhrase);
+        Assertions.assertDoesNotThrow(response::request);
+        Assertions.assertDoesNotThrow(response::body);
+        Assertions.assertDoesNotThrow(() -> response.bodyAs(Object.class));
+        Assertions.assertDoesNotThrow(() -> response.bodyAs(Object.class));
+        Assertions.assertDoesNotThrow(() -> response.bodyAsList(List.class));
 
     }
 
@@ -66,9 +76,12 @@ public class RequestUtilTest {
         Assertions.assertDoesNotThrow(() -> request.onFail(null));
         Assertions.assertDoesNotThrow(() -> request.onSuccessful(null));
         Assertions.assertDoesNotThrow(() -> request.onFinished(null));
-        Assertions.assertDoesNotThrow(() -> request.isOK());
+        Assertions.assertDoesNotThrow(request::isOK);
         Assertions.assertDoesNotThrow(() -> request.exceptionOnFail());
         Assertions.assertDoesNotThrow(() -> request.exceptionOnFail(false));
+        Assertions.assertDoesNotThrow(() -> request.path("/teste"));
+        Assertions.assertDoesNotThrow(() -> request.path(null));
+        Assertions.assertDoesNotThrow(() -> request.path());
 
 
     }

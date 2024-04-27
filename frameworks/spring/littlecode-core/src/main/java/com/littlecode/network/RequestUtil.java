@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.littlecode.config.UtilCoreConfig;
 import com.littlecode.exceptions.FrameworkException;
 import com.littlecode.files.FileFormat;
+import com.littlecode.parsers.ObjectUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -164,9 +165,10 @@ public class RequestUtil {
     }
 
     public String responseBody() {
-        if (response == null)
-            return null;
-        return this.response.body();
+        return
+                (response == null)
+                        ?null
+                        :this.response.body();
     }
 
     public RequestUtil body(String newBody) {
@@ -211,7 +213,7 @@ public class RequestUtil {
     }
 
     public RequestUtil method(Method newMethod) {
-        this.privateMethod =
+        privateMethod =
                 (newMethod == null)
                         ?Method.GET
                         :newMethod;
@@ -244,9 +246,10 @@ public class RequestUtil {
     }
 
     public RequestUtil path(String newPath) {
-        this.privatePath = (newPath == null || newPath.trim().equals("/"))
-                ? null
-                : newPath.trim();
+        this.privatePath =
+                (newPath == null || newPath.trim().equals("/"))
+                        ? "/"
+                        : newPath.trim();
         return this;
     }
 
@@ -339,7 +342,7 @@ public class RequestUtil {
                 }
             }
             if (this.exceptionOnFail())
-                throw new RequestException(response.toString());
+                throw new FrameworkException(response.toString());
             else if (this.printOnFail())
                 this.print();
         }
@@ -384,40 +387,17 @@ public class RequestUtil {
         private RequestUtil request;
 
         public String toString() {
-            if (this.isOK())
-                return "";
-            var str = new StringBuilder();
-            str
-                    .append(String.format("fail: statusCode: %d, reasonPhrase: %s", this.status, this.reasonPhrase))
-                    .append("\n");
-            this.request
-                    .printMake()
-                    .forEach(s -> str.append(s).append("\n"));
-            return str.toString();
-        }
-
-        private <T> T jsonToObject(String json, Class<T> classOfT) {
-            var objectMapper = UtilCoreConfig.newObjectMapper(FILE_FORMAT_DEFAULT);
-            try {
-                return objectMapper.readValue(json, classOfT);
-            } catch (JsonProcessingException e) {
-                if (this.request.printOnFail())
-                    log.error(e.getMessage());
-                return null;
+            if (!this.isOK()){
+                var str = new StringBuilder();
+                str
+                        .append(String.format("fail: statusCode: %d, reasonPhrase: %s", this.status, this.reasonPhrase))
+                        .append("\n");
+                this.request
+                        .printMake()
+                        .forEach(s -> str.append(s).append("\n"));
+                return str.toString();
             }
-        }
-
-        private <T> T writeObject(Object src, Class<T> classOfT) {
-            var objectMapper = UtilCoreConfig.newObjectMapper(FILE_FORMAT_DEFAULT);
-
-            try {
-                var jsonSrc=objectMapper.writeValueAsString(src);
-                return objectMapper.readValue(jsonSrc, classOfT);
-            } catch (JsonProcessingException e) {
-                if (this.request.printOnFail())
-                    log.error(e.getMessage());
-                return null;
-            }
+            return "";
         }
 
         public boolean isOK() {
@@ -441,48 +421,27 @@ public class RequestUtil {
         }
 
         public <T> T bodyAs(Class<T> objectClass) {
-            var object = jsonToObject(body, objectClass);
-            if (object == null && this.request.exceptionOnFail())
-                throw new RequestException(objectClass);
-            return object;
+            return ObjectUtil.createFromString(objectClass,body);
         }
 
         public <T> List<T> bodyAsList(Class<T> objectClass) {
-            var __object = jsonToObject(body, Object.class);
-            if(__object == null)
-                return new ArrayList<>();
-
-            if(__object instanceof List){
-                List<T> __return=new ArrayList<>();
-                for(var src:(List<T>) __object){
-                    __return.add(writeObject(src,objectClass));
+            if(objectClass!=null){
+                var __object = ObjectUtil.createFromObject(Object.class,body);
+                if(__object != null){
+                    if(__object instanceof List){
+                        List<T> __return=new ArrayList<>();
+                        for(var src:(List<?>) __object){
+                            __return.add(ObjectUtil.createFromObject(objectClass,src));
+                        }
+                        return __return;
+                    }
+                    var __return=ObjectUtil.createFromObject(objectClass,__object);
+                    return __return==null
+                            ?new ArrayList<>()
+                            :List.of(__return);
                 }
-                return __return;
             }
-            var __return=writeObject(__object, objectClass);
-            return __return==null
-                    ?new ArrayList<>()
-                    :List.of(__return);
-
+            return null;
         }
     }
-
-    public static class RequestException extends RuntimeException {
-        public RequestException(String msg, Throwable t) {
-            super(msg, t);
-        }
-
-        public RequestException(String msg) {
-            super(msg);
-        }
-
-        public RequestException(String format, Object... args) {
-            super(String.format(format, args));
-        }
-
-        public RequestException(Class<?> classType) {
-            super(String.format("Request error: [%s]", classType.getName()));
-        }
-    }
-
 }
