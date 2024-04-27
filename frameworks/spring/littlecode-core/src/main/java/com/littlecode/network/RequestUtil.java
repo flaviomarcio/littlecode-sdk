@@ -4,7 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.littlecode.config.UtilCoreConfig;
 import com.littlecode.exceptions.FrameworkException;
 import com.littlecode.files.FileFormat;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.URI;
@@ -24,7 +26,7 @@ public class RequestUtil {
     private Method privateMethod;
     private URI privateUri;
     private String privatePath;
-    private Map<String, String> privateHeaders;
+    private final Map<String, String> privateHeaders=new HashMap<>();
     private Response response;
     private String body;
     private boolean privatePrintOnFail;
@@ -70,7 +72,7 @@ public class RequestUtil {
     public RequestUtil clear() {
         this.privateUri = null;
         this.privateMethod = Method.GET;
-        this.privateHeaders = new HashMap<>();
+        this.privateHeaders.clear();
         this.body = null;
         this.response = null;
         this.privateOnSuccessful = null;
@@ -119,34 +121,37 @@ public class RequestUtil {
     }
 
     public Map<String, String> headers() {
-        if (this.privateHeaders == null)
-            this.privateHeaders = new HashMap<>();
         return privateHeaders;
     }
 
     public RequestUtil headers(Map<String, String> newHeaders) {
-        this.privateHeaders = newHeaders;
+        this.privateHeaders.clear();
+        if(newHeaders!=null)
+            this.privateHeaders.putAll(newHeaders);
         return this;
     }
 
     public RequestUtil headersJSON() {
-        this.headers().put("Content-Type", "application/json");
+        this.privateHeaders.put("Content-Type", "application/json");
         return this;
     }
 
     public RequestUtil headersAuthBearer(String token) {
-        this.headers().put("Authorization", String.format("Bearer %s", token));
+        this.privateHeaders.put("Authorization", String.format("Bearer %s", token));
         return this;
     }
 
     public RequestUtil headersAuthBasic(String token) {
-        this.headers().put("Authorization", String.format("Basic %s", token));
+        this.privateHeaders.put("Authorization", String.format("Basic %s", token));
         return this;
     }
 
     public RequestUtil headersAuthBasic(String clientId, String secret) {
-        String credentials = String.format("%s:%s", clientId, secret);
-        return this.headersAuthBasic(Base64.getEncoder().encodeToString(credentials.getBytes()));
+        if((clientId!=null && !clientId.trim().isEmpty()) && (secret!=null && !secret.trim().isEmpty())){
+            String credentials = String.format("%s:%s", clientId, secret);
+            return this.headersAuthBasic(Base64.getEncoder().encodeToString(credentials.getBytes()));
+        }
+        return this;
     }
 
     public RequestUtil headers(String headerName, String headerValue) {
@@ -170,16 +175,14 @@ public class RequestUtil {
     }
 
     public RequestUtil body(Object newBody) {
-        if (newBody == null) {
-            this.body = null;
-            return this;
+        if (newBody != null) {
+            try {
+                var mapper = UtilCoreConfig.newObjectMapper(FILE_FORMAT_DEFAULT);
+                this.body = mapper.writeValueAsString(newBody);
+            } catch (Exception ignored) {
+            }
         }
-        var mapper = UtilCoreConfig.newObjectMapper(FILE_FORMAT_DEFAULT);
-        try {
-            this.body = mapper.writeValueAsString(newBody);
-        } catch (JsonProcessingException e) {
-            this.body = null;
-        }
+        this.body = null;
         return this;
     }
 
@@ -204,18 +207,14 @@ public class RequestUtil {
     }
 
     public Method method() {
-        if (this.privateMethod == null)
-            this.privateMethod = Method.GET;
         return privateMethod;
     }
 
     public RequestUtil method(Method newMethod) {
-        this.privateMethod = newMethod == null ? Method.GET : newMethod;
-        return this;
-    }
-
-    public RequestUtil method(String newMethod) {
-        this.privateMethod = Method.valueOf(newMethod.toLowerCase());
+        this.privateMethod =
+                (newMethod == null)
+                        ?Method.GET
+                        :newMethod;
         return this;
     }
 
@@ -225,6 +224,8 @@ public class RequestUtil {
     }
 
     public URI uri() {
+        if(privateUri==null)
+            return privateUri=URI.create("http://localhost");
         return privateUri;
     }
 
@@ -366,6 +367,8 @@ public class RequestUtil {
     }
 
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class Response {
 
         private String url;

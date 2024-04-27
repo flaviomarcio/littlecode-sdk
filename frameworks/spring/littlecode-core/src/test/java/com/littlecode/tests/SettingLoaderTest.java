@@ -114,7 +114,7 @@ public class SettingLoaderTest {
     }
 
     @Test
-    public void UT_CHECKER() {
+    public void UT_CHECKER_SAVE_LOAD() {
 
         Map<FileFormat, File> settingFiles = new HashMap<>();
 
