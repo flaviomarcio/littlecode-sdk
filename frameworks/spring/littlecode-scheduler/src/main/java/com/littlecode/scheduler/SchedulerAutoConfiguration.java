@@ -15,7 +15,24 @@ public class SchedulerAutoConfiguration {
     public SchedulerAutoConfiguration(ApplicationContext applicationContext, Environment environment) {
         UtilCoreConfig.setApplicationContext(applicationContext);
         UtilCoreConfig.setEnvironment(environment);
-        if (autoStart)
-            SchedulerRunner.start();
+        this.start();
+    }
+
+    public void start() {
+        String logPrefix = this.getClass().getName() + ": ";
+        log.info("{}: started", logPrefix);
+
+        try {
+            if (!this.autoStart) {
+                log.info("{}: skipped", logPrefix);
+            } else {
+                log.info("{}: executing", logPrefix);
+                SchedulerRunner.start();
+                log.info("{}: executed", logPrefix);
+            }
+        } finally {
+            log.info("{}: finished", logPrefix);
+        }
+
     }
 }
