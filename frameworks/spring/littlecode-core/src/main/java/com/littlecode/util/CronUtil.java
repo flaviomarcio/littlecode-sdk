@@ -154,14 +154,13 @@ public class CronUtil {
     }
 
     public LocalDateTime next() {
-        if (!CronExpression.isValidExpression(this.expression))
-            throw new RuntimeException("Invalid expression: " + expression);
-        if (this.temporal == null)
-            throw new RuntimeException("Invalid temporal: " + temporal);
-        var cron = CronExpression.parse(this.expression);
-        var temporal = cron.next(this.temporal);
-        if (temporal == null)
-            throw new RuntimeException(String.format("Invalid next temporal, expression :[%s] temporal:[%s] ", this.expression, this.temporal));
-        return LocalDateTime.of(temporal.toLocalDate(), temporal.toLocalTime());
+        if (CronExpression.isValidExpression(this.expression) && this.temporal!=null){
+            var cron = CronExpression.parse(this.expression);
+            var temporal = cron.next(this.temporal);
+            if (temporal == null)
+                throw new RuntimeException(String.format("Invalid next temporal, expression :[%s] temporal:[%s] ", this.expression, this.temporal));
+            return LocalDateTime.of(temporal.toLocalDate(), temporal.toLocalTime());
+        }
+        return null;
     }
 }

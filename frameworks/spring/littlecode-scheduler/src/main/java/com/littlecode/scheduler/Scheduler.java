@@ -1,8 +1,10 @@
 package com.littlecode.scheduler;
 
+import com.littlecode.parsers.DateUtil;
 import com.littlecode.parsers.ObjectUtil;
 import com.littlecode.util.CronUtil;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,6 +12,7 @@ import java.lang.reflect.Method;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -21,25 +24,44 @@ public class Scheduler {
     @Builder
     public static class Task {
         private SchedulerRunner runner;
+
         @Getter
+        @Setter
         private Object instance;
+
         @Getter
+        @Setter
         private Method method;
+
         @Getter
+        @Setter
         private int order;
+
         @Getter
+        @Setter
         private String expression;
+
         @Getter
+        @Setter
         private Checker checker;
+
         @Getter
+        @Setter
         private Execution execution;
+
         @Getter
-        private List<Execution> executions;
+        private final List<Execution> executions=new ArrayList<>();
+
+        public void setExecutions(List<Execution> executions) {
+            this.executions.clear();
+            if(executions!=null)
+                this.executions.addAll(executions);
+        }
 
         public LocalDateTime nextExecution() {
-            Execution execution = this.getLastExecution();
-            LocalDateTime lastExecution = (execution == null)
-                    ? LocalDateTime.of(LocalDate.MIN, LocalTime.MIN)
+            var execution = this.getLastExecution();
+            var lastExecution = (execution == null)
+                    ? DateUtil.MIN_LOCALDATETIME
                     : execution.getExecutionLasted();
 
             return CronUtil
@@ -50,29 +72,38 @@ public class Scheduler {
                     .next();
         }
 
+        public boolean canExecute(LocalDateTime nextExecution) {
+            if(nextExecution!=null){
+                return
+                        (checker != null && checker.checker != null)
+                                ? checker.checker.exec(this)
+                                : nextExecution.isBefore(LocalDateTime.now());
+            }
+            return false;
+        }
+
         public boolean canExecute() {
-            return
-                    (checker != null && checker.checker != null)
-                            ? checker.checker.exec(this)
-                            : this.nextExecution().isBefore(LocalDateTime.now());
+            return canExecute(nextExecution());
         }
 
         public Execution getLastExecution() {
-            if (this.executions == null || this.executions.isEmpty())
-                return null;
-            return this.executions.get(this.executions.size() - 1);
+            return
+                    (this.executions.isEmpty())
+                            ?null
+                            :this.executions.get(this.executions.size() - 1);
         }
 
         public String getMessages() {
             var execution = getLastExecution();
-            if (execution == null || execution.error == null)
-                return "";
-            var message = new StringBuilder();
-            if (execution.error.exception != null)
-                message.append(execution.error.exception).append("\n");
-            if (execution.error.message != null)
-                message.append(execution.error.message);
-            return message.toString();
+            if (execution != null && execution.error != null){
+                var message = new StringBuilder();
+                if (execution.error.exception != null)
+                    message.append(execution.error.exception).append("\n");
+                if (execution.error.message != null)
+                    message.append(execution.error.message);
+                return message.toString();
+            }
+            return "";
         }
 
         public String getName() {
@@ -80,7 +111,7 @@ public class Scheduler {
         }
 
         public Response invoke() {
-            if (this.canExecute())
+            if (!this.canExecute())
                 return Response.SKIPPED;
 
             this.checker.onBefore.accept(this);
@@ -111,17 +142,15 @@ public class Scheduler {
             return (execution.error == null) ? Response.SUCCESSFUL : Response.FAIL;
         }
 
-        private void cleanup() {
+        public void cleanup() {
             this.executions.add(this.execution);
             this.execution = null;
-            //remove last errors
-            while (this.executions.size() > 5)
+            while (executions.size() > 5)
                 this.executions.remove(this.executions.size() - 1);
         }
 
         public enum Response {
             SUCCESSFUL, SKIPPED, FAIL
-
         }
 
         @Builder
@@ -146,14 +175,14 @@ public class Scheduler {
     @Builder
     @Getter
     public static class Checker {
-        public Func<Boolean, Task> checker;
-        public Consumer<Task> onBefore;
-        public Consumer<Task> onAfter;
+        private Func<Boolean, Task> checker;
+        private Consumer<Task> onBefore;
+        private Consumer<Task> onAfter;
 
         public static Optional<Checker> from(Schedule scheduleAnnotation) {
-            if (scheduleAnnotation == null || scheduleAnnotation.checker() == null)
-                return Optional.empty();
-            return Optional.ofNullable(ObjectUtil.create(scheduleAnnotation.checker()));
+            if (scheduleAnnotation != null)
+                return Optional.ofNullable(ObjectUtil.create(scheduleAnnotation.checker()));
+            return Optional.empty();
         }
 
         @FunctionalInterface

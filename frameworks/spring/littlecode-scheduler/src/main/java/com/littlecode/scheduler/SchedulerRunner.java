@@ -1,154 +1,118 @@
 package com.littlecode.scheduler;
 
+import com.littlecode.exceptions.FrameworkException;
 import com.littlecode.parsers.PrimitiveUtil;
 import com.littlecode.util.BeanUtil;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Method;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @Slf4j
-@RequiredArgsConstructor
-@Service
+@Data
 public class SchedulerRunner implements Runnable {
+    private static final LocalDateTime MAX_EXECUTION_TIME=LocalDateTime.of(LocalDate.of(2500,1,1), LocalTime.of(0,0,0));
     private static final ExecutorService EXECUTOR_SERVICE = Executors.newSingleThreadExecutor();
-
+    private final List<Scheduler.Task> cacheSchedulerTask = new ArrayList<>();
     private final Schedule scheduleAnnotation;
     private final Object schedulerInstance;
-    private final List<Scheduler.Task> cacheSchedulerTask = new ArrayList<>();
+    private LocalDateTime limitExecutionTime=MAX_EXECUTION_TIME;
+
+    public SchedulerRunner(Schedule scheduleAnnotation, Object schedulerInstance) {
+        if (scheduleAnnotation == null)
+            throw new NullPointerException("scheduleAnnotation is null");
+        if (schedulerInstance == null)
+            throw new NullPointerException("schedulerInstance is null");
+        this.scheduleAnnotation = scheduleAnnotation;
+        this.schedulerInstance = schedulerInstance;
+    }
+
+    public LocalDateTime getLimitExecutionTime(){
+        if(this.limitExecutionTime==null)
+            return this.limitExecutionTime=MAX_EXECUTION_TIME;
+        return this.limitExecutionTime;
+    }
 
     public static void start() {
         var beanUtil = new BeanUtil();
-
-        log.debug("Scheduler.Startup: start");
-
         var beanNames = beanUtil.asAnnotation(Schedule.class);
-
-        beanNames.forEach(
-                beanName ->
-                {
-                    try {
-                        log.error("Scheduler.Startup:Bean[{}] initializing", beanName);
-                        Object schedulerInstance = beanUtil.getBean(Object.class);
-                        if (schedulerInstance == null) {
-                            log.error("Scheduler.Startup:Bean[{}] bean object is null", beanName);
-                            return;
-                        }
-
-                        log.error("Scheduler.Startup:Bean[{}] bean create successful", beanName);
-                        Schedule scheduleAnnotation = schedulerInstance.getClass().getAnnotation(Schedule.class);
-
-                        if (scheduleAnnotation == null) {
-                            log.error("Scheduler.Startup:Bean[{}] Invalid bean {}", beanName, Schedule.class.getName());
-                            return;
-                        }
-
-                        if (!scheduleAnnotation.enable()) {
-                            log.error("Scheduler.Startup:Bean[{}] skipping", beanName);
-                            return;
-                        }
-
+        for (var beanName : beanNames) {
+            try {
+                Object schedulerInstance = beanUtil.bean(beanName).getBean(Object.class);
+                if (schedulerInstance != null) {
+                    Schedule scheduleAnnotation = schedulerInstance.getClass().getAnnotation(Schedule.class);
+                    if (scheduleAnnotation != null && !scheduleAnnotation.enable())
                         EXECUTOR_SERVICE.submit(new SchedulerRunner(scheduleAnnotation, schedulerInstance));
-                        log.error("Scheduler.Startup:Bean[{}] successful", beanName);
-                    } catch (Exception e) {
-                        log.error("Scheduler.Startup:Bean[{}] fail: {}", beanName, e.getMessage());
-                    }
-
                 }
-        );
-        log.debug("Scheduler.Startup: finished");
-    }
-
-
-    private void sleep() {
-        try {
-            Thread.sleep(1000);//wait 1s to empty messages
-        } catch (InterruptedException ignored) {
+            } catch (Exception ignored) {
+            }
         }
     }
 
+    @SneakyThrows
     @Override
     public void run() {
-        log.debug("SchedulerRunner:[{}] started", this.schedulerInstance.getClass().getName());
-        try {
-            if (!this.schedulesMaker())
-                return;
-            while (!Thread.currentThread().isInterrupted()) {
+        final var currentThread=Thread.currentThread();
+        if (this.schedulesMaker()){
+            while (!currentThread.isInterrupted()) {
                 this.schedulesRunner();
-                this.sleep();
+                if(!this.getLimitExecutionTime().isBefore(LocalDateTime.now()))
+                    Thread.sleep(1);//wait 1s to empty messages
+                break;
             }
-        } finally {
-            log.debug("SchedulerRunner:[{}] finished", this.schedulerInstance.getClass().getName());
         }
+    }
+
+    public Scheduler.Task createSchedulerTask(Method method, Scheduler.Checker checker){
+        if(method!=null && checker!=null){
+            Schedule methodAnnotation = AnnotationUtils.findAnnotation(method, Schedule.class);
+            if (methodAnnotation != null && methodAnnotation.enable()){
+                final var expression =
+                        (methodAnnotation.expression()!=null && !methodAnnotation.expression().trim().isEmpty())
+                                ? this.scheduleAnnotation.expression()
+                                : methodAnnotation.expression();
+                return Scheduler.Task
+                        .builder()
+                        .runner(this)
+                        .expression(expression)
+                        .method(method)
+                        .checker(checker)
+                        .execution(null)
+                        .order(methodAnnotation.order())
+                        .build();
+            }
+        }
+        return null;
+    }
+
+    public Method[] getInstanceMethods(){
+        return schedulerInstance.getClass().getDeclaredMethods();
     }
 
     public boolean schedulesMaker() {
+        cacheSchedulerTask.clear();
         var schedulerChecker = Scheduler.Checker.from(this.scheduleAnnotation).orElse(null);
-        var methods = List.of(schedulerInstance.getClass().getDeclaredMethods());
-        methods.forEach(
-                method ->
-                {
-                    Schedule methodAnnotation = AnnotationUtils.findAnnotation(method, Schedule.class);
-                    if (methodAnnotation == null)
-                        return;
-
-                    if (methodAnnotation.enable()) {
-                        log.debug("SchedulerRunner:[{}], method:[{}] disabled", this.schedulerInstance.getClass().getName(), method.getName());
-                        return;
-                    }
-
-                    String expression =
-                            PrimitiveUtil.isEmpty(methodAnnotation.expression())
-                                    ? this.scheduleAnnotation.expression()
-                                    : methodAnnotation.expression();
-
-                    if (PrimitiveUtil.isEmpty(expression)) {
-                        log.debug("SchedulerRunner:[{}], method:[{}] no expression found", this.schedulerInstance.getClass().getName(), method.getName());
-                        return;
-                    }
-
-                    log.debug("SchedulerRunner:[{}], method:[{}] is enabled", this.schedulerInstance.getClass().getName(), method.getName());
-                    cacheSchedulerTask.add(
-                            Scheduler.Task
-                                    .builder()
-                                    .runner(this)
-                                    .expression(expression)
-                                    .method(method)
-                                    .checker(Scheduler.Checker.from(methodAnnotation).orElse(schedulerChecker))
-                                    .execution(null)
-                                    .executions(new ArrayList<>())
-                                    .order(methodAnnotation.order())
-                                    .build()
-                    );
-                }
-        );
-
+        for (var method : this.getInstanceMethods()) {
+            var schedulerTask=createSchedulerTask(method,schedulerChecker);
+            if(schedulerTask!=null)
+                cacheSchedulerTask.add(schedulerTask);
+        }
         return cacheSchedulerTask.isEmpty();
     }
 
     public void schedulesRunner() {
-
-        cacheSchedulerTask
-                .forEach(
-                        schedulerTask ->
-                        {
-                            switch (schedulerTask.invoke()) {
-                                case SUCCESSFUL:
-                                    log.error("SchedulerRunner:[{}], {} successful", this.schedulerInstance.getClass().getName(), schedulerTask.getName());
-                                case SKIPPED:
-                                    log.debug("SchedulerRunner:[{}], [{}] skipped", this.schedulerInstance.getClass().getName(), schedulerTask.getName());
-                                case FAIL:
-                                    log.error("SchedulerRunner:[{}], {}", this.schedulerInstance.getClass().getName(), schedulerTask.getMessages());
-                                default:
-                                    log.error("SchedulerRunner:[{}], invalid response", this.schedulerInstance.getClass().getName());
-                            }
-                        }
-                );
-
+        for (Scheduler.Task schedulerTask : cacheSchedulerTask)
+            schedulerTask.invoke();
     }
 }
