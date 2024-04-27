@@ -3,7 +3,7 @@ package com.littlecode.tests;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.littlecode.files.FileFormat;
 import com.littlecode.files.IOUtil;
-import com.littlecode.setting.SettingUtil;
+import com.littlecode.setting.SettingLoader;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
@@ -13,12 +13,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
-public class SettingUtilTest {
+public class SettingLoaderTest {
 
     private SettingTest makeSetting(FileFormat fileFormat) {
         return SettingTest
@@ -63,11 +64,61 @@ public class SettingUtilTest {
     }
 
     @Test
+    public void UT_CHECKER_fileFormat() {
+        var settingTest=new SettingTest();
+        Assertions.assertDoesNotThrow(() -> settingTest.setFileFormat(null));
+        Assertions.assertDoesNotThrow(settingTest::getFileFormat);
+        Assertions.assertNotNull(settingTest.getFileFormat());
+        Assertions.assertEquals(settingTest.getFileFormat(),SettingTest.FILE_FORMAT_DEFAULT);
+
+        Assertions.assertDoesNotThrow(() -> settingTest.setFileFormat(FileFormat.JSON));
+        Assertions.assertDoesNotThrow(settingTest::getFileFormat);
+        Assertions.assertNotNull(settingTest.getFileFormat());
+        Assertions.assertEquals(settingTest.getFileFormat(),FileFormat.JSON);
+
+    }
+
+    @Test
+    public void UT_CHECKER_getExtension() {
+        for (FileFormat e : List.of(FileFormat.values())) {
+            Assertions.assertDoesNotThrow(() -> SettingTest.getExtension(e));
+            Assertions.assertEquals(SettingTest.getExtension(e), "." + e.name().toLowerCase());
+        }
+
+        Assertions.assertDoesNotThrow(()->SettingTest.getExtension(null));
+        Assertions.assertEquals(SettingTest.getExtension(null),"");
+
+    }
+
+    @Test
+    public void UT_CHECKER_parseExtension() {
+        var file=new File("/tmp/file.json");
+        var fileJson=new File("/tmp/file.json");
+
+        Assertions.assertDoesNotThrow(()->SettingTest.parseExtension(file,FileFormat.JSON).getAbsolutePath());
+        Assertions.assertDoesNotThrow(()->SettingTest.parseExtension(fileJson,FileFormat.JSON).getAbsolutePath());
+        Assertions.assertDoesNotThrow(()->SettingTest.parseExtension(fileJson,FileFormat.JSON).getAbsolutePath());
+        Assertions.assertDoesNotThrow(()->SettingTest.parseExtension(fileJson,FileFormat.JSON));
+        Assertions.assertDoesNotThrow(()->SettingTest.parseExtension(fileJson,null));
+        Assertions.assertDoesNotThrow(()->SettingTest.parseExtension(null, FileFormat.JSON));
+        Assertions.assertDoesNotThrow(()->SettingTest.parseExtension(null, null));
+
+        Assertions.assertEquals(SettingTest.parseExtension(file,FileFormat.JSON).getAbsolutePath(),file.getAbsolutePath());
+        Assertions.assertEquals(SettingTest.parseExtension(fileJson,FileFormat.JSON).getAbsolutePath(),fileJson.getAbsolutePath());
+        Assertions.assertEquals(SettingTest.parseExtension(fileJson,FileFormat.JSON).getAbsolutePath(),fileJson.getAbsolutePath());
+        Assertions.assertEquals(SettingTest.parseExtension(fileJson,FileFormat.JSON),fileJson);
+        Assertions.assertNull(SettingTest.parseExtension(fileJson,null));
+        Assertions.assertNull(SettingTest.parseExtension(null, FileFormat.JSON));
+        Assertions.assertNull(SettingTest.parseExtension(null, null));
+
+    }
+
+    @Test
     public void UT_CHECKER() {
 
         Map<FileFormat, File> settingFiles = new HashMap<>();
 
-        for (FileFormat fileFormat : SettingUtil.getFileFormats()) {
+        for (FileFormat fileFormat : SettingLoader.FILE_FORMAT_ACCEPTED) {
             SettingTest setting = makeSetting(fileFormat);
             var settingFile = setting
                     .settingFile(IOUtil.createFileTemp())
@@ -99,7 +150,7 @@ public class SettingUtilTest {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class SettingTest extends SettingUtil<SettingTest> {
+    public static class SettingTest extends SettingLoader<SettingTest> {
         private SettingSubTest subA;
         private SettingSubTest subB;
         private SettingSubTest subC;

@@ -200,7 +200,7 @@ public class IOUtil {
         }
     }
 
-    public static void writeAll(File file, String body) {
+    public static boolean writeAll(File file, String body) {
         if (file == null)
             throw new FrameworkException("Destine file is null");
         var basePath = IOUtil.target(file).basePath();
@@ -217,9 +217,10 @@ public class IOUtil {
         try (FileWriter writer = new FileWriter(file)) {
             writer.write(body);
             writer.flush();
-        } catch (IOException e) {
-            throw new FrameworkException(e);
+            return true;
+        } catch (IOException ignored) {
         }
+        return false;
     }
 
     public static void writeLines(File file, List<String> lines) {
