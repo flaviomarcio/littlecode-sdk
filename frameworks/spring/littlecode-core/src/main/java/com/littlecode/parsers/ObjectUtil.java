@@ -378,7 +378,7 @@ public class ObjectUtil {
                             try {
                                 fieldValues.put(field.getName(), field.get(o));
                             } catch (IllegalAccessException e) {
-                                throw new FrameworkException(e);
+                                throw new FrameworkException(e.getMessage());
                             }
                         });
                 return fieldValues;
@@ -419,7 +419,7 @@ public class ObjectUtil {
                                 fieldValues.put(field.getName(), toString(oGet));
 
                         } catch (Exception e) {
-                            throw new FrameworkException(e);
+                            throw new FrameworkException(e.getMessage());
                         }
                     });
             return fieldValues;

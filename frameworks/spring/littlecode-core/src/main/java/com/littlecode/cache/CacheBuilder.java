@@ -167,7 +167,7 @@ public class CacheBuilder {
                 var type = Class.forName(map.get(FIELD_TYPE));
                 return new CacheItem(id, data, type);
             } catch (ClassNotFoundException e) {
-                throw new FrameworkException(e);
+                throw new FrameworkException(e.getMessage());
             }
         }
 
@@ -244,7 +244,7 @@ public class CacheBuilder {
                                 throw new FrameworkException(String.format("Field[%s] not found", fieldName));
                             mapValues.put(field.getName(), field.get(data));
                         } catch (IllegalAccessException e) {
-                            throw new FrameworkException(e);
+                            throw new FrameworkException(e.getMessage());
                         }
                     });
             return HashUtil.toMd5Uuid(mapValues);
@@ -577,7 +577,7 @@ public class CacheBuilder {
             try {
                 return Class.forName(storageName);
             } catch (Exception e) {
-                throw new FrameworkException(e);
+                throw new FrameworkException(e.getMessage());
             }
         }
     }

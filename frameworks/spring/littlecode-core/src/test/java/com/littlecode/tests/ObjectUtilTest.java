@@ -196,7 +196,7 @@ public class ObjectUtilTest {
                 writer.write(objectSrcString);
                 writer.flush();
             } catch (IOException e) {
-                throw new FrameworkException(e);
+                throw new FrameworkException(e.getMessage());
             }
             objNew = ObjectUtil.createFromFile(ObjectCheck.class, file);
             Assertions.assertNotNull(objNew);

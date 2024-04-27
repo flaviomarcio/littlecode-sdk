@@ -23,7 +23,7 @@ public class HashUtilTest {
             writer.write("test");
             writer.flush();
         } catch (IOException e) {
-            throw new FrameworkException(e);
+            throw new FrameworkException(e.getMessage());
         }
 
         Assertions.assertDoesNotThrow(() ->
@@ -94,7 +94,7 @@ public class HashUtilTest {
                     writer.write(md5ObjectJson);
                     writer.flush();
                 } catch (IOException e) {
-                    throw new FrameworkException(e);
+                    throw new FrameworkException(e.getMessage());
                 }
                 Assertions.assertEquals(HashUtil.toMd5(new FileInputStream(file)), md5ObjectMd5);
                 Assertions.assertEquals(HashUtil.toMd5Uuid(new FileInputStream(file)), md5ObjectHash);

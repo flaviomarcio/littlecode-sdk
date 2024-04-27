@@ -245,7 +245,7 @@ public class IOUtil {
             }
             writer.flush();
         } catch (IOException e) {
-            throw new FrameworkException(e);
+            throw new FrameworkException(e.getMessage());
         }
     }
 
@@ -276,7 +276,7 @@ public class IOUtil {
                     suffix == null ? "" : suffix.trim(),
                     directory == null ? tempDir() : directory);
         } catch (IOException e) {
-            throw new FrameworkException(e);
+            throw new FrameworkException(e.getMessage());
         }
     }
 

@@ -39,7 +39,7 @@ public class CollectionUtil {
                     throw new FrameworkException("Invalid key conversion");
                 __return.put(k, value);
             } catch (IllegalAccessException e) {
-                throw new FrameworkException(e);
+                throw new FrameworkException(e.getMessage());
             }
         }
         return __return;

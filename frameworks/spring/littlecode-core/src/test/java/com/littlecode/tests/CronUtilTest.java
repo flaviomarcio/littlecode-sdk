@@ -14,6 +14,8 @@ import java.time.LocalDateTime;
 public class CronUtilTest {
     @Test
     public void UT_CHECK_CRON() {
+        Assertions.assertDoesNotThrow(() -> new CronUtil());
+        Assertions.assertDoesNotThrow(() -> CronUtil.builder().build());
         Assertions.assertDoesNotThrow(() -> CronUtil.ofCron(0));
         Assertions.assertDoesNotThrow(() -> CronUtil.ofCron(0, 0));
         Assertions.assertDoesNotThrow(() -> CronUtil.ofCron(0, 0, 0));
@@ -28,6 +30,15 @@ public class CronUtilTest {
         Assertions.assertDoesNotThrow(() -> CronUtil.ofCron("", "", "", ""));
         Assertions.assertDoesNotThrow(() -> CronUtil.ofCron("", "", "", "", "", ""));
 
+
+        Assertions.assertDoesNotThrow(() -> CronUtil.ofCron(null));
+        Assertions.assertDoesNotThrow(() -> CronUtil.ofCron(null, null));
+        Assertions.assertDoesNotThrow(() -> CronUtil.ofCron(null, null, null));
+        Assertions.assertDoesNotThrow(() -> CronUtil.ofCron(null, null, null, null));
+        Assertions.assertDoesNotThrow(() -> CronUtil.ofCron(null, null, null, null));
+        Assertions.assertDoesNotThrow(() -> CronUtil.ofCron(null, null, null, null, "", ""));
+
+
         Assertions.assertDoesNotThrow(() -> CronUtil.everySecond(2));
         Assertions.assertDoesNotThrow(() -> CronUtil.everyMinute(2));
         Assertions.assertDoesNotThrow(() -> CronUtil.everyDay(2));
@@ -35,10 +46,13 @@ public class CronUtilTest {
         Assertions.assertDoesNotThrow(() -> CronUtil.everySecond());
         Assertions.assertDoesNotThrow(() -> CronUtil.everyMinute());
         Assertions.assertDoesNotThrow(() -> CronUtil.everyDay());
-        Assertions.assertDoesNotThrow(() -> CronUtil.builder()
+        var cronUtil=CronUtil.builder();
+        Assertions.assertDoesNotThrow(() -> cronUtil.temporal(null));
+        Assertions.assertDoesNotThrow(() -> cronUtil
                 .temporal(LocalDateTime.now())
                 .expression(CronUtil.ofCron("10"))
-                .build().next()
+                .build()
+                .next()
         );
 
     }

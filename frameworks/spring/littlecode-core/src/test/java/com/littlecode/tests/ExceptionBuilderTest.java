@@ -17,6 +17,60 @@ import java.util.List;
 public class ExceptionBuilderTest {
 
     @Test
+    public void UT_CHECK_OF_EXPTIONS() {
+        Assertions.assertDoesNotThrow(() -> new ArithmeticException("teste"));
+        Assertions.assertDoesNotThrow(() -> new ArithmeticException("teste"));
+        Assertions.assertDoesNotThrow(() -> new BadRequestException("teste"));
+        Assertions.assertDoesNotThrow(() -> new ConflictException("teste"));
+        Assertions.assertDoesNotThrow(() -> new ConversionException("teste"));
+        Assertions.assertDoesNotThrow(() -> new FrameworkException("teste"));
+        Assertions.assertDoesNotThrow(() -> new InvalidException("teste"));
+        Assertions.assertDoesNotThrow(() -> new InvalidObjectException("teste"));
+        Assertions.assertDoesNotThrow(() -> new InvalidSettingException("teste"));
+        Assertions.assertDoesNotThrow(() -> new NetworkException("teste"));
+        Assertions.assertDoesNotThrow(() -> new NoContentException("teste"));
+        Assertions.assertDoesNotThrow(() -> new NoImplementedException("teste"));
+        Assertions.assertDoesNotThrow(() -> new NotFoundException("teste"));
+        Assertions.assertDoesNotThrow(() -> new ParserException("teste"));
+        Assertions.assertDoesNotThrow(() -> new UnAuthorizationException("teste"));
+        Assertions.assertDoesNotThrow(() -> new UnknownException("teste"));
+
+        Assertions.assertThrows(ArithmeticException.class,() -> {throw new ArithmeticException("teste");});
+        Assertions.assertThrows(BadRequestException.class,() -> {throw new BadRequestException("teste");});
+        Assertions.assertThrows(ConflictException.class,() -> {throw new ConflictException("teste");});
+        Assertions.assertThrows(ConversionException.class,() -> {throw new ConversionException("teste");});
+        Assertions.assertThrows(FrameworkException.class,() -> {throw new FrameworkException("teste");});
+        Assertions.assertThrows(InvalidException.class,() -> {throw new InvalidException("teste");});
+        Assertions.assertThrows(InvalidObjectException.class,() -> {throw new InvalidObjectException("teste");});
+        Assertions.assertThrows(InvalidSettingException.class,() -> {throw new InvalidSettingException("teste");});
+        Assertions.assertThrows(NetworkException.class,() -> {throw new NetworkException("teste");});
+        Assertions.assertThrows(NoContentException.class,() -> {throw new NoContentException("teste");});
+        Assertions.assertThrows(NoImplementedException.class,() -> {throw new NoImplementedException("teste");});
+        Assertions.assertThrows(NotFoundException.class,() -> {throw new NotFoundException("teste");});
+        Assertions.assertThrows(ParserException.class,() -> {throw new ParserException("teste");});
+        Assertions.assertThrows(UnAuthorizationException.class,() -> {throw new UnAuthorizationException("teste");});
+        Assertions.assertThrows(UnknownException.class,() -> {throw new UnknownException("teste");});
+
+        Assertions.assertNotNull(new ArithmeticException("teste"));
+        Assertions.assertNotNull(new ArithmeticException("teste"));
+        Assertions.assertNotNull(new BadRequestException("teste"));
+        Assertions.assertNotNull(new ConflictException("teste"));
+        Assertions.assertNotNull(new ConversionException("teste"));
+        Assertions.assertNotNull(new FrameworkException("teste"));
+        Assertions.assertNotNull(new InvalidException("teste"));
+        Assertions.assertNotNull(new InvalidObjectException("teste"));
+        Assertions.assertNotNull(new InvalidSettingException("teste"));
+        Assertions.assertNotNull(new NetworkException("teste"));
+        Assertions.assertNotNull(new NoContentException("teste"));
+        Assertions.assertNotNull(new NoImplementedException("teste"));
+        Assertions.assertNotNull(new NotFoundException("teste"));
+        Assertions.assertNotNull(new ParserException("teste"));
+        Assertions.assertNotNull(new UnAuthorizationException("teste"));
+        Assertions.assertNotNull(new UnknownException("teste"));
+
+    }
+
+    @Test
     public void UT_CHECK_SET() {
         Assertions.assertDoesNotThrow(() -> new ExceptionBuilder());
         Assertions.assertDoesNotThrow(() -> new ExceptionBuilder().getTarget());

@@ -99,7 +99,7 @@ public class DiskPlugin extends PluginBase {
             writer.flush();
             writer.close();
         } catch (IOException e) {
-            throw new FrameworkException(e);
+            throw new FrameworkException(e.getMessage());
         }
     }
 

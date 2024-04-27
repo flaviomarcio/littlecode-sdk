@@ -2,9 +2,7 @@ package com.littlecode.cron;
 
 import com.littlecode.exceptions.FrameworkException;
 import com.littlecode.parsers.PrimitiveUtil;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.scheduling.support.CronExpression;
 
 import java.time.LocalDateTime;
@@ -50,7 +48,7 @@ public class CronUtil {
 //"0 0 0 ? * MON#1" = the first Monday in the month at midnight
 
     private static String check(String val) {
-        return (val.isEmpty()) ? "*" : val;
+        return (val!=null && val.isEmpty()) ? "*" : val;
     }
 
     public static String ofCron(String seconds, String minutes, String hours, String days, String months, String dayOfWeek) {
@@ -62,10 +60,11 @@ public class CronUtil {
                 check(months),
                 check(dayOfWeek)
         );
-        if (!CronExpression.isValidExpression(expression))
-            throw new FrameworkException("Invalid expression: " + expression);
-        var cronExpression = CronExpression.parse(expression);
-        return cronExpression.toString();
+        if (CronExpression.isValidExpression(expression)){
+            var cronExpression = CronExpression.parse(expression);
+            return cronExpression.toString();
+        }
+        return "";
     }
 
     public static String ofCron(String seconds, String minutes, String hours, String days) {
@@ -154,14 +153,11 @@ public class CronUtil {
     }
 
     public LocalDateTime next() {
-        if (!CronExpression.isValidExpression(this.expression))
-            throw new FrameworkException("Invalid expression: " + expression);
-        if (this.temporal == null)
-            throw new FrameworkException("Invalid temporal: " + temporal);
-        var cron = CronExpression.parse(this.expression);
-        var temporal = cron.next(this.temporal);
-        if (temporal == null)
-            throw new FrameworkException(String.format("Invalid next temporal, expression :[%s] temporal:[%s] ", this.expression, this.temporal));
-        return LocalDateTime.of(temporal.toLocalDate(), temporal.toLocalTime());
+        if (this.temporal!=null && CronExpression.isValidExpression(this.expression)){
+            var cron = CronExpression.parse(this.expression);
+            var temporal = cron.next(this.temporal);
+            return LocalDateTime.of(temporal.toLocalDate(), temporal.toLocalTime());
+        }
+        return null;
     }
 }

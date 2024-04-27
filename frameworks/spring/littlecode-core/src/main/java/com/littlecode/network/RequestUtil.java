@@ -269,7 +269,7 @@ public class RequestUtil {
                 try {
                     privateOnStarted.execute();
                 } catch (Throwable ex) {
-                    throw new FrameworkException(ex);
+                    throw new FrameworkException(ex.getMessage());
                 }
             }
 
@@ -325,7 +325,7 @@ public class RequestUtil {
                 try {
                     privateOnSuccessful.execute();
                 } catch (Throwable ex) {
-                    throw new FrameworkException(ex);
+                    throw new FrameworkException(ex.getMessage());
                 }
             }
         } catch (Throwable e) {
@@ -335,7 +335,7 @@ public class RequestUtil {
                 try {
                     privateOnFail.execute();
                 } catch (Throwable ex) {
-                    throw new FrameworkException(ex);
+                    throw new FrameworkException(ex.getMessage());
                 }
             }
             if (this.exceptionOnFail())
@@ -347,7 +347,7 @@ public class RequestUtil {
             try {
                 privateOnFinished.execute();
             } catch (Throwable ex) {
-                throw new FrameworkException(ex);
+                throw new FrameworkException(ex.getMessage());
             }
         }
         return this;

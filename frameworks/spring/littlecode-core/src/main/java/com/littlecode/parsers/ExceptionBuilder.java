@@ -61,7 +61,7 @@ public class ExceptionBuilder {
     }
 
     public static RuntimeException of(Exception e) {
-        return new FrameworkException(e);
+        return new FrameworkException(e.getMessage());
     }
 
     public static RuntimeException of(Object target) {
