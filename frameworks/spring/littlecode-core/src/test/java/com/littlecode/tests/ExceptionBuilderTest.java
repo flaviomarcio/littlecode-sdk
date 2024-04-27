@@ -18,18 +18,19 @@ public class ExceptionBuilderTest {
 
     @Test
     public void UT_CHECK_SET() {
-        Assertions.assertDoesNotThrow(() -> ExceptionBuilder.builder().build().setArgs((List<Object>) null));
-        Assertions.assertDoesNotThrow(() -> ExceptionBuilder.builder().build().setArgs(new Object[0]));
-        Assertions.assertDoesNotThrow(() -> ExceptionBuilder.builder().build().setType(null));
+        Assertions.assertDoesNotThrow(() -> new ExceptionBuilder());
+        Assertions.assertDoesNotThrow(() -> new ExceptionBuilder().getTarget());
+        Assertions.assertDoesNotThrow(() -> new ExceptionBuilder().getType());
+        Assertions.assertDoesNotThrow(() -> new ExceptionBuilder().getArgs());
+        Assertions.assertDoesNotThrow(() -> ExceptionBuilder.builder().build().setArgs(null));
         Assertions.assertDoesNotThrow(() -> ExceptionBuilder.builder().build().setType(ExceptionBuilder.Type.NoContent));
 
         var eBuilder = ExceptionBuilder.builder().build();
-        eBuilder.setArgs((List<Object>) null);
         Assertions.assertNull(eBuilder.getArgs());
-        eBuilder.setArgs(new Object[0]);
-        Assertions.assertNotNull(eBuilder.getArgs());
-        eBuilder.setType(null);
-        Assertions.assertNull(eBuilder.getType());
+        eBuilder.setArgs(null);
+        Assertions.assertNull(eBuilder.getArgs());
+        eBuilder.setType(ExceptionBuilder.Type.NoContent);
+        Assertions.assertNotNull(eBuilder.getType());
         eBuilder.setType(ExceptionBuilder.Type.NoContent);
         Assertions.assertNotNull(eBuilder.getType());
         Assertions.assertEquals(eBuilder.getType(), ExceptionBuilder.Type.NoContent);

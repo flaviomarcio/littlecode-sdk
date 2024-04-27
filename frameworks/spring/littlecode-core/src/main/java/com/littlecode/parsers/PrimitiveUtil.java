@@ -36,11 +36,17 @@ public class PrimitiveUtil {
         return HashUtil.toUuid(v);
     }
 
-    private static String formatDouble(Double v, int precision) {
-        var d = (v == null) ? 0 : v;
-        var format = precision <= 0
+    @SuppressWarnings("SameParameterValue")
+    private static String formatFormat(int precision) {
+        return precision <= 0
                 ? "#"
                 : "#." + ("#".repeat(precision));
+    }
+
+    @SuppressWarnings("SameParameterValue")
+    private static String formatDouble(Double v,  int precision) {
+        var d = (v == null) ? 0 : v;
+        var format = formatFormat(precision);
         var symbols = new DecimalFormatSymbols(Locale.US);
         return (new DecimalFormat(format, symbols)).format(d);
     }
@@ -102,11 +108,12 @@ public class PrimitiveUtil {
     }
 
     public static double toDouble(Double v, int precision) {
-        if (v == null || v.equals(0D))
-            return 0;
-        var decimal = new BigDecimal(v.toString());
-        decimal = decimal.setScale(precision, RoundingMode.HALF_UP);
-        return decimal.doubleValue();
+        if (v != null && !v.equals(0D)){
+            var decimal = new BigDecimal(v.toString());
+            decimal = decimal.setScale(precision, RoundingMode.HALF_UP);
+            return decimal.doubleValue();
+        }
+        return 0;
     }
 
     public static double toDouble(String v, int precision) {
@@ -309,6 +316,5 @@ public class PrimitiveUtil {
         }
         return "";
     }
-
 
 }

@@ -90,31 +90,26 @@ public class ObjectUtil {
     }
 
     public static void clear(Object object) {
-        if (object != null)
-            update(object, ObjectUtil.create(object.getClass()));
+        update(object, ObjectUtil.create(object.getClass()));
     }
 
-    public static void update(Object object, Object newValues) {
-        update(object, newValues, FILE_FORMAT_DEFAULT);
+    public static boolean update(Object object, Object newValues) {
+        return update(object, newValues, FILE_FORMAT_DEFAULT);
     }
 
-    public static void update(Object object, Object newValues, FileFormat fileFormat) {
-        if (object == null)
-            throw new FrameworkException("Invalid object");
-
-        if (newValues == null)
-            throw new FrameworkException("Invalid new values");
-
-        try {
-            var updateBytes = IOUtil.readAll(newValues).trim();
-            var updateValues = updateBytes.isEmpty()
-                    ? newValues
-                    : ObjectUtil.createFromString(object.getClass(), updateBytes);
-            var objectMapper = UtilCoreConfig.newObjectMapper(fileFormat);
-            objectMapper.updateValue(object, updateValues);
-        } catch (JsonMappingException e) {
-            throw new FrameworkException(e);
+    public static boolean update(Object object, Object newValues, FileFormat fileFormat) {
+        if (object != null && newValues!=null){
+            try {
+                var updateBytes = IOUtil.readAll(newValues).trim();
+                var updateValues = updateBytes.isEmpty()
+                        ? newValues
+                        : ObjectUtil.createFromString(object.getClass(), updateBytes);
+                var objectMapper = UtilCoreConfig.newObjectMapper(fileFormat);
+                objectMapper.updateValue(object, updateValues);
+            } catch (Exception ignored) {
+            }
         }
+        return false;
     }
 
     public static synchronized Field toFieldByName(Class<?> tClass, String fieldName) {

@@ -21,7 +21,6 @@ public class ExceptionBuilder {
     private Object target;
     private Object[] args;
 
-    @SuppressWarnings("unused")
     public ExceptionBuilder() {
         this.type = Type.Default;
     }
@@ -339,13 +338,9 @@ public class ExceptionBuilder {
         return of(Type.Network, format, args);
     }
 
-    public void setArgs(Object[] args) {
-        this.args = args;
-    }
-
-    public void setArgs(List<Object> args) {
-        setArgs(args == null || args.isEmpty() ? null : args.toArray());
-    }
+//    public void setArgs(Object[] args) {
+//        this.args = args;
+//    }
 
     private String makeMessage() {
         return makeMessage(this.type, this.target, this.args);
