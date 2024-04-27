@@ -33,14 +33,13 @@ public class Setup {
                 log.debug("{}: auto start disabled", logPrefix);
                 return;
             }
-            log.info("{}: started", logPrefix);
-            log.info("{}: executing", logPrefix);
+            log.debug("{}: executing", logPrefix);
             (new SetupExecutor(setting)).execute();
-            log.info("{}: executed", logPrefix);
+            log.debug("{}: executed", logPrefix);
         } catch (Exception e) {
             log.error("{}: fail:{}", logPrefix, e.getMessage());
         } finally {
-            log.info("{}: finished", logPrefix);
+            log.debug("{}: finished", logPrefix);
         }
     }
 

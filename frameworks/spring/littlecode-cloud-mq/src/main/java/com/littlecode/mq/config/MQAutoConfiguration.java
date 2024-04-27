@@ -18,6 +18,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 @Data
+@Slf4j
 public class MQAutoConfiguration {
     private final MQ mq;
     @Value("${littlecode.mq.auto-start:false}")
@@ -33,7 +34,18 @@ public class MQAutoConfiguration {
     }
 
     public void start(){
-        if(autoStart)
-            mq.listen();
+        String logPrefix = this.getClass().getName() + ": ";
+        log.info("{}: started", logPrefix);
+        try{
+            if(!autoStart)
+                log.info("{}: skipped", logPrefix);
+            else{
+                log.info("{}: executing", logPrefix);
+                mq.listen();
+                log.info("{}: executed", logPrefix);
+            }
+        }finally {
+            log.info("{}: finished", logPrefix);
+        }
     }
 }
