@@ -20,19 +20,72 @@ import java.util.Map;
 
 @Slf4j
 public class DSFactory {
+    private static final String STATIC_BASE_PACKAGE = "spring.datasource";
     private final Environment environment;
     @Getter
     private final Database database;
     @Getter
     private final String[] packages;
-
-    private final String __ds_base_path;
+    @Getter
+    private final String dsName;
+    @Getter
+    private final String dsBasePath;
 
     public DSFactory(final Environment environment, final Database database, final String[] packages) {
+        if(environment == null)
+            throw new NullPointerException("environment is null");
+        if(database == null)
+            throw new NullPointerException("database is null");
+        if(packages==null)
+            throw new NullPointerException("packages is null");
+
         this.environment = environment;
         this.database = database;
         this.packages = packages;
-        this.__ds_base_path=String.format("spring.datasource.%s", database.name().toLowerCase());
+        this.dsName = database.name().toLowerCase();
+        this.dsBasePath = STATIC_BASE_PACKAGE;
+    }
+
+    public DSFactory(final Environment environment, final Database database, final String[] packages, final String dsName) {
+        if(environment == null)
+            throw new NullPointerException("environment is null");
+        if(database == null)
+            throw new NullPointerException("database is null");
+        if(packages==null)
+            throw new NullPointerException("packages is null");
+        if(dsName == null)
+            throw new NullPointerException("dsName is null");
+        this.environment = environment;
+        this.database = database;
+        this.packages = packages;
+        this.dsName = dsName;
+        this.dsBasePath = STATIC_BASE_PACKAGE;
+    }
+
+    public DSFactory(final Environment environment, final Database database, final String[] packages, final String dsName, final String dsBasePath) {
+        if(environment == null)
+            throw new NullPointerException("environment is null");
+        if(database == null)
+            throw new NullPointerException("database is null");
+        if(packages==null)
+            throw new NullPointerException("packages is null");
+        if(dsName == null)
+            throw new NullPointerException("dsName is null");
+        if(dsBasePath == null)
+            throw new NullPointerException("dsBasePath is null");
+        this.environment = environment;
+        this.database = database;
+        this.packages = packages;
+        this.dsName = dsName;
+        this.dsBasePath = dsBasePath;
+    }
+
+    public String getDSName(){
+        return this.dsName;
+    }
+
+    public String getDSBasePath(){
+        return String.format("spring.datasource.%s", this.getDSName());
     }
 
     public HibernateJpaVendorAdapter makeVendorAdapter() {
@@ -85,9 +138,10 @@ public class DSFactory {
     }
 
     private String __property__get(String property){
-        property = String.format("%s.%s", __ds_base_path, property);
-        final var __ds_value = environment.getProperty(property,"");
-        return __ds_value==null?"":__ds_value;
+        property = String.format("%s.%s", getDSBasePath(), property);
+        return environment.containsProperty(property)
+                ?environment.getProperty(property,"")
+                :"";
     }
 
     private Map<String,String> __make_default_properties() {
@@ -95,13 +149,10 @@ public class DSFactory {
         var hibernate_envs= List.of(AvailableSettings.DIALECT,AvailableSettings.SHOW_SQL,AvailableSettings.FORMAT_SQL,AvailableSettings.USE_SQL_COMMENTS,AvailableSettings.PHYSICAL_NAMING_STRATEGY,AvailableSettings.IMPLICIT_NAMING_STRATEGY);
         for(var env: hibernate_envs)
             __property__add(properties, env);
-
         if(!properties.containsKey(AvailableSettings.PHYSICAL_NAMING_STRATEGY))
             __property__add(properties, AvailableSettings.PHYSICAL_NAMING_STRATEGY, CamelCaseToUnderscoresNamingStrategy.class.getCanonicalName());
         if(!properties.containsKey(AvailableSettings.IMPLICIT_NAMING_STRATEGY))
             __property__add(properties, AvailableSettings.IMPLICIT_NAMING_STRATEGY, SpringImplicitNamingStrategy.class.getCanonicalName());
-
-        //PhysicalNamingStrategyStandardImpl.INSTANCE.
 
         return properties;
     }

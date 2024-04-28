@@ -4,15 +4,20 @@ import com.littlecode.config.UtilCoreConfig;
 import com.littlecode.containers.ObjectContainer;
 import com.littlecode.exceptions.FrameworkException;
 import com.littlecode.mq.MQ;
-import com.littlecode.mq.adapter.*;
+import com.littlecode.mq.adapter.Amqp;
+import com.littlecode.mq.adapter.AmqpByRabbitMQ;
+import com.littlecode.mq.adapter.AwsSQS;
+import com.littlecode.mq.adapter.MQAdapter;
 import com.littlecode.mq.adapter.impl.MQAMQPRabbitMQImpl;
 import com.littlecode.mq.adapter.impl.MQSQSAWSImpl;
 import com.littlecode.mq.config.MQAutoConfiguration;
+import com.littlecode.mq.config.MQBeans;
 import com.littlecode.mq.config.MQSetting;
 import com.littlecode.parsers.ObjectUtil;
 import lombok.Getter;
 import lombok.Setter;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -25,13 +30,24 @@ import java.util.UUID;
 @ExtendWith(MockitoExtension.class)
 public class MQTest {
 
+    @BeforeAll
+    public static void setUp() {
+        UtilCoreConfig.setApplicationContext(Mockito.mock(ApplicationContext.class));
+        UtilCoreConfig.setEnvironment(Mockito.mock(Environment.class));
+    }
+
     @Test
     public void UT_CHECK_STARTED() {
-        Assertions.assertThrows(NullPointerException.class,() -> new MQAutoConfiguration(null,Mockito.mock(ApplicationContext.class),Mockito.mock(Environment.class)));
-        Assertions.assertDoesNotThrow(() -> new MQAutoConfiguration(Mockito.mock(MQ.class),Mockito.mock(ApplicationContext.class),Mockito.mock(Environment.class)));
-        var config=new MQAutoConfiguration(Mockito.mock(MQ.class),Mockito.mock(ApplicationContext.class),Mockito.mock(Environment.class));
-        Assertions.assertDoesNotThrow(() -> config.getMq());
-        Assertions.assertDoesNotThrow(() -> config.isAutoStart());
+        Assertions.assertDoesNotThrow(() -> new MQBeans());
+        Assertions.assertDoesNotThrow(() -> new MQBeans().newMQSetting());
+        Assertions.assertDoesNotThrow(() -> new MQBeans().newMQ());
+        Assertions.assertNotNull(new MQBeans().newMQSetting());
+        Assertions.assertNotNull(new MQBeans().newMQ());
+
+
+        Assertions.assertDoesNotThrow(() -> new MQAutoConfiguration(Mockito.mock(ApplicationContext.class), Mockito.mock(Environment.class)));
+        var config = new MQAutoConfiguration(Mockito.mock(ApplicationContext.class), Mockito.mock(Environment.class));
+        Assertions.assertDoesNotThrow(config::isAutoStart);
         Assertions.assertDoesNotThrow(config::start);
         config.setAutoStart(true);
         Assertions.assertDoesNotThrow(config::start);
@@ -46,8 +62,11 @@ public class MQTest {
         UtilCoreConfig.setApplicationContext(context);
         UtilCoreConfig.setEnvironment(environment);
 
-        Assertions.assertThrows(NullPointerException.class,()-> new MQ(null));
+        Assertions.assertThrows(NullPointerException.class, () -> new MQ((MQSetting) null));
+        Assertions.assertThrows(NullPointerException.class, () -> new MQ((Environment) null));
+        Assertions.assertDoesNotThrow(() -> new MQ(Mockito.mock(Environment.class)));
         Assertions.assertDoesNotThrow(()->new MQ(Mockito.mock(MQSetting.class)));
+        Assertions.assertDoesNotThrow(() -> new MQ());
         var setting=Mockito.mock(MQSetting.class);
         Mockito.when(setting.getEngine()).thenReturn(MQAdapter.class.getCanonicalName());
         var mq=new MQ(setting);
@@ -155,8 +174,12 @@ public class MQTest {
     }
 
     @Test
-    public void UI_CHECK_ATTR(){
+    public void UI_CHECK_MQSETTING() {
+        Assertions.assertThrows(NullPointerException.class, () -> new MQSetting(null));
+        Assertions.assertDoesNotThrow(() -> new MQSetting());
+        Assertions.assertDoesNotThrow(() -> new MQSetting(Mockito.mock(Environment.class)));
         var config=new MQSetting();
+        Assertions.assertDoesNotThrow(config::resetEnvs);
         Assertions.assertDoesNotThrow(config::isAutoCreate);
         Assertions.assertDoesNotThrow(config::isAutoStart);
         Assertions.assertDoesNotThrow(config::isStopOnFail);
@@ -179,37 +202,37 @@ public class MQTest {
         Assertions.assertDoesNotThrow(config::getUrl);
         Assertions.assertDoesNotThrow(config::getVHostName);
 
-        Assertions.assertNull(config.getClientId());
-        Assertions.assertNull(config.getClientSecret());
-        Assertions.assertNull(config.getEngine());
-        Assertions.assertNull(config.getHostName());
-        Assertions.assertNull(config.getQueueChannel());
-        Assertions.assertNull(config.getQueueExchange());
-        Assertions.assertNull(config.getQueueName());
-        Assertions.assertNull(config.getQueueNameConsumer());
-        Assertions.assertNull(config.getQueueNameDispatcher());
+        Assertions.assertNotNull(config.getClientId());
+        Assertions.assertNotNull(config.getClientSecret());
+        Assertions.assertNotNull(config.getEngine());
+        Assertions.assertNotNull(config.getHostName());
+        Assertions.assertNotNull(config.getQueueChannel());
+        Assertions.assertNotNull(config.getQueueExchange());
+        Assertions.assertNotNull(config.getQueueName());
+        Assertions.assertNotNull(config.getQueueNameConsumer());
+        Assertions.assertNotNull(config.getQueueNameDispatcher());
         Assertions.assertNotNull(config.getQueueNameConsumers());
         Assertions.assertNotNull(config.getQueueNameDispatchers());
-        Assertions.assertNull(config.getQueueRegion());
-        Assertions.assertNull(config.getUrl());
-        Assertions.assertNull(config.getVHostName());
+        Assertions.assertNotNull(config.getQueueRegion());
+        Assertions.assertNotNull(config.getUrl());
+        Assertions.assertNotNull(config.getVHostName());
 
+        Assertions.assertFalse(config.isAutoCreate());
+        Assertions.assertFalse(config.isAutoStart());
+        Assertions.assertTrue(config.isStopOnFail());
+
+
+        Assertions.assertEquals(config.getClientId(), "guest");
+        Assertions.assertEquals(config.getClientSecret(), "guest");
+        Assertions.assertEquals(config.getQueueName(), "");
+        Assertions.assertEquals(config.getQueueRegion(), "us-east-1");
         Assertions.assertEquals(config.getHeartbeat(),30);
-        Assertions.assertEquals(config.getRecoveryInterval(),60);
+        Assertions.assertEquals(config.getRecoveryInterval(), 10);
         Assertions.assertEquals(config.getQueueConsumers(),1);
         Assertions.assertEquals(config.getQueueMaxNumber(),1);
         Assertions.assertEquals(config.getQueueIdleSleep(),1000);
-
-        config.setHeartbeat(1);
-        Assertions.assertEquals(config.getHeartbeat(),1);
-        config.setRecoveryInterval(1);
-        Assertions.assertEquals(config.getRecoveryInterval(),1);
-        config.setQueueConsumers(2);
-        Assertions.assertEquals(config.getQueueConsumers(),2);
-        config.setQueueMaxNumber(2);
-        Assertions.assertEquals(config.getQueueMaxNumber(),2);
-        config.setQueueIdleSleep(1);
-        Assertions.assertEquals(config.getQueueIdleSleep(),1);
+        Assertions.assertEquals(config.getHeartbeat(), 30);
+        Assertions.assertEquals(config.getRecoveryInterval(), 10);
 
         Assertions.assertTrue(config.getQueueNameConsumers().isEmpty());
         Assertions.assertTrue(config.getQueueNameDispatchers().isEmpty());

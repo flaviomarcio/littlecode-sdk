@@ -11,12 +11,12 @@ import java.lang.annotation.*;
 @Slf4j
 @Component
 public class MQAdapter {
-    private final MQ mq;
+    private MQ mq;
 
     public MQAdapter(MQ mq) {
         if(mq==null)
             throw new NullPointerException("MQ is null");
-        this.mq = mq;
+        this.mq = new MQ();
     }
 
     public final MQ mq() {

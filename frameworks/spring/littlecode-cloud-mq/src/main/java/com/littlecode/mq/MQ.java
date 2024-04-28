@@ -1,34 +1,21 @@
 package com.littlecode.mq;
 
-import com.littlecode.config.UtilCoreConfig;
 import com.littlecode.containers.ObjectContainer;
 import com.littlecode.mq.adapter.MQAdapter;
 import com.littlecode.mq.config.MQSetting;
 import com.littlecode.parsers.ExceptionBuilder;
 import com.littlecode.parsers.HashUtil;
 import com.littlecode.parsers.ObjectUtil;
-import com.littlecode.parsers.PrimitiveUtil;
-import com.littlecode.privates.CoreUtilAutoConfiguration;
 import com.littlecode.util.BeanUtil;
-import com.littlecode.util.EnvironmentUtil;
 import lombok.*;
-import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import java.beans.Transient;
-import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Slf4j
-@Component
 @Getter
 public class MQ {
     public static final String MQ_BEAN_NAME_DISPATCHER = "littleCodeMqBeanNameDispatcher";
@@ -38,10 +25,20 @@ public class MQ {
     private final MQSetting setting;
     private MQAdapter adapter = null;
 
+    public MQ() {
+        this.setting = new MQSetting();
+    }
+
     public MQ(MQSetting setting) {
         if(setting==null)
             throw new NullPointerException("setting is null");
         this.setting = setting;
+    }
+
+    public MQ(Environment environment) {
+        if (environment == null)
+            throw new NullPointerException("environment is null");
+        this.setting = new MQSetting(environment);
     }
 
     public MQSetting setting(){
@@ -58,20 +55,17 @@ public class MQ {
             return this.adapter;
 
         var configurer = BeanUtil
-                .of(UtilCoreConfig.getApplicationContext())
-                .bean(MQ.MQ_BEAN_CONFIGURER)
+                .of(MQ.MQ_BEAN_CONFIGURER)
                 .getBean(MQ.Configurer.class);
         if (configurer != null)
             configurer.configurer.accept(this.setting);
 
         var engine = setting.getEngine();
-        if (engine==null || engine.trim().isEmpty())
-            throw ExceptionBuilder.ofFrameWork(String.format("Invalid [%s] name", MQAdapter.class.getName()));
-        var aClass = ObjectUtil.getClassByName(engine);
-        this.adapter = ObjectUtil.createWithArgsConstructor(aClass, this);
-        if (adapter == null)
-            throw ExceptionBuilder.ofFrameWork(String.format("Invalid [%s] name: [%s]", MQAdapter.class.getName(), engine));
-
+        if (engine != null && !engine.trim().isEmpty()) {
+            var aClass = ObjectUtil.getClassByName(engine);
+            if (aClass != null)
+                this.adapter = ObjectUtil.createWithArgsConstructor(aClass, this);
+        }
         return adapter;
     }
 

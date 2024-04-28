@@ -1,110 +1,104 @@
 package com.littlecode.mq.config;
 
+import com.littlecode.mq.adapter.Amqp;
+import com.littlecode.util.EnvironmentUtil;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Service;
+import org.springframework.core.env.Environment;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@Configuration
-@EnableAutoConfiguration
 public class MQSetting {
-    @Value("${littlecode.mq.engine:amqp}")
+    private final EnvironmentUtil environmentUtil;
     private String engine;
-
-    @Value("${littlecode.mq.auto-create:false}")
     private boolean autoCreate;
-
-    @Value("${littlecode.mq.auto-start:false}")
     private boolean autoStart;
-
-    @Value("${littlecode.mq.stop-on-fail:true}")
     private boolean stopOnFail;
-
-    @Value("${littlecode.mq.hostname:}")
     private String hostName;
-
-    @Value("${littlecode.mq.v-hostname:/}")
     private String vHostName;
-
-    @Value("${littlecode.mq.consumers:1}")
     private int queueConsumers;
-
-    @Value("${littlecode.mq.channel:}")
     private String queueChannel;
-
-    @Value("${littlecode.mq.exchange:}")
     private String queueExchange;
-
-    @Value("${littlecode.mq.port:}")
     private int port;
-
-    @Value("${littlecode.mq.url:}")
     private String url;
-
-    @Value("${littlecode.mq.keep-alive:30}")
     private int heartbeat;
-
-    @Value("${littlecode.mq.recovery-time:10}")
     private int recoveryInterval;
-
-    @Value("${littlecode.mq.client.id:}")
     private String clientId;
-
-    @Value("${littlecode.mq.client.secret:}")
     private String clientSecret;
-
-    @Value("${littlecode.mq.region:us-east-1}")
     private String queueRegion;
-
-    @Value("${littlecode.mq.max-number:1}")
     private int queueMaxNumber;
-
-    @Value("${littlecode.mq.idle-sleep:1000}")
     private int queueIdleSleep;
-
-    @Value("${littlecode.mq.name:}")
     private String queueName;
-
-    @Value("${littlecode.mq.name.consumer:}")
     private String queueNameConsumer;
-
-    @Value("${littlecode.mq.name.dispatcher:}")
     private String queueNameDispatcher;
 
-    public int getHeartbeat() {
-        if (this.heartbeat <= 0)
-            return this.heartbeat = 30;
-        return this.heartbeat;
+    public MQSetting() {
+        this.environmentUtil = new EnvironmentUtil();
+        this.resetEnvs();
     }
 
-    public int getRecoveryInterval() {
-        if (this.recoveryInterval <= 0)
-            return this.recoveryInterval = 60;
-        return this.recoveryInterval;
+    public MQSetting(Environment environment) {
+        if (environment == null)
+            throw new NullPointerException("environment is null");
+        this.environmentUtil = new EnvironmentUtil(environment);
+        this.resetEnvs();
     }
 
-    public int getQueueConsumers() {
-        if (this.queueConsumers <= 0)
-            return this.queueConsumers = 1;
-        return this.queueConsumers;
+    public void resetEnvs() {
+        var envUtil = new EnvironmentUtil();
+        this.engine = envUtil.asString("littlecode.mq.engine", Amqp.class.getCanonicalName());
+        this.autoCreate = envUtil.asBool("littlecode.mq.auto-create", false);
+        this.autoStart = envUtil.asBool("littlecode.mq.auto-start", false);
+        this.stopOnFail = envUtil.asBool("littlecode.mq.stop-on-fail", true);
+        this.hostName = envUtil.asString("littlecode.mq.hostname");
+        this.vHostName = envUtil.asString("littlecode.mq.v-hostname", "/");
+        this.queueConsumers = envUtil.asInt("littlecode.mq.consumers", 1);
+        this.queueChannel = envUtil.asString("littlecode.mq.channel");
+        this.queueExchange = envUtil.asString("littlecode.mq.exchange");
+        this.port = envUtil.asInt("littlecode.mq.port", 5672);
+        this.url = envUtil.asString("littlecode.mq.url");
+        this.heartbeat = envUtil.asInt("littlecode.mq.keep-alive", 30);
+        this.recoveryInterval = envUtil.asInt("littlecode.mq.recovery-time", 10);
+        this.clientId = envUtil.asString("littlecode.mq.client.id", "guest");
+        this.clientSecret = envUtil.asString("littlecode.mq.client.secret", "guest");
+        this.queueRegion = envUtil.asString("littlecode.mq.region:", "us-east-1");
+        this.queueMaxNumber = envUtil.asInt("littlecode.mq.max-number", 1);
+        this.queueIdleSleep = envUtil.asInt("littlecode.mq.idle-sleep", 1000);
+        this.queueName = envUtil.asString("littlecode.mq.name");
+        this.queueNameConsumer = envUtil.asString("littlecode.mq.name.consumer");
+        this.queueNameDispatcher = envUtil.asString("littlecode.mq.name.dispatcher");
     }
 
-    public int getQueueMaxNumber() {
-        if (this.queueMaxNumber <= 0)
-            return this.queueMaxNumber = 1;
-        return this.queueMaxNumber;
-    }
-
-    public int getQueueIdleSleep() {
-        if(this.queueIdleSleep<=0)
-            return this.queueIdleSleep=1000;
-        return this.queueIdleSleep;
-    }
+//    public int getHeartbeat() {
+//        if (this.heartbeat <= 0)
+//            return this.heartbeat = 30;
+//        return this.heartbeat;
+//    }
+//
+//    public int getRecoveryInterval() {
+//        if (this.recoveryInterval <= 0)
+//            return this.recoveryInterval = 60;
+//        return this.recoveryInterval;
+//    }
+//
+//    public int getQueueConsumers() {
+//        if (this.queueConsumers <= 0)
+//            return this.queueConsumers = 1;
+//        return this.queueConsumers;
+//    }
+//
+//    public int getQueueMaxNumber() {
+//        if (this.queueMaxNumber <= 0)
+//            return this.queueMaxNumber = 1;
+//        return this.queueMaxNumber;
+//    }
+//
+//    public int getQueueIdleSleep() {
+//        if(this.queueIdleSleep<=0)
+//            return this.queueIdleSleep=1000;
+//        return this.queueIdleSleep;
+//    }
 
 
     public List<String> getQueueNameConsumers() {
