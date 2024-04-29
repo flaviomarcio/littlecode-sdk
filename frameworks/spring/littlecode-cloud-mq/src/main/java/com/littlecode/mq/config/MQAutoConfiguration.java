@@ -5,11 +5,15 @@ import com.littlecode.mq.MQ;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
 @Data
 @Slf4j
+@Configuration
+@AutoConfiguration
 public class MQAutoConfiguration {
     @Value("${littlecode.mq.auto-start:false}")
     private boolean autoStart;

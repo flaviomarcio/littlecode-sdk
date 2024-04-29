@@ -11,7 +11,6 @@ import com.littlecode.mq.adapter.MQAdapter;
 import com.littlecode.mq.adapter.impl.MQAMQPRabbitMQImpl;
 import com.littlecode.mq.adapter.impl.MQSQSAWSImpl;
 import com.littlecode.mq.config.MQAutoConfiguration;
-import com.littlecode.mq.config.MQBeans;
 import com.littlecode.mq.config.MQSetting;
 import com.littlecode.parsers.ObjectUtil;
 import lombok.Getter;
@@ -38,11 +37,11 @@ public class MQTest {
 
     @Test
     public void UT_CHECK_STARTED() {
-        Assertions.assertDoesNotThrow(() -> new MQBeans());
-        Assertions.assertDoesNotThrow(() -> new MQBeans().newMQSetting());
-        Assertions.assertDoesNotThrow(() -> new MQBeans().newMQ());
-        Assertions.assertNotNull(new MQBeans().newMQSetting());
-        Assertions.assertNotNull(new MQBeans().newMQ());
+//        Assertions.assertDoesNotThrow(() -> new MQBeans());
+//        Assertions.assertDoesNotThrow(() -> new MQBeans().newMQSetting());
+//        Assertions.assertDoesNotThrow(() -> new MQBeans().newMQ());
+//        Assertions.assertNotNull(new MQBeans().newMQSetting());
+//        Assertions.assertNotNull(new MQBeans().newMQ());
 
 
         Assertions.assertDoesNotThrow(() -> new MQAutoConfiguration(Mockito.mock(ApplicationContext.class), Mockito.mock(Environment.class)));
