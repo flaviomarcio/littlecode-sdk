@@ -1,5 +1,7 @@
 package com.littlecode.parsers;
 
+import com.littlecode.config.CorePublicConsts;
+
 import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -11,6 +13,7 @@ import java.text.DecimalFormatSymbols;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
@@ -18,19 +21,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class PrimitiveUtil {
-    private static final LocalDate MIN_LOCALDATE = LocalDate.of(1901, 1, 1);
-    private static final LocalTime MIN_LOCALTIME = LocalTime.of(0, 0, 0, 0);
-    private static final LocalDateTime MIN_LOCALDATETIME = LocalDateTime.of(MIN_LOCALDATE, MIN_LOCALTIME);
 
-    private static final String FORMAT_DATE = "yyyy-MM-dd";
-    private static final String FORMAT_DATE_SHORT = "yy-MM-dd";
-    private static final String FORMAT_DATE_TIME = "yyyy-MM-dd'T'HH:mm:ss";
-    private static final String FORMAT_DATE_TIME_MS = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSS";
-    private static final String FORMAT_DATE_TIME_SHORT = "yyyy-MM-dd'T'HH:mm";
-    private static final String FORMAT_TIME = "HH:mm:ss";
-    private static final String FORMAT_TIME_MS = "HH:mm:ss.SSSSSSSSS";
-    private static final String FORMAT_TIME_SHORT = "HH:mm";
-    private static final int DOUBLE_PRECISION = 6;
 
     public static UUID toUUID(String v) {
         return HashUtil.toUuid(v);
@@ -52,25 +43,7 @@ public class PrimitiveUtil {
     }
 
     private static String formatDouble(Double d) {
-        return formatDouble(d, DOUBLE_PRECISION);
-    }
-
-    public static long toLong(String v) {
-        if (v != null) {
-            try {
-                return Long.parseLong(v);
-            } catch (Exception ignored) {
-            }
-        }
-        return 0;
-    }
-
-    public static long toLong(boolean v) {
-        return v ? 1 : 0;
-    }
-
-    public static long toLong(double v) {
-        return (long) v;
+        return formatDouble(d, CorePublicConsts.DOUBLE_PRECISION);
     }
 
     public static int toInt(String v) {
@@ -93,6 +66,48 @@ public class PrimitiveUtil {
 
     public static int toInt(boolean v) {
         return v ? 1 : 0;
+    }
+
+    public static int toInt(LocalDate v) {
+        return v==null ? 0 : (int)v.toEpochDay();
+    }
+
+    public static int toInt(LocalTime v) {
+        return v==null ? 0 : v.toSecondOfDay();
+    }
+
+    public static int toInt(LocalDateTime v) {
+        return v==null ? 0 : (int)v.toEpochSecond(ZoneOffset.UTC);
+    }
+
+    public static long toLong(String v) {
+        if (v != null) {
+            try {
+                return Long.parseLong(v);
+            } catch (Exception ignored) {
+            }
+        }
+        return 0;
+    }
+
+    public static long toLong(boolean v) {
+        return v ? 1 : 0;
+    }
+
+    public static long toLong(double v) {
+        return (long) v;
+    }
+
+    public static long toLong(LocalDate v) {
+        return v==null ? 0 : v.toEpochDay();
+    }
+
+    public static long toLong(LocalTime v) {
+        return v==null ? 0 : v.toSecondOfDay();
+    }
+
+    public static long toLong(LocalDateTime v) {
+        return v==null ? 0 : v.toEpochSecond(ZoneOffset.UTC);
     }
 
     public static double toDouble(String v) {
@@ -121,23 +136,36 @@ public class PrimitiveUtil {
         return toDouble(d, precision);
     }
 
+    public static double toDouble(LocalDate v) {
+        return v==null ? 0 : v.toEpochDay();
+    }
+
+    public static double toDouble(LocalTime v) {
+        return v==null ? 0 : v.toSecondOfDay();
+    }
+
+    public static double toDouble(LocalDateTime v) {
+        return v==null ? 0 : v.toEpochSecond(ZoneOffset.UTC);
+    }
+
     public static LocalDate toDate(String v) {
         if (v != null) {
-            try {
-                var value = v.trim();
-                String format;
-                if (value.length() == 10)
-                    format = FORMAT_DATE;
-                else if (value.length() == 8)
-                    format = FORMAT_TIME_SHORT;
-                else
-                    format = FORMAT_DATE;
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
-                return LocalDate.parse(value, formatter);
-            } catch (Exception ignored) {
-            }
+            var dt=PrimitiveUtil.toDateTime(v);
+            return dt==null?null:dt.toLocalDate();
         }
         return null;
+    }
+
+    public static LocalDate toDate(int v){
+        return LocalDate.ofEpochDay(v);
+    }
+
+    public static LocalDate toDate(long v){
+        return LocalDate.ofEpochDay(v);
+    }
+
+    public static LocalDate toDate(double v){
+        return LocalDate.ofEpochDay((long)v);
     }
 
     public static LocalTime toTime(String v) {
@@ -145,14 +173,14 @@ public class PrimitiveUtil {
             try {
                 var value = v.trim();
                 String format;
-                if (value.length() == 5)
-                    format = FORMAT_TIME_SHORT;
-                else if (value.length() == 8)
-                    format = FORMAT_TIME;
-                else if (value.length() == 18)
-                    format = FORMAT_TIME_MS;
+                if (value.length() == CorePublicConsts.FORMAT_TIME_HH_MM.length())
+                    format = CorePublicConsts.FORMAT_TIME_HH_MM;
+                else if (value.length() == CorePublicConsts.FORMAT_TIME.length())
+                    format = CorePublicConsts.FORMAT_TIME;
+                else if (value.length() == CorePublicConsts.FORMAT_TIME_MS.length())
+                    format = CorePublicConsts.FORMAT_TIME_MS;
                 else
-                    format = FORMAT_TIME;
+                    format = CorePublicConsts.FORMAT_TIME;
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
                 return LocalTime.parse(value, formatter);
             } catch (Exception ignored) {
@@ -161,29 +189,66 @@ public class PrimitiveUtil {
         return null;
     }
 
+    public static LocalTime toTime(int v){
+        return LocalTime.ofSecondOfDay(v);
+    }
+
+    public static LocalTime toTime(long v){
+        return LocalTime.ofSecondOfDay(v);
+    }
+
+    public static LocalTime toTime(double v){
+        return LocalTime.ofSecondOfDay((long)v);
+    }
+
     public static LocalDateTime toDateTime(String v) {
         if (v != null) {
             try {
                 var value = v.trim();
                 String format;
-                if (value.length() == 19)
-                    format = FORMAT_DATE_TIME;
-                else if (value.length() == 16)//1901-01-01T00:00:00
-                    format = FORMAT_DATE_TIME_SHORT;
-                else if (value.length() == 29)//1901-01-01T00:00:00
-                    format = FORMAT_DATE_TIME_MS;
-                else if (value.length() == 10)
-                    format = FORMAT_DATE;
-                else if (value.length() == 8)
-                    format = FORMAT_DATE_SHORT;
-                else
-                    format = FORMAT_DATE_TIME;
+                if (value.length() == CorePublicConsts.FORMAT_DATE_TIME.length()-2){
+                    format = CorePublicConsts.FORMAT_DATE_TIME;
+                }
+                else if (value.length() == CorePublicConsts.FORMAT_DATE_TIME_HH.length()-2){
+                    format = CorePublicConsts.FORMAT_DATE_TIME;
+                    value=value+":00:00";
+                }
+                else if (value.length() == CorePublicConsts.FORMAT_DATE_TIME_HH_MM.length()-2){
+                    format = CorePublicConsts.FORMAT_DATE_TIME;
+                    value=value+":00";
+                }
+                else if (value.length() == CorePublicConsts.FORMAT_DATE.length()){
+                    format = CorePublicConsts.FORMAT_DATE_TIME;
+                    value=value+"T00:00:00";
+                }
+                else if (value.length() == CorePublicConsts.FORMAT_DATE_TIME_MS.length()-2){
+                    format = CorePublicConsts.FORMAT_DATE_TIME_MS;
+                }
+                else {
+                    format = CorePublicConsts.FORMAT_DATE_TIME_MS;
+                    var valueS=value.split("\\.");
+                    var valueA=valueS.length>0?valueS[0]:"";
+                    var valueB= new StringBuilder(valueS.length > 1 ? valueS[1] : "");
+                    while(valueB.length()<9)// .SSSSSSSSS
+                        valueB.insert(0, "0");
+                    value=valueA + "." + valueB;
+                }
+
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
                 return LocalDateTime.parse(value, formatter);
+
             } catch (Exception ignored) {
             }
         }
         return null;
+    }
+
+    public static LocalDateTime toDateTime(long v){
+        return LocalDateTime.ofEpochSecond(v,0, ZoneOffset.UTC);
+    }
+
+    public static LocalDateTime toDateTime(double v){
+        return LocalDateTime.ofEpochSecond((long)v,0, ZoneOffset.UTC);
     }
 
     public static boolean toBool(String v) {
@@ -215,15 +280,15 @@ public class PrimitiveUtil {
     }
 
     public static boolean isEmpty(LocalDate v) {
-        return (v == null || v.equals(MIN_LOCALDATE));
+        return (v == null || v.equals(CorePublicConsts.MIN_LOCALDATE));
     }
 
     public static boolean isEmpty(LocalTime v) {
-        return (v == null || v.equals(MIN_LOCALTIME));
+        return (v == null || v.equals(CorePublicConsts.MIN_LOCALTIME));
     }
 
     public static boolean isEmpty(LocalDateTime v) {
-        return (v == null || v.equals(MIN_LOCALDATETIME));
+        return (v == null || v.equals(CorePublicConsts.MIN_LOCALDATETIME));
     }
 
     public static boolean isEmpty(Object v) {
@@ -294,16 +359,17 @@ public class PrimitiveUtil {
         return v ? "true" : "false";
     }
 
+
     public static String toString(LocalDate v) {
         if (v == null)
             return "";
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(FORMAT_DATE);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(CorePublicConsts.FORMAT_DATE);
         return formatter.format(v);
     }
 
     public static String toString(LocalTime v) {
         if(v!=null){
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(FORMAT_TIME);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(CorePublicConsts.FORMAT_TIME);
             return formatter.format(v);
         }
         return "";
@@ -311,7 +377,7 @@ public class PrimitiveUtil {
 
     public static String toString(LocalDateTime v) {
         if(v!=null){
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(FORMAT_DATE_TIME_MS);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(CorePublicConsts.FORMAT_DATE_TIME_MS);
             return formatter.format(v);
         }
         return "";

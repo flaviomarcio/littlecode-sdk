@@ -1,5 +1,7 @@
 package com.littlecode.tests;
 
+import com.littlecode.parsers.ConverterUtil;
+import com.littlecode.config.CorePublicConsts;
 import com.littlecode.parsers.PrimitiveUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -13,6 +15,7 @@ import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneOffset;
 import java.util.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -88,24 +91,55 @@ public class PrimitiveUtilTest {
     @Test
     public void UI_toLong() {
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toLong(""));
-        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toLong(null));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toLong((String)null));
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toLong("100"));
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toLong("100.1"));
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toLong(true));
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toLong(false));
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toLong(1.5));
 
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toLong((LocalDate) null));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toLong((LocalTime) null));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toLong((LocalDateTime)null));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toLong(CorePublicConsts.MIN_LOCALDATE));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toLong(CorePublicConsts.MIN_LOCALTIME));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toLong(CorePublicConsts.MIN_LOCALDATETIME));
+
         Assertions.assertEquals(PrimitiveUtil.toLong(""), 0);
-        Assertions.assertEquals(PrimitiveUtil.toLong(null), 0);
+        Assertions.assertEquals(PrimitiveUtil.toLong((String)null), 0);
         Assertions.assertEquals(PrimitiveUtil.toLong("100"), 100);
         Assertions.assertEquals(PrimitiveUtil.toLong("100.1"), 0);
         Assertions.assertEquals(PrimitiveUtil.toLong(true), 1);
         Assertions.assertEquals(PrimitiveUtil.toLong(false), 0);
         Assertions.assertEquals(PrimitiveUtil.toLong(1.5), 1);
+
+        Assertions.assertEquals(PrimitiveUtil.toLong((LocalDate) null), 0);
+        Assertions.assertEquals(PrimitiveUtil.toLong((LocalTime)null), 0);
+        Assertions.assertEquals(PrimitiveUtil.toLong((LocalDateTime) null), 0);
+        Assertions.assertEquals(PrimitiveUtil.toLong(CorePublicConsts.MIN_LOCALDATE), CorePublicConsts.MIN_LOCALDATE.toEpochDay());
+        Assertions.assertEquals(PrimitiveUtil.toLong(CorePublicConsts.MIN_LOCALTIME), CorePublicConsts.MIN_LOCALTIME.toSecondOfDay());
+        Assertions.assertEquals(PrimitiveUtil.toLong(CorePublicConsts.MIN_LOCALDATETIME), CorePublicConsts.MIN_LOCALDATETIME.toEpochSecond(ZoneOffset.UTC));
     }
 
     @Test
     public void UI_toInt() {
+
+        Assertions.assertDoesNotThrow(()-> PrimitiveUtil.toInt((String)null));
+        Assertions.assertDoesNotThrow(()-> PrimitiveUtil.toInt(""));
+        Assertions.assertDoesNotThrow(()-> PrimitiveUtil.toInt("100"));
+        Assertions.assertDoesNotThrow(()-> PrimitiveUtil.toInt("100.1"));
+        Assertions.assertDoesNotThrow(()-> PrimitiveUtil.toInt("9999999999999999999999999"));
+        Assertions.assertDoesNotThrow(()-> PrimitiveUtil.toInt(100));
+        Assertions.assertDoesNotThrow(()-> PrimitiveUtil.toInt(100.1));
+        Assertions.assertDoesNotThrow(()-> PrimitiveUtil.toInt(true));
+        Assertions.assertDoesNotThrow(()-> PrimitiveUtil.toInt(false));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toInt((LocalDate) null));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toInt((LocalTime) null));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toInt((LocalDateTime)null));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toInt(CorePublicConsts.MIN_LOCALDATE));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toInt(CorePublicConsts.MIN_LOCALTIME));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toInt(CorePublicConsts.MIN_LOCALDATETIME));
+
         Assertions.assertEquals(PrimitiveUtil.toInt(""), 0);
         Assertions.assertEquals(PrimitiveUtil.toInt("100"), 100);
         Assertions.assertEquals(PrimitiveUtil.toInt("100.1"), 0);
@@ -114,10 +148,32 @@ public class PrimitiveUtilTest {
         Assertions.assertEquals(PrimitiveUtil.toInt(100.1), 100);
         Assertions.assertEquals(PrimitiveUtil.toInt(true), 1);
         Assertions.assertEquals(PrimitiveUtil.toInt(false), 0);
+
+        Assertions.assertEquals(PrimitiveUtil.toInt((LocalDate) null), 0);
+        Assertions.assertEquals(PrimitiveUtil.toInt((LocalTime)null), 0);
+        Assertions.assertEquals(PrimitiveUtil.toInt((LocalDateTime) null), 0);
+        Assertions.assertEquals(PrimitiveUtil.toInt(CorePublicConsts.MIN_LOCALDATE), (int)CorePublicConsts.MIN_LOCALDATE.toEpochDay());
+        Assertions.assertEquals(PrimitiveUtil.toInt(CorePublicConsts.MIN_LOCALTIME), CorePublicConsts.MIN_LOCALTIME.toSecondOfDay());
+        Assertions.assertEquals(PrimitiveUtil.toInt(CorePublicConsts.MIN_LOCALDATETIME), (int)CorePublicConsts.MIN_LOCALDATETIME.toEpochSecond(ZoneOffset.UTC));
     }
 
     @Test
     public void UI_toDouble() {
+
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toDouble((String)null));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toDouble(""));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toDouble(""));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toDouble(100.11001D,2));
+
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toDouble((LocalDate) null));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toDouble((LocalTime) null));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toDouble((LocalDateTime)null));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toDouble(CorePublicConsts.MIN_LOCALDATE));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toDouble(CorePublicConsts.MIN_LOCALTIME));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toDouble(CorePublicConsts.MIN_LOCALDATETIME));
+
+
+
         Assertions.assertEquals(PrimitiveUtil.toDouble(""), 0);
         Assertions.assertEquals(PrimitiveUtil.toDouble("0"), 0);
         Assertions.assertEquals(PrimitiveUtil.toDouble("-100"), -100);
@@ -150,30 +206,90 @@ public class PrimitiveUtilTest {
         Assertions.assertEquals(PrimitiveUtil.toDouble(240.23, 2), 240.23);
         Assertions.assertEquals(PrimitiveUtil.toDouble(true), 1);
         Assertions.assertEquals(PrimitiveUtil.toDouble(false), 0);
+
+        Assertions.assertEquals(PrimitiveUtil.toDouble((LocalDate) null), 0);
+        Assertions.assertEquals(PrimitiveUtil.toDouble((LocalTime)null), 0);
+        Assertions.assertEquals(PrimitiveUtil.toDouble((LocalDateTime) null), 0);
+        Assertions.assertEquals(PrimitiveUtil.toDouble(CorePublicConsts.MIN_LOCALDATE), (double)CorePublicConsts.MIN_LOCALDATE.toEpochDay());
+        Assertions.assertEquals(PrimitiveUtil.toDouble(CorePublicConsts.MIN_LOCALTIME), (double) CorePublicConsts.MIN_LOCALTIME.toSecondOfDay());
+        Assertions.assertEquals(PrimitiveUtil.toDouble(CorePublicConsts.MIN_LOCALDATETIME), (double)CorePublicConsts.MIN_LOCALDATETIME.toEpochSecond(ZoneOffset.UTC));
     }
 
     @Test
     public void UI_toDate() {
         var dt19010101 = LocalDate.of(1901, 1, 1);
+
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toDate((String)null));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toDate(""));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toDate(dt19010101.toString()));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toDate("1901-01-01"));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toDate(0));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toDate(0L));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toDate(0D));
+
         Assertions.assertNull(PrimitiveUtil.toDate(""));
         Assertions.assertEquals(PrimitiveUtil.toDate(dt19010101.toString()), dt19010101);
         Assertions.assertEquals(PrimitiveUtil.toDate("1901-01-01"), dt19010101);
+        Assertions.assertEquals(PrimitiveUtil.toDate((long)CorePublicConsts.MIN_LOCALDATE.toEpochDay()), CorePublicConsts.MIN_LOCALDATE);
+        Assertions.assertEquals(PrimitiveUtil.toDate((int)CorePublicConsts.MIN_LOCALDATE.toEpochDay()), CorePublicConsts.MIN_LOCALDATE);
+        Assertions.assertEquals(PrimitiveUtil.toDate((double)CorePublicConsts.MIN_LOCALDATE.toEpochDay()), CorePublicConsts.MIN_LOCALDATE);
     }
 
     @Test
     public void UI_toTime() {
         var tm010203 = LocalTime.of(1, 2, 3);
+
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toTime(""));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toTime((String)null));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toTime(tm010203.toString()));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toTime("01:02:03"));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toTime(null));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toTime("23:59:59"));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toTime("23:59:00"));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toTime("23:59"));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toTime(0));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toTime(0L));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toTime(0D));
+
         Assertions.assertNull(PrimitiveUtil.toTime(""));
         Assertions.assertEquals(PrimitiveUtil.toTime(tm010203.toString()), tm010203);
         Assertions.assertEquals(PrimitiveUtil.toTime("01:02:03"), tm010203);
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toTime(null));
+        Assertions.assertEquals(PrimitiveUtil.toTime("23:59:59"),LocalTime.of(23,59,59));
+        Assertions.assertEquals(PrimitiveUtil.toTime("23:59:00"),LocalTime.of(23,59,00));
+        Assertions.assertEquals(PrimitiveUtil.toTime("23:59"),LocalTime.of(23,59,00));
+
+        Assertions.assertEquals(PrimitiveUtil.toTime((long)CorePublicConsts.MIN_LOCALTIME.toSecondOfDay()), CorePublicConsts.MIN_LOCALTIME);
+        Assertions.assertEquals(PrimitiveUtil.toTime((int)CorePublicConsts.MIN_LOCALTIME.toSecondOfDay()), CorePublicConsts.MIN_LOCALTIME);
+        Assertions.assertEquals(PrimitiveUtil.toTime((double)CorePublicConsts.MIN_LOCALTIME.toSecondOfDay()), CorePublicConsts.MIN_LOCALTIME);
+
     }
 
     @Test
     public void UI_toDateTime() {
         var dt19010101 = LocalDateTime.of(LocalDate.of(1901, 1, 1), LocalTime.of(1, 2, 3));
+
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toDateTime((String)null));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toDateTime(""));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toDateTime(dt19010101.toString()));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toDateTime("1901-01-01T01:02:03"));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toDateTime(0));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toDateTime(0L));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toDateTime(0D));
+
         Assertions.assertNull(PrimitiveUtil.toDateTime(""));
         Assertions.assertEquals(PrimitiveUtil.toDateTime(dt19010101.toString()), dt19010101);
         Assertions.assertEquals(PrimitiveUtil.toDateTime("1901-01-01T01:02:03"), dt19010101);
+
+//        Assertions.assertThrows(NullPointerException.class,() -> new ConverterUtil((LocalDateTime) null).toLocalTime());
+        Assertions.assertEquals(PrimitiveUtil.toDateTime("1901-01-01"), CorePublicConsts.MIN_LOCALDATETIME);
+        Assertions.assertEquals(PrimitiveUtil.toDateTime("1901-01-01T00"), CorePublicConsts.MIN_LOCALDATETIME);
+        Assertions.assertEquals(PrimitiveUtil.toDateTime("1901-01-01T00:00"), CorePublicConsts.MIN_LOCALDATETIME);
+        Assertions.assertEquals(PrimitiveUtil.toDateTime("1901-01-01T00:00:00"), CorePublicConsts.MIN_LOCALDATETIME);
+        Assertions.assertEquals(PrimitiveUtil.toDateTime("1901-01-01T23:59:59.999"), CorePublicConsts.MIN_LOCALDATETIME_MAX_TIME);
+
+        Assertions.assertEquals(PrimitiveUtil.toDateTime(CorePublicConsts.MIN_LOCALDATETIME.toEpochSecond(ZoneOffset.UTC)), CorePublicConsts.MIN_LOCALDATETIME);
+        Assertions.assertEquals(PrimitiveUtil.toDateTime((double)CorePublicConsts.MIN_LOCALDATETIME.toEpochSecond(ZoneOffset.UTC)), CorePublicConsts.MIN_LOCALDATETIME);
     }
 
     @Test

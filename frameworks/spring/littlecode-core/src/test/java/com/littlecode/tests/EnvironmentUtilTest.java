@@ -372,7 +372,6 @@ public class EnvironmentUtilTest {
         enum TypeTest {
             enumA, enumB, enumC
         }
-
         {//step 1
 
             var environment = Mockito.mock(Environment.class);

@@ -355,11 +355,6 @@ public class ObjectUtil {
         return "";
     }
 
-    @Deprecated(since = "use function ObjectUtil.toString")
-    public static String toJson(Object o) {
-        return toString(o);
-    }
-
     public static synchronized Map<String, Object> toMapObject(final Object o) {
         if (o != null) {
             if (o.getClass().equals(String.class)) {

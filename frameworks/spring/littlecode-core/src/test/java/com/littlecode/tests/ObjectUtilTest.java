@@ -155,6 +155,17 @@ public class ObjectUtilTest {
 
     @Test
     public void UT_000_CHECK_FIELD() {
+
+        Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldByAnnotation(ObjectCheck.class, NotNull.class));
+        Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldByAnnotation(SubObjectCheck.class, NotNull.class));
+        Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldByName(ObjectCheck.class, "id"));
+        Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldByName(ObjectCheck.class, "test"));
+        Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldByType(ObjectCheck.class, UUID.class));
+        Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldByType(SubObjectCheck.class, Long.class));
+        Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldsByType(ObjectCheck.class, UUID.class).isEmpty());
+        Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldsByType(SubObjectCheck.class, Long.class).isEmpty());
+
+
         Assertions.assertNotNull(ObjectUtil.toFieldByAnnotation(ObjectCheck.class, NotNull.class));
         Assertions.assertFalse(ObjectUtil.toFieldsByAnnotation(ObjectCheck.class, NotNull.class).isEmpty());
 
