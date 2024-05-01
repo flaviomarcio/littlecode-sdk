@@ -41,11 +41,18 @@ public class DSFactoryTest {
     @Test
     public void UT_CHECK() {
 
-        Assertions.assertThrows(NullPointerException.class,() -> new DSFactory(null, null, null));
-        Assertions.assertThrows(NullPointerException.class,() -> new DSFactory(mockEnviroments, null, null));
         Assertions.assertThrows(NullPointerException.class,() -> new DSFactory(mockEnviroments, Database.H2, null));
+        Assertions.assertThrows(NullPointerException.class,() -> new DSFactory(mockEnviroments, null, null));
+        Assertions.assertThrows(NullPointerException.class,() -> new DSFactory(null, null, null));
         Assertions.assertThrows(NullPointerException.class,() -> new DSFactory(mockEnviroments, Database.H2, new String[]{},null));
+        Assertions.assertThrows(NullPointerException.class,() -> new DSFactory(mockEnviroments, Database.H2, null,null));
+        Assertions.assertThrows(NullPointerException.class,() -> new DSFactory(mockEnviroments, null, null,null));
+        Assertions.assertThrows(NullPointerException.class,() -> new DSFactory(null, null, null,null));
         Assertions.assertThrows(NullPointerException.class,() -> new DSFactory(mockEnviroments, Database.H2, new String[]{},"mysetting",null));
+        Assertions.assertThrows(NullPointerException.class,() -> new DSFactory(mockEnviroments, Database.H2, new String[]{},null,null));
+        Assertions.assertThrows(NullPointerException.class,() -> new DSFactory(mockEnviroments, Database.H2, null,null,null));
+        Assertions.assertThrows(NullPointerException.class,() -> new DSFactory(mockEnviroments, null, null,null,null));
+        Assertions.assertThrows(NullPointerException.class,() -> new DSFactory(null, null, null,null,null));
 
 
         Assertions.assertDoesNotThrow(() -> new DSFactory(mockEnviroments, Database.H2, new String[]{}));
@@ -54,8 +61,10 @@ public class DSFactoryTest {
         var factory=new DSFactory(mockEnviroments, Database.H2, new String[]{"com.littlecode.jpa"});
         Assertions.assertNotNull(factory.getDatabase());
         Assertions.assertNotNull(factory.getPackages());
-        Assertions.assertNotNull(factory.getDSName());
-        Assertions.assertNotNull(factory.getDSBasePath());
+        Assertions.assertNotNull(factory.getDsName());
+        Assertions.assertDoesNotThrow(()->factory.setDsName("dbName"));
+        Assertions.assertNotNull(factory.getDsBasePath());
+        Assertions.assertDoesNotThrow(()->factory.setDsBasePath("spring.datasource"));
         Assertions.assertNotNull(factory.getPackages());
         Assertions.assertNotNull(factory.makeDataSource());
         Assertions.assertNotNull(factory.makeEntityManagerFactory());

@@ -1,6 +1,7 @@
 package com.littlecode.jpa.datasource;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy;
 import org.hibernate.cfg.AvailableSettings;
@@ -26,10 +27,14 @@ public class DSFactory {
     private final Database database;
     @Getter
     private final String[] packages;
+
     @Getter
-    private final String dsName;
+    @Setter
+    private String dsName;
+
     @Getter
-    private final String dsBasePath;
+    @Setter
+    private String dsBasePath;
 
     public DSFactory(final Environment environment, final Database database, final String[] packages) {
         if(environment == null)
@@ -43,7 +48,7 @@ public class DSFactory {
         this.database = database;
         this.packages = packages;
         this.dsName = database.name().toLowerCase();
-        this.dsBasePath = STATIC_BASE_PACKAGE;
+        this.dsBasePath=String.format("%s.%s", STATIC_BASE_PACKAGE, this.dsName);
     }
 
     public DSFactory(final Environment environment, final Database database, final String[] packages, final String dsName) {
@@ -59,7 +64,7 @@ public class DSFactory {
         this.database = database;
         this.packages = packages;
         this.dsName = dsName;
-        this.dsBasePath = STATIC_BASE_PACKAGE;
+        this.dsBasePath=String.format("%s.%s", STATIC_BASE_PACKAGE, this.dsName);
     }
 
     public DSFactory(final Environment environment, final Database database, final String[] packages, final String dsName, final String dsBasePath) {
@@ -78,14 +83,6 @@ public class DSFactory {
         this.packages = packages;
         this.dsName = dsName;
         this.dsBasePath = dsBasePath;
-    }
-
-    public String getDSName(){
-        return this.dsName;
-    }
-
-    public String getDSBasePath(){
-        return String.format("spring.datasource.%s", this.getDSName());
     }
 
     public HibernateJpaVendorAdapter makeVendorAdapter() {
@@ -138,7 +135,7 @@ public class DSFactory {
     }
 
     private String __property__get(String property){
-        property = String.format("%s.%s", getDSBasePath(), property);
+        property = String.format("%s.%s", getDsBasePath(), property);
         return environment.containsProperty(property)
                 ?environment.getProperty(property,"")
                 :"";
