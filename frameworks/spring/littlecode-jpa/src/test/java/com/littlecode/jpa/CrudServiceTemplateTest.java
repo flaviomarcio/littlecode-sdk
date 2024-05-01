@@ -1,7 +1,7 @@
 package com.littlecode.jpa;
 
 import com.littlecode.containers.ObjectReturn;
-import com.littlecode.jpa.crud.CRUDTemplate;
+import com.littlecode.jpa.crud.CrudServiceTemplate;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
@@ -16,7 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)
-public class CRUDTemplateTest {
+public class CrudServiceTemplateTest {
 
     @Test
     public void UT_000_CHECK_ScheduleGroup() {
@@ -55,7 +55,7 @@ public class CRUDTemplateTest {
     }
 
     @NoArgsConstructor
-    public static class PrivateCRUD extends CRUDTemplate<PrivateModel,PrivateModelIn> {
+    public static class PrivateCRUD extends CrudServiceTemplate<PrivateModel,PrivateModelIn> {
     }
 
 

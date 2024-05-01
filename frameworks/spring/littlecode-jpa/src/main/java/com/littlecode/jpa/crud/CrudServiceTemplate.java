@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.UUID;
 
 @RequiredArgsConstructor
-public class CRUDTemplate<MODEL, DTO> {
+public class CrudServiceTemplate<MODEL, DTO> {
 
     private static final String __ID = "id";
 
