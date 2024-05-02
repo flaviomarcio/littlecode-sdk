@@ -22,28 +22,30 @@ import java.util.UUID;
 
 public class PrimitiveUtil {
 
-
-    public static UUID toUUID(String v) {
-        return HashUtil.toUuid(v);
-    }
-
-    @SuppressWarnings("SameParameterValue")
-    private static String formatFormat(int precision) {
+    public static String formatMask(int precision) {
         return precision <= 0
                 ? "#"
                 : "#." + ("#".repeat(precision));
     }
 
-    @SuppressWarnings("SameParameterValue")
-    private static String formatDouble(Double v,  int precision) {
-        var d = (v == null) ? 0 : v;
-        var format = formatFormat(precision);
+    public static String formatDouble(double v,  int precision) {
+        var format = formatMask(precision);
         var symbols = new DecimalFormatSymbols(Locale.US);
-        return (new DecimalFormat(format, symbols)).format(d);
+        return (new DecimalFormat(format, symbols)).format(v);
     }
 
-    private static String formatDouble(Double d) {
+    public static String formatDouble(double d) {
         return formatDouble(d, CorePublicConsts.DOUBLE_PRECISION);
+    }
+
+    public static boolean isPrimitiveValue(Class<?> aClass){
+        return aClass!=null && (
+                aClass.isPrimitive() || CorePublicConsts.PRIMITIVE_CLASSES.containsValue(aClass)
+        );
+    }
+
+    public static boolean isPrimitiveValue(Object value){
+        return value!=null && CorePublicConsts.PRIMITIVE_CLASSES.containsValue(value.getClass());
     }
 
     public static int toInt(String v) {
@@ -381,6 +383,30 @@ public class PrimitiveUtil {
             return formatter.format(v);
         }
         return "";
+    }
+
+    public static UUID toUUID(String v) {
+        return(v==null)
+                ?null
+                :HashUtil.toUuid(v);
+    }
+
+    public static URI toURI(String v) {
+        return(v==null)
+                ?null
+                :URI.create(v);
+    }
+
+    public static Path toPath(String v) {
+        return(v==null)
+                ?null
+                :Path.of(v);
+    }
+
+    public static File toFile(String v) {
+        return(v==null)
+                ?null
+                :new File(v);
     }
 
 }

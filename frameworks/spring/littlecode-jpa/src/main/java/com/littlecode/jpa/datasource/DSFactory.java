@@ -137,7 +137,7 @@ public class DSFactory {
     private String __property__get(String property){
         property = String.format("%s.%s", getDsBasePath(), property);
         return environment.containsProperty(property)
-                ?environment.getProperty(property,"")
+                ?environment.getProperty(property)
                 :"";
     }
 

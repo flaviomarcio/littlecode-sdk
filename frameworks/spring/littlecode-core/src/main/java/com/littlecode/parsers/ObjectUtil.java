@@ -2,6 +2,7 @@ package com.littlecode.parsers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.littlecode.config.CorePublicConsts;
 import com.littlecode.config.UtilCoreConfig;
 import com.littlecode.exceptions.FrameworkException;
 import com.littlecode.files.FileFormat;
@@ -25,24 +26,6 @@ public class ObjectUtil {
 
     public static final FileFormat FILE_FORMAT_DEFAULT = UtilCoreConfig.FILE_FORMAT_DEFAULT;
 
-    private static final List<String> PRIMITIVE_CLASSES = new ArrayList<>();
-
-
-    static {
-        PRIMITIVE_CLASSES.add(String.class.getName());
-        PRIMITIVE_CLASSES.add(Byte.class.getName());
-        PRIMITIVE_CLASSES.add(UUID.class.getName());
-        PRIMITIVE_CLASSES.add(Boolean.class.getName());
-        PRIMITIVE_CLASSES.add(Integer.class.getName());
-        PRIMITIVE_CLASSES.add(Long.class.getName());
-        PRIMITIVE_CLASSES.add(Double.class.getName());
-        PRIMITIVE_CLASSES.add(BigDecimal.class.getName());
-        PRIMITIVE_CLASSES.add(BigInteger.class.getName());
-        PRIMITIVE_CLASSES.add(LocalDate.class.getName());
-        PRIMITIVE_CLASSES.add(LocalTime.class.getName());
-        PRIMITIVE_CLASSES.add(LocalDateTime.class.getName());
-        PRIMITIVE_CLASSES.add("java.lang.Class<?>");
-    }
 
     public static String classToName(Object o) {
         if (o != null) {
@@ -185,9 +168,10 @@ public class ObjectUtil {
     }
 
     public static synchronized List<Field> toFieldsList(Object o) {
-        if (o != null && !PRIMITIVE_CLASSES.contains(o.getClass().getName()))
-            return toFieldsList(o.getClass());
-        return new ArrayList<>();
+        return
+                (o != null && !PrimitiveUtil.isPrimitiveValue(o))
+                        ?toFieldsList(o.getClass())
+                        :new ArrayList<>();
     }
 
     public static synchronized Map<String, Field> toFieldsMap(Class<?> tClass) {
@@ -257,53 +241,57 @@ public class ObjectUtil {
         return create(aClass);
     }
 
-    public static <T> T createFromString(Class<T> aClass, String src, FileFormat fileFormat) {
+    public static <T> T createFromString(Class<T> aClass, String source, FileFormat fileFormat) {
         var mapper = UtilCoreConfig.newObjectMapper(fileFormat);
         try {
-            return mapper.readValue(src, aClass);
+            return mapper.readValue(source, aClass);
         } catch (Exception ignored) {
         }
         return null;
     }
 
-    public static <T> T createFromString(Class<T> aClass, String src) {
-        return createFromString(aClass, src, FILE_FORMAT_DEFAULT);
+    public static <T> T createFromString(Class<T> aClass, String source) {
+        return createFromString(aClass, source, FILE_FORMAT_DEFAULT);
     }
 
-    public static <T> T createFromFile(Class<T> aClass, File file) {
-        try {
-            return createFromStream(aClass, new FileInputStream(file));
-        } catch (Exception ignored) {
+    public static <T> T createFromFile(Class<T> aClass, File source) {
+        if(aClass!=null && source!=null){
+            try {
+                return createFromStream(aClass, new FileInputStream(source));
+            } catch (Exception ignored) {
+            }
         }
         return null;
     }
 
-    public static <T> T createFromStream(Class<T> aClass, InputStream stream) {
-        try {
-            return createFromString(aClass, new String(stream.readAllBytes()), FILE_FORMAT_DEFAULT);
-        } catch (Exception ignored) {
+    public static <T> T createFromStream(Class<T> aClass, InputStream source) {
+        if(aClass!=null && source!=null){
+            try {
+                return createFromString(aClass, new String(source.readAllBytes()), FILE_FORMAT_DEFAULT);
+            } catch (Exception ignored) {
+            }
         }
         return null;
     }
 
-    public static <T> T createFromJSON(Class<T> claClass, String values) {
-        return createFromString(claClass, values);
+    public static <T> T createFromJSON(Class<T> claClass, String source) {
+        return createFromString(claClass, source);
     }
 
-    public static <T> T createFromYML(Class<T> claClass, String values) {
-        return createFromString(claClass, values);
+    public static <T> T createFromYML(Class<T> claClass, String source) {
+        return createFromString(claClass, source);
     }
 
-    public static <T> T createFromXML(Class<T> claClass, String values) {
-        return createFromString(claClass, values);
+    public static <T> T createFromXML(Class<T> claClass, String source) {
+        return createFromString(claClass, source);
     }
 
-    public static <T> T createFromPROPS(Class<T> aClass, String values) {
-        return createFromString(aClass, values);
+    public static <T> T createFromPROPS(Class<T> aClass, String source) {
+        return createFromString(aClass, source);
     }
 
-    public static <T> T createFromValues(Class<T> aClass, final Map<String, Object> srcValues) {
-        if (aClass!=null && srcValues != null && !srcValues.isEmpty()) {
+    public static <T> T createFromValues(Class<T> aClass, final Map<String, Object> source) {
+        if (aClass!=null && source != null && !source.isEmpty()) {
             var fieldsNew = toFieldsList(aClass);
             if (!fieldsNew.isEmpty()) {
                 Map<String, Field> fieldsWriter = new HashMap<>();
@@ -311,7 +299,7 @@ public class ObjectUtil {
                 if (!fieldsWriter.isEmpty()) {
                     Map<String, Object> finaMapValues = new HashMap<>();
 
-                    for (Map.Entry<String, Object> entry : srcValues.entrySet()) {
+                    for (Map.Entry<String, Object> entry : source.entrySet()) {
                         String fieldName = entry.getKey();
                         Object fieldValue = entry.getValue();
                         try {
@@ -328,9 +316,9 @@ public class ObjectUtil {
         return null;
     }
 
-    public static <T> T createFromObject(Class<T> aClass, Object objectSrc) {
-        if (aClass != null && objectSrc != null) {
-            var objectValues = toMapObject(objectSrc);
+    public static <T> T createFromObject(Class<T> aClass, Object source) {
+        if (aClass != null && source != null) {
+            var objectValues = toMapObject(source);
             if (!objectValues.isEmpty())
                 return createFromValues(aClass, objectValues);
         }
@@ -357,26 +345,15 @@ public class ObjectUtil {
 
     public static synchronized Map<String, Object> toMapObject(final Object o) {
         if (o != null) {
-            if (o.getClass().equals(String.class)) {
+            if (o instanceof String string) {
+                var mapValues = toMapOfString(string);
                 Map<String, Object> fieldValues = new HashMap<>();
-                var mapValues = toMapOfString(o.toString());
-                //noinspection CollectionAddAllCanBeReplacedWithConstructor
                 fieldValues.putAll(mapValues);
                 return fieldValues;
-            } else if (PRIMITIVE_CLASSES.contains(o.getClass().getName())) {
+            } else if (PrimitiveUtil.isPrimitiveValue(o.getClass())) {
                 return new HashMap<>();
             } else {
-                Map<String, Object> fieldValues = new HashMap<>();
-                toFieldsList(o.getClass())
-                        .forEach(field -> {
-                            field.setAccessible(true);
-                            try {
-                                fieldValues.put(field.getName(), field.get(o));
-                            } catch (IllegalAccessException e) {
-                                throw new FrameworkException(e.getMessage());
-                            }
-                        });
-                return fieldValues;
+                return ObjectValueUtil.of(o).asMap();
             }
         }
         return new HashMap<>();
@@ -399,7 +376,7 @@ public class ObjectUtil {
                         var oGet = field.get(o);
                         if (oGet != null)
                             fieldValues.put(field.getName(), "");
-                        else if (oGet.getClass().isPrimitive() || oGet.getClass().isEnum() || PRIMITIVE_CLASSES.contains(field.getGenericType().getTypeName()))
+                        else if (oGet.getClass().isEnum() || PrimitiveUtil.isPrimitiveValue(field.getGenericType()))
                             fieldValues.put(field.getName(), oGet.toString());
                         else if (oGet.getClass().isLocalClass())
                             fieldValues.put(field.getName(), toString(oGet));

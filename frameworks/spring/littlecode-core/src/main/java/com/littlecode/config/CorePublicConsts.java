@@ -1,9 +1,15 @@
 package com.littlecode.config;
 
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class CorePublicConsts {
     public CorePublicConsts(){
@@ -23,4 +29,27 @@ public class CorePublicConsts {
     public static final String FORMAT_TIME_MS = "HH:mm:ss.SSSSSSSSS";
     public static final String FORMAT_TIME_HH_MM = "HH:mm";
     public static final int DOUBLE_PRECISION = 6;
+
+    public static final ConcurrentHashMap<String,Class<?>> PRIMITIVE_CLASSES=new ConcurrentHashMap<>();
+
+
+    static {
+        var list=List.of(
+        String.class,
+        Byte.class,
+        UUID.class,
+        Boolean.class,
+        Integer.class,
+        Long.class,
+        Double.class,
+        BigDecimal.class,
+        BigInteger.class,
+        LocalDate.class,
+        LocalTime.class,
+        LocalDateTime.class
+        );
+        list.forEach(aClass -> PRIMITIVE_CLASSES.put(aClass.getName(),aClass));
+        PRIMITIVE_CLASSES.put("java.lang.Class<?>",java.lang.Class.class);
+    }
+
 }

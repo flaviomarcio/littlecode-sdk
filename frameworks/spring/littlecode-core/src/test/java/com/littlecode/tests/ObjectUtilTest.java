@@ -209,6 +209,15 @@ public class ObjectUtilTest {
             } catch (IOException e) {
                 throw new FrameworkException(e.getMessage());
             }
+            Assertions.assertDoesNotThrow(() -> ObjectUtil.createFromFile(ObjectCheck.class, file));
+            Assertions.assertDoesNotThrow(() -> ObjectUtil.createFromFile(ObjectCheck.class, new File("")));
+            Assertions.assertDoesNotThrow(() -> ObjectUtil.createFromFile(ObjectCheck.class, null));
+            Assertions.assertDoesNotThrow(() -> ObjectUtil.createFromFile(null, file));
+
+            Assertions.assertNull(ObjectUtil.createFromFile(ObjectCheck.class, new File("")));
+            Assertions.assertNull(ObjectUtil.createFromFile(ObjectCheck.class, null));
+            Assertions.assertNull(ObjectUtil.createFromFile(null, file));
+
             objNew = ObjectUtil.createFromFile(ObjectCheck.class, file);
             Assertions.assertNotNull(objNew);
             Assertions.assertEquals(objNew.getClass(), ObjectCheck.class);
