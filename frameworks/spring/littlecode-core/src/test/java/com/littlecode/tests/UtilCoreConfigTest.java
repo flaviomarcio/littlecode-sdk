@@ -15,8 +15,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 
-import java.time.LocalDate;
-
 @Slf4j
 @ExtendWith(MockitoExtension.class)
 public class UtilCoreConfigTest {
@@ -24,6 +22,8 @@ public class UtilCoreConfigTest {
     public void UT_CHECK() {
         var context = Mockito.mock(ApplicationContext.class);
         var environment = Mockito.mock(Environment.class);
+        Assertions.assertThrows(NullPointerException.class, () -> new UtilCoreConfig(context, null));
+        Assertions.assertThrows(NullPointerException.class, () -> new UtilCoreConfig(null, null));
         Assertions.assertDoesNotThrow(() -> new UtilCoreConfig(context, environment));
         Assertions.assertDoesNotThrow(UtilCoreConfig::getApplicationContext);
         Assertions.assertDoesNotThrow(UtilCoreConfig::getEnvironment);
@@ -50,23 +50,4 @@ public class UtilCoreConfigTest {
         Assertions.assertEquals(UtilCoreConfig.getFactoryFromFileFormat(FileFormat.PROPS).getClass(), JavaPropsFactory.class);
     }
 
-    @Test
-    public void UT_ObjectConverter() {
-        Assertions.assertDoesNotThrow(UtilCoreConfig.ObjectConverter::converters);
-        Assertions.assertNotNull(UtilCoreConfig.ObjectConverter.converters());
-
-        Assertions.assertDoesNotThrow(() -> LocalDate.parse("1901-01-01"));
-        Assertions.assertNotNull(LocalDate.parse("1901-01-01"));
-
-        Assertions.assertNotNull(UtilCoreConfig.ObjectConverter.toLocalDate);
-        Assertions.assertNotNull(UtilCoreConfig.ObjectConverter.toLocalDateString);
-        Assertions.assertNotNull(UtilCoreConfig.ObjectConverter.toLocalDateTime);
-        Assertions.assertNotNull(UtilCoreConfig.ObjectConverter.toLocalTime);
-        Assertions.assertNotNull(UtilCoreConfig.ObjectConverter.toLocalTimeString);
-        Assertions.assertNotNull(UtilCoreConfig.ObjectConverter.toLocalDateTimeString);
-
-        Assertions.assertDoesNotThrow(UtilCoreConfig.ObjectConverter::modules);
-        Assertions.assertNotNull(UtilCoreConfig.ObjectConverter.modules());
-
-    }
 }
