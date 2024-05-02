@@ -119,8 +119,7 @@ public class SettingLoader<T>  {
                     ? file
                     : parseExtension(file, fileFormat);
 
-            var newValues = IOUtil.target(file).readAll();
-            ObjectUtil.update(this, newValues, fileFormat);
+            ObjectUtil.update(this, file);
             return true;
         }
         return false;

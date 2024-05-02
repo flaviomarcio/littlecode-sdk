@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -163,90 +162,87 @@ public class IOUtil {
         return new File(out.toString().trim());
     }
 
-    public static String readAll(Object target) {
-        File updateFile = null;
-        //noinspection ConstantValue
-        if (target.getClass().equals(Path.class))
-            updateFile = ((Path) target).toFile();
-        else if (target.getClass().equals(File.class))
-            updateFile = (File) target;
-        else if (target.getClass().equals(String.class)) {
-            var file = Path.of(((String) target).trim()).toFile();
-            if (file.exists() && file.isFile())
-                updateFile = file;
+    public static String readAll(File target) {
+        if(target!=null){
+            try (var inputStream = new FileInputStream(target)) {
+                StringBuilder str = new StringBuilder();
+                int content;
+                while ((content = inputStream.read()) != -1)
+                    str.append((char) content);
+                return str.toString().trim();
+            } catch (Exception ignored) {
+            }
         }
-        if (updateFile == null || !updateFile.exists() || !updateFile.isFile())
-            return "";
+        return "";
+    }
 
-        try (var inputStream = new FileInputStream(updateFile)) {
-            StringBuilder str = new StringBuilder();
-            int content;
-            while ((content = inputStream.read()) != -1)
-                str.append((char) content);
-            return str.toString().trim();
-        } catch (IOException e) {
-            System.out.print(e.getMessage());
-            return "";
+    public static String readAll(Path target) {
+        if(target!=null)
+            return readAll(target.toFile());
+        return "";
+    }
+
+    public static String readAll(String target) {
+        if(target!=null)
+            return readAll(new File(target));
+        return "";
+    }
+
+
+    public static List<String> readLines(Path target) {
+        if (target != null){
+            try {
+                return Files.readAllLines(target);
+            } catch (Exception ignored) {
+            }
         }
+        return new ArrayList<>();
     }
 
     public static List<String> readLines(File target) {
-        if (target == null || !target.exists() || !target.isFile())
-            return new ArrayList<>();
-        try {
-            return Files.readAllLines(target.toPath());
-        } catch (IOException e) {
-            return new ArrayList<>();
-        }
+        if (target != null)
+            return readLines(target.toPath());
+        return new ArrayList<>();
     }
 
+    public static List<String> readLines(String target) {
+        if (target != null)
+            return readLines(Path.of(target));
+        return new ArrayList<>();
+    }
+
+
     public static boolean writeAll(File file, String body) {
-        if (file == null)
-            throw new FrameworkException("Destine file is null");
-        var basePath = IOUtil.target(file).basePath();
-
-        if (file.exists() && file.isDirectory())
-            throw new FrameworkException(String.format("Destine file is a directory :%s", file));
-
-        if (!IOUtil.target(basePath).createDir().exists())
-            throw new FrameworkException(String.format("Base path no exists :%s", basePath));
-
-        if (file.exists() && !file.delete())
-            throw new FrameworkException(String.format("No remove file :%s", file));
-
-        try (FileWriter writer = new FileWriter(file)) {
-            writer.write(body);
-            writer.flush();
-            return true;
-        } catch (IOException ignored) {
+        if (file != null && body!=null){
+            var basePath = IOUtil.target(file).basePath();
+            if (IOUtil.target(basePath).createDir().exists()){
+                try (FileWriter writer = new FileWriter(file)) {
+                    writer.write(body);
+                    writer.flush();
+                    return true;
+                } catch (Exception ignored) {
+                }
+            }
         }
         return false;
     }
 
-    public static void writeLines(File file, List<String> lines) {
+    public static boolean writeLines(File file, List<String> lines) {
         final int LF = 10;
-        if (file == null)
-            throw new FrameworkException("Destine file is null");
-        var basePath = IOUtil.target(file).basePath();
-
-        if (file.exists() && file.isDirectory())
-            throw new FrameworkException(String.format("Destine file is a directory :%s", file));
-
-        if (!IOUtil.target(basePath).createDir().exists())
-            throw new FrameworkException(String.format("Base path no exists :%s", basePath));
-
-        if (file.exists() && !file.delete())
-            throw new FrameworkException(String.format("No remove file :%s", file));
-
-        try (FileWriter writer = new FileWriter(file)) {
-            for (var line : lines) {
-                writer.write(line);
-                writer.write(LF);
+        if (file != null && lines!=null){
+            var basePath = IOUtil.target(file).basePath();
+            if (IOUtil.target(basePath).createDir().exists()){
+                try (FileWriter writer = new FileWriter(file)) {
+                    for (var line : lines) {
+                        writer.write(line);
+                        writer.write(LF);
+                    }
+                    writer.flush();
+                } catch (Exception ignored) {
+                }
             }
-            writer.flush();
-        } catch (IOException e) {
-            throw new FrameworkException(e.getMessage());
         }
+        return false;
     }
 
     public static File tempDir() {
@@ -270,32 +266,35 @@ public class IOUtil {
     }
 
     public static File createFileTemp(String prefix, String suffix, File directory) {
-        try {
-            return File.createTempFile(
-                    prefix == null ? PREFIX_TEMP_FILE : prefix.trim(),
-                    suffix == null ? "" : suffix.trim(),
-                    directory == null ? tempDir() : directory);
-        } catch (IOException e) {
-            throw new FrameworkException(e.getMessage());
+        if(prefix!=null || suffix!=null || directory!=null){
+            try {
+                return File.createTempFile(
+                        prefix == null ? PREFIX_TEMP_FILE : prefix.trim(),
+                        suffix == null ? "" : suffix.trim(),
+                        directory == null ? tempDir() : directory);
+            } catch (Exception ignored) {
+            }
         }
+        return null;
     }
 
     public static boolean createFileEmpty(File file) {
-        try {
-            if (file.exists()) {
-                if (!file.canWrite())
-                    throw new FrameworkException(String.format("File no accessible: %s", file.toString()));
-                if (!file.delete())
-                    throw new FrameworkException(String.format("File no accessible: %s", file.toString()));
+        if(file!=null){
+            try {
+                FileWriter fileWriter = new FileWriter(file);
+                fileWriter.write(Arrays.toString(EMPTY_BYTE_ARRAY));
+                fileWriter.close();
+                return file.exists();
+            } catch (Exception ignored) {
             }
-            FileWriter fileWriter = new FileWriter(file);
-            fileWriter.write(Arrays.toString(EMPTY_BYTE_ARRAY));
-            fileWriter.close();
-            return file.exists();
-        } catch (IOException e) {
-            log.error(e.getMessage());
-            return false;
         }
+        return false;
+    }
+
+    public static boolean createFileEmpty(String fileName) {
+        if(fileName!=null && !fileName.trim().isEmpty())
+            return createFileEmpty(new File(fileName));
+        return false;
     }
 
     public String toString() {
@@ -311,7 +310,7 @@ public class IOUtil {
     }
 
     public boolean isEmpty() {
-        return isEmpty(toString());
+        return this.target==null || isEmpty(toString());
     }
 
     public String[] split() {
@@ -340,8 +339,7 @@ public class IOUtil {
     }
 
     public IOUtil createDir() {
-        if (!createDir(this.getTarget()))
-            log.error("No create directory: {}", toString(this.getTarget()));
+        createDir(this.getTarget());
         return this;
     }
 

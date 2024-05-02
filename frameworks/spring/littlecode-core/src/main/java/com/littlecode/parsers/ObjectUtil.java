@@ -16,6 +16,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -24,14 +25,13 @@ import java.util.*;
 @Slf4j
 public class ObjectUtil {
 
-    public static final FileFormat FILE_FORMAT_DEFAULT = UtilCoreConfig.FILE_FORMAT_DEFAULT;
 
 
     public static String classToName(Object o) {
         if (o != null) {
-            if (o instanceof String)
-                return (String) o;
-            else if (o instanceof Class<?> aClass)
+            if (o instanceof String string)
+                return string;
+            else if (o instanceof Class<?> aClass )
                 return aClass.getName();
             else if (o.getClass().isEnum())
                 return o.toString();
@@ -39,7 +39,7 @@ public class ObjectUtil {
         return "";
     }
 
-    private static List<Class<?>> getClassesBySorted(Set<Class<?>> classes) {
+    public static List<Class<?>> getClassesBySorted(Set<Class<?>> classes) {
         if (classes != null && !classes.isEmpty()) {
             List<Class<?>> __return = new ArrayList<>(classes);
             __return
@@ -73,26 +73,34 @@ public class ObjectUtil {
     }
 
     public static void clear(Object object) {
-        update(object, ObjectUtil.create(object.getClass()));
+        update(object, "{}");
     }
 
     public static boolean update(Object object, Object newValues) {
-        return update(object, newValues, FILE_FORMAT_DEFAULT);
-    }
-
-    public static boolean update(Object object, Object newValues, FileFormat fileFormat) {
         if (object != null && newValues!=null){
             try {
-                var updateBytes = IOUtil.readAll(newValues).trim();
-                var updateValues = updateBytes.isEmpty()
-                        ? newValues
-                        : ObjectUtil.createFromString(object.getClass(), updateBytes);
-                var objectMapper = UtilCoreConfig.newObjectMapper(fileFormat);
-                objectMapper.updateValue(object, updateValues);
+                var objectMapper = UtilCoreConfig.newObjectMapper(UtilCoreConfig.FILE_FORMAT_DEFAULT);
+                objectMapper.updateValue(object, newValues);
             } catch (Exception ignored) {
             }
         }
         return false;
+    }
+
+    public static boolean update(Object object, File newValues) {
+        if (object != null && newValues!=null){
+            try {
+                var updateBytes = IOUtil.readAll(newValues).trim();
+                var objectMapper = UtilCoreConfig.newObjectMapper(UtilCoreConfig.FILE_FORMAT_DEFAULT);
+                objectMapper.updateValue(object, updateBytes);
+            } catch (Exception ignored) {
+            }
+        }
+        return false;
+    }
+
+    public static boolean update(Object object, Path newValues) {
+        return update(object,newValues.toFile());
     }
 
     public static synchronized Field toFieldByName(Class<?> tClass, String fieldName) {
@@ -251,7 +259,7 @@ public class ObjectUtil {
     }
 
     public static <T> T createFromString(Class<T> aClass, String source) {
-        return createFromString(aClass, source, FILE_FORMAT_DEFAULT);
+        return createFromString(aClass, source, ObjectValueUtil.FILE_FORMAT_DEFAULT);
     }
 
     public static <T> T createFromFile(Class<T> aClass, File source) {
@@ -267,7 +275,7 @@ public class ObjectUtil {
     public static <T> T createFromStream(Class<T> aClass, InputStream source) {
         if(aClass!=null && source!=null){
             try {
-                return createFromString(aClass, new String(source.readAllBytes()), FILE_FORMAT_DEFAULT);
+                return createFromString(aClass, new String(source.readAllBytes()), ObjectValueUtil.FILE_FORMAT_DEFAULT);
             } catch (Exception ignored) {
             }
         }
@@ -298,16 +306,12 @@ public class ObjectUtil {
                 fieldsNew.forEach(field -> fieldsWriter.put(field.getName().toLowerCase(), field));
                 if (!fieldsWriter.isEmpty()) {
                     Map<String, Object> finaMapValues = new HashMap<>();
-
                     for (Map.Entry<String, Object> entry : source.entrySet()) {
                         String fieldName = entry.getKey();
                         Object fieldValue = entry.getValue();
-                        try {
-                            var fieldWrite = fieldsWriter.get(fieldName.trim().toLowerCase());
-                            if (fieldWrite != null)
-                                finaMapValues.put(fieldWrite.getName(), fieldValue);
-                        } catch (Exception ignored) {
-                        }
+                        var fieldWrite = fieldsWriter.get(fieldName.trim().toLowerCase());
+                        if (fieldWrite != null)
+                            finaMapValues.put(fieldWrite.getName(), fieldValue);
                     }
                     return UtilCoreConfig.newModelMapper().map(finaMapValues, aClass);
                 }
@@ -326,21 +330,11 @@ public class ObjectUtil {
     }
 
     public static String toString(Object o) {
-        return toString(o, FILE_FORMAT_DEFAULT);
+        return ObjectValueUtil.toString(o, ObjectValueUtil.FILE_FORMAT_DEFAULT);
     }
 
     public static String toString(Object o, FileFormat fileFormat) {
-        if (o == null)
-            return "";
-        if (o instanceof String)
-            return (String) o;
-
-        try {
-            var mapper = UtilCoreConfig.newObjectMapper(fileFormat);
-            return mapper.writeValueAsString(o);
-        } catch (Exception ignored) {
-        }
-        return "";
+        return ObjectValueUtil.toString(o,fileFormat);
     }
 
     public static synchronized Map<String, Object> toMapObject(final Object o) {
@@ -350,9 +344,11 @@ public class ObjectUtil {
                 Map<String, Object> fieldValues = new HashMap<>();
                 fieldValues.putAll(mapValues);
                 return fieldValues;
-            } else if (PrimitiveUtil.isPrimitiveValue(o.getClass())) {
-                return new HashMap<>();
-            } else {
+            }
+            else if(o instanceof Map map){
+                return map;
+            }
+            else if(!PrimitiveUtil.isPrimitiveValue(o.getClass())){
                 return ObjectValueUtil.of(o).asMap();
             }
         }
@@ -363,27 +359,33 @@ public class ObjectUtil {
         if (o != null) {
             if(o instanceof String string) {
                 try {
-                    var mapper = UtilCoreConfig.newObjectMapper(FILE_FORMAT_DEFAULT);
+                    var mapper = UtilCoreConfig.newObjectMapper(UtilCoreConfig.FILE_FORMAT_DEFAULT);
                     return mapper.readValue(string, Map.class);
                 } catch (Exception ignored) {
                 }
             }
+            else if(o instanceof Map map){
+                return map;
+            }
             else{
-                Map<String, String> fieldValues = new HashMap<>();
-                for (Field field : toFieldsList(o.getClass())) {
-                    field.setAccessible(true);
-                    try {
-                        var oGet = field.get(o);
-                        if (oGet != null)
-                            fieldValues.put(field.getName(), "");
-                        else if (oGet.getClass().isEnum() || PrimitiveUtil.isPrimitiveValue(field.getGenericType()))
-                            fieldValues.put(field.getName(), oGet.toString());
-                        else if (oGet.getClass().isLocalClass())
-                            fieldValues.put(field.getName(), toString(oGet));
-                    } catch (Exception ignored) {
-                    }
-                }
-                return fieldValues;
+                return ObjectValueUtil
+                        .of(o)
+                        .asMapString();
+//                Map<String, String> fieldValues = new HashMap<>();
+//                for (Field field : toFieldsList(o.getClass())) {
+//                    field.setAccessible(true);
+//                    try {
+//                        var oGet = field.get(o);
+//                        if (oGet != null)
+//                            fieldValues.put(field.getName(), "");
+//                        else if (oGet.getClass().isEnum() || PrimitiveUtil.isPrimitiveValue(field.getGenericType()))
+//                            fieldValues.put(field.getName(), oGet.toString());
+//                        else if (oGet.getClass().isLocalClass())
+//                            fieldValues.put(field.getName(), toString(oGet));
+//                    } catch (Exception ignored) {
+//                    }
+//                }
+//                return fieldValues;
             }
 
         }

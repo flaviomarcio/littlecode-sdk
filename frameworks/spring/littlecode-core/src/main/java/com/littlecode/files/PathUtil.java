@@ -85,10 +85,6 @@ public class PathUtil {
         return new ArrayList<>();
     }
 
-    public static int countFiles(Path target) {
-        return (target == null) ? 0 : countFiles(target.toFile());
-    }
-
     public static int countFiles(File target) {
         if (target != null && target.exists() && target.isDirectory()) {
             File[] files = target.listFiles();
@@ -108,39 +104,52 @@ public class PathUtil {
         return 0;
     }
 
+    public static int countFiles(Path target) {
+        return (target == null) ? 0 : countFiles(target.toFile());
+    }
+
+    public static int countFiles(String target) {
+        return (target == null) ? 0 : countFiles(new File(target));
+    }
+
     public static Path fileName(Path directory, Object fileName) {
         return Path.of(directory.toString(), fileName.toString());
+    }
+
+    public static boolean exists(String target) {
+        return target != null && (new File(target).exists());
     }
 
     public static boolean exists(Path target) {
         return target != null && target.toFile().exists();
     }
 
-    public static void mkDir(Path target) {
-        if (target != null)
-            mkDir(target.toFile());
+    public static boolean exists(File target) {
+        return target != null && target.exists();
     }
 
-    public static void mkDir(File target) {
-        if (target != null) {
-            if (target.exists()) {
-                if (target.isFile())
-                    throw new FrameworkException("file is a directory: " + target);
-                return;
-            }
-            if (!target.mkdirs())
-                throw new FrameworkException("No create paths: " + target);
-        }
+    public static boolean mkDir(File target) {
+        return target != null && (target.exists() || target.mkdirs());
     }
 
-    public static void rmDir(Path path) {
-        if (path != null)
-            rmDir(path.toFile());
+    public static boolean mkDir(String target) {
+        return target!=null && mkDir(new File(target));
     }
 
-    public static void rmDir(File file) {
-        if (file != null && file.exists() && !file.delete())
-            throw new FrameworkException("No delete file: " + file);
+    public static boolean mkDir(Path target) {
+        return target!=null && mkDir(target.toFile());
+    }
+
+    public static boolean rmDir(File file) {
+        return (file != null && file.exists() && !file.delete());
+    }
+
+    public static boolean rmDir(Path target) {
+        return target!=null && mkDir(target.toFile());
+    }
+
+    public static boolean rmDir(String target) {
+        return target!=null && mkDir(new File(target));
     }
 
     public PathUtil clear() {
@@ -194,13 +203,11 @@ public class PathUtil {
     }
 
     public Integer countFiles() {
-        var file = this.toFile();
-        return file == null ? 0 : countFiles(file);
+        return countFiles(this.toFile());
     }
 
     public Path fileName(Object fileName) {
-        var file = this.toFile();
-        return file == null ? null : Path.of(this.toFile().toString(), fileName.toString());
+        return fileName == null ? null : Path.of(this.toFile().getAbsolutePath(), fileName.toString());
     }
 
     public boolean exists() {

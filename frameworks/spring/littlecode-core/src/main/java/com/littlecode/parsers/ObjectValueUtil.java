@@ -1,10 +1,14 @@
 package com.littlecode.parsers;
 
+import com.littlecode.config.UtilCoreConfig;
+import com.littlecode.exceptions.FrameworkException;
+import com.littlecode.files.FileFormat;
 import lombok.Data;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.net.URI;
 import java.nio.file.Path;
 import java.time.LocalDate;
@@ -15,6 +19,7 @@ import java.util.*;
 @Slf4j
 @Getter
 public class ObjectValueUtil {
+    public static final FileFormat FILE_FORMAT_DEFAULT = UtilCoreConfig.FILE_FORMAT_DEFAULT;
     private Object target;
     private final List<String> fieldNames=new ArrayList<>();
     private final List<Field> fieldList=new ArrayList<>();
@@ -38,15 +43,34 @@ public class ObjectValueUtil {
         this.fieldList.clear();
         this.fieldMap.clear();
         this.fieldNames.clear();
-        for(Field field : ObjectUtil.toFieldsList(target.getClass())){
+        this.fieldList.addAll(getFieldList(this.target.getClass()));
+        for(Field field : this.fieldList){
             this.fieldMap.put(field.getName().toLowerCase(), field);
-            this.fieldList.add(field);
             this.fieldNames.add(field.getName());
         }
     }
 
     public static ObjectValueUtil of(Object target){
         return new ObjectValueUtil(target);
+    }
+
+    public static String toString(Object o, FileFormat fileFormat) {
+        if (o != null){
+            if (o instanceof String)
+                return (String) o;
+            else{
+                try {
+                    var mapper = UtilCoreConfig.newObjectMapper(fileFormat);
+                    return mapper.writeValueAsString(o);
+                } catch (Exception ignored) {
+                }
+            }
+        }
+        return "";
+    }
+
+    public static String toString(Object o) {
+        return ObjectValueUtil.toString(o, FILE_FORMAT_DEFAULT);
     }
 
     public Map<String,Object> asMap(){
@@ -68,7 +92,13 @@ public class ObjectValueUtil {
         for(Field field : this.fieldList){
             field.setAccessible(true);
             try {
-                __return.put(field.getName(), PrimitiveUtil.toString(field.get(this.target)));
+                var oGet = field.get(this.target);
+                if (oGet == null)
+                    __return.put(field.getName(), "");
+                else if (oGet.getClass().isEnum() || PrimitiveUtil.isPrimitiveValue(field.getGenericType()))
+                    __return.put(field.getName(), oGet.toString());
+                else
+                    __return.put(field.getName(), PrimitiveUtil.toString(oGet));
             } catch (Exception ignored) {
             }
         }
@@ -83,6 +113,21 @@ public class ObjectValueUtil {
         return this.fieldMap.containsValue(field);
     }
 
+    public static List<Field> getFieldList(Class<?> tClass) {
+        if(tClass!=null){
+            List<Field> __return = new ArrayList<>();
+            Field[] fieldList = tClass.getDeclaredFields();
+            for (Field field : fieldList) {
+                if (!Modifier.isStatic(field.getModifiers())){
+                    field.setAccessible(true);
+                    __return.add(field);
+                }
+            }
+            return __return;
+        }
+        return new ArrayList<>();
+    }
+
     public Field getField(String name){
         if(name==null)
             throw new NullPointerException("invalid fieldName");
@@ -95,7 +140,7 @@ public class ObjectValueUtil {
         try {
             field.setAccessible(true);
             return field.get(this.target);
-        } catch (Exception ignored) {
+        }catch (Exception ignored) {
         }
         return null;
     }
@@ -105,7 +150,7 @@ public class ObjectValueUtil {
     }
 
     public String toString(){
-        return ObjectUtil.toString(this.target);
+        return toString(this.target);
     }
 
     public Object asValue(Field field){

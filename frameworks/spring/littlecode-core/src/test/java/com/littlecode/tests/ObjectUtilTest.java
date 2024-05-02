@@ -3,6 +3,7 @@ package com.littlecode.tests;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.littlecode.config.UtilCoreConfig;
 import com.littlecode.exceptions.FrameworkException;
+import com.littlecode.files.IOUtil;
 import com.littlecode.parsers.HashUtil;
 import com.littlecode.parsers.ObjectUtil;
 import jakarta.validation.constraints.NotNull;
@@ -15,9 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -25,6 +24,7 @@ import java.lang.annotation.Target;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Set;
 import java.util.UUID;
 
 @Slf4j
@@ -189,6 +189,17 @@ public class ObjectUtilTest {
 
         //check 1
         var objNew = ObjectUtil.createFromObject(ObjectCheck.class, objectSrc);
+
+        var byteSrc=ObjectUtil.toString(objNew);
+        var fileSrc=new File("/tmp/oj.json");
+        IOUtil.writeAll(fileSrc,byteSrc);
+
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.update(new ObjectCheck(),ObjectCheck.builder()));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.update(new ObjectCheck(), byteSrc));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.update(new ObjectCheck(), fileSrc));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.update(new ObjectCheck(), fileSrc.toPath()));
+
+
         Assertions.assertNotNull(objNew);
         Assertions.assertEquals(objNew.getClass(), ObjectCheck.class);
         var md5New = ObjectUtil.toMapObject(objNew);
@@ -209,6 +220,12 @@ public class ObjectUtilTest {
             } catch (IOException e) {
                 throw new FrameworkException(e.getMessage());
             }
+            Assertions.assertDoesNotThrow(() -> ObjectUtil.createFromStream(null,(InputStream) null));
+            Assertions.assertDoesNotThrow(() -> ObjectUtil.createFromStream(Object.class,(InputStream) null));
+            Assertions.assertThrows(FileNotFoundException.class,() -> ObjectUtil.createFromStream(String.class, new FileInputStream(new File(UUID.randomUUID().toString()))));
+            Assertions.assertNull(ObjectUtil.createFromStream(null,(InputStream) null));
+
+
             Assertions.assertDoesNotThrow(() -> ObjectUtil.createFromFile(ObjectCheck.class, file));
             Assertions.assertDoesNotThrow(() -> ObjectUtil.createFromFile(ObjectCheck.class, new File("")));
             Assertions.assertDoesNotThrow(() -> ObjectUtil.createFromFile(ObjectCheck.class, null));
@@ -249,6 +266,23 @@ public class ObjectUtilTest {
 
     @Test
     public void UT_000_CHECK_CLASSES() {
+
+        Assertions.assertNotNull(ObjectUtil.classToName(""));
+        Assertions.assertNotNull(ObjectUtil.classToName(null));
+        Assertions.assertNotNull(ObjectUtil.classToName(ObjectCheckType.class));
+        Assertions.assertNotNull(ObjectUtil.classToName(ObjectCheckType.Type1));
+        Assertions.assertEquals(ObjectUtil.classToName(null),"");
+        Assertions.assertNotNull(ObjectUtil.classToName(""),String.class.getName());
+        Assertions.assertNotNull(ObjectUtil.classToName(ObjectCheckType.Type1),ObjectCheckType.class.getName());
+
+
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.getClassesBySorted(null));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.getClassesBySorted(Set.of(String.class, Integer.class)));
+        Assertions.assertNotNull(ObjectUtil.getClassesBySorted(null));
+        Assertions.assertNotNull(ObjectUtil.getClassesBySorted(Set.of(String.class, Integer.class)));
+
+
+
         Assertions.assertNotNull(ObjectUtil.getClassByName(ObjectCheckType.class.getName()));
         Assertions.assertNotNull(ObjectUtil.getClassByName(ObjectCheck.class.getName()));
         Assertions.assertNull(ObjectUtil.getClassByName("abc.1234.c4"));

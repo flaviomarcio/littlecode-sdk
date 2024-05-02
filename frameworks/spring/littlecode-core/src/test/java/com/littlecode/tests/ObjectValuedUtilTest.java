@@ -1,11 +1,13 @@
 package com.littlecode.tests;
 
+import com.littlecode.exceptions.FrameworkException;
 import com.littlecode.parsers.ObjectValueUtil;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
@@ -36,10 +38,11 @@ public class ObjectValuedUtilTest {
         Assertions.assertThrows(NullPointerException.class, () -> objValueUtil.setTarget(null));
         Assertions.assertDoesNotThrow(() -> objValueUtil.setTarget(new PrivateObject()));
 
-        Assertions.assertDoesNotThrow(objValueUtil::toString);
+        Assertions.assertDoesNotThrow(() -> objValueUtil.toString());
+        Assertions.assertDoesNotThrow(() -> ObjectValueUtil.toString(new Object()));
         Assertions.assertDoesNotThrow(objValueUtil::getTarget);
         Assertions.assertDoesNotThrow(objValueUtil::getFieldMap);
-        Assertions.assertDoesNotThrow(objValueUtil::getFieldList);
+        Assertions.assertDoesNotThrow(() -> ObjectValueUtil.getFieldList(Object.class));
         Assertions.assertDoesNotThrow(objValueUtil::getFieldNames);
         Assertions.assertDoesNotThrow(objValueUtil::asMap);
         Assertions.assertDoesNotThrow(objValueUtil::asMapString);
@@ -53,6 +56,15 @@ public class ObjectValuedUtilTest {
         Assertions.assertNotNull(objValueUtil.asMapString());
 
 
+
+    }
+
+    @Test
+    public void UT_000_CHECK_GET_FIELD_LIST() {
+        Assertions.assertDoesNotThrow(() -> ObjectValueUtil.getFieldList(null));
+        Assertions.assertDoesNotThrow(() -> ObjectValueUtil.getFieldList(PrivateObject.class));
+        Assertions.assertNotNull(ObjectValueUtil.getFieldList(null));
+        Assertions.assertNotNull(ObjectValueUtil.getFieldList(PrivateObject.class));
 
     }
 
@@ -102,6 +114,10 @@ public class ObjectValuedUtilTest {
             Assertions.assertFalse(objValueUtil.contains((Field)null));
             Assertions.assertTrue(objValueUtil.contains(field));
             Assertions.assertTrue(objValueUtil.contains(field.getName()));
+            Assertions.assertThrows(NullPointerException.class,() -> objValueUtil.getField(null));
+            Assertions.assertThrows(NullPointerException.class,() -> objValueUtil.getFieldValue((Field) null));
+            Assertions.assertThrows(NullPointerException.class,() -> objValueUtil.getFieldValue((String) null));
+            Assertions.assertNull(objValueUtil.getFieldValue(Mockito.mock(Field.class)));
             Assertions.assertNotNull(objValueUtil.getField(field.getName()));
 
             if(field.getName().equals("vObject"))
