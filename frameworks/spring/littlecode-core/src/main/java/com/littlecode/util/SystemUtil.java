@@ -16,7 +16,7 @@ public class SystemUtil {
         }
     }
 
-    //ref ref https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/System.html
+    //ref https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/System.html
     public static class Env {
         public static final Path JAVA_TEMP_DIR = Path.of(System.getProperty("java.io.tmpdir"));
         public static final Path JAVA_LIBRARY_PATH = Path.of(System.getProperty("java.library.path"));
