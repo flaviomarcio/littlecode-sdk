@@ -2,6 +2,7 @@ package com.littlecode.tests;
 
 import com.littlecode.network.RequestUtil;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -14,6 +15,7 @@ import java.util.Map;
 public class RequestUtilTest {
 
     @Test
+    @DisplayName("Deve validar Response")
     public void UT_000_CHECK_RESPONSE() {
         Assertions.assertDoesNotThrow(()-> new RequestUtil.Response(null));
         var response=(new RequestUtil()).response();
@@ -37,6 +39,7 @@ public class RequestUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar methods")
     public void UT_000_CHECK_REQUEST_UTIL() {
 
         Assertions.assertDoesNotThrow(RequestUtil::new);
