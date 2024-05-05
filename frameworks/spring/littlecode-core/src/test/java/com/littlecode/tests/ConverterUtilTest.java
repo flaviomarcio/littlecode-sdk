@@ -288,6 +288,7 @@ public class ConverterUtilTest {
 
         Assertions.assertDoesNotThrow(() -> new ConverterUtil("/tmp/tmp").toPath());
         Assertions.assertDoesNotThrow(() -> new ConverterUtil(Path.of("/tmp/tmp")).toPath());
+        Assertions.assertDoesNotThrow(() -> new ConverterUtil(Path.of("/tmp/tmp").toUri()).toPath());
         Assertions.assertDoesNotThrow(() -> new ConverterUtil(new File("/tmp/tmp")).toPath());
         Assertions.assertDoesNotThrow(() -> new ConverterUtil(LocalDateTime.now()).toPath());
 

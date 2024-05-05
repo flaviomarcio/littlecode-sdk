@@ -111,19 +111,26 @@ public class HashUtilTest {
         String bytesIn = "stringToHex";
         String bytesOut = "737472696e67546f486578";
 
+        Assertions.assertEquals(HashUtil.toHex(null), "");
+        Assertions.assertEquals(HashUtil.toHex(""), "");
         Assertions.assertEquals(HashUtil.toHex(bytesIn), bytesOut);
         Assertions.assertEquals(HashUtil.toHex("%s", bytesIn), bytesOut);
         Assertions.assertNotNull(HashUtil.fromHex(bytesOut), bytesIn);
+        Assertions.assertNotNull(HashUtil.fromHex(""), "");
+        Assertions.assertNotNull(HashUtil.fromHex(null), "");
     }
 
     @Test
     public void UT_toBase64() {
         String bytesIn = "stringToBase64";
         String bytesOut = "c3RyaW5nVG9CYXNlNjQ=";
-
+        Assertions.assertEquals(HashUtil.toBase64(null), "");
+        Assertions.assertEquals(HashUtil.toBase64(""), "");
         Assertions.assertEquals(HashUtil.toBase64(bytesIn), bytesOut);
         Assertions.assertEquals(HashUtil.toBase64("%s", bytesIn), bytesOut);
         Assertions.assertNotNull(HashUtil.fromBase64(bytesOut), bytesIn);
+        Assertions.assertNotNull(HashUtil.fromBase64(null), "");
+        Assertions.assertNotNull(HashUtil.fromBase64(""), "");
     }
 
     @Data

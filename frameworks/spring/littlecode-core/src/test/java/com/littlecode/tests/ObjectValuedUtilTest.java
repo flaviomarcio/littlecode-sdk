@@ -1,6 +1,7 @@
 package com.littlecode.tests;
 
 import com.littlecode.exceptions.FrameworkException;
+import com.littlecode.parsers.ObjectUtil;
 import com.littlecode.parsers.ObjectValueUtil;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,7 @@ import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Map;
 import java.util.UUID;
 
 @Slf4j
@@ -29,6 +31,14 @@ public class ObjectValuedUtilTest {
         Assertions.assertThrows(NullPointerException.class, () -> ObjectValueUtil.of(null));
         Assertions.assertDoesNotThrow(() -> new ObjectValueUtil(new PrivateObject()));
         Assertions.assertDoesNotThrow(() -> ObjectValueUtil.of(new PrivateObject()));
+    }
+
+    @Test
+    public void UT_000_CHECK_TOO_STRING() {
+        Assertions.assertDoesNotThrow(()->ObjectValueUtil.toString(null));
+        Assertions.assertDoesNotThrow(()->ObjectValueUtil.toString(""));
+        Assertions.assertDoesNotThrow(()->ObjectValueUtil.toString(new PrivateObject()));
+
     }
 
     @Test
@@ -234,6 +244,7 @@ public class ObjectValuedUtilTest {
         private final int vInt=12;
         private final double vDouble=12;
         private final long vLong=112233454;
+        private final Map<String,String> maps=Map.of("","");
     }
 
 }

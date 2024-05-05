@@ -1,6 +1,7 @@
 package com.littlecode.parsers;
 
 import com.littlecode.exceptions.ParserException;
+import lombok.SneakyThrows;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -73,27 +74,25 @@ public class HashUtil {
         return toMd5Uuid(String.format(format, args));
     }
 
+    @SneakyThrows
     public static UUID toMd5Uuid(String value) {
         if (value != null && !value.isEmpty()) {
             try {
                 return UUID.fromString(formatStringToMd5(value));
             } catch (Exception ignored) {
             }
-            try {
-                MessageDigest md = MessageDigest.getInstance("MD5");
-                byte[] messageDigest = md.digest(value.getBytes());
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] messageDigest = md.digest(value.getBytes());
 
-                StringBuilder hexString = new StringBuilder();
-                for (byte b : messageDigest) {
-                    String hex = Integer.toHexString(0xFF & b);
-                    if (hex.length() == 1)
-                        hexString.append('0');
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : messageDigest) {
+                String hex = Integer.toHexString(0xFF & b);
+                if (hex.length() == 1)
+                    hexString.append('0');
 
-                    hexString.append(hex);
-                }
-                return UUID.fromString(formatStringToMd5(hexString));
-            } catch (Exception ignored) {
+                hexString.append(hex);
             }
+            return UUID.fromString(formatStringToMd5(hexString));
         }
         return null;
     }
@@ -131,10 +130,10 @@ public class HashUtil {
         return Base64.getEncoder().encodeToString(bytes.getBytes());
     }
 
-    public static String fromBase64(String bytes) {
-        if (bytes == null || bytes.isEmpty())
+    public static String fromBase64(String value) {
+        if (value == null || value.isEmpty())
             return "";
-        return Arrays.toString(Base64.getDecoder().decode(bytes));
+        return Arrays.toString(Base64.getDecoder().decode(value));
     }
 
     public static String toHex(String format, Object... args) {
@@ -153,6 +152,8 @@ public class HashUtil {
     }
 
     public static String fromHex(String hexEncoded) {
+        if(hexEncoded==null || hexEncoded.isEmpty())
+            return "";
         byte[] decodedBytes = new byte[hexEncoded.length() / 2];
         for (int i = 0; i < decodedBytes.length; i++)
             decodedBytes[i] = (byte) Integer.parseInt(hexEncoded.substring(i * 2, i * 2 + 2), 16);

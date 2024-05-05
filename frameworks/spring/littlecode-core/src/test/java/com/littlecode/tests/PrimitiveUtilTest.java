@@ -204,6 +204,7 @@ public class PrimitiveUtilTest {
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toDouble(""));
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toDouble(""));
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toDouble(100.11001D,2));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toDouble(0D, 0));
 
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toDouble((LocalDate) null));
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toDouble((LocalTime) null));
@@ -284,6 +285,7 @@ public class PrimitiveUtilTest {
         Assertions.assertDoesNotThrow(()->PrimitiveUtil.toTime(tm010203.toString()));
         Assertions.assertDoesNotThrow(()->PrimitiveUtil.toTime("01:02:03"));
         Assertions.assertDoesNotThrow(()->PrimitiveUtil.toTime(null));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toTime("23:59:59.111222333"));
         Assertions.assertDoesNotThrow(()->PrimitiveUtil.toTime("23:59:59"));
         Assertions.assertDoesNotThrow(()->PrimitiveUtil.toTime("23:59:00"));
         Assertions.assertDoesNotThrow(()->PrimitiveUtil.toTime("23:59"));

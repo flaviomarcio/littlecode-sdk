@@ -5,6 +5,7 @@ import com.littlecode.exceptions.FrameworkException;
 import com.littlecode.files.FileFormat;
 import lombok.Data;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
@@ -73,34 +74,29 @@ public class ObjectValueUtil {
         return ObjectValueUtil.toString(o, FILE_FORMAT_DEFAULT);
     }
 
+    @SneakyThrows
     public Map<String,Object> asMap(){
         Map<String,Object> __return=new HashMap<>();
         for(Field field : this.fieldList){
             field.setAccessible(true);
-            try {
-                var value=field.get(this.target);
-                if(value!=null)
-                    __return.put(field.getName(), value);
-            } catch (Exception ignored) {
-            }
+            var value=field.get(this.target);
+            __return.put(field.getName(), value);
         }
         return __return;
     }
 
+    @SneakyThrows
     public Map<String,String> asMapString(){
         Map<String,String> __return=new HashMap<>();
         for(Field field : this.fieldList){
             field.setAccessible(true);
-            try {
-                var oGet = field.get(this.target);
-                if (oGet == null)
-                    __return.put(field.getName(), "");
-                else if (oGet.getClass().isEnum() || PrimitiveUtil.isPrimitiveValue(field.getGenericType()))
-                    __return.put(field.getName(), oGet.toString());
-                else
-                    __return.put(field.getName(), PrimitiveUtil.toString(oGet));
-            } catch (Exception ignored) {
-            }
+            var oGet = field.get(this.target);
+            if (oGet == null)
+                __return.put(field.getName(), "");
+            else if (oGet.getClass().isEnum() || PrimitiveUtil.isPrimitiveValue(field.getGenericType()))
+                __return.put(field.getName(), oGet.toString());
+            else
+                __return.put(field.getName(), PrimitiveUtil.toString(oGet));
         }
         return __return;
     }

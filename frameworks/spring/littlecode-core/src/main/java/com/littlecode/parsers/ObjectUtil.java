@@ -7,6 +7,7 @@ import com.littlecode.config.UtilCoreConfig;
 import com.littlecode.exceptions.FrameworkException;
 import com.littlecode.files.FileFormat;
 import com.littlecode.files.IOUtil;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
@@ -355,14 +356,12 @@ public class ObjectUtil {
         return new HashMap<>();
     }
 
+    @SneakyThrows
     public static synchronized Map<String, String> toMapOfString(final Object o) {
         if (o != null) {
             if(o instanceof String string) {
-                try {
-                    var mapper = UtilCoreConfig.newObjectMapper(UtilCoreConfig.FILE_FORMAT_DEFAULT);
-                    return mapper.readValue(string, Map.class);
-                } catch (Exception ignored) {
-                }
+                var mapper = UtilCoreConfig.newObjectMapper(UtilCoreConfig.FILE_FORMAT_DEFAULT);
+                return mapper.readValue(string, Map.class);
             }
             else if(o instanceof Map map){
                 return map;
@@ -371,21 +370,6 @@ public class ObjectUtil {
                 return ObjectValueUtil
                         .of(o)
                         .asMapString();
-//                Map<String, String> fieldValues = new HashMap<>();
-//                for (Field field : toFieldsList(o.getClass())) {
-//                    field.setAccessible(true);
-//                    try {
-//                        var oGet = field.get(o);
-//                        if (oGet != null)
-//                            fieldValues.put(field.getName(), "");
-//                        else if (oGet.getClass().isEnum() || PrimitiveUtil.isPrimitiveValue(field.getGenericType()))
-//                            fieldValues.put(field.getName(), oGet.toString());
-//                        else if (oGet.getClass().isLocalClass())
-//                            fieldValues.put(field.getName(), toString(oGet));
-//                    } catch (Exception ignored) {
-//                    }
-//                }
-//                return fieldValues;
             }
 
         }

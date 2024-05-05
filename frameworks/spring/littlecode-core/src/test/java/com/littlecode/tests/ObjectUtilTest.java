@@ -3,6 +3,7 @@ package com.littlecode.tests;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.littlecode.config.UtilCoreConfig;
 import com.littlecode.exceptions.FrameworkException;
+import com.littlecode.files.FileFormat;
 import com.littlecode.files.IOUtil;
 import com.littlecode.parsers.HashUtil;
 import com.littlecode.parsers.ObjectUtil;
@@ -24,6 +25,7 @@ import java.lang.annotation.Target;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -113,7 +115,11 @@ public class ObjectUtilTest {
 
 
     @Test
-    public void UT_000_CHECK_TO_STRING_AND_TO_JSON() {
+    public void UT_000_CHECK_TO_STRING_BY_FORMATS() {
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.toString(objectSrc, FileFormat.JSON));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.toString(objectSrc, FileFormat.XML));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.toString(objectSrc, FileFormat.XML));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.toString(objectSrc, FileFormat.PROPS));
         Assertions.assertEquals(ObjectUtil.toString(objectSrc), objectSrcString);
     }
 
@@ -141,6 +147,24 @@ public class ObjectUtilTest {
 
     @Test
     public void UT_000_CHECK_MAPS() {
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.toMapObject(objectSrcString));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.toMapObject(Map.of("","")));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.toMapObject(null));
+
+        Assertions.assertNotNull(ObjectUtil.toMapObject(objectSrcString));
+        Assertions.assertNotNull(ObjectUtil.toMapObject(Map.of("","")));
+        Assertions.assertNotNull(ObjectUtil.toMapObject(null));
+
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.toMapOfString(objectSrcString));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.toMapOfString(Map.of("","")));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.toMapOfString(null));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.toMapOfString(new Object()));
+
+        Assertions.assertNotNull(ObjectUtil.toMapOfString(objectSrcString));
+        Assertions.assertNotNull(ObjectUtil.toMapOfString(Map.of("","")));
+        Assertions.assertNotNull(ObjectUtil.toMapOfString(null));
+        Assertions.assertNotNull(ObjectUtil.toMapOfString(new Object()));
+
         var mapObjectA = ObjectUtil.toMapObject(objectSrcString);
         var mapObjectB = ObjectUtil.toMapObject(objectSrc);
         Assertions.assertFalse(mapObjectA.isEmpty());
