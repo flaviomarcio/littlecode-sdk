@@ -5,6 +5,7 @@ import com.littlecode.exceptions.FrameworkException;
 import com.littlecode.parsers.PrimitiveUtil;
 import com.littlecode.util.EnvironmentUtil;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -22,6 +23,7 @@ import java.util.Map;
 public class EnvironmentUtilTest {
 
     @Test
+    @DisplayName("Deve validar constructor")
     public void UI_Constructor() {
         UtilCoreConfig.setApplicationContext(null);
         UtilCoreConfig.setEnvironment(null);
@@ -38,6 +40,7 @@ public class EnvironmentUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar getValues")
     public void UI_envValue() {
         {//step 1
             var environment= Mockito.mock(Environment.class);
@@ -60,6 +63,7 @@ public class EnvironmentUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar asAString")
     public void UI_asString() {
         {//step 1
             var environment= Mockito.mock(Environment.class);
@@ -94,6 +98,7 @@ public class EnvironmentUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar asBool")
     public void UI_asBool() {
         {//step 1
             var environment= Mockito.mock(Environment.class);
@@ -146,6 +151,7 @@ public class EnvironmentUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar asDouble")
     public void UI_asDouble() {
         {//step 1
             var environment= Mockito.mock(Environment.class);
@@ -194,6 +200,7 @@ public class EnvironmentUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar asInt")
     public void UI_asInt() {
         {//step 1
             var environment= Mockito.mock(Environment.class);
@@ -225,6 +232,7 @@ public class EnvironmentUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar asLong")
     public void UI_asLong() {
         {//step 1
             var environment= Mockito.mock(Environment.class);
@@ -277,6 +285,7 @@ public class EnvironmentUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar asDate")
     public void UI_asDate() {
         {//step 1
             var environment = Mockito.mock(Environment.class);
@@ -311,6 +320,7 @@ public class EnvironmentUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar asTime")
     public void UI_asTime() {
         {//step 1
             var environment = Mockito.mock(Environment.class);
@@ -339,6 +349,7 @@ public class EnvironmentUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar asDateTime")
     public void UI_asDateTime() {
         {//step 1
             var environment = Mockito.mock(Environment.class);
@@ -368,6 +379,7 @@ public class EnvironmentUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar asEnum")
     public void UI_asEnum() {
         enum TypeTest {
             enumA, enumB, enumC
@@ -403,8 +415,8 @@ public class EnvironmentUtilTest {
         }
     }
 
-
     @Test
+    @DisplayName("Deve validar asEnums")
     public void UI_asEnums() {
         enum TypeTest{
             enumA,enumB,enumC
@@ -488,6 +500,7 @@ public class EnvironmentUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar asListOfString")
     public void UI_asListOfString() {
         {//step 1
             var environment= Mockito.mock(Environment.class);
@@ -545,6 +558,7 @@ public class EnvironmentUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar asListOfLong")
     public void UI_asListOfLong() {
         {//step 1
             var environment= Mockito.mock(Environment.class);
@@ -603,6 +617,7 @@ public class EnvironmentUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar asListOfInt")
     public void UI_asListOfInt() {
         {//step 1
             var environment= Mockito.mock(Environment.class);

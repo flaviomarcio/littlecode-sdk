@@ -3,6 +3,7 @@ package com.littlecode.tests;
 import com.littlecode.parsers.UrlUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -11,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 public class UrlUtilTest {
     @Test
+    @DisplayName("Deve validar parsers")
     public void UT_pathParse() {
         Assertions.assertEquals(UrlUtil.pathParse("/api"), "/api");
         Assertions.assertEquals(UrlUtil.pathParse("api/"), "/api");
@@ -21,6 +23,7 @@ public class UrlUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar path maker")
     public void UT_pathMaker() {
         UrlUtil.setContextPath("");
         Assertions.assertEquals(UrlUtil.pathMaker("/path/method"), "/path/method");
@@ -31,6 +34,7 @@ public class UrlUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar contextPath")
     public void UT_contextPath() {
         UrlUtil.setContextPath("/");
         Assertions.assertNotNull(UrlUtil.getTrustedOpenUrl());

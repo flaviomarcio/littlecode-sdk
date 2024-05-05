@@ -3,6 +3,7 @@ package com.littlecode.tests;
 import com.littlecode.config.UtilCoreConfigConverters;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -13,6 +14,7 @@ import java.time.LocalDate;
 @ExtendWith(MockitoExtension.class)
 public class UtilCoreConfigConvertersTest {
     @Test
+    @DisplayName("Deve validar class UtilCoreConfigConverters")
     public void UT_ObjectConverterConfig() {
         Assertions.assertDoesNotThrow(UtilCoreConfigConverters::converters);
         Assertions.assertNotNull(UtilCoreConfigConverters.converters());

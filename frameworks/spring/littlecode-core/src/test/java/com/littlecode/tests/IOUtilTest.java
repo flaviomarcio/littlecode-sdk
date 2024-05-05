@@ -3,6 +3,7 @@ package com.littlecode.tests;
 import com.littlecode.files.IOUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -18,6 +19,7 @@ public class IOUtilTest {
     private static final File PATH_TEMP_DIR = Path.of(System.getProperty("java.io.tmpdir")).toFile();
 
     @Test
+    @DisplayName("Deve validar getters")
     public void UT_CHECK_GETTER() {
         Assertions.assertDoesNotThrow(() -> IOUtil.target(null));
         Assertions.assertDoesNotThrow(() -> IOUtil.target("/tmp"));
@@ -26,6 +28,7 @@ public class IOUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar isEmpty")
     public void UT_CHECK_IsEmpty() {
         Assertions.assertDoesNotThrow(() -> IOUtil.isEmpty(null));
         Assertions.assertDoesNotThrow(() -> IOUtil.isEmpty(""));
@@ -37,6 +40,7 @@ public class IOUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar toString")
     public void UT_CHECK_ToString() {
         Assertions.assertDoesNotThrow(() -> IOUtil.toString("/tmp"));
         Assertions.assertDoesNotThrow(() -> IOUtil.toString(null));
@@ -52,16 +56,7 @@ public class IOUtilTest {
     }
 
     @Test
-    public void UT_CHECK_TEMP_FILE() {
-        Assertions.assertEquals(IOUtil.tempDir().toString(), PATH_TEMP_DIR.toString());
-        Assertions.assertNotNull(IOUtil.createFileTemp());
-        Assertions.assertNotNull(IOUtil.createFileTemp("test_"));
-        Assertions.assertNotNull(IOUtil.createFileTemp("test_", "_file"));
-        Assertions.assertNotNull(IOUtil.createFileTemp("test_", "_file", PATH_TEMP_DIR));
-        Assertions.assertNotNull(IOUtil.createFileTemp(PATH_TEMP_DIR));
-    }
-
-    @Test
+    @DisplayName("Deve validar write files")
     public void UT_CHECK_READ_WRITE() {
         var fileTemp = IOUtil.createFileTemp();
         var ioUtil = IOUtil.target(fileTemp);
@@ -108,9 +103,16 @@ public class IOUtilTest {
         Assertions.assertEquals(ioUtil.readLines().size(), lines.size());
     }
 
-
     @Test
+    @DisplayName("Deve validar file functions")
     public void UT_CHECK_FILE_FUNCTION() {
+
+        Assertions.assertEquals(IOUtil.tempDir().toString(), PATH_TEMP_DIR.toString());
+        Assertions.assertNotNull(IOUtil.createFileTemp());
+        Assertions.assertNotNull(IOUtil.createFileTemp("test_"));
+        Assertions.assertNotNull(IOUtil.createFileTemp("test_", "_file"));
+        Assertions.assertNotNull(IOUtil.createFileTemp("test_", "_file", PATH_TEMP_DIR));
+        Assertions.assertNotNull(IOUtil.createFileTemp(PATH_TEMP_DIR));
 
         Assertions.assertTrue(IOUtil.target(IOUtil.tempDir()).isDirectory());
         Assertions.assertTrue(IOUtil.target(IOUtil.tempDir()).toPath().toFile().isDirectory());

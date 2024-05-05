@@ -5,6 +5,7 @@ import com.littlecode.util.SystemUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -41,6 +42,7 @@ public class SystemUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar variaveis publicas")
     public void UT_CHECK_ENV_PUBLIC() {
         Assertions.assertDoesNotThrow(() -> new SystemUtil());
         Assertions.assertDoesNotThrow(() -> SystemUtil.sleep(1));
@@ -60,6 +62,7 @@ public class SystemUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar metodos GET")
     public void UT_CHECK_ENV_GET() {
 
         Assertions.assertDoesNotThrow(() -> SystemUtil.Env.getProperty(null));

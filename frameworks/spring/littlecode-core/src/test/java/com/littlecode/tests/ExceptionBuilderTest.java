@@ -5,18 +5,19 @@ import com.littlecode.exceptions.*;
 import com.littlecode.parsers.ExceptionBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
 public class ExceptionBuilderTest {
 
     @Test
+    @DisplayName("Deve validar constructor")
     public void UT_CHECK_OF_EXPTIONS() {
         Assertions.assertDoesNotThrow(() -> new ArithmeticException("teste"));
         Assertions.assertDoesNotThrow(() -> new ArithmeticException("teste"));
@@ -51,26 +52,10 @@ public class ExceptionBuilderTest {
         Assertions.assertThrows(UnAuthorizationException.class,() -> {throw new UnAuthorizationException("teste");});
         Assertions.assertThrows(UnknownException.class,() -> {throw new UnknownException("teste");});
 
-        Assertions.assertNotNull(new ArithmeticException("teste"));
-        Assertions.assertNotNull(new ArithmeticException("teste"));
-        Assertions.assertNotNull(new BadRequestException("teste"));
-        Assertions.assertNotNull(new ConflictException("teste"));
-        Assertions.assertNotNull(new ConversionException("teste"));
-        Assertions.assertNotNull(new FrameworkException("teste"));
-        Assertions.assertNotNull(new InvalidException("teste"));
-        Assertions.assertNotNull(new InvalidObjectException("teste"));
-        Assertions.assertNotNull(new InvalidSettingException("teste"));
-        Assertions.assertNotNull(new NetworkException("teste"));
-        Assertions.assertNotNull(new NoContentException("teste"));
-        Assertions.assertNotNull(new NoImplementedException("teste"));
-        Assertions.assertNotNull(new NotFoundException("teste"));
-        Assertions.assertNotNull(new ParserException("teste"));
-        Assertions.assertNotNull(new UnAuthorizationException("teste"));
-        Assertions.assertNotNull(new UnknownException("teste"));
-
     }
 
     @Test
+    @DisplayName("Deve validar getters e setters")
     public void UT_CHECK_SET() {
         Assertions.assertDoesNotThrow(() -> new ExceptionBuilder());
         Assertions.assertDoesNotThrow(() -> new ExceptionBuilder().getTarget());
@@ -92,6 +77,7 @@ public class ExceptionBuilderTest {
     }
 
     @Test
+    @DisplayName("Deve validar classes")
     public void UT_CHECK_OF_CLASS() {
         Assertions.assertThrows(RuntimeException.class, () -> {
             throw ExceptionBuilder.of(new Object());
@@ -110,8 +96,8 @@ public class ExceptionBuilderTest {
         });
     }
 
-
     @Test
+    @DisplayName("Deve validar exceptions of types")
     public void UT_CHECK_OF_TYPE() {
         Assertions.assertThrows(RuntimeException.class, () -> {
             try {
@@ -172,6 +158,7 @@ public class ExceptionBuilderTest {
     }
 
     @Test
+    @DisplayName("Deve validar exceptions of messages")
     public void UT_CHECK_OF_MESSAGE() {
 
         Assertions.assertThrows(RuntimeException.class, () -> {
@@ -225,6 +212,7 @@ public class ExceptionBuilderTest {
     }
 
     @Test
+    @DisplayName("Deve validar exceptions of string format")
     public void UT_CHECK_OF_FORMAT() {
 
 
@@ -279,6 +267,7 @@ public class ExceptionBuilderTest {
     }
 
     @Test
+    @DisplayName("Deve validar exceptions of class messages")
     public void UT_CHECK_OF_CLASS_MESSAGE() {
         Assertions.assertThrows(RuntimeException.class, () -> {
             throw ExceptionBuilder.ofDefault(Object.class, "test");
@@ -331,6 +320,7 @@ public class ExceptionBuilderTest {
     }
 
     @Test
+    @DisplayName("Deve validar exceptions of make messages")
     public void UT_CHECK_MAKE_MESSAGE() {
 
         Assertions.assertEquals(ExceptionBuilder.makeMessage(ExceptionBuilder.Type.Default, Object.class, ""), "[Default]: class " + Object.class.getName());

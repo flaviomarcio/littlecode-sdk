@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import java.util.*;
 
 @Slf4j
-@AllArgsConstructor
 public class ObjectReturn {
     private static final String INVALID_OBJECT_OF_TYPE = "Invalid object of type: [%s]";
     private static final String CODE_NAME = "code";
@@ -289,15 +288,15 @@ public class ObjectReturn {
     }
 
     public ObjectReturn.Type getType() {
-        if (internalMessages.isEmpty())
-            return Type.Success;
-        for (var e : internalMessages) {
-            if (!e.isOK())
-                return e.type;
-        }
-        for (var e : internalMessages) {
-            if (e.isOK())
-                return e.type;
+        if (!internalMessages.isEmpty()){
+            for (var e : internalMessages) {
+                if (!e.isOK())
+                    return e.type;
+            }
+            for (var e : internalMessages) {
+                if (e.isOK())
+                    return e.type;
+            }
         }
         return Type.Success;
     }

@@ -2,10 +2,7 @@ package com.littlecode.tests;
 
 import com.littlecode.threads.TaskRunner;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -89,6 +86,7 @@ public class ThreadsStackTaskRunnerTest {
     }
 
     @Test
+    @DisplayName("Deve validar Runner")
     public void UT_CHECK_RUNNER() {
         runner = this.makeRunnerError();
         Assertions.assertDoesNotThrow(() -> runner.start().waitToFinished());

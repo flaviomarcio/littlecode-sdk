@@ -4,6 +4,7 @@ import com.littlecode.parsers.ConverterUtil;
 import com.littlecode.config.CorePublicConsts;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -21,6 +22,7 @@ import java.util.UUID;
 public class ConverterUtilTest {
 
     @Test
+    @DisplayName("Deve validar constructor")
     public void UT_000_CHECK_CONSTRUCTOR() {
         Assertions.assertDoesNotThrow(() -> new ConverterUtil(""));
         Assertions.assertDoesNotThrow(() -> new ConverterUtil(0));
@@ -77,6 +79,7 @@ public class ConverterUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar toString")
     public void UT_000_CHECK_CONVERT_toString() {
         Assertions.assertDoesNotThrow(() -> new ConverterUtil(UUID.randomUUID().toString()).toString());
         Assertions.assertDoesNotThrow(() -> new ConverterUtil(String.valueOf(0)).toString());
@@ -105,6 +108,7 @@ public class ConverterUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar toBool")
     public void UT_000_CHECK_CONVERT_toBool() {
 
         Assertions.assertDoesNotThrow(() -> new ConverterUtil("0").toBool());
@@ -135,6 +139,7 @@ public class ConverterUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar toInt")
     public void UT_000_CHECK_CONVERT_toInt() {
 
         Assertions.assertDoesNotThrow(() -> new ConverterUtil("0").toInt());
@@ -153,6 +158,7 @@ public class ConverterUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar toLong")
     public void UT_000_CHECK_CONVERT_toLong() {
 
         Assertions.assertDoesNotThrow(() -> new ConverterUtil("0").toLong());
@@ -171,6 +177,7 @@ public class ConverterUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar toDouble")
     public void UT_000_CHECK_CONVERT_toDouble() {
 
         Assertions.assertDoesNotThrow(() -> new ConverterUtil("0").toDouble());
@@ -189,6 +196,7 @@ public class ConverterUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar toLocalDate")
     public void UT_000_CHECK_CONVERT_toLocalDate() {
 
         Assertions.assertDoesNotThrow(() -> new ConverterUtil("0").toLocalDate());
@@ -206,8 +214,8 @@ public class ConverterUtilTest {
         Assertions.assertEquals(new ConverterUtil("1901-01-01").toLocalDate(),LocalDate.of(1901,1,1));
     }
 
-
     @Test
+    @DisplayName("Deve validar toLocalTime")
     public void UT_000_CHECK_CONVERT_toLocalTime() {
 
         Assertions.assertDoesNotThrow(() -> new ConverterUtil("0").toLocalTime());
@@ -228,6 +236,7 @@ public class ConverterUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar toLocalDateTime")
     public void UT_000_CHECK_CONVERT_toLocalDateTime() {
 
         Assertions.assertDoesNotThrow(() -> new ConverterUtil("0").toLocalDateTime());
@@ -250,6 +259,7 @@ public class ConverterUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar toUUID")
     public void UT_000_CHECK_CONVERT_toUUID() {
 
         Assertions.assertDoesNotThrow(() -> new ConverterUtil("0").toUUID());
@@ -269,6 +279,7 @@ public class ConverterUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar toURI")
     public void UT_000_CHECK_CONVERT_toURI() {
 
         Assertions.assertDoesNotThrow(() -> new ConverterUtil("/tmp/tmp").toURI());
@@ -284,6 +295,7 @@ public class ConverterUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar toPath")
     public void UT_000_CHECK_CONVERT_toPath() {
 
         Assertions.assertDoesNotThrow(() -> new ConverterUtil("/tmp/tmp").toPath());
@@ -298,10 +310,5 @@ public class ConverterUtilTest {
         Assertions.assertEquals(new ConverterUtil(path.toFile()).toPath(), path);
         Assertions.assertNull(new ConverterUtil(LocalDateTime.now()).toPath());
     }
-
-
-
-
-
 
 }

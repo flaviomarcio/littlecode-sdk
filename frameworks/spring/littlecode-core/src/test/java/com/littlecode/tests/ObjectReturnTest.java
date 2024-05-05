@@ -3,11 +3,13 @@ package com.littlecode.tests;
 import com.littlecode.containers.ObjectReturn;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Slf4j
@@ -15,7 +17,29 @@ import java.util.UUID;
 public class ObjectReturnTest {
 
     @Test
+    @DisplayName("Deve validar ObjectReturn.type")
     public void UT_DIRECT_RETURN_TYPE() {
+
+        Assertions.assertDoesNotThrow(()->ObjectReturn.type(ObjectReturn.Type.Success));
+        Assertions.assertDoesNotThrow(()->ObjectReturn.type(ObjectReturn.Type.Success, Object.class));
+        Assertions.assertDoesNotThrow(()->ObjectReturn.type(ObjectReturn.Type.Success, (Class<?>) null));
+        Assertions.assertDoesNotThrow(()->ObjectReturn.type(ObjectReturn.Type.Success, (String) null));
+        Assertions.assertDoesNotThrow(()->ObjectReturn.type(ObjectReturn.Type.Success, "teste"));
+
+        Assertions.assertDoesNotThrow(()->ObjectReturn.Empty().getType());
+        Assertions.assertEquals(ObjectReturn.Empty().getType(),ObjectReturn.Type.Success);
+
+        Assertions.assertDoesNotThrow(()->ObjectReturn.type(null));
+        Assertions.assertDoesNotThrow(()->ObjectReturn.type(null, Object.class));
+        Assertions.assertDoesNotThrow(()->ObjectReturn.type(null, (Class<?>) null));
+        Assertions.assertDoesNotThrow(()->ObjectReturn.type(null, (String) null));
+        Assertions.assertDoesNotThrow(()->ObjectReturn.type(null, "teste"));
+
+        Assertions.assertNotNull(ObjectReturn.type(ObjectReturn.Type.Success));
+        Assertions.assertNotNull(ObjectReturn.type(ObjectReturn.Type.Success, Object.class));
+        Assertions.assertNotNull(ObjectReturn.type(ObjectReturn.Type.Success, (Class<?>) null));
+        Assertions.assertNotNull(ObjectReturn.type(ObjectReturn.Type.Success, (String) null));
+        Assertions.assertNotNull(ObjectReturn.type(ObjectReturn.Type.Success, "teste"));
 
         Assertions.assertEquals(ObjectReturn.Empty().getType(), ObjectReturn.Type.Success);
         Assertions.assertTrue(ObjectReturn.Empty().isOK());
@@ -113,6 +137,7 @@ public class ObjectReturnTest {
     }
 
     @Test
+    @DisplayName("Deve validar ObjectReturn.of")
     public void UT_CHECK_RETURN_OF_OBJECTS() {
         ObjectReturn objectReturn = new ObjectReturn();
         Assertions.assertTrue(objectReturn.isOK());
@@ -135,14 +160,8 @@ public class ObjectReturnTest {
     }
 
     @Test
-    public void UT_CHECK_RETURN_BY_FAIL_MESSAGES() {
-
-        ObjectReturn objectReturn = ObjectReturn
-                .create()
-                .Fail()
-                .message("Generic error")
-                .end();
-
+    @DisplayName("Deve validar ObjectReturn.create")
+    public void UT_CHECK_RETURN_BY_OBJECT_CREATE() {
         Assertions.assertEquals(
                 ObjectReturn.create()
                         .type(ObjectReturn.Type.NoContent)
@@ -159,11 +178,19 @@ public class ObjectReturnTest {
                         .getType(),
                 ObjectReturn.Type.Fail);
 
+    }
 
+    @Test
+    @DisplayName("Deve validar falhas com mensagens falhas")
+    public void UT_CHECK_RETURN_BY_MESSAGES_FAIL() {
+        ObjectReturn objectReturn = ObjectReturn
+                .create()
+                .Fail()
+                .message("Generic error")
+                .end().body(Map.of("a", "b"));
         var listReturn = List.of(
                 objectReturn,
-                new ObjectReturn(objectReturn),
-                ObjectReturn.of(objectReturn)
+                new ObjectReturn(objectReturn)
         );
 
         for (var oReturn : listReturn) {
@@ -182,12 +209,28 @@ public class ObjectReturnTest {
             Assertions.assertTrue(oReturn.asResultInfo().isSuccess());
             Assertions.assertTrue(oReturn.asResultInfo().getMessages().isEmpty());
         }
+    }
+    @Test
+    @DisplayName("Deve validar falhas com mensagens falhas")
+    public void UT_CHECK_RETURN_BY_MESSAGES_SUCESS() {
+        var listReturn = List.of(
+                ObjectReturn.Empty(),
+                ObjectReturn.of(Map.of("a","b"))
+        );
 
+        for (var oReturn : listReturn) {
+            Assertions.assertEquals(oReturn.getType(), ObjectReturn.Type.Success);
+            Assertions.assertNotNull(oReturn.asResultHttp());
+            Assertions.assertNotNull(oReturn.asResultInfo());
+            Assertions.assertTrue(oReturn.asResultInfo().isSuccess());
+            Assertions.assertTrue(oReturn.asResultInfo().getMessages().isEmpty());
+        }
 
     }
 
 
     @Test
+    @DisplayName("Deve validar conversao para adapters")
     public void UT_CHECK_RETURN_BY_ADAPTER() {
 
 

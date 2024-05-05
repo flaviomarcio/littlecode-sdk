@@ -8,6 +8,7 @@ import com.littlecode.config.UtilCoreConfig;
 import com.littlecode.files.FileFormat;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -19,6 +20,7 @@ import org.springframework.core.env.Environment;
 @ExtendWith(MockitoExtension.class)
 public class UtilCoreConfigTest {
     @Test
+    @DisplayName("Deve validar class UtilCoreConfig")
     public void UT_CHECK() {
         var context = Mockito.mock(ApplicationContext.class);
         var environment = Mockito.mock(Environment.class);

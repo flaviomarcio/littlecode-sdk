@@ -4,6 +4,7 @@ import com.littlecode.files.PathUtil;
 import com.littlecode.util.SystemUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -19,6 +20,7 @@ public class PathUtilTest {
     private static final File PATH_HOME_DIR = Path.of(System.getProperty("user.home")).toFile();
 
     @Test
+    @DisplayName("Deve validar class PathUtil")
     public void UT_CHECK() {
         Assertions.assertDoesNotThrow(()->PathUtil.target(PATH_TEMP_DIR.toURI()).getTarget());
         Assertions.assertDoesNotThrow(()->PathUtil.target(PATH_TEMP_DIR.toURI()).setTarget(Path.of("/tmp/file")));

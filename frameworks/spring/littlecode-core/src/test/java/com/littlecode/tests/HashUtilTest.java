@@ -6,6 +6,7 @@ import com.littlecode.parsers.HashUtil;
 import lombok.Builder;
 import lombok.Data;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -17,6 +18,7 @@ import java.util.UUID;
 public class HashUtilTest {
 
     @Test
+    @DisplayName("Deve validar readBytes")
     public void UT_readBytes() throws IOException {
         var file = File.createTempFile("tmp", UUID.randomUUID().toString());
         try (FileWriter writer = new FileWriter(file)) {
@@ -36,7 +38,9 @@ public class HashUtilTest {
         Assertions.assertNotNull(HashUtil.readBytes(new FileInputStream(finalFile)));
         Assertions.assertNotNull(HashUtil.readBytes(null));
     }
+
     @Test
+    @DisplayName("Deve validar toUUID")
     public void UT_toUuid() {
         String bytesOut = "c4ca4238a0b923820dcc509a6f75849b";
         UUID uuidOut = UUID.fromString("c4ca4238-a0b9-2382-0dcc-509a6f75849b");
@@ -46,6 +50,7 @@ public class HashUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar toMD5")
     public void UT_toMd5() throws IOException {
         String bytesIn = "1";
         String bytesOut = "c4ca4238a0b923820dcc509a6f75849b";
@@ -107,6 +112,7 @@ public class HashUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar toHEX")
     public void UT_toHex() {
         String bytesIn = "stringToHex";
         String bytesOut = "737472696e67546f486578";
@@ -121,6 +127,7 @@ public class HashUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar toBase64")
     public void UT_toBase64() {
         String bytesIn = "stringToBase64";
         String bytesOut = "c3RyaW5nVG9CYXNlNjQ=";

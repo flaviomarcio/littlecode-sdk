@@ -6,6 +6,7 @@ import com.littlecode.parsers.ObjectValueUtil;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -26,6 +27,7 @@ import java.util.UUID;
 public class ObjectValuedUtilTest {
 
     @Test
+    @DisplayName("Deve validar constructors")
     public void UT_000_CHECK_CONSTRUCTOR() {
         Assertions.assertThrows(NullPointerException.class, () -> new ObjectValueUtil(null));
         Assertions.assertThrows(NullPointerException.class, () -> ObjectValueUtil.of(null));
@@ -34,7 +36,8 @@ public class ObjectValuedUtilTest {
     }
 
     @Test
-    public void UT_000_CHECK_TOO_STRING() {
+    @DisplayName("Deve validar toString")
+    public void UT_000_CHECK_TO_STRING() {
         Assertions.assertDoesNotThrow(()->ObjectValueUtil.toString(null));
         Assertions.assertDoesNotThrow(()->ObjectValueUtil.toString(""));
         Assertions.assertDoesNotThrow(()->ObjectValueUtil.toString(new PrivateObject()));
@@ -42,6 +45,7 @@ public class ObjectValuedUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar class getters")
     public void UT_000_CHECK_GETTER() {
         var objValueUtil=ObjectValueUtil.of(new PrivateObject());
 
@@ -70,6 +74,7 @@ public class ObjectValuedUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar class fieldList")
     public void UT_000_CHECK_GET_FIELD_LIST() {
         Assertions.assertDoesNotThrow(() -> ObjectValueUtil.getFieldList(null));
         Assertions.assertDoesNotThrow(() -> ObjectValueUtil.getFieldList(PrivateObject.class));
@@ -79,6 +84,7 @@ public class ObjectValuedUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar get values")
     public void UT_000_CHECK_GET_VALUES() {
         var privateObject=new PrivateObject();
         var objValueUtil=ObjectValueUtil.of(privateObject);

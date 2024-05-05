@@ -3,6 +3,7 @@ package com.littlecode.tests;
 import com.littlecode.cron.CronUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -12,7 +13,9 @@ import java.time.LocalDateTime;
 @Slf4j
 @ExtendWith(MockitoExtension.class)
 public class CronUtilTest {
+
     @Test
+    @DisplayName("Deve validar class CronUtil")
     public void UT_CHECK_CRON() {
         Assertions.assertDoesNotThrow(() -> new CronUtil());
         Assertions.assertDoesNotThrow(() -> CronUtil.builder().build());
@@ -50,6 +53,18 @@ public class CronUtilTest {
         Assertions.assertDoesNotThrow(() -> cronUtil.temporal(null));
         Assertions.assertDoesNotThrow(() -> cronUtil
                 .temporal(LocalDateTime.now())
+                .expression(CronUtil.ofCron("10"))
+                .build()
+                .next()
+        );
+        Assertions.assertDoesNotThrow(() -> cronUtil
+                .temporal(null)
+                .expression(CronUtil.ofCron("10"))
+                .build()
+                .next()
+        );
+        Assertions.assertNull(cronUtil
+                .temporal(null)
                 .expression(CronUtil.ofCron("10"))
                 .build()
                 .next()

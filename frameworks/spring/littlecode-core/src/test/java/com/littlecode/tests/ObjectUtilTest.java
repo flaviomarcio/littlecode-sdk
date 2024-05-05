@@ -12,6 +12,7 @@ import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -87,6 +88,7 @@ public class ObjectUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar toFields")
     public void UT_000_CHECK_FIELDS() {
         Assertions.assertNotNull(ObjectUtil.toFieldsList(objectSrc));
         Assertions.assertNotNull(ObjectUtil.toFieldsList(objectSrc.getClass()));
@@ -108,6 +110,7 @@ public class ObjectUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar equals")
     public void UT_000_CHECK_EQUAL() {
         Assertions.assertTrue(ObjectUtil.equal(objectSrc, objectSrc));
         Assertions.assertFalse(ObjectUtil.equal(objectSrc, this));
@@ -115,6 +118,7 @@ public class ObjectUtilTest {
 
 
     @Test
+    @DisplayName("Deve validar toString by Formats")
     public void UT_000_CHECK_TO_STRING_BY_FORMATS() {
         Assertions.assertDoesNotThrow(() -> ObjectUtil.toString(objectSrc, FileFormat.JSON));
         Assertions.assertDoesNotThrow(() -> ObjectUtil.toString(objectSrc, FileFormat.XML));
@@ -124,6 +128,7 @@ public class ObjectUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar toMd5")
     public void UT_000_CHECK_MD5() {
         var objectNew = ObjectUtil.createFromString(ObjectCheck.class, objectSrcString);
         Assertions.assertNotNull(objectNew);
@@ -136,6 +141,7 @@ public class ObjectUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar from values")
     public void UT_000_CREATE_FROM() {
         Assertions.assertNotNull(ObjectUtil.createFromYML(ObjectCheck.class, objectSrcString));
         Assertions.assertNotNull(ObjectUtil.createFromPROPS(ObjectCheck.class, objectSrcString));
@@ -146,6 +152,7 @@ public class ObjectUtilTest {
 
 
     @Test
+    @DisplayName("Deve validar toMap")
     public void UT_000_CHECK_MAPS() {
         Assertions.assertDoesNotThrow(() -> ObjectUtil.toMapObject(objectSrcString));
         Assertions.assertDoesNotThrow(() -> ObjectUtil.toMapObject(Map.of("","")));
@@ -178,6 +185,7 @@ public class ObjectUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar toFields")
     public void UT_000_CHECK_FIELD() {
 
         Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldByAnnotation(ObjectCheck.class, NotNull.class));
@@ -208,6 +216,7 @@ public class ObjectUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar create Objects")
     public void UT_000_CHECK_CREATE() {
         final var md5Src = ObjectUtil.toMapObject(objectSrc);
 
@@ -289,6 +298,7 @@ public class ObjectUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar Class<?>")
     public void UT_000_CHECK_CLASSES() {
 
         Assertions.assertNotNull(ObjectUtil.classToName(""));

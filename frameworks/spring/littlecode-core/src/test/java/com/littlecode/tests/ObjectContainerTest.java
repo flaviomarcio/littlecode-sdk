@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -16,6 +17,7 @@ import java.util.UUID;
 @ExtendWith(MockitoExtension.class)
 public class ObjectContainerTest {
     @Test
+    @DisplayName("Deve validar class ObjectContainer")
     public void UT_CHECK() {
         enum EnumCheck {
             EnumA, EnumB

@@ -2,6 +2,7 @@ package com.littlecode.tests;
 
 import com.littlecode.parsers.DateUtil;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -19,6 +20,7 @@ public class DateUtilTest {
     public static final LocalDateTime TEST_MAX_LOCALDATETIME = LocalDateTime.of(LocalDate.now(), TEST_MAX_LOCALTIME);
 
     @Test
+    @DisplayName("Deve validar toMax_Time")
     public void UI_toMax_LocalTime() {
         var value = LocalTime.now();
         Assertions.assertEquals(DateUtil.toMax(value).toString(), LocalDateTime.of(LocalDate.now(), TEST_MAX_LOCALTIME).toString());
@@ -26,6 +28,7 @@ public class DateUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar toMax_Date")
     public void UI_toMax_LocalDate() {
 
         var value = LocalDate.now();
@@ -34,6 +37,7 @@ public class DateUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar toMax_DateTime")
     public void UI_toMax_LocalDateTime() {
 
         var value = LocalDateTime.now();
@@ -42,13 +46,14 @@ public class DateUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar toMin_Time")
     public void UI_toMin_LocalTime() {
-        var value = LocalTime.now();
-        Assertions.assertEquals(DateUtil.toMin(value).toString(), TEST_MIN_LOCALDATETIME.toString());
-        Assertions.assertEquals(DateUtil.toMin(value = null).toString(), TEST_MIN_LOCALDATETIME.toString());
+        Assertions.assertEquals(DateUtil.toMin(LocalTime.now()).toString(), TEST_MIN_LOCALDATETIME.toString());
+        Assertions.assertEquals(DateUtil.toMin((LocalTime) null).toString(), TEST_MIN_LOCALDATETIME.toString());
     }
 
     @Test
+    @DisplayName("Deve validar toMin_Date")
     public void UI_toMin_LocalDate() {
 
         var value = LocalDate.now();
@@ -57,6 +62,7 @@ public class DateUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar toMin_DateTime")
     public void UI_toMin_LocalDateTime() {
 
         var value = LocalDateTime.now();

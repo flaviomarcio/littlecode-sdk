@@ -7,6 +7,7 @@ import com.littlecode.setting.SettingLoader;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -64,6 +65,7 @@ public class SettingLoaderTest {
     }
 
     @Test
+    @DisplayName("Deve validar fileFormat")
     public void UT_CHECKER_fileFormat() {
         var settingTest=new SettingTest();
         Assertions.assertDoesNotThrow(() -> settingTest.setFileFormat(null));
@@ -79,6 +81,7 @@ public class SettingLoaderTest {
     }
 
     @Test
+    @DisplayName("Deve validar get extensions")
     public void UT_CHECKER_getExtension() {
         for (FileFormat e : List.of(FileFormat.values())) {
             Assertions.assertDoesNotThrow(() -> SettingTest.getExtension(e));
@@ -91,6 +94,7 @@ public class SettingLoaderTest {
     }
 
     @Test
+    @DisplayName("Deve validar parser extensions")
     public void UT_CHECKER_parseExtension() {
         var file=new File("/tmp/file.json");
         var fileJson=new File("/tmp/file.json");
@@ -114,6 +118,7 @@ public class SettingLoaderTest {
     }
 
     @Test
+    @DisplayName("Deve validar loaders")
     public void UT_CHECKER_SAVE_LOAD() {
 
         Map<FileFormat, File> settingFiles = new HashMap<>();

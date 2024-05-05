@@ -3,6 +3,7 @@ package com.littlecode.tests;
 import com.littlecode.config.CorePublicConsts;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -12,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 public class CorePublicConstsTest {
     @Test
+    @DisplayName("Deve validar class CorePublicConsts")
     public void UT_000_CHECK_CONSTRUCTOR() {
         Assertions.assertDoesNotThrow(CorePublicConsts::new);
         Assertions.assertNotNull(CorePublicConsts.MIN_LOCALDATE);

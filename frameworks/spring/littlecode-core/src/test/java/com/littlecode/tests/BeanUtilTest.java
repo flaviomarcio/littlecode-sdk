@@ -7,6 +7,7 @@ import com.littlecode.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -39,6 +40,7 @@ public class BeanUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar constructor")
     public void UT_CHECK_CONSTRUCTOR() {
 
         UtilCoreConfig.setApplicationContext(null);
@@ -72,6 +74,7 @@ public class BeanUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar get by name")
     public void UT_CHECK_GET_BEAN() {
         var context = Mockito.mock(ApplicationContext.class);
         Mockito.when(context.getBeanNamesForAnnotation(AnnotationTestA.class)).thenReturn(new String[]{"1", "2"});
@@ -131,6 +134,7 @@ public class BeanUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar get by annotation")
     public void UT_CHECK_GET_AS_ANNOTATION() {
         var context = Mockito.mock(ApplicationContext.class);
         Mockito.when(context.getBeanNamesForAnnotation(AnnotationTestA.class)).thenReturn(new String[]{"1", "2"});
