@@ -78,7 +78,6 @@ public class BeanUtil {
         try{
             return context.getBean(beanName, valueType);
         }catch (Exception e){
-            log.error(e.getMessage());
         }
         return null;
     }
