@@ -24,7 +24,7 @@ public class UtilCoreConfigConvertersTest {
 
         Assertions.assertNotNull(UtilCoreConfigConverters.toLocalDate);
         Assertions.assertNotNull(UtilCoreConfigConverters.toLocalDateString);
-        Assertions.assertNotNull(UtilCoreConfigConverters.toLocalDateTime);
+        Assertions.assertNotNull(UtilCoreConfigConverters.toLocalDateTimeByStr);
         Assertions.assertNotNull(UtilCoreConfigConverters.toLocalTime);
         Assertions.assertNotNull(UtilCoreConfigConverters.toLocalTimeString);
         Assertions.assertNotNull(UtilCoreConfigConverters.toLocalDateTimeString);

@@ -23,10 +23,10 @@ import java.util.*;
 @ExtendWith(MockitoExtension.class)
 public class PrimitiveUtilTest {
     public static final LocalDate TEST_MIN_LOCALDATE = LocalDate.of(1901, 1, 1);
-    public static final LocalTime TEST_MAX_LOCALTIME = LocalTime.of(23, 59, 59, 999);
+//    public static final LocalTime TEST_MAX_LOCALTIME = LocalTime.of(23, 59, 59, 999);
     public static final LocalTime TEST_MIN_LOCALTIME = LocalTime.of(0, 0, 0, 0);
     public static final LocalDateTime TEST_MIN_LOCALDATETIME = LocalDateTime.of(TEST_MIN_LOCALDATE, TEST_MIN_LOCALTIME);
-    public static final LocalDateTime TEST_MAX_LOCALDATETIME = LocalDateTime.of(LocalDate.now(), TEST_MAX_LOCALTIME);
+//    public static final LocalDateTime TEST_MAX_LOCALDATETIME = LocalDateTime.of(LocalDate.now(), TEST_MAX_LOCALTIME);
 
     @Test
     @DisplayName("Deve validar format")
@@ -326,14 +326,17 @@ public class PrimitiveUtilTest {
         Assertions.assertDoesNotThrow(()->PrimitiveUtil.toDateTime(dt19010101.toString()));
         Assertions.assertDoesNotThrow(()->PrimitiveUtil.toDateTime("1901-01-01T01:02:03"));
         Assertions.assertDoesNotThrow(()->PrimitiveUtil.toDateTime(0));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toDateTime(1.715027295E9));
         Assertions.assertDoesNotThrow(()->PrimitiveUtil.toDateTime(0L));
         Assertions.assertDoesNotThrow(()->PrimitiveUtil.toDateTime(0D));
 
         Assertions.assertNull(PrimitiveUtil.toDateTime(""));
+        Assertions.assertNull(PrimitiveUtil.toDateTime(0));
         Assertions.assertEquals(PrimitiveUtil.toDateTime(dt19010101.toString()), dt19010101);
         Assertions.assertEquals(PrimitiveUtil.toDateTime("1901-01-01T01:02:03"), dt19010101);
 
 //        Assertions.assertThrows(NullPointerException.class,() -> new ConverterUtil((LocalDateTime) null).toLocalTime());
+        Assertions.assertEquals(PrimitiveUtil.toDateTime(1.715027295E9), LocalDateTime.of(LocalDate.of(2024,5,6), LocalTime.of(20,28,15)));
         Assertions.assertEquals(PrimitiveUtil.toDateTime("1901-01-01"), CorePublicConsts.MIN_LOCALDATETIME);
         Assertions.assertEquals(PrimitiveUtil.toDateTime("1901-01-01T00"), CorePublicConsts.MIN_LOCALDATETIME);
         Assertions.assertEquals(PrimitiveUtil.toDateTime("1901-01-01T00:00"), CorePublicConsts.MIN_LOCALDATETIME);

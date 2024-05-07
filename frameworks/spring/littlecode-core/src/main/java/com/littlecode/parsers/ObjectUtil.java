@@ -255,6 +255,7 @@ public class ObjectUtil {
         try {
             return mapper.readValue(source, aClass);
         } catch (Exception ignored) {
+            log.error(ignored.getMessage());
         }
         return null;
     }

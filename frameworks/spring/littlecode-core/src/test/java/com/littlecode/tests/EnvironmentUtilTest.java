@@ -305,7 +305,7 @@ public class EnvironmentUtilTest {
             Mockito.when(environment.containsProperty(null)).thenReturn(false);
 
             for (var entry : values.entrySet()) {
-                String k = entry.getKey();
+                var k = entry.getKey();
                 var v = entry.getValue();
                 var eUtil = new EnvironmentUtil(environment);
                 Assertions.assertDoesNotThrow(()->eUtil.asDate(k));

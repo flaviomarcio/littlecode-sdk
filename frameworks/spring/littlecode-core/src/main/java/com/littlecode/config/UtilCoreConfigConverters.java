@@ -43,21 +43,37 @@ public class UtilCoreConfigConverters {
             return PrimitiveUtil.toString(source);
         }
     };
-    public static final Converter<String, LocalDateTime> toLocalDateTime = new AbstractConverter<String, LocalDateTime>() {
+    public static final Converter<String, LocalDateTime> toLocalDateTimeByStr = new AbstractConverter<String, LocalDateTime>() {
         @Override
         protected LocalDateTime convert(String source) {
             return PrimitiveUtil.toDateTime(source);
         }
     };
+    public static final Converter<Integer, LocalDateTime> toLocalDateTimeByInt = new AbstractConverter<Integer, LocalDateTime>() {
+        @Override
+        protected LocalDateTime convert(Integer source) {
+            return PrimitiveUtil.toDateTime(source);
+        }
+    };
+    public static final Converter<Long, LocalDateTime> toLocalDateTimeByLng = new AbstractConverter<Long, LocalDateTime>() {
+        @Override
+        protected LocalDateTime convert(Long source) {
+            return PrimitiveUtil.toDateTime(source);
+        }
+    };
+    public static final Converter<Double, LocalDateTime> toLocalDateTimeByDbl = new AbstractConverter<Double, LocalDateTime>() {
+        @Override
+        protected LocalDateTime convert(Double source) {
+            return PrimitiveUtil.toDateTime(source);
+        }
+    };
+
     public static final Converter<LocalDateTime, String> toLocalDateTimeString = new AbstractConverter<LocalDateTime, String>() {
         @Override
         protected String convert(LocalDateTime source) {
             return PrimitiveUtil.toString(source);
         }
     };
-    private static final String FORMAT_DATE = "yyyy-MM-dd";
-    private static final String FORMAT_TIME = "HH:mm:ss";
-    private static final String FORMAT_DATETIME = "yyyy-MM-dd'T'HH:mm:ss";
 
     public static SimpleModule modules() {
         SimpleModule modules = new SimpleModule();
@@ -86,7 +102,7 @@ public class UtilCoreConfigConverters {
         return List.of(
                 toLocalDate, toLocalDateString,
                 toLocalTime, toLocalTimeString,
-                toLocalDateTime, toLocalDateTimeString
+                toLocalDateTimeByStr,toLocalDateTimeByInt,toLocalDateTimeByLng,toLocalDateTimeByDbl, toLocalDateTimeString
         );
     }
 

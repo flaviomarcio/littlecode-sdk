@@ -10,10 +10,7 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
@@ -204,9 +201,9 @@ public class PrimitiveUtil {
     }
 
     public static LocalDateTime toDateTime(String v) {
-        if (v != null) {
+        if (v != null && !v.trim().isEmpty()) {
+            var value = v.trim();
             try {
-                var value = v.trim();
                 String format;
                 if (value.length() == CorePublicConsts.FORMAT_DATE_TIME.length()-2){
                     format = CorePublicConsts.FORMAT_DATE_TIME;
@@ -241,16 +238,20 @@ public class PrimitiveUtil {
 
             } catch (Exception ignored) {
             }
+
+            return toDateTime(toDouble(value));
         }
         return null;
     }
 
     public static LocalDateTime toDateTime(long v){
-        return LocalDateTime.ofEpochSecond(v,0, ZoneOffset.UTC);
+        return v==0?null:LocalDateTime.ofEpochSecond(v,0, ZoneOffset.UTC);
     }
 
     public static LocalDateTime toDateTime(double v){
-        return LocalDateTime.ofEpochSecond((long)v,0, ZoneOffset.UTC);
+        Instant instant = Instant.ofEpochSecond((long) v);
+        return LocalDateTime.ofInstant(instant, ZoneOffset.UTC);
+        //return LocalDateTime.ofEpochSecond((long)v,0, ZoneOffset.UTC);
     }
 
     public static boolean toBool(String v) {
