@@ -73,13 +73,22 @@ public class BeanUtil {
                 ?new ArrayList<>()
                 :List.of(beans);
     }
-    public <T> T getBean(Class<T> valueType) {
-        return context.getBean(valueType);
-    }
+
     public <T> T getBean(String beanName, Class<T> valueType) {
-        return context.getBean(beanName, valueType);
+        try{
+            return context.getBean(beanName, valueType);
+        }catch (Exception e){
+            log.error(e.getMessage());
+        }
+        return null;
     }
-    public <T> T as(Class<T> tClass) {
-        return this.getBean(this.bean, tClass);
+
+    public <T> T getBean(Class<T> valueType) {
+        return this.getBean(this.bean, valueType);
     }
+
+    public <T> T as(Class<T> valueType) {
+        return this.getBean(this.bean, valueType);
+    }
+
 }

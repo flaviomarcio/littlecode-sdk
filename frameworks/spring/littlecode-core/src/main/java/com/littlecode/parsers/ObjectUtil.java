@@ -356,12 +356,14 @@ public class ObjectUtil {
         return new HashMap<>();
     }
 
-    @SneakyThrows
     public static synchronized Map<String, String> toMapOfString(final Object o) {
         if (o != null) {
             if(o instanceof String string) {
                 var mapper = UtilCoreConfig.newObjectMapper(UtilCoreConfig.FILE_FORMAT_DEFAULT);
-                return mapper.readValue(string, Map.class);
+                try {
+                    return mapper.readValue(string, Map.class);
+                } catch (Exception e) {
+                }
             }
             else if(o instanceof Map map){
                 return map;

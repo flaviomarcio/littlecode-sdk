@@ -368,8 +368,11 @@ public class MQAMQPRabbitMQImpl extends MQAdapter {
         public void start() {
             var logPrefix = String.format("Queue:[%s]", queueName);
             try{
-                if(queueExecutor==null)
+                this.queueExecutor = BeanUtil.of(MQ.MQ_BEAN_RECEIVER).getBean(MQ.Executor.class);
+                if (queueExecutor == null){
+                    log.debug("Queue:[{}] bean[{}] not found", this.queueName,MQ.MQ_BEAN_RECEIVER);
                     return;
+                }
                 int loop = 0;
                 log.info("{} started", logPrefix);
                 try {

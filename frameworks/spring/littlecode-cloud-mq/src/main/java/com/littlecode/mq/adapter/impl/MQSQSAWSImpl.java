@@ -307,8 +307,10 @@ public class MQSQSAWSImpl extends MQAdapter {
             log.debug("Queue:[{}] started", this.queueName);
             try{
                 var queueExecutor = BeanUtil.of(MQ.MQ_BEAN_RECEIVER).getBean(MQ.Executor.class);
-                if (queueExecutor != null)
+                if (queueExecutor == null){
+                    log.debug("Queue:[{}] bean[{}] not found", this.queueName,MQ.MQ_BEAN_RECEIVER);
                     return;
+                }
                 var queueMaxNumber = setting.getQueueMaxNumber();
                 var queueIdleSleep = setting.getQueueIdleSleep();
 

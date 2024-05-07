@@ -2,6 +2,7 @@ package com.littlecode.mq.config;
 
 import com.littlecode.config.UtilCoreConfig;
 import com.littlecode.mq.MQ;
+import com.littlecode.util.EnvironmentUtil;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,12 +16,14 @@ import org.springframework.core.env.Environment;
 @Configuration
 @AutoConfiguration
 public class MQAutoConfiguration {
-    @Value("${littlecode.mq.auto-start:false}")
+
     private boolean autoStart;
 
     public MQAutoConfiguration(ApplicationContext applicationContext, Environment environment) {
         UtilCoreConfig.setApplicationContext(applicationContext);
         UtilCoreConfig.setEnvironment(environment);
+        var envUtil=new EnvironmentUtil();
+        this.autoStart=envUtil.asBool("littlecode.mq.auto-start",false);
         start();
     }
 
