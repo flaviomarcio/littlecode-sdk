@@ -37,6 +37,7 @@ public class HashUtilTest {
         Assertions.assertEquals(HashUtil.readBytes(new FileInputStream(finalFile)), "test");
         Assertions.assertNotNull(HashUtil.readBytes(new FileInputStream(finalFile)));
         Assertions.assertNotNull(HashUtil.readBytes(null));
+        Assertions.assertEquals(HashUtil.readBytes(null),"");
     }
 
     @Test
@@ -62,6 +63,8 @@ public class HashUtilTest {
         Assertions.assertThrows(ParserException.class, () -> HashUtil.formatStringToMd5(bytesIn));
         Assertions.assertDoesNotThrow(() -> HashUtil.formatStringToMd5((String) null));
         Assertions.assertDoesNotThrow(() -> HashUtil.formatStringToMd5((StringBuilder) null));
+        Assertions.assertDoesNotThrow(() -> HashUtil.toMd5Uuid("%s", null));
+        Assertions.assertDoesNotThrow(() -> HashUtil.toMd5Uuid(null, null));
 
         Assertions.assertDoesNotThrow(() -> HashUtil.toMd5(bytesIn));
         Assertions.assertDoesNotThrow(() -> HashUtil.toMd5((Object) null));
@@ -78,6 +81,8 @@ public class HashUtilTest {
         Assertions.assertEquals(HashUtil.toMd5("%s", bytesIn), bytesOut);
         Assertions.assertEquals(HashUtil.toMd5Uuid(bytesIn), uuidOut);
         Assertions.assertEquals(HashUtil.toMd5Uuid("%s", bytesIn), uuidOut);
+        Assertions.assertEquals(HashUtil.toMd5Uuid("%s", null), null);
+        Assertions.assertEquals(HashUtil.toMd5Uuid(null, null), null);
         Assertions.assertEquals(HashUtil.toMd5Uuid(bytesOut), uuidOut);
         Assertions.assertEquals(HashUtil.toMd5Uuid("%s", bytesOut), uuidOut);
         Assertions.assertNull(HashUtil.toMd5Uuid((Object) null));

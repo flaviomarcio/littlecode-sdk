@@ -3,6 +3,7 @@ package com.littlecode.parsers;
 import com.littlecode.exceptions.ParserException;
 import lombok.SneakyThrows;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -11,7 +12,16 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 public class HashUtil {
+    public static final String MD5Strategy = "MD5";
     private static final Pattern UUID_REGEX = Pattern.compile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$");
+
+    public static MessageDigest createMessageDigest(String strategy){
+        try {
+            return MessageDigest.getInstance(strategy);
+        } catch (Exception ignored) {
+            return null;
+        }
+    }
 
     public static String formatStringToMd5(StringBuilder value) {
         return value == null ? "" : formatStringToMd5(value.toString());
@@ -36,10 +46,13 @@ public class HashUtil {
         return "";
     }
 
-    public static String readBytes(InputStream value) throws IOException {
-        return value == null
-                ? ""
-                : new String(value.readAllBytes());
+    public static String readBytes(InputStream value){
+        if(value!=null){
+            try {
+                return new String(value.readAllBytes());
+            } catch (IOException ignored) {}
+        }
+        return "";
     }
 
     public static boolean isUuid(String value) {
@@ -53,46 +66,49 @@ public class HashUtil {
     }
 
     public static UUID toUuid(String value) {
-        try {
-            return UUID.fromString(formatStringToMd5(value));
-        } catch (Exception ignored) {
-        }
-        return null;
-    }
-
-    public static UUID toMd5Uuid(InputStream value) throws IOException {
-        return toMd5Uuid(readBytes(value));
-    }
-
-    public static UUID toMd5Uuid(Object o) {
-        return (o == null)
-                ? null
-                : toMd5Uuid(ObjectUtil.toString(o));
-    }
-
-    public static UUID toMd5Uuid(String format, Object... args) {
-        return toMd5Uuid(String.format(format, args));
-    }
-
-    @SneakyThrows
-    public static UUID toMd5Uuid(String value) {
-        if (value != null && !value.isEmpty()) {
+        if(value!=null && !value.trim().isEmpty()){
             try {
                 return UUID.fromString(formatStringToMd5(value));
             } catch (Exception ignored) {
             }
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            byte[] messageDigest = md.digest(value.getBytes());
+        }
+        return null;
+    }
 
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : messageDigest) {
-                String hex = Integer.toHexString(0xFF & b);
-                if (hex.length() == 1)
-                    hexString.append('0');
+    public static UUID toMd5Uuid(InputStream value){
+        return toMd5Uuid(readBytes(value));
+    }
 
-                hexString.append(hex);
+    public static UUID toMd5Uuid(String format, Object... args) {
+        if(format!=null && args!=null && args.length>0){
+            var bytes = String.format(format, args);
+            return toMd5Uuid(bytes);
+        }
+        return null;
+    }
+
+    public static UUID toMd5Uuid(Object o) {
+        if (o != null) {
+            var value = ObjectUtil.toString(o);
+            if(!value.isEmpty()){
+
+                var __response=toUuid(value);
+                if(__response!=null)
+                    return __response;
+
+                var md = createMessageDigest(MD5Strategy);
+                if(md!=null){
+                    var messageDigest = md.digest(value.getBytes());
+                    var hexString = new StringBuilder();
+                    for (byte b : messageDigest) {
+                        String hex = Integer.toHexString(0xFF & b);
+                        if (hex.length() == 1)
+                            hexString.append("0");
+                        hexString.append(hex);
+                    }
+                    return toUuid(hexString.toString());
+                }
             }
-            return UUID.fromString(formatStringToMd5(hexString));
         }
         return null;
     }
