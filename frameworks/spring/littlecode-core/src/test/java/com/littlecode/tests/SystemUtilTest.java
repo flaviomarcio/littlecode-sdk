@@ -44,7 +44,7 @@ public class SystemUtilTest {
     @Test
     @DisplayName("Deve validar variaveis publicas")
     public void UT_CHECK_ENV_PUBLIC() {
-        Assertions.assertDoesNotThrow(() -> new SystemUtil());
+        Assertions.assertDoesNotThrow(SystemUtil::new);
         Assertions.assertDoesNotThrow(() -> SystemUtil.sleep(1));
         Assertions.assertDoesNotThrow(() -> SystemUtil.sleep(0));
         Assertions.assertNotNull(SystemUtil.Env.JAVA_TEMP_DIR);

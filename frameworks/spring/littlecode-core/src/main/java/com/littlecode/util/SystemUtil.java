@@ -2,6 +2,7 @@ package com.littlecode.util;
 
 import com.littlecode.config.UtilCoreConfig;
 import com.littlecode.parsers.PrimitiveUtil;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.file.Path;
@@ -9,11 +10,9 @@ import java.nio.file.Path;
 @Slf4j
 public class SystemUtil {
 
+    @SneakyThrows
     public static void sleep(long millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (Exception ignored) {
-        }
+        Thread.sleep(millis);
     }
 
     //ref https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/System.html
