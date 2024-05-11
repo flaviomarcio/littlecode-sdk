@@ -1,7 +1,6 @@
 package com.littlecode.util;
 
 import com.littlecode.config.UtilCoreConfig;
-import com.littlecode.parsers.PrimitiveUtil;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,47 +32,25 @@ public class SystemUtil {
             return getSystemProperty(propertyName, null);
         }
 
-        public static String getProperty(String propertyName, String defaultValue) {
-            if (propertyName != null) {
-                var environment = UtilCoreConfig.getEnvironment();
-                try {
-                    var value = (defaultValue != null)
-                            ? environment.getProperty(propertyName, defaultValue)
-                            : environment.getProperty(propertyName);
-                    if (!PrimitiveUtil.isEmpty(value))
-                        return value.trim();
-                    value = environment.getProperty(propertyName);
-                    if (!PrimitiveUtil.isEmpty(value))
-                        return value.trim();
-                } catch (Exception ignored) {
-                }
-
-                try {
-                    var value = (defaultValue != null)
-                            ? System.getProperty(propertyName, defaultValue)
-                            : System.getProperty(propertyName);
-                    if (!PrimitiveUtil.isEmpty(value))
-                        return value.trim();
-
-                    value = System.getProperty(propertyName);
-                    if (!PrimitiveUtil.isEmpty(value))
-                        return value.trim();
-                } catch (Exception ignored) {
-                }
+        public static String getSystemProperty(String propertyName, String defaultValue) {
+            if(propertyName!=null){
+                var value = System.getProperty(propertyName);
+                if (value!=null)
+                    return value.trim();
             }
             return defaultValue == null ? "" : defaultValue.trim();
         }
 
-        public static String getSystemProperty(String propertyName, String defaultValue) {
-            var value = defaultValue != null
-                    ? System.getProperty(propertyName, defaultValue)
-                    : System.getProperty(propertyName);
-            if (!PrimitiveUtil.isEmpty(value))
-                return value.trim();
+        public static String getProperty(String propertyName, String defaultValue) {
+            if (propertyName != null && !propertyName.trim().isEmpty()) {
+                var environment = UtilCoreConfig.getEnvironment();
+                if(environment.containsProperty(propertyName))
+                    return environment.getProperty(propertyName);
 
-            value = System.getProperty(propertyName);
-            if (!PrimitiveUtil.isEmpty(value))
-                return value.trim();
+                var value = System.getProperty(propertyName);
+                if (value!=null)
+                    return value.trim();
+            }
             return defaultValue == null ? "" : defaultValue.trim();
         }
 
@@ -86,5 +63,4 @@ public class SystemUtil {
         }
 
     }
-
 }

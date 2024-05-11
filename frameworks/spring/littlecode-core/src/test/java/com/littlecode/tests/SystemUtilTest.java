@@ -19,10 +19,6 @@ public class SystemUtilTest {
 
     private static final String PROPERTY_A = "a-test-1.a-test-2.a-test-3";
     private static final String PROPERTY_A_VALUE = "a-test-0";
-    private static final String PROPERTY_B = "b-test-1.b-test-2.b-test-3";
-    private static final String PROPERTY_B_VALUE = "b-test-0";
-    private static final String PROPERTY_C = "c-test-1.c-test-2.c-test-3";
-    private static final String PROPERTY_C_VALUE = "c-test-0";
 
     @BeforeAll
     public static void beforeAll() {
@@ -30,12 +26,8 @@ public class SystemUtilTest {
         var applicationContext = Mockito.mock(ApplicationContext.class);
         var environment = Mockito.mock(Environment.class);
 
+        Mockito.when(environment.containsProperty(PROPERTY_A)).thenReturn(true);
         Mockito.when(environment.getProperty(PROPERTY_A)).thenReturn(PROPERTY_A_VALUE);
-
-        Mockito.when(environment.getProperty(PROPERTY_B, PROPERTY_B_VALUE)).thenReturn(PROPERTY_B_VALUE);
-        Mockito.when(environment.getProperty(PROPERTY_B, "")).thenReturn("");
-
-        Mockito.when(environment.getProperty(PROPERTY_C, "")).thenReturn(PROPERTY_C_VALUE);
 
         UtilCoreConfig.setApplicationContext(applicationContext);
         UtilCoreConfig.setEnvironment(environment);
@@ -65,24 +57,31 @@ public class SystemUtilTest {
     @DisplayName("Deve validar metodos GET")
     public void UT_CHECK_ENV_GET() {
 
+        {
+            var originalEnvironment=UtilCoreConfig.getEnvironment();
+            var env=Mockito.mock(Environment.class);
+            UtilCoreConfig.setEnvironment(env);
+            Assertions.assertDoesNotThrow(() -> SystemUtil.Env.getSystemProperty("test"));
+            Assertions.assertDoesNotThrow(() -> SystemUtil.Env.getSystemProperty(null));
+            Assertions.assertDoesNotThrow(() -> SystemUtil.Env.getSystemProperty("test",null));
+            Assertions.assertDoesNotThrow(() -> SystemUtil.Env.getSystemProperty(null,null));
+            UtilCoreConfig.setEnvironment(originalEnvironment);
+        }
+
         Assertions.assertDoesNotThrow(() -> SystemUtil.Env.getProperty(null));
+        Assertions.assertDoesNotThrow(() -> SystemUtil.Env.getProperty("os.name"));
+        Assertions.assertDoesNotThrow(() -> SystemUtil.Env.getProperty("test"));
         Assertions.assertDoesNotThrow(() -> SystemUtil.Env.getProperty(null, null));
+        Assertions.assertDoesNotThrow(() -> SystemUtil.Env.getProperty("test", null));
         Assertions.assertDoesNotThrow(() -> SystemUtil.Env.getProperty(PROPERTY_A));
         Assertions.assertDoesNotThrow(() -> SystemUtil.Env.getProperty(PROPERTY_A, PROPERTY_A_VALUE));
 
+        Assertions.assertEquals(SystemUtil.Env.getProperty("test", "aaaa"), "aaaa");
 
         Assertions.assertEquals(SystemUtil.Env.getProperty(null), "");
+        Assertions.assertEquals(SystemUtil.Env.getProperty(null,"bbbb"), "bbbb");
         Assertions.assertEquals(SystemUtil.Env.getProperty(PROPERTY_A), PROPERTY_A_VALUE);
-        Assertions.assertEquals(SystemUtil.Env.getProperty(PROPERTY_A, PROPERTY_A_VALUE), PROPERTY_A_VALUE);
         Assertions.assertEquals(SystemUtil.Env.getProperty(PROPERTY_A, ""), PROPERTY_A_VALUE);
-
-        Assertions.assertEquals(SystemUtil.Env.getProperty(PROPERTY_B), "");
-        Assertions.assertEquals(SystemUtil.Env.getProperty(PROPERTY_B, PROPERTY_B_VALUE), PROPERTY_B_VALUE);
-        Assertions.assertEquals(SystemUtil.Env.getProperty(PROPERTY_B, ""), "");
-
-        Assertions.assertEquals(SystemUtil.Env.getProperty(PROPERTY_C), "");
-        Assertions.assertEquals(SystemUtil.Env.getProperty(PROPERTY_C, ""), PROPERTY_C_VALUE);
-        Assertions.assertEquals(SystemUtil.Env.getProperty(PROPERTY_C, PROPERTY_C_VALUE), PROPERTY_C_VALUE);
     }
 
 
