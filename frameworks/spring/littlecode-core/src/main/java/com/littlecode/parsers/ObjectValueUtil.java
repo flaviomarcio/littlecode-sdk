@@ -57,8 +57,28 @@ public class ObjectValueUtil {
 
     public static String toString(Object o, FileFormat fileFormat) {
         if (o != null){
-            if (o instanceof String)
-                return (String) o;
+            if (o instanceof String v)
+                return v;
+            else if (o instanceof UUID v)
+                return v.toString();
+            else if (o instanceof URI v)
+                return v.toString();
+            else if (o instanceof Path v)
+                return v.toString();
+            else if (o instanceof LocalDate v)
+                return v.toString();
+            else if (o instanceof LocalTime v)
+                return v.toString();
+            else if (o instanceof LocalDateTime v)
+                return v.toString();
+            else if (o instanceof Integer v)
+                return v.toString();
+            else if (o instanceof Long v)
+                return v.toString();
+            else if (o instanceof Double v)
+                return v.toString();
+            else if (o instanceof Boolean v)
+                return v.toString();
             else{
                 try {
                     var mapper = UtilCoreConfig.newObjectMapper(fileFormat);

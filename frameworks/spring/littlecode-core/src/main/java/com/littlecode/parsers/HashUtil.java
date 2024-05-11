@@ -50,7 +50,7 @@ public class HashUtil {
         if(value!=null){
             try {
                 return new String(value.readAllBytes());
-            } catch (IOException ignored) {}
+            } catch (Exception ignored) {}
         }
         return "";
     }

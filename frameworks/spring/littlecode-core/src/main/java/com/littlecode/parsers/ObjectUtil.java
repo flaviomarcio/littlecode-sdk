@@ -1,32 +1,30 @@
 package com.littlecode.parsers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.littlecode.config.CorePublicConsts;
 import com.littlecode.config.UtilCoreConfig;
 import com.littlecode.exceptions.FrameworkException;
 import com.littlecode.files.FileFormat;
 import com.littlecode.files.IOUtil;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.nio.file.Path;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.*;
 
 @Slf4j
 public class ObjectUtil {
 
-
+    public static String inputReadAll(InputStream source) {
+        if(source!=null){
+            try {
+                return new String(source.readAllBytes());
+            } catch (Exception ignored) {
+            }
+        }
+        return "";
+    }
 
     public static String classToName(Object o) {
         if (o != null) {
@@ -91,6 +89,8 @@ public class ObjectUtil {
     public static boolean update(Object object, File newValues) {
         if (object != null && newValues!=null){
             try {
+                if(!newValues.exists())
+                    throw new FrameworkException("Invalid file: "+newValues);
                 var updateBytes = IOUtil.readAll(newValues).trim();
                 var objectMapper = UtilCoreConfig.newObjectMapper(UtilCoreConfig.FILE_FORMAT_DEFAULT);
                 objectMapper.updateValue(object, updateBytes);
@@ -203,11 +203,7 @@ public class ObjectUtil {
             return false;
         var md5A = toMd5Uuid(a);
         var md5B = toMd5Uuid(b);
-        if (md5A == md5B)
-            return true;
-        if (md5A == null || md5B == null)
-            return false;
-        return md5A.toString().equals(md5B.toString());
+        return (md5A==md5B) || (md5A.toString().equals(md5B.toString()));
     }
 
     public static <T> T create(Class<?> classType) {
@@ -236,16 +232,15 @@ public class ObjectUtil {
                         }
                     }
 
-                    if (constructor == null)
-                        continue;
-                    constructor.setAccessible(true);
-
-                    return (T) constructor.newInstance(initArgs);
+                    if (constructor != null){
+                        constructor.setAccessible(true);
+                        return (T) constructor.newInstance(initArgs);
+                    }
                 }
 
             } catch (Exception ignored) {
+                return null;
             }
-            return null;
         }
         return create(aClass);
     }
@@ -275,12 +270,8 @@ public class ObjectUtil {
     }
 
     public static <T> T createFromStream(Class<T> aClass, InputStream source) {
-        if(aClass!=null && source!=null){
-            try {
-                return createFromString(aClass, new String(source.readAllBytes()), ObjectValueUtil.FILE_FORMAT_DEFAULT);
-            } catch (Exception ignored) {
-            }
-        }
+        if(aClass!=null && source!=null)
+            return createFromString(aClass, inputReadAll(source), ObjectValueUtil.FILE_FORMAT_DEFAULT);
         return null;
     }
 
@@ -363,7 +354,7 @@ public class ObjectUtil {
                 var mapper = UtilCoreConfig.newObjectMapper(UtilCoreConfig.FILE_FORMAT_DEFAULT);
                 try {
                     return mapper.readValue(string, Map.class);
-                } catch (Exception e) {
+                } catch (Exception ignored) {
                 }
             }
             else if(o instanceof Map map){

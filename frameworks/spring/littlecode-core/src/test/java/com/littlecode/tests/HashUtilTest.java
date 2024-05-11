@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.*;
@@ -33,6 +35,7 @@ public class HashUtilTest {
         );
         File finalFile = file;
         Assertions.assertDoesNotThrow(() -> HashUtil.readBytes(new FileInputStream(finalFile)));
+        Assertions.assertDoesNotThrow(() -> HashUtil.readBytes(Mockito.mock(FileInputStream.class)));
         Assertions.assertEquals(HashUtil.readBytes(null), "");
         Assertions.assertEquals(HashUtil.readBytes(new FileInputStream(finalFile)), "test");
         Assertions.assertNotNull(HashUtil.readBytes(new FileInputStream(finalFile)));
@@ -61,6 +64,8 @@ public class HashUtilTest {
         Assertions.assertTrue(HashUtil.isUuid(bytesOut));
         Assertions.assertNotNull(HashUtil.formatStringToMd5(bytesOut));
         Assertions.assertThrows(ParserException.class, () -> HashUtil.formatStringToMd5(bytesIn));
+        Assertions.assertDoesNotThrow(() -> HashUtil.createMessageDigest("TEST"));
+        Assertions.assertDoesNotThrow(() -> HashUtil.createMessageDigest("MD5"));
         Assertions.assertDoesNotThrow(() -> HashUtil.formatStringToMd5((String) null));
         Assertions.assertDoesNotThrow(() -> HashUtil.formatStringToMd5((StringBuilder) null));
         Assertions.assertDoesNotThrow(() -> HashUtil.toMd5Uuid("%s", null));

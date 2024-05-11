@@ -290,11 +290,11 @@ public class ObjectReturn {
     public ObjectReturn.Type getType() {
         if (!internalMessages.isEmpty()){
             for (var e : internalMessages) {
-                if (!e.isOK())
+                if (!e.isSuccess())
                     return e.type;
             }
             for (var e : internalMessages) {
-                if (e.isOK())
+                if (e.isSuccess())
                     return e.type;
             }
         }
@@ -304,7 +304,7 @@ public class ObjectReturn {
     public List<Message> getErrors() {
         List<Message> errors = new ArrayList<>();
         for (var m : this.internalMessages) {
-            if (m.isOK())
+            if (m.isSuccess())
                 continue;
             errors.add(m);
         }
@@ -319,7 +319,7 @@ public class ObjectReturn {
 
     public boolean isOK() {
         for (var m : this.internalMessages) {
-            if (!m.isOK())
+            if (!m.isSuccess())
                 return false;
         }
         return true;
@@ -412,6 +412,7 @@ public class ObjectReturn {
     @Data
     @Builder
     @AllArgsConstructor
+    @NoArgsConstructor
     public static class ResultInfo {
         private boolean success;
         private int code;
@@ -427,13 +428,14 @@ public class ObjectReturn {
     @Data
     @Builder
     @AllArgsConstructor
+    @NoArgsConstructor
     public static class Message {
         private Type type;
         private Object code;
         private String message;
 
-        public boolean isOK() {
-            return this.type.equals(Type.Success) || this.type.equals(Type.Accepted);
+        public boolean isSuccess() {
+            return this.type!=null && (this.type.equals(Type.Success) || this.type.equals(Type.Accepted));
         }
     }
 
@@ -444,7 +446,7 @@ public class ObjectReturn {
         private Object code = null;
         private String message = null;
 
-        private MessageMaker clear() {
+        public MessageMaker clear() {
             return this
                     .type(Type.Success)
                     .code(null)
@@ -465,6 +467,63 @@ public class ObjectReturn {
                         );
             }
             return this.objectReturn;
+        }
+
+        public MessageMaker type(Type type) {
+            return this.type(type, message);
+        }
+
+        public MessageMaker type(Type type, String message) {
+            this.type = type;
+            this.message = message;
+            return this;
+        }
+
+        public MessageMaker type(Type type, String format, Object... args) {
+            this.type = type;
+            if (format != null && args != null)
+                this.message = String.format(format, args);
+            else if (format != null)
+                this.message = format;
+            else if (args != null)
+                this.message = Arrays.toString(args);
+            else
+                this.message = null;
+            return this;
+        }
+
+        public MessageMaker code(Object code) {
+            this.code = code;
+            return this;
+        }
+
+        public MessageMaker message(String message) {
+            this.message = message==null?"":message;
+            return this;
+        }
+
+        public <T> MessageMaker message(Class<T> aClass) {
+            return aClass==null
+                    ?this
+                    :this.message(String.format(INVALID_OBJECT_OF_TYPE, aClass));
+        }
+
+        public MessageMaker message(String format, Object... args) {
+            if(format!=null && args!=null)
+                return this.message(String.format(format, args));
+            return this;
+        }
+
+        public MessageMaker Fail() {
+            return this.Fail(null);
+        }
+
+        public MessageMaker Fail(String message) {
+            return this.Fail(message, (Object) null);
+        }
+
+        public MessageMaker Fail(String format, Object... args) {
+            return this.type(Type.Fail, format, args);
         }
 
         public MessageMaker Success() {
@@ -587,18 +646,6 @@ public class ObjectReturn {
             return this.type(Type.Unauthorized, format, args);
         }
 
-        public MessageMaker Fail() {
-            return this.Fail(null);
-        }
-
-        public MessageMaker Fail(String message) {
-            return this.Fail(message, (Object) null);
-        }
-
-        public MessageMaker Fail(String format, Object... args) {
-            return this.type(Type.Fail, format, args);
-        }
-
         public MessageMaker NotImplemented() {
             return this.NotImplemented(null);
         }
@@ -611,46 +658,6 @@ public class ObjectReturn {
             return this.type(Type.NotImplemented, format, args);
         }
 
-        public MessageMaker type(Type type) {
-            return this.type(type, message);
-        }
-
-        public MessageMaker type(Type type, String message) {
-            this.type = type;
-            this.message = message;
-            return this;
-        }
-
-        public MessageMaker type(Type type, String format, Object... args) {
-            this.type = type;
-            if (format != null && args != null)
-                this.message = String.format(format, args);
-            else if (format != null)
-                this.message = format;
-            else if (args != null)
-                this.message = Arrays.toString(args);
-            else
-                this.message = null;
-            return this;
-        }
-
-        public MessageMaker code(Object code) {
-            this.code = code;
-            return this;
-        }
-
-        public MessageMaker message(String message) {
-            this.message = message;
-            return this;
-        }
-
-        public MessageMaker message(String format, Object... args) {
-            return this.message(String.format(format, args));
-        }
-
-        public <T> MessageMaker message(Class<T> aClass) {
-            return this.message(String.format(INVALID_OBJECT_OF_TYPE, aClass));
-        }
     }
 
 }

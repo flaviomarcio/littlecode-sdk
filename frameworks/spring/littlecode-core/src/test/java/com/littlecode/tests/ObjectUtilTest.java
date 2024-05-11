@@ -15,6 +15,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.stereotype.Component;
 
@@ -112,8 +113,19 @@ public class ObjectUtilTest {
     @Test
     @DisplayName("Deve validar equals")
     public void UT_000_CHECK_EQUAL() {
+        Assertions.assertDoesNotThrow(()->ObjectUtil.equal(objectSrc, objectSrc));
+        Assertions.assertDoesNotThrow(()->ObjectUtil.equal(objectSrc, null));
+        Assertions.assertDoesNotThrow(()->ObjectUtil.equal(null, null));
+        Assertions.assertDoesNotThrow(()->ObjectUtil.equal(objectSrc, this));
+        Assertions.assertDoesNotThrow(()->ObjectUtil.equal(UUID.randomUUID(), UUID.randomUUID().toString()));
+
+        Assertions.assertTrue(ObjectUtil.equal(null, null));
         Assertions.assertTrue(ObjectUtil.equal(objectSrc, objectSrc));
+        Assertions.assertFalse(ObjectUtil.equal(objectSrc, null));
         Assertions.assertFalse(ObjectUtil.equal(objectSrc, this));
+        Assertions.assertFalse(ObjectUtil.equal(UUID.randomUUID(), UUID.randomUUID()));
+        var uuid=UUID.randomUUID();
+        Assertions.assertTrue(ObjectUtil.equal(uuid,uuid.toString()));
     }
 
 
@@ -162,6 +174,8 @@ public class ObjectUtilTest {
         Assertions.assertNotNull(ObjectUtil.toMapObject(Map.of("","")));
         Assertions.assertNotNull(ObjectUtil.toMapObject(null));
 
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.toMapOfString(""));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.toMapOfString("--"));
         Assertions.assertDoesNotThrow(() -> ObjectUtil.toMapOfString(objectSrcString));
         Assertions.assertDoesNotThrow(() -> ObjectUtil.toMapOfString(Map.of("","")));
         Assertions.assertDoesNotThrow(() -> ObjectUtil.toMapOfString(null));
@@ -177,6 +191,10 @@ public class ObjectUtilTest {
         Assertions.assertFalse(mapObjectA.isEmpty());
         Assertions.assertFalse(mapObjectB.isEmpty());
 
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.createFromValues(ObjectCheck.class, mapObjectA));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.createFromValues(ObjectCheck.class, null));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.createFromValues(null, null));
+
         var objA = ObjectUtil.createFromValues(ObjectCheck.class, mapObjectA);
         Assertions.assertNotNull(objA);
         var objB = ObjectUtil.createFromValues(ObjectCheck.class, mapObjectB);
@@ -190,10 +208,22 @@ public class ObjectUtilTest {
 
         Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldByAnnotation(ObjectCheck.class, NotNull.class));
         Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldByAnnotation(SubObjectCheck.class, NotNull.class));
+        Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldByAnnotation(SubObjectCheck.class, null));
+        Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldByAnnotation(null, null));
+
+        Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldsByAnnotation(ObjectCheck.class, NotNull.class));
+        Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldsByAnnotation(SubObjectCheck.class, NotNull.class));
+        Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldsByAnnotation(SubObjectCheck.class, null));
+        Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldsByAnnotation(null, null));
+
         Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldByName(ObjectCheck.class, "id"));
+        Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldByName(ObjectCheck.class, null));
+        Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldByName(null, null));
         Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldByName(ObjectCheck.class, "test"));
         Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldByType(ObjectCheck.class, UUID.class));
         Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldByType(SubObjectCheck.class, Long.class));
+        Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldByType(SubObjectCheck.class, null));
+        Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldByType(null, null));
         Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldsByType(ObjectCheck.class, UUID.class).isEmpty());
         Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldsByType(SubObjectCheck.class, Long.class).isEmpty());
 
@@ -230,6 +260,7 @@ public class ObjectUtilTest {
         Assertions.assertDoesNotThrow(() -> ObjectUtil.update(new ObjectCheck(),ObjectCheck.builder()));
         Assertions.assertDoesNotThrow(() -> ObjectUtil.update(new ObjectCheck(), byteSrc));
         Assertions.assertDoesNotThrow(() -> ObjectUtil.update(new ObjectCheck(), fileSrc));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.update(new ObjectCheck(), new File("/tmp/fake-file")));
         Assertions.assertDoesNotThrow(() -> ObjectUtil.update(new ObjectCheck(), fileSrc.toPath()));
 
 
@@ -282,6 +313,8 @@ public class ObjectUtilTest {
         Assertions.assertNotNull(objNew);
         Assertions.assertEquals(objNew.getClass(), ObjectCheck.class);
 
+        Assertions.assertDoesNotThrow(()->ObjectUtil.createWithArgsConstructor(null));
+        Assertions.assertDoesNotThrow(()->ObjectUtil.createWithArgsConstructor(ObjectBaseException.class,UUID.randomUUID()));
         Assertions.assertNull(ObjectUtil.createWithArgsConstructor(ObjectCheckWithArgs.class));
         Assertions.assertNull(ObjectUtil.createWithArgsConstructor(ObjectCheckWithArgs.class, UUID.randomUUID()));
         Assertions.assertNull(ObjectUtil.createWithArgsConstructor(ObjectCheckWithArgs.class, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()));
@@ -328,6 +361,13 @@ public class ObjectUtilTest {
 //        Assertions.assertFalse(ObjectUtil.getClassesByInherits(ObjectBase.class).isEmpty());
     }
 
+    @Test
+    @DisplayName("Deve validar mehod inputReadAll")
+    public void UT_000_CHECK_METHOD_INPUT_READ_ALL() {
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.inputReadAll(null));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.inputReadAll(Mockito.mock(InputStream.class)));
+    }
+
     private enum ObjectCheckType {
         Type1
     }
@@ -335,6 +375,13 @@ public class ObjectUtilTest {
     @Target({ElementType.TYPE})
     @Retention(RetentionPolicy.SOURCE)
     public @interface AnnTest {
+    }
+
+    public static class ObjectBaseException {
+        public ObjectBaseException(UUID uuid){
+            throw new RuntimeException(uuid.toString());
+        }
+
     }
 
     @Component

@@ -1,5 +1,6 @@
 package com.littlecode.tests;
 
+import com.littlecode.exceptions.FrameworkException;
 import com.littlecode.files.IOUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
@@ -192,6 +193,67 @@ public class IOUtilTest {
         var fileName = IOUtil.createFileTemp(PATH_TEMP_DIR);
         Assertions.assertNotNull(fileName);
 
+
+    }
+
+    @Test
+    @DisplayName("Deve validar metodo new file")
+    public void UT_CHECK_METHOD_NEW_FILE() {
+
+        Assertions.assertThrows(FrameworkException.class, () -> IOUtil.newFile());
+        Assertions.assertThrows(FrameworkException.class, () -> IOUtil.newFile(null));
+        Assertions.assertDoesNotThrow(() -> IOUtil.newFile("/tmp",UUID.randomUUID()));
+
+    }
+
+    @Test
+    @DisplayName("Deve validar metodo create file")
+    public void UT_CHECK_METHOD_CREATE_FILE() {
+
+        Assertions.assertDoesNotThrow(() -> IOUtil.target("/tmp/"+UUID.randomUUID()));
+        var io=IOUtil.target("/tmp/"+UUID.randomUUID());
+        Assertions.assertDoesNotThrow(() -> io.readAll());
+        io.createFile();
+        Assertions.assertDoesNotThrow(() -> io.readAll());
+    }
+
+    @Test
+    @DisplayName("Deve validar metodo read all lines")
+    public void UT_CHECK_METHOD_READ_ALL_LINES() {
+
+        Assertions.assertDoesNotThrow(() -> IOUtil.target("/tmp/"+UUID.randomUUID()));
+        {
+            var io=IOUtil.target("/tmp/"+UUID.randomUUID());
+            Assertions.assertDoesNotThrow(() -> io.createFile());
+            Assertions.assertFalse(io.createFile());
+        }
+
+        {
+            var io=IOUtil.target("/tmp/"+UUID.randomUUID()).createDir();
+            Assertions.assertDoesNotThrow(() -> io.createFile());
+            Assertions.assertFalse(io.createFile());
+        }
+
+    }
+
+    @Test
+    @DisplayName("Deve validar metodo delete")
+    public void UT_CHECK_METHOD_DELETE() {
+
+        {
+            var io = IOUtil.target("/tmp/"+UUID.randomUUID());
+            io.createFile();
+            Assertions.assertDoesNotThrow(() -> io.createDir().delete());
+        }
+
+        {
+            var dir="/tmp/"+UUID.randomUUID();
+            var io = IOUtil.target(dir);
+            Assertions.assertDoesNotThrow(() -> io.delete());
+            Assertions.assertDoesNotThrow(() -> io.createDir());
+            IOUtil.target(dir+"/"+UUID.randomUUID()).createFile();
+            Assertions.assertDoesNotThrow(() -> io.createDir().delete());
+        }
 
     }
 

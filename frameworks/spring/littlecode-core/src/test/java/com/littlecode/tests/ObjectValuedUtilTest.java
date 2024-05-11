@@ -41,6 +41,17 @@ public class ObjectValuedUtilTest {
         Assertions.assertDoesNotThrow(()->ObjectValueUtil.toString(null));
         Assertions.assertDoesNotThrow(()->ObjectValueUtil.toString(""));
         Assertions.assertDoesNotThrow(()->ObjectValueUtil.toString(new PrivateObject()));
+        Assertions.assertDoesNotThrow(()->ObjectValueUtil.toString(UUID.randomUUID()));
+        Assertions.assertDoesNotThrow(()->ObjectValueUtil.toString(URI.create("http://localhost:8080")));
+        Assertions.assertDoesNotThrow(()->ObjectValueUtil.toString(Path.of("/tmp/localhost:8080")));
+        Assertions.assertDoesNotThrow(()->ObjectValueUtil.toString(0));
+        Assertions.assertDoesNotThrow(()->ObjectValueUtil.toString(0L));
+        Assertions.assertDoesNotThrow(()->ObjectValueUtil.toString(0D));
+        Assertions.assertDoesNotThrow(()->ObjectValueUtil.toString(Boolean.TRUE));
+        Assertions.assertDoesNotThrow(()->ObjectValueUtil.toString(true));
+        Assertions.assertDoesNotThrow(()->ObjectValueUtil.toString(LocalDate.now()));
+        Assertions.assertDoesNotThrow(()->ObjectValueUtil.toString(LocalTime.now()));
+        Assertions.assertDoesNotThrow(()->ObjectValueUtil.toString(LocalDateTime.now()));
 
     }
 

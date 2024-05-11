@@ -83,17 +83,13 @@ public class IOUtil {
         var file = toFile(target);
         if (!file.exists())
             return false;
-        if (!file.canWrite())
-            return false;
         if (file.isFile())
             return file.delete();
 
-        boolean __return = true;
-        for (var itemFile : Objects.requireNonNull(file.listFiles())) {
-            if (!delete(itemFile))
-                __return = false;
-        }
-        return __return && file.delete();
+        for (var itemFile : file.listFiles())
+            delete(itemFile);
+
+        return file.delete() && !file.exists();
     }
 
     public static File newFile(Object... args) {
@@ -116,11 +112,8 @@ public class IOUtil {
 
     public static boolean createFile(Object target) {
         var file = toFile(target);
-        if (file.exists()) {
-            if (file.isDirectory())
-                return false;
-            return file.isFile();
-        }
+        if(file.exists())
+            return false;
         return createFileEmpty(file);
     }
 
@@ -187,7 +180,6 @@ public class IOUtil {
             return readAll(new File(target));
         return "";
     }
-
 
     public static List<String> readLines(Path target) {
         if (target != null){

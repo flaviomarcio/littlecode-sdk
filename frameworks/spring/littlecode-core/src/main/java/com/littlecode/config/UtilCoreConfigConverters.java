@@ -52,19 +52,19 @@ public class UtilCoreConfigConverters {
     public static final Converter<Integer, LocalDateTime> toLocalDateTimeByInt = new AbstractConverter<Integer, LocalDateTime>() {
         @Override
         protected LocalDateTime convert(Integer source) {
-            return PrimitiveUtil.toDateTime(source);
+            return source==null?null:PrimitiveUtil.toDateTime(source);
         }
     };
     public static final Converter<Long, LocalDateTime> toLocalDateTimeByLng = new AbstractConverter<Long, LocalDateTime>() {
         @Override
         protected LocalDateTime convert(Long source) {
-            return PrimitiveUtil.toDateTime(source);
+            return source==null?null:PrimitiveUtil.toDateTime(source);
         }
     };
     public static final Converter<Double, LocalDateTime> toLocalDateTimeByDbl = new AbstractConverter<Double, LocalDateTime>() {
         @Override
         protected LocalDateTime convert(Double source) {
-            return PrimitiveUtil.toDateTime(source);
+            return source==null?null:PrimitiveUtil.toDateTime(source);
         }
     };
 

@@ -1,6 +1,7 @@
 package com.littlecode.util;
 
 import com.littlecode.config.UtilCoreConfig;
+import com.littlecode.exceptions.FrameworkException;
 import com.littlecode.parsers.ExceptionBuilder;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -76,10 +77,12 @@ public class BeanUtil {
 
     public <T> T getBean(String beanName, Class<T> valueType) {
         try{
+            if(beanName==null || valueType==null)
+                throw new FrameworkException("");
             return context.getBean(beanName, valueType);
         }catch (Exception e){
+            return null;
         }
-        return null;
     }
 
     public <T> T getBean(Class<T> valueType) {

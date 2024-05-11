@@ -36,6 +36,8 @@ public class ObjectContainer {
     }
 
     public static Class<?> classDictionaryByName(Object classType) {
+        if(classType==null)
+            return null;
         var className = ObjectUtil.classToName(classType);
         if (className.isEmpty())
             return null;
@@ -51,7 +53,7 @@ public class ObjectContainer {
         return ObjectUtil.classToName(type);
     }
 
-    public static Class<?> classByName(Object classType) {
+    public static Class<?> classBy(Object classType) {
         var className = ObjectUtil.classToName(classType);
         if (className.isEmpty())
             return null;
@@ -63,21 +65,22 @@ public class ObjectContainer {
     }
 
 
-    private static List<String> classToListNames(Object o) {
+    public static List<String> classToListNames(Object o) {
         if (o == null)
             return new ArrayList<>();
 
-        if (o.getClass().equals(String.class)) {
-            var name = (String) o;
-            List<String> names = List.of(name.split("\\."));
+        if (o instanceof String string) {
+            List<String> names = List.of(string.split("\\."));
             if (names.size() == 1)
-                return List.of(name);
-            return List.of(name, names.get(names.size() - 1));
+                return List.of(string);
+            return List.of(string, names.get(names.size() - 1));
         }
 
-        var aClass = o.getClass().equals(Class.class)
-                ? ((Class<?>) o)
-                : o.getClass();
+        var aClass=
+                (o instanceof Class aClass1)
+                        ?aClass1
+                        :o.getClass();
+
         return List.of(aClass.getName(), aClass.getSimpleName(), aClass.toString());
     }
 
@@ -99,7 +102,8 @@ public class ObjectContainer {
     }
 
     public static ObjectContainer of(UUID id, Object taskObject) {
-        return of(id, taskObject.getClass(), taskObject);
+        var aClass=taskObject==null?null:taskObject.getClass();
+        return of(id, aClass, taskObject);
     }
 
     public static ObjectContainer of(Object type, Object taskObject) {
@@ -107,21 +111,21 @@ public class ObjectContainer {
     }
 
     public static ObjectContainer of(Object taskObject) {
-        return of(null, taskObject.getClass(), taskObject);
+        var aClass=taskObject==null?null:taskObject.getClass();
+        return of(null, aClass, taskObject);
     }
 
-    private static String classToString(Object o) {
-        var typeName = (o == null)
-                ? "" :
-                o.getClass().equals(String.class)
-                        ? ""
-                        :
-                        o.getClass().equals(Class.class)
-                                ? ((Class<?>) o).getName()
-                                : o.toString();
-        if (typeName.equals(String.class.getName()))
+    public static String classToString(Object o) {
+        if(o==null || (o instanceof String))
             return "";
-        return typeName;
+
+        if(o instanceof Class aClass){
+            if(aClass==String.class)
+                return "";
+            return aClass.getName();
+        }
+
+        return o.getClass().getName();
     }
 
 
@@ -145,7 +149,7 @@ public class ObjectContainer {
 
     @Transient
     public Class<?> getTypeClass() {
-        return ObjectContainer.classByName(this.type);
+        return ObjectContainer.classBy(this.type);
     }
 
     @Transient
@@ -154,17 +158,19 @@ public class ObjectContainer {
     }
 
     @Transient
-    public <T> T asObject(Class<T> valueType) {
-        return ObjectUtil.createFromString(valueType, this.asString());
+    public <T> T asObject(Class<T> aClass) {
+        return ObjectUtil.createFromString(aClass, this.asString());
     }
 
     @Transient
-    public <T> T asObject(Object valueType) {
-        Class<?> aClass = ObjectContainer.classByName(valueType);
+    public <T> T asObject(String className) {
+        if(className==null || className.trim().isEmpty())
+            return null;
+
+        Class<?> aClass = ObjectContainer.classBy(className);
         if (aClass == null)
             throw ExceptionBuilder.ofFrameWork("Class not found");
         var o = ObjectUtil.createFromString(aClass, this.asString());
-        //noinspection unchecked
         return (T) o;
     }
 }

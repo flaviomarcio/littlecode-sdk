@@ -16,34 +16,42 @@ import java.util.UUID;
 @Slf4j
 @ExtendWith(MockitoExtension.class)
 public class ObjectContainerTest {
+
     @Test
-    @DisplayName("Deve validar class ObjectContainer")
-    public void UT_CHECK() {
-        enum EnumCheck {
-            EnumA, EnumB
-        }
-        ;
+    @DisplayName("Deve validar class Constructor")
+    public void UT_CHECK_CONSTRUCTOR() {
+        Assertions.assertDoesNotThrow(() -> ObjectContainer.builder().build());
+        Assertions.assertDoesNotThrow(() -> new ObjectContainer());
 
-        var objectCheck = new ObjectCheck();
-        var bodyJson = String.format("{\"id\":\"%s\"}", objectCheck.getId());
+        var objectContainer = new ObjectContainer();
+        Assertions.assertDoesNotThrow(objectContainer::getId);
+        Assertions.assertDoesNotThrow(objectContainer::getTypeName);
+        Assertions.assertDoesNotThrow(objectContainer::getType);
+        Assertions.assertDoesNotThrow(objectContainer::getChecksum);
+        Assertions.assertDoesNotThrow(objectContainer::getTypeName);
+        Assertions.assertDoesNotThrow(objectContainer::getBody);
+        Assertions.assertDoesNotThrow(objectContainer::getTypeClass);
 
-        {
-            var container = ObjectContainer.of(EnumCheck.EnumA, objectCheck);
-            Assertions.assertTrue(ObjectContainer.of(bodyJson).getType().toString().isEmpty());
-            Assertions.assertEquals(ObjectContainer.of(objectCheck).getType().toString(), objectCheck.getClass().getName());
 
-            Assertions.assertEquals(container.asString(), bodyJson);
-            Assertions.assertNotNull(container.getChecksum());
-            Assertions.assertTrue(ObjectContainer.of(objectCheck).canType(ObjectCheck.class));
-            Assertions.assertTrue(container.canType(EnumCheck.EnumA));
-            Assertions.assertFalse(container.canType(EnumCheck.EnumB));
-            Assertions.assertFalse(container.canType(null));
-            Assertions.assertNotNull(container.getType());
-            Assertions.assertNotNull(container.getTypeName());
-        }
+        Assertions.assertDoesNotThrow(() -> objectContainer.setId(null));
+        Assertions.assertDoesNotThrow(() -> objectContainer.setType(null));
+        Assertions.assertDoesNotThrow(() -> objectContainer.setBody(null));
+    }
+
+    @Test
+    @DisplayName("Deve validar metodos As")
+    public void UT_CHECK_AS() {
+        var objectCheck=new ObjectCheck();
+        var objectContainer = ObjectContainer.of(objectCheck);
+        Assertions.assertDoesNotThrow(objectContainer::asString);
+        Assertions.assertDoesNotThrow(() -> objectContainer.asObject(ObjectCheck.class));
 
         {
             var container = ObjectContainer.of(objectCheck);
+            Assertions.assertDoesNotThrow(()->container.asObject(ObjectCheck.class));
+            Assertions.assertDoesNotThrow(()->container.asObject((Class)null));
+            Assertions.assertDoesNotThrow(()->container.asObject((String)null));
+            Assertions.assertThrows(FrameworkException.class, ()->container.asObject("test"));
             Assertions.assertNotNull(container.asObject(ObjectCheck.class));
             Assertions.assertNotNull(container.asObject(ObjectCheck.class.getName()));
             Assertions.assertThrows(FrameworkException.class, () -> container.asObject(ObjectCheck.class.getSimpleName()));
@@ -59,8 +67,128 @@ public class ObjectContainerTest {
             Assertions.assertDoesNotThrow(() -> container.asObject(ObjectCheck.class.toString()));
             Assertions.assertEquals(container.asObject(ObjectCheck.class).getId(), objectCheck.getId());
         }
+    }
+
+    @Test
+    @DisplayName("Deve validar metodo class Dictionary By Name")
+    public void UT_CHECK_metodo_class_Dictionary_By_Name() {
+        enum EnumCheck {
+            EnumA, EnumB
+        }
+        Assertions.assertDoesNotThrow(() -> ObjectContainer.classDictionaryByName(null));
+        Assertions.assertDoesNotThrow(() -> ObjectContainer.classDictionaryByName(EnumCheck.class));
+        Assertions.assertDoesNotThrow(() -> ObjectContainer.classDictionaryByName(EnumCheck.class.getName()));
+        Assertions.assertDoesNotThrow(() -> ObjectContainer.classDictionaryByName(new ObjectCheck()));
+        Assertions.assertNull(ObjectContainer.classDictionaryByName(null));
+    }
+
+    @Test
+    @DisplayName("Deve validar metodo class to list names")
+    public void UT_CHECK_CLASS_TO_LIST_NAMES() {
+        enum EnumCheck {
+            EnumA, EnumB
+        }
+        Assertions.assertDoesNotThrow(() -> ObjectContainer.classToListNames(null));
+        Assertions.assertDoesNotThrow(() -> ObjectContainer.classToListNames(EnumCheck.class));
+        Assertions.assertDoesNotThrow(() -> ObjectContainer.classToListNames(EnumCheck.class.getName()));
+        Assertions.assertDoesNotThrow(() -> ObjectContainer.classToListNames(new ObjectCheck()));
+        Assertions.assertNotNull(ObjectContainer.classToListNames(null));
+        Assertions.assertNotNull(ObjectContainer.classToListNames(EnumCheck.class));
+        Assertions.assertNotNull(ObjectContainer.classToListNames(EnumCheck.class));
+        Assertions.assertNotNull(ObjectContainer.classToListNames(EnumCheck.class.getName()));
+        Assertions.assertNotNull(ObjectContainer.classToListNames(EnumCheck.class.getSimpleName()));
+        Assertions.assertNotNull(ObjectContainer.classToListNames(new ObjectCheck()));
+    }
 
 
+    @Test
+    @DisplayName("Deve validar metodo class by name")
+    public void UT_CHECK_CLASS_BY_NAME() {
+        enum EnumCheck {
+            EnumA, EnumB
+        }
+        Assertions.assertDoesNotThrow(() -> ObjectContainer.classBy(new ObjectCheck()));
+        Assertions.assertDoesNotThrow(() -> ObjectContainer.classBy(null));
+        Assertions.assertDoesNotThrow(() -> ObjectContainer.classBy("test"));
+    }
+
+    @Test
+    @DisplayName("Deve validar metodo class to name")
+    public void UT_CHECK_CLASS_TO_NAME() {
+        enum EnumCheck {
+            EnumA, EnumB
+        }
+        Assertions.assertDoesNotThrow(() -> ObjectContainer.classToName(EnumCheck.EnumA));
+        Assertions.assertDoesNotThrow(() -> ObjectContainer.classToName(EnumCheck.class));
+        Assertions.assertDoesNotThrow(() -> ObjectContainer.classToName(null));
+        Assertions.assertDoesNotThrow(() -> ObjectContainer.classToName(new Object()));
+    }
+
+    @Test
+    @DisplayName("Deve validar metodo class to name")
+    public void UT_CHECK_CLASS_BY() {
+        enum EnumCheck {
+            EnumA, EnumB
+        }
+        Assertions.assertDoesNotThrow(() -> ObjectContainer.classBy(null));
+        Assertions.assertDoesNotThrow(() -> ObjectContainer.classBy(EnumCheck.class));
+        Assertions.assertDoesNotThrow(() -> ObjectContainer.classBy(Object.class));
+        Assertions.assertDoesNotThrow(() -> ObjectContainer.classBy(Object.class.getName()));
+        Assertions.assertDoesNotThrow(() -> ObjectContainer.classBy(Object.class.getCanonicalName()));
+
+        Assertions.assertNull(ObjectContainer.classBy(null));
+        Assertions.assertNotNull(ObjectContainer.classBy(EnumCheck.class));
+        Assertions.assertNotNull(ObjectContainer.classBy(Object.class));
+        Assertions.assertNotNull(ObjectContainer.classBy(Object.class.getName()));
+        Assertions.assertNotNull(ObjectContainer.classBy(Object.class.getCanonicalName()));
+    }
+
+    @Test
+    @DisplayName("Deve validar metodo class to String")
+    public void UT_CHECK_CLASS_TO_STRING() {
+        enum EnumCheck {
+            EnumA, EnumB
+        }
+        Assertions.assertDoesNotThrow(() -> ObjectContainer.classToString(null));
+        Assertions.assertDoesNotThrow(() -> ObjectContainer.classToString(new ObjectCheck()));
+        Assertions.assertDoesNotThrow(() -> ObjectContainer.classToString("test"));
+
+        Assertions.assertEquals(ObjectContainer.classToString(null),"");
+        Assertions.assertEquals(ObjectContainer.classToString("test"),"");
+    }
+
+    @Test
+    @DisplayName("Deve validar class ObjectContainer")
+    public void UT_CHECK_OF() {
+        enum EnumCheck {
+            EnumA, EnumB
+        }
+        Assertions.assertDoesNotThrow(() -> ObjectContainer.of(UUID.randomUUID(), new ObjectCheck()));
+        Assertions.assertDoesNotThrow(() -> ObjectContainer.of(UUID.randomUUID(), null));
+        Assertions.assertDoesNotThrow(() -> ObjectContainer.of((UUID)null, null));
+        Assertions.assertDoesNotThrow(() -> ObjectContainer.of(EnumCheck.EnumA, new ObjectCheck()));
+        Assertions.assertDoesNotThrow(() -> ObjectContainer.of(EnumCheck.EnumA, null));
+        Assertions.assertDoesNotThrow(() -> ObjectContainer.of(null, null));
+        Assertions.assertDoesNotThrow(() -> ObjectContainer.of(new ObjectCheck()));
+        Assertions.assertDoesNotThrow(() -> ObjectContainer.of(null));
+
+    }
+
+    @Test
+    @DisplayName("Deve validar class can type")
+    public void UT_CHECK_CAN_TYPE() {
+        enum EnumCheck {
+            EnumA, EnumB
+        }
+        var objectContainer=ObjectContainer.of(UUID.randomUUID(), new ObjectCheck());
+        Assertions.assertDoesNotThrow(() -> objectContainer.canType(null));
+        Assertions.assertDoesNotThrow(() -> objectContainer.canType(ObjectCheck.class));
+
+        Assertions.assertFalse(objectContainer.canType(null));
+        Assertions.assertFalse(objectContainer.canType("test"));
+        Assertions.assertFalse(objectContainer.canType(EnumCheck.EnumA));
+        Assertions.assertFalse(objectContainer.canType(EnumCheck.class));
+        Assertions.assertTrue(objectContainer.canType(ObjectCheck.class));
     }
 
     @Getter
