@@ -1,8 +1,9 @@
 package com.littlecode.scheduler;
 
+import com.littlecode.config.CorePublicConsts;
+import com.littlecode.cron.CronUtil;
 import com.littlecode.parsers.DateUtil;
 import com.littlecode.parsers.ObjectUtil;
-import com.littlecode.util.CronUtil;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
@@ -61,7 +62,7 @@ public class Scheduler {
         public LocalDateTime nextExecution() {
             var execution = this.getLastExecution();
             var lastExecution = (execution == null)
-                    ? DateUtil.MIN_LOCALDATETIME
+                    ? CorePublicConsts.MIN_LOCALDATETIME
                     : execution.getExecutionLasted();
 
             return CronUtil
@@ -93,18 +94,18 @@ public class Scheduler {
                             :this.executions.get(this.executions.size() - 1);
         }
 
-        public String getMessages() {
-            var execution = getLastExecution();
-            if (execution != null && execution.error != null){
-                var message = new StringBuilder();
-                if (execution.error.exception != null)
-                    message.append(execution.error.exception).append("\n");
-                if (execution.error.message != null)
-                    message.append(execution.error.message);
-                return message.toString();
-            }
-            return "";
-        }
+//        public String getMessages() {
+//            var execution = getLastExecution();
+//            if (execution != null && execution.error != null){
+//                var message = new StringBuilder();
+//                if (execution.error.exception != null)
+//                    message.append(execution.error.exception).append("\n");
+//                if (execution.error.message != null)
+//                    message.append(execution.error.message);
+//                return message.toString();
+//            }
+//            return "";
+//        }
 
         public String getName() {
             return method == null ? "" : method.getName();

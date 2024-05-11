@@ -1,8 +1,10 @@
 package com.littlecode.cron;
 
-import com.littlecode.exceptions.FrameworkException;
+
 import com.littlecode.parsers.PrimitiveUtil;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 import org.springframework.scheduling.support.CronExpression;
 
 import java.time.LocalDateTime;
@@ -48,7 +50,7 @@ public class CronUtil {
 //"0 0 0 ? * MON#1" = the first Monday in the month at midnight
 
     private static String check(String val) {
-        return (val!=null && val.isEmpty()) ? "*" : val;
+        return (val!=null && val.trim().isEmpty()) ? "*" : val;
     }
 
     public static String ofCron(String seconds, String minutes, String hours, String days, String months, String dayOfWeek) {
@@ -153,10 +155,11 @@ public class CronUtil {
     }
 
     public LocalDateTime next() {
-        if (this.temporal!=null && CronExpression.isValidExpression(this.expression)){
+        if (CronExpression.isValidExpression(this.expression) && this.temporal!=null){
             var cron = CronExpression.parse(this.expression);
             var temporal = cron.next(this.temporal);
-            return LocalDateTime.of(temporal.toLocalDate(), temporal.toLocalTime());
+            if (temporal != null)
+               return LocalDateTime.of(temporal.toLocalDate(), temporal.toLocalTime());
         }
         return null;
     }
