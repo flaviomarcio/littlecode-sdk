@@ -6,6 +6,7 @@ import com.littlecode.files.FileFormat;
 import lombok.Data;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
@@ -19,6 +20,7 @@ import java.util.*;
 
 @Slf4j
 @Getter
+@ToString
 public class ObjectValueUtil {
     public static final FileFormat FILE_FORMAT_DEFAULT = UtilCoreConfig.FILE_FORMAT_DEFAULT;
     private Object target;
@@ -95,14 +97,12 @@ public class ObjectValueUtil {
     }
 
     public static Object getFieldValue(Object o,Field field){
-        if(o!=null && field!=null){
-            try {
-                field.setAccessible(true);
-                return field.get(o);
-            } catch (Exception ignored) {
-            }
+        try {
+            field.setAccessible(true);
+            return field.get(o);
+        } catch (Exception ignored) {
+            return null;
         }
-        return null;
     }
 
     public Map<String,Object> asMap(){
@@ -160,12 +160,7 @@ public class ObjectValueUtil {
     public Object getFieldValue(Field field){
         if(field==null)
             throw new NullPointerException("invalid field");
-        try {
-            field.setAccessible(true);
-            return field.get(this.target);
-        }catch (Exception ignored) {
-        }
-        return null;
+        return getFieldValue(this.target, field);
     }
 
     public Object getFieldValue(String fieldName){

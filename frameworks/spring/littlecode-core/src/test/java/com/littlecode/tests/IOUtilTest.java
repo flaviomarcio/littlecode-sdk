@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
@@ -84,6 +85,7 @@ public class IOUtilTest {
         Assertions.assertDoesNotThrow(() -> IOUtil.readLines((String)null ));
         Assertions.assertDoesNotThrow(() -> IOUtil.readLines((File)null ));
         Assertions.assertDoesNotThrow(() -> IOUtil.readLines((Path)null ));
+        Assertions.assertDoesNotThrow(() -> IOUtil.readLines(Mockito.mock(Path.class)));
         Assertions.assertDoesNotThrow(() -> IOUtil.readLines(new File("/tmp/test.txt")));
         Assertions.assertDoesNotThrow(() -> IOUtil.readLines(Path.of("/tmp/test.txt")));
         Assertions.assertDoesNotThrow(() -> IOUtil.readLines("/tmp/test.txt"));
@@ -118,6 +120,10 @@ public class IOUtilTest {
         Assertions.assertTrue(IOUtil.target(IOUtil.tempDir()).isDirectory());
         Assertions.assertTrue(IOUtil.target(IOUtil.tempDir()).toPath().toFile().isDirectory());
         Assertions.assertTrue(IOUtil.target(IOUtil.createFileTemp()).isFile());
+
+
+        Assertions.assertDoesNotThrow(()-> IOUtil.baseName(null));
+        Assertions.assertDoesNotThrow(()-> IOUtil.baseName("/test"));
 
         var file = IOUtil.newFile(PATH_TEMP_DIR, "file.tmp");
         Assertions.assertNotNull(file);

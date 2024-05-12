@@ -65,6 +65,7 @@ public class StringUtilTest {
                                 var stringUtil = StringUtil.target(sCheck);
                                 Assertions.assertEquals(stringUtil.getTarget(), sCheck);
 
+                                Assertions.assertDoesNotThrow(() -> StringUtil.toCamelCase(null));
                                 Assertions.assertEquals(StringUtil.toCamelCase(sCheck), check.camelCase);
                                 Assertions.assertEquals(stringUtil.toCamelCase(), check.camelCase);
                                 Assertions.assertTrue(StringUtil.target(stringUtil.toCamelCase()).isCamelCase());
@@ -72,12 +73,32 @@ public class StringUtilTest {
                                 Assertions.assertEquals(StringUtil.toSnakeCase(sCheck), check.snakeCase);
                                 Assertions.assertEquals(stringUtil.toSnakeCase(), check.snakeCase);
                                 Assertions.assertTrue(StringUtil.target(stringUtil.toSnakeCase()).isSnakeCase());
+                                Assertions.assertDoesNotThrow(() -> StringUtil.target(stringUtil.toWord()));
+                                Assertions.assertDoesNotThrow(() -> StringUtil.target(stringUtil.toCamelCase()));
+                                Assertions.assertDoesNotThrow(() -> StringUtil.target(stringUtil.toSnakeCase()));
                             }
                     );
                 }
         );
 
+        Assertions.assertDoesNotThrow(() -> StringUtil.toWord(null));
+        Assertions.assertDoesNotThrow(() -> StringUtil.toWord(" "));
+        Assertions.assertDoesNotThrow(() -> StringUtil.toWord("a"));
         Assertions.assertEquals(StringUtil.target("TEST").toWord(), "Test");
+
+        Assertions.assertDoesNotThrow(() -> StringUtil.isCamelCase("TEST"));
+        Assertions.assertDoesNotThrow(() -> StringUtil.isCamelCase(""));
+        Assertions.assertDoesNotThrow(() -> StringUtil.isCamelCase(null));
+        Assertions.assertDoesNotThrow(() -> StringUtil.toCamelCase("test_teste"));
+        Assertions.assertDoesNotThrow(() -> StringUtil.toCamelCase("a"));
+        Assertions.assertDoesNotThrow(() -> StringUtil.toCamelCase(null));
+
+        Assertions.assertDoesNotThrow(() -> StringUtil.isSnakeCase("TEST"));
+        Assertions.assertDoesNotThrow(() -> StringUtil.isSnakeCase(""));
+        Assertions.assertDoesNotThrow(() -> StringUtil.isSnakeCase(null));
+        Assertions.assertDoesNotThrow(() -> StringUtil.toSnakeCase("testA"));
+        Assertions.assertDoesNotThrow(() -> StringUtil.toSnakeCase("a"));
+        Assertions.assertDoesNotThrow(() -> StringUtil.toSnakeCase(null));
 
 
     }

@@ -15,7 +15,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 @Builder
 @Getter
@@ -132,11 +131,12 @@ public class IOUtil {
     }
 
     public static String baseName(Object target) {
-        var list = split(target);
-        var baseName = (list.length == 0) ? "" : list[list.length - 1];
-        return baseName == null
-                ? ""
-                : baseName.trim();
+        if(target!=null){
+            var list = split(target);
+            var baseName = list[list.length - 1];
+            return baseName.trim();
+        }
+        return "";
     }
 
     public static File basePath(Object target) {

@@ -242,6 +242,9 @@ public class ObjectUtilTest {
         Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldByType(SubObjectCheck.class, Long.class));
         Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldByType(SubObjectCheck.class, null));
         Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldByType(null, null));
+        Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldsByType(ObjectCheck.class, UUID.class));
+        Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldsByType(ObjectCheck.class, null));
+        Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldsByType(null, null));
         Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldsByType(ObjectCheck.class, UUID.class).isEmpty());
         Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldsByType(SubObjectCheck.class, Long.class).isEmpty());
 

@@ -22,11 +22,9 @@ public class StringUtil {
     }
 
     public static String toWord(String target) {
-        if (target == null)
+        if (target == null || target.trim().isEmpty())
             return "";
         target = target.trim();
-        if (target.isEmpty())
-            return "";
         if (target.length() == 1)
             return target.toUpperCase();
         return target.substring(0, 1).toUpperCase() + target.substring(1).toLowerCase();
@@ -125,10 +123,6 @@ public class StringUtil {
         if (target == null || target.isEmpty())
             return false;
         return !target.contains(SNAKE_CASE_SEPARATOR);
-//        String regex = "^[a-z]+(?:[A-Z][a-z]*)*$";
-//        Pattern pattern = Pattern.compile(regex);
-//        Matcher matcher = pattern.matcher(target);
-//        return matcher.matches();
     }
 
     public static boolean isSnakeCase(String target) {
