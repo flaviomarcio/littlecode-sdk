@@ -113,10 +113,7 @@ public class StringUtil {
             }
             target = words.toString();
         }
-        var __return = target.substring(0, 1).toLowerCase() + target.substring(1);
-        if (!isCamelCase(__return))
-            throw new FrameworkException("invalid camelCase name: " + __return);
-        return __return;
+        return target.substring(0, 1).toLowerCase() + target.substring(1);
     }
 
     public static boolean isCamelCase(String target) {
@@ -145,10 +142,7 @@ public class StringUtil {
             else
                 word.append(chr);
         }
-        target = (word == null) ? "" : word.toString().toLowerCase();
-        if (!isSnakeCase(target))
-            throw new FrameworkException("invalid snake case name: " + target);
-        return target;
+        return (word == null) ? "" : word.toString().toLowerCase();
     }
 
     public String toWord() {

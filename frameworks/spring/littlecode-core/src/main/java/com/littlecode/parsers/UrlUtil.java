@@ -32,9 +32,7 @@ public class UrlUtil {
 
     public static String pathMaker(String path) {
         var lst = pathMaker(List.of(path));
-        return (lst.length == 0)
-                ? ""
-                : List.of(lst).get(0);
+        return List.of(lst).get(0);
     }
 
     public static String[] pathMaker(final List<String> pathList) {

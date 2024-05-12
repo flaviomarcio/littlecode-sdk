@@ -65,6 +65,9 @@ public class StringUtilTest {
                                 var stringUtil = StringUtil.target(sCheck);
                                 Assertions.assertEquals(stringUtil.getTarget(), sCheck);
 
+                                Assertions.assertDoesNotThrow(() -> StringUtil.target(stringUtil.toCamelCase()).getTarget());
+                                Assertions.assertDoesNotThrow(() -> StringUtil.target(stringUtil.toCamelCase()).setTarget("werw"));
+
                                 Assertions.assertDoesNotThrow(() -> StringUtil.toCamelCase(null));
                                 Assertions.assertEquals(StringUtil.toCamelCase(sCheck), check.camelCase);
                                 Assertions.assertEquals(stringUtil.toCamelCase(), check.camelCase);
