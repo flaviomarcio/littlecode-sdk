@@ -1,150 +1,164 @@
 package com.littlecode.network;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.littlecode.config.UtilCoreConfig;
 import com.littlecode.exceptions.FrameworkException;
 import com.littlecode.files.FileFormat;
+import com.littlecode.network.clients.Http;
+import com.littlecode.network.clients.RequestClient;
 import com.littlecode.parsers.ObjectUtil;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpHeaders;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
 import java.util.*;
 
 @Slf4j
 public class RequestUtil {
     private static final FileFormat FILE_FORMAT_DEFAULT = FileFormat.JSON;
-    private Executable privateOnStarted = null;
-    private Executable privateOnSuccessful = null;
-    private Executable privateOnFail = null;
-    private Executable privateOnFinished = null;
-    private Method privateMethod;
-    private URI privateUri;
-    private String privatePath;
-    private final Map<String, String> privateHeaders=new HashMap<>();
+    private RequestClient client;
+    @Getter
+    private Executable onStarted = null;
+    @Getter
+    private Executable onSuccessful = null;
+    @Getter
+    private Executable onFail = null;
+    @Getter
+    private Executable onFinished = null;
+    @Getter
+    @Setter
+    private boolean printOnFail;
+    @Getter
+    @Setter
+    private boolean exceptionOnFail;
+    private Method method =Method.GET;
+    private URI uri;
+    private String path;
+    private final Map<String, String> headers =new HashMap<>();
     private final Response response= new Response(this);
+    @Getter
     private String body;
-    private boolean privatePrintOnFail;
-    private boolean privateExceptionOnFail;
 
     public static RequestUtil builder() {
         return new RequestUtil();
-    }
-
-    public String toString() {
-        return (this.response.isOK())
-                ?""
-                :response.toString();
     }
 
     public RequestUtil build() {
         return this;
     }
 
+    public String toString() {
+        return response.toString();
+    }
+
+    public RequestClient getClient(){
+        if(this.client ==null)
+            this.client =new Http();
+        return this.client;
+    }
+
+    public RequestUtil client(RequestClient client){
+        if(client==null)
+            throw new NullPointerException("client is null");
+        this.client =client;
+        return this;
+    }
+
     public RequestUtil onStarted(Executable executable) {
-        this.privateOnStarted = executable;
+        this.onStarted = executable;
         return this;
     }
 
     public RequestUtil onSuccessful(Executable executable) {
-        this.privateOnSuccessful = executable;
+        this.onSuccessful = executable;
         return this;
     }
 
     public RequestUtil onFail(Executable executable) {
-        this.privateOnFail = executable;
+        this.onFail = executable;
         return this;
     }
 
     public RequestUtil onFinished(Executable executable) {
-        this.privateOnFinished = executable;
+        this.onFinished = executable;
         return this;
     }
 
     public RequestUtil clear() {
-        this.privateUri = null;
-        this.privateMethod = Method.GET;
-        this.privateHeaders.clear();
+        this.uri = null;
+        this.method = Method.GET;
+        this.headers.clear();
         this.body = null;
         this.response.clear();
-        this.privateOnSuccessful = null;
-        this.privateOnFail = null;
+        this.onSuccessful = null;
+        this.onFail = null;
         return this;
     }
 
-    private List<String> printMake() {
+    public List<String> printLines() {
         var method=this.method();
-        if(method!=null){
-            List<String> str = new ArrayList<>();
-            str.add(String.format("curl -i -X %s \\", method.name().toUpperCase()));
-            this.headers().forEach((key, value) -> {
-                str.add(String.format("             --header '%s: %s' \\", key, value));
-            });
-            str.add(String.format("             --location '%s' \\", this.url()));
-            if (method == Method.POST || method == Method.PUT)
-                str.add(String.format("             --data '%s' ", this.body()));
-            return str;
-        }
-        return new ArrayList<>();
+        List<String> lines = new ArrayList<>();
+        lines.add(String.format("curl -i -X %s \\", method.name().toUpperCase()));
+        this.headers().forEach((key, value) -> {
+            lines.add(String.format("             --header '%s: %s' \\", key, value));
+        });
+        lines.add(String.format("             --location '%s' \\", this.url()));
+        if (method == Method.POST || method == Method.PUT)
+            lines.add(String.format("             --data '%s' ", this.getBody()));
+        return lines;
 
     }
 
     public RequestUtil print() {
-        this.printMake().forEach(log::info);
+        this.printLines().forEach(log::info);
         return this;
     }
 
     public boolean isOK() {
-        return response != null && response.isOK();
+        return response.isOK();
     }
 
 
     public boolean printOnFail() {
-        return this.privatePrintOnFail;
+        return this.printOnFail;
     }
 
     public RequestUtil printOnFail(boolean newValue) {
-        this.privatePrintOnFail = newValue;
+        this.printOnFail = newValue;
         return this;
     }
 
     public boolean exceptionOnFail() {
-        return this.privateExceptionOnFail;
+        return this.exceptionOnFail;
     }
 
     public RequestUtil exceptionOnFail(boolean newValue) {
-        this.privateExceptionOnFail = newValue;
+        this.exceptionOnFail = newValue;
         return this;
     }
 
     public Map<String, String> headers() {
-        return privateHeaders;
+        return headers;
     }
 
     public RequestUtil headers(Map<String, String> newHeaders) {
-        this.privateHeaders.clear();
+        this.headers.clear();
         if(newHeaders!=null)
-            this.privateHeaders.putAll(newHeaders);
+            this.headers.putAll(newHeaders);
         return this;
     }
 
     public RequestUtil headersJSON() {
-        this.privateHeaders.put("Content-Type", "application/json");
+        this.headers.put("Content-Type", "application/json");
         return this;
     }
 
     public RequestUtil headersAuthBearer(String token) {
-        this.privateHeaders.put("Authorization", String.format("Bearer %s", token));
+        this.headers.put("Authorization", String.format("Bearer %s", token));
         return this;
     }
 
     public RequestUtil headersAuthBasic(String token) {
-        this.privateHeaders.put("Authorization", String.format("Basic %s", token));
+        this.headers.put("Authorization", String.format("Basic %s", token));
         return this;
     }
 
@@ -161,17 +175,6 @@ public class RequestUtil {
         return this;
     }
 
-    public String body() {
-        return body;
-    }
-
-    public String responseBody() {
-        return
-                (response == null)
-                        ?null
-                        :this.response.body();
-    }
-
     public RequestUtil body(String newBody) {
         this.body = newBody;
         return this;
@@ -185,36 +188,38 @@ public class RequestUtil {
             } catch (Exception ignored) {
             }
         }
-        this.body = null;
+        else{
+            this.body = null;
+        }
         return this;
     }
 
     public RequestUtil GET() {
-        this.privateMethod = Method.GET;
+        this.method = Method.GET;
         return this;
     }
 
     public RequestUtil POST() {
-        this.privateMethod = Method.POST;
+        this.method = Method.POST;
         return this;
     }
 
     public RequestUtil PUT() {
-        this.privateMethod = Method.PUT;
+        this.method = Method.PUT;
         return this;
     }
 
     public RequestUtil DELETE() {
-        this.privateMethod = Method.DELETE;
+        this.method = Method.DELETE;
         return this;
     }
 
     public Method method() {
-        return privateMethod;
+        return method;
     }
 
     public RequestUtil method(Method newMethod) {
-        privateMethod =
+        method =
                 (newMethod == null)
                         ?Method.GET
                         :newMethod;
@@ -227,27 +232,30 @@ public class RequestUtil {
     }
 
     public URI uri() {
-        if(privateUri==null)
-            return privateUri=URI.create("http://localhost");
-        return privateUri;
+        if(uri==null)
+            return uri =URI.create("http://localhost");
+        return uri;
     }
 
     public RequestUtil uri(String newUri) {
-        this.privateUri = URI.create(newUri);
+        if(newUri==null || newUri.trim().isEmpty())
+            this.uri=null;
+        else
+            this.uri = URI.create(newUri);
         return this;
     }
 
     public RequestUtil uri(URI newUri) {
-        this.privateUri = newUri;
+        this.uri = newUri;
         return this;
     }
 
     public String path() {
-        return privatePath;
+        return path;
     }
 
     public RequestUtil path(String newPath) {
-        this.privatePath =
+        this.path =
                 (newPath == null || newPath.trim().equals("/"))
                         ? "/"
                         : newPath.trim();
@@ -259,97 +267,31 @@ public class RequestUtil {
     }
 
     public RequestUtil call() {
-        var requestBody = (this.body() == null || this.body.trim().isEmpty())
-                ? HttpRequest.BodyPublishers.noBody()
-                : HttpRequest.BodyPublishers.ofString(this.body());
+        if (this.getOnStarted() != null)
+            this.getOnStarted().execute();
 
-        try {
+        this.getClient().call(this);
 
-            if (privateOnStarted != null) {
+        if(this.response.isOK()){
+            if (this.getOnSuccessful() != null)
+                this.getOnSuccessful().execute();
+        }
+        else{
+            if (this.getOnFail() != null) {
                 try {
-                    privateOnStarted.execute();
-                } catch (Throwable ex) {
-                    throw new FrameworkException(ex.getMessage());
-                }
-            }
-
-            HttpClient httpClient = HttpClient.newBuilder()
-                    .connectTimeout(Duration.ofSeconds(5)) // Configura um tempo limite de conexão de 5 segundos
-                    .build();
-
-            HttpRequest.Builder requestBuilder;
-
-            switch (this.method()) {
-                case POST:
-                    requestBuilder = HttpRequest.newBuilder()
-                            .uri(URI.create(this.url()))
-                            .timeout(Duration.ofSeconds(10))
-                            .POST(requestBody);
-                    ; // Configura um tempo limite de leitura de 10 segundos
-                    break;
-                case PUT:
-                    requestBuilder = HttpRequest.newBuilder()
-                            .uri(URI.create(this.url()))
-                            .timeout(Duration.ofSeconds(10))
-                            .PUT(requestBody);
-                    ; // Configura um tempo limite de leitura de 10 segundos
-                    break;
-                case DELETE:
-                    requestBuilder = HttpRequest.newBuilder()
-                            .uri(URI.create(this.url()))
-                            .timeout(Duration.ofSeconds(10))
-                            .DELETE();
-                    ; // Configura um tempo limite de leitura de 10 segundos
-                    break;
-                default:
-                    requestBuilder = HttpRequest.newBuilder()
-                            .uri(URI.create(this.url()))
-                            .timeout(Duration.ofSeconds(10))
-                            .GET();
-                    ; // Configura um tempo limite de leitura de 10 segundos
-                    break;
-            }
-
-            this.headers().forEach(requestBuilder::header);
-
-            HttpRequest request = requestBuilder.build();
-
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-            this.response.setBody(response.body());
-            this.response.setStatus(response.statusCode());
-            this.response.getHeaders().clear();
-            this.response.getHeaders().putAll(response.headers().map());
-            this.response.setUrl(response.uri().toURL().toString());
-            if (privateOnSuccessful != null) {
-                try {
-                    privateOnSuccessful.execute();
-                } catch (Throwable ex) {
-                    throw new FrameworkException(ex.getMessage());
-                }
-            }
-        } catch (Throwable e) {
-            response.setStatus(-1);
-            response.setReasonPhrase(e.getMessage());
-            if (privateOnFail != null) {
-                try {
-                    privateOnFail.execute();
+                    this.getOnFail().execute();
                 } catch (Throwable ex) {
                     throw new FrameworkException(ex.getMessage());
                 }
             }
             if (this.exceptionOnFail())
-                throw new FrameworkException(response.toString());
+                throw new FrameworkException(this.response.toString());
             else if (this.printOnFail())
                 this.print();
         }
-        if (privateOnFinished != null) {
-            try {
-                privateOnFinished.execute();
-            } catch (Throwable ex) {
-                throw new FrameworkException(ex.getMessage());
-            }
-        }
+
+        if (this.getOnFinished() != null)
+            this.getOnFinished().execute();
         return this;
     }
 
@@ -363,7 +305,7 @@ public class RequestUtil {
 
     @FunctionalInterface
     public interface Executable {
-        void execute() throws Throwable;
+        void execute();
     }
 
     @Data
@@ -384,16 +326,15 @@ public class RequestUtil {
             this.reasonPhrase=null;
         }
 
-//        public void setHeaders(Map<String, List<String>> headers){
-//            headers.clear();
-//            headers.putAll(headers);
-//        }
-
         public void setHeaders(Map<String, String> headers){
             this.headers.clear();
-            headers.forEach((k, v) -> {
-                this.headers.put(k,List.of(v));
-            });
+            if(headers!=null){
+                for (Map.Entry<String, String> entry : headers.entrySet()) {
+                    var k = entry.getKey();
+                    var v = entry.getValue();
+                    this.headers.put(k, List.of(v));
+                }
+            }
         }
 
         public String toString() {
@@ -403,7 +344,7 @@ public class RequestUtil {
                         .append(String.format("fail: statusCode: %d, reasonPhrase: %s", this.status, this.reasonPhrase))
                         .append("\n");
                 this.request
-                        .printMake()
+                        .printLines()
                         .forEach(s -> str.append(s).append("\n"));
                 return str.toString();
             }
@@ -430,23 +371,22 @@ public class RequestUtil {
             return body;
         }
 
-        public <T> T bodyAs(Class<T> objectClass) {
-            return ObjectUtil.createFromString(objectClass,body);
+        public <T> T bodyAs(Class<T> aClass) {
+            return ObjectUtil.createFromString(aClass,body);
         }
 
-        public <T> List<?> bodyAsList(Class<T> objectClass) {
-            if(objectClass!=null){
-                var __object = ObjectUtil.createFromObject(Object.class,body);
+        public <T> List<?> bodyAsList(Class<T> aClass) {
+            if(aClass!=null){
+                var __object = ObjectUtil.createFromString(Object.class,body);
                 if(__object != null){
-                    if(__object instanceof List list){
-                        List<T> __return=new ArrayList<>();
-                        for(var src:list)
-                            __return.add(ObjectUtil.createFromObject(objectClass,src));
-                        return __return;
+                    if(__object instanceof List list)
+                        return list;
+                    else {
+                        __object=ObjectUtil.createFromString(aClass,body);
+                        return __object==null
+                                ?null
+                                :List.of(__object);
                     }
-                    var __return=ObjectUtil.createFromObject(objectClass,__object);
-                    if(__return!=null)
-                        return (List<?>) __return;
                 }
             }
             return null;
