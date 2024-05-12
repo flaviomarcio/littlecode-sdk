@@ -155,6 +155,24 @@ public class ObjectUtilTest {
     @Test
     @DisplayName("Deve validar from values")
     public void UT_000_CREATE_FROM() {
+        Assertions.assertDoesNotThrow(()->ObjectUtil.createFromYML(ObjectCheck.class, objectSrcString));
+        Assertions.assertDoesNotThrow(()->ObjectUtil.createFromPROPS(ObjectCheck.class, objectSrcString));
+        Assertions.assertDoesNotThrow(()->ObjectUtil.createFromObject(ObjectCheck.class, objectSrcString));
+        Assertions.assertDoesNotThrow(()->ObjectUtil.createFromXML(ObjectCheck.class, objectSrcString));
+        Assertions.assertDoesNotThrow(()->ObjectUtil.createFromJSON(ObjectCheck.class, objectSrcString));
+
+        Assertions.assertDoesNotThrow(()->ObjectUtil.createFromYML(ObjectCheck.class, null));
+        Assertions.assertDoesNotThrow(()->ObjectUtil.createFromPROPS(ObjectCheck.class, null));
+        Assertions.assertDoesNotThrow(()->ObjectUtil.createFromObject(ObjectCheck.class, null));
+        Assertions.assertDoesNotThrow(()->ObjectUtil.createFromXML(ObjectCheck.class, null));
+        Assertions.assertDoesNotThrow(()->ObjectUtil.createFromJSON(ObjectCheck.class, null));
+
+        Assertions.assertDoesNotThrow(()->ObjectUtil.createFromYML(null, null));
+        Assertions.assertDoesNotThrow(()->ObjectUtil.createFromPROPS(null, null));
+        Assertions.assertDoesNotThrow(()->ObjectUtil.createFromObject(null, null));
+        Assertions.assertDoesNotThrow(()->ObjectUtil.createFromXML(null, null));
+        Assertions.assertDoesNotThrow(()->ObjectUtil.createFromJSON(null, null));
+
         Assertions.assertNotNull(ObjectUtil.createFromYML(ObjectCheck.class, objectSrcString));
         Assertions.assertNotNull(ObjectUtil.createFromPROPS(ObjectCheck.class, objectSrcString));
         Assertions.assertNotNull(ObjectUtil.createFromObject(ObjectCheck.class, objectSrcString));

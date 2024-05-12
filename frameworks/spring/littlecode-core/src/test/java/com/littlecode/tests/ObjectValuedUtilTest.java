@@ -68,6 +68,9 @@ public class ObjectValuedUtilTest {
         Assertions.assertDoesNotThrow(objValueUtil::getTarget);
         Assertions.assertDoesNotThrow(objValueUtil::getFieldMap);
         Assertions.assertDoesNotThrow(() -> ObjectValueUtil.getFieldList(Object.class));
+        Assertions.assertDoesNotThrow(() -> objValueUtil.getFieldValue(new Object(), Mockito.mock(Field.class)));
+        Assertions.assertDoesNotThrow(() -> objValueUtil.getFieldValue(new Object(), null));
+        Assertions.assertDoesNotThrow(() -> objValueUtil.getFieldValue(null, null));
         Assertions.assertDoesNotThrow(objValueUtil::getFieldNames);
         Assertions.assertDoesNotThrow(objValueUtil::asMap);
         Assertions.assertDoesNotThrow(objValueUtil::asMapString);

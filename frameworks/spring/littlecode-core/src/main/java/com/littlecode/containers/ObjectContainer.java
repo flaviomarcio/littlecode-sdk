@@ -118,14 +118,10 @@ public class ObjectContainer {
     public static String classToString(Object o) {
         if(o==null || (o instanceof String))
             return "";
-
-        if(o instanceof Class aClass){
-            if(aClass==String.class)
-                return "";
+        else if(o instanceof Class aClass)
             return aClass.getName();
-        }
-
-        return o.getClass().getName();
+        else
+            return o.getClass().getName();
     }
 
 

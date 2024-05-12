@@ -150,11 +150,14 @@ public class ObjectContainerTest {
             EnumA, EnumB
         }
         Assertions.assertDoesNotThrow(() -> ObjectContainer.classToString(null));
-        Assertions.assertDoesNotThrow(() -> ObjectContainer.classToString(new ObjectCheck()));
         Assertions.assertDoesNotThrow(() -> ObjectContainer.classToString("test"));
+        Assertions.assertDoesNotThrow(() -> ObjectContainer.classToString(ObjectCheck.class));
+        Assertions.assertDoesNotThrow(() -> ObjectContainer.classToString(new ObjectCheck()));
 
         Assertions.assertEquals(ObjectContainer.classToString(null),"");
         Assertions.assertEquals(ObjectContainer.classToString("test"),"");
+        Assertions.assertEquals(ObjectContainer.classToString(ObjectCheck.class),ObjectCheck.class.getName());
+        Assertions.assertEquals(ObjectContainer.classToString(new ObjectCheck()),ObjectCheck.class.getName());
     }
 
     @Test

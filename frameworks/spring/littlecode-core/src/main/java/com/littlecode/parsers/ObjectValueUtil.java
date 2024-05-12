@@ -94,23 +94,30 @@ public class ObjectValueUtil {
         return ObjectValueUtil.toString(o, FILE_FORMAT_DEFAULT);
     }
 
-    @SneakyThrows
+    public static Object getFieldValue(Object o,Field field){
+        if(o!=null && field!=null){
+            try {
+                field.setAccessible(true);
+                return field.get(o);
+            } catch (Exception ignored) {
+            }
+        }
+        return null;
+    }
+
     public Map<String,Object> asMap(){
         Map<String,Object> __return=new HashMap<>();
         for(Field field : this.fieldList){
-            field.setAccessible(true);
-            var value=field.get(this.target);
+            var value=getFieldValue(this.target,field);
             __return.put(field.getName(), value);
         }
         return __return;
     }
 
-    @SneakyThrows
     public Map<String,String> asMapString(){
         Map<String,String> __return=new HashMap<>();
         for(Field field : this.fieldList){
-            field.setAccessible(true);
-            var oGet = field.get(this.target);
+            var oGet = getFieldValue(this.target, field);
             if (oGet == null)
                 __return.put(field.getName(), "");
             else if (oGet.getClass().isEnum() || PrimitiveUtil.isPrimitiveValue(field.getGenericType()))

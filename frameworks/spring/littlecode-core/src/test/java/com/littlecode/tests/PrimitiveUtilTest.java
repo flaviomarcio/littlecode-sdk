@@ -489,6 +489,10 @@ public class PrimitiveUtilTest {
     public void UI_CHECK_toUUID() {
         var uuid = UUID.fromString("c4ca4238-a0b9-2382-0dcc-509a6f75849b");
         var uuid_str = "c4ca4238a0b923820dcc509a6f75849b";
+
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toUUID(""));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toUUID(null));
+
         Assertions.assertNull(PrimitiveUtil.toUUID(""));
         Assertions.assertEquals(PrimitiveUtil.toUUID(uuid.toString()), uuid);
         Assertions.assertEquals(PrimitiveUtil.toUUID(uuid_str), uuid);

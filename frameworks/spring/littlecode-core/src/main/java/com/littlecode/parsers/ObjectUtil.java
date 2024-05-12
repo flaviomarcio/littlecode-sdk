@@ -13,7 +13,6 @@ import java.lang.reflect.Modifier;
 import java.nio.file.Path;
 import java.util.*;
 
-@Slf4j
 public class ObjectUtil {
 
     public static String inputReadAll(InputStream source) {
@@ -250,7 +249,6 @@ public class ObjectUtil {
         try {
             return mapper.readValue(source, aClass);
         } catch (Exception ignored) {
-            log.error(ignored.getMessage());
         }
         return null;
     }
