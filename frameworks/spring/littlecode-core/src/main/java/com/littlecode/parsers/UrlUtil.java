@@ -4,17 +4,51 @@ import java.util.List;
 
 public class UrlUtil {
     private static final String PATH_LIST_DELIMIT = " ";
-    private static final String PATH_DELIMIT = "/";
-    private static final String PATH_AUTH_END = "/**";
-    private static final List<String> TRUSTED_URLS = List.of("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html");
-    private static final List<String> TRUSTED_URLS_OPEN = List.of("/login/**", "/swagger-ui/**", "/v3/api-docs/**", "/actuator/**", "/prometheus/**");
-    private static String CONTEXT_PATH;
+    public static final String PATH_DELIMIT = "/";
+    public static final String PATH_AUTH_END = "/**";
+    public static final List<String> DEFAULT_TRUSTED_URLS = List.of("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html");
+    public static final List<String> DEFAULT_TRUSTED_URLS_OPEN = List.of("/login/**", "/swagger-ui/**", "/v3/api-docs/**", "/actuator/**", "/prometheus/**");
 
-    private UrlUtil() {
-        super();
+    private String contextPath;
+    private List<String> trustedUrls;
+    private List<String> trustedUrlsOpen;
+
+    public UrlUtil() {
+        this.contextPath = "";
+        this.trustedUrls = List.copyOf(DEFAULT_TRUSTED_URLS);
+        this.trustedUrlsOpen = List.copyOf(DEFAULT_TRUSTED_URLS_OPEN);
     }
 
-    public static String pathParse(String url) {
+    public static UrlUtil builder() {
+        return new UrlUtil();
+    }
+
+    public UrlUtil build() {
+        return this;
+    }
+
+    public String getContextPath() {
+        if (this.contextPath == null)
+            this.contextPath = "";
+        return this.contextPath;
+    }
+
+    public UrlUtil contextPath(String contextPath) {
+        this.contextPath = pathParse(contextPath);
+        return this;
+    }
+
+    public UrlUtil trustedUrls(List<String> values) {
+        this.trustedUrls = values;
+        return this;
+    }
+
+    public UrlUtil trustedUrlsOpen(List<String> values) {
+        this.trustedUrlsOpen = values;
+        return this;
+    }
+
+    public String pathParse(String url) {
         if (url.isEmpty())
             return PATH_DELIMIT;
         while (url.contains(PATH_DELIMIT + PATH_DELIMIT))
@@ -30,12 +64,12 @@ public class UrlUtil {
         return output.toString().toLowerCase();
     }
 
-    public static String pathMaker(String path) {
+    public String pathMaker(String path) {
         var lst = pathMaker(List.of(path));
         return List.of(lst).get(0);
     }
 
-    public static String[] pathMaker(final List<String> pathList) {
+    public String[] pathMaker(final List<String> pathList) {
         final var contextPath = getContextPath();
         final var output = new StringBuilder();
         for (var i = 0; i < pathList.size(); i++) {
@@ -48,7 +82,7 @@ public class UrlUtil {
         return output.toString().split(PATH_LIST_DELIMIT);
     }
 
-    public static boolean pathMatch(final List<String> pathList, final String urlPath) {
+    public boolean pathMatch(final List<String> pathList, final String urlPath) {
         final var pathCheck = urlPath == null ? "" : urlPath.trim().toLowerCase();
         final var paths = List.of(pathMaker(pathList));
         for (var path : paths) {
@@ -64,16 +98,8 @@ public class UrlUtil {
         return false;
     }
 
-    public static String getContextPath() {
-        return String.valueOf(CONTEXT_PATH);
-    }
-
-    public static void setContextPath(String contextPath) {
-        CONTEXT_PATH = pathParse(contextPath);
-    }
-
-    public static String[] getTrustedUrl() {
-        var paths = new java.util.ArrayList<>(List.copyOf(TRUSTED_URLS));
+    public String[] getTrustedUrl() {
+        var paths = new java.util.ArrayList<>(List.copyOf(trustedUrls));
         paths.add(getContextPath() + PATH_AUTH_END);
         StringBuilder output = new StringBuilder();
         paths.forEach(path -> {
@@ -83,15 +109,15 @@ public class UrlUtil {
         return output.toString().trim().split(PATH_LIST_DELIMIT);
     }
 
-    public static String[] getTrustedOpenUrl() {
-        return pathMaker(TRUSTED_URLS);
+    public String[] getTrustedOpenUrl() {
+        return pathMaker(trustedUrls);
     }
 
-    public static boolean isTrustedOpenUrl(final String urlPath) {
-        return pathMatch(TRUSTED_URLS_OPEN, urlPath);
+    public boolean isTrustedOpenUrl(final String urlPath) {
+        return pathMatch(trustedUrlsOpen, urlPath);
     }
 
-    public static boolean isTrustedUrl(final String urlPath) {
-        return pathMatch(TRUSTED_URLS, urlPath);
+    public boolean isTrustedUrl(final String urlPath) {
+        return pathMatch(trustedUrls, urlPath);
     }
 }
