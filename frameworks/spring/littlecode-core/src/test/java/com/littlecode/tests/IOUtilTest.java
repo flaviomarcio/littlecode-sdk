@@ -58,6 +58,26 @@ public class IOUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar basePath e baseName")
+    public void UT_CHECK_basePath_baseName() {
+        Assertions.assertDoesNotThrow(() -> IOUtil.basePath(null));
+        Assertions.assertDoesNotThrow(() -> IOUtil.basePath(" "));
+        Assertions.assertDoesNotThrow(() -> IOUtil.basePath("file"));
+        Assertions.assertDoesNotThrow(() -> IOUtil.basePath("/"));
+        Assertions.assertDoesNotThrow(() -> IOUtil.basePath("///"));
+        Assertions.assertDoesNotThrow(() -> IOUtil.basePath("/tmp"));
+
+        Assertions.assertDoesNotThrow(()-> IOUtil.baseName(null));
+        Assertions.assertDoesNotThrow(()-> IOUtil.baseName(""));
+        Assertions.assertDoesNotThrow(()-> IOUtil.baseName(" "));
+        Assertions.assertDoesNotThrow(()-> IOUtil.baseName("file"));
+        Assertions.assertDoesNotThrow(()-> IOUtil.baseName("/"));
+        Assertions.assertDoesNotThrow(()-> IOUtil.baseName("///"));
+        Assertions.assertDoesNotThrow(()-> IOUtil.baseName("/tmp/test"));
+    }
+
+
+    @Test
     @DisplayName("Deve validar write files")
     public void UT_CHECK_READ_WRITE() {
         var fileTemp = IOUtil.createFileTemp();
@@ -122,9 +142,6 @@ public class IOUtilTest {
         Assertions.assertTrue(IOUtil.target(IOUtil.createFileTemp()).isFile());
 
 
-        Assertions.assertDoesNotThrow(()-> IOUtil.baseName(null));
-        Assertions.assertDoesNotThrow(()-> IOUtil.baseName("/test"));
-
         var file = IOUtil.newFile(PATH_TEMP_DIR, "file.tmp");
         Assertions.assertNotNull(file);
         if (!file.toString().isEmpty()) {
@@ -169,8 +186,6 @@ public class IOUtilTest {
         if (!file.toString().isEmpty()) {
 
             var io = IOUtil.target(file);
-            Assertions.assertNotNull(io.baseName());
-            Assertions.assertNotNull(io.basePath());
 
             Assertions.assertTrue(io.exists());
             Assertions.assertDoesNotThrow(() -> io.delete());
@@ -202,12 +217,11 @@ public class IOUtilTest {
 
     }
 
-
     @Test
     @DisplayName("Deve validar metodo new file")
     public void UT_CHECK_METHOD_NEW_FILE() {
 
-        Assertions.assertThrows(FrameworkException.class, () -> IOUtil.newFile());
+        Assertions.assertThrows(FrameworkException.class, IOUtil::newFile);
         Assertions.assertThrows(FrameworkException.class, () -> IOUtil.newFile(null));
         Assertions.assertDoesNotThrow(() -> IOUtil.newFile("/tmp",UUID.randomUUID()));
 

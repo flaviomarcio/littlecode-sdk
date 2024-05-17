@@ -15,6 +15,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @Builder
 @Getter
@@ -63,7 +64,15 @@ public class IOUtil {
     }
 
     public static String[] split(Object target) {
-        return toString(target).split(DIR_SEPARATOR);
+        if(target!=null){
+            var values=toString(target);
+            if(!values.isEmpty()){
+                while(values.contains(DIR_SEPARATOR_DOUBLE))
+                    values=values.replace(DIR_SEPARATOR_DOUBLE,DIR_SEPARATOR);
+                return values.split(DIR_SEPARATOR);
+            }
+        }
+        return null;
     }
 
     public static boolean isFile(Object target) {
@@ -85,7 +94,7 @@ public class IOUtil {
         if (file.isFile())
             return file.delete();
 
-        for (var itemFile : file.listFiles())
+        for (var itemFile : Objects.requireNonNull(file.listFiles()))
             delete(itemFile);
 
         return file.delete() && !file.exists();
@@ -97,11 +106,10 @@ public class IOUtil {
         var fileParty = new StringBuilder();
         for (var arg : args) {
             var str = toString(arg);
-            if (isEmpty(str))
-                continue;
-            fileParty
-                    .append(DIR_SEPARATOR)
-                    .append(str);
+            if (!str.isEmpty())
+                fileParty
+                        .append(DIR_SEPARATOR)
+                        .append(str);
         }
         String fileName = fileParty.toString();
         while (fileName.contains(DIR_SEPARATOR_DOUBLE))
@@ -133,21 +141,18 @@ public class IOUtil {
     public static String baseName(Object target) {
         if(target!=null){
             var list = split(target);
-            var baseName = list[list.length - 1];
-            return baseName.trim();
+            return (list==null || list.length==0)?"":list[list.length - 1].trim();
         }
         return "";
     }
 
     public static File basePath(Object target) {
         var list = split(target);
-        if (list.length == 0)
+        if (list==null || list.length == 0)
             return null;
         var out = new StringBuilder();
         for (int i = 0; i <= list.length - 2; i++) {
             var str = list[i];
-            if (isEmpty(str))
-                continue;
             out
                     .append(DIR_SEPARATOR)
                     .append(str);

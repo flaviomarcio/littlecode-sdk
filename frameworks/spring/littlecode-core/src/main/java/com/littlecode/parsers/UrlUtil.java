@@ -51,18 +51,14 @@ public class UrlUtil {
     public static boolean pathMatch(final List<String> pathList, final String urlPath) {
         final var pathCheck = urlPath == null ? "" : urlPath.trim().toLowerCase();
         final var paths = List.of(pathMaker(pathList));
-        for (final var path : paths) {
+        for (var path : paths) {
+            path=path.toLowerCase().trim();
             if (path.equals(pathCheck))
                 return true;
-            else if (path.endsWith(PATH_AUTH_END)) {
+            if (path.endsWith(PATH_AUTH_END)) {
                 var auxA = path.replace(PATH_AUTH_END, "");
-                if (pathCheck.startsWith(auxA)) {
-                    var auxB = pathCheck.length() < auxA.length()
-                            ? pathCheck
-                            : pathCheck.substring(0, auxA.length());
-                    if (auxB.endsWith(auxA))
-                        return true;
-                }
+                if (pathCheck.startsWith(auxA))
+                    return true;
             }
         }
         return false;

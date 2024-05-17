@@ -1,5 +1,6 @@
 package com.littlecode.tests;
 
+import java.util.List;
 import com.littlecode.parsers.UrlUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
@@ -11,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @Slf4j
 @ExtendWith(MockitoExtension.class)
 public class UrlUtilTest {
+
     @Test
     @DisplayName("Deve validar parsers")
     public void UT_pathParse() {
@@ -21,6 +23,17 @@ public class UrlUtilTest {
         Assertions.assertEquals(UrlUtil.pathParse("//api//a"), "/api/a");
         Assertions.assertEquals(UrlUtil.pathParse("/api/a"), "/api/a");
     }
+
+    @Test
+    @DisplayName("Deve validar path Match")
+    public void UT_pathMatch() {
+        UrlUtil.setContextPath("");
+        Assertions.assertDoesNotThrow(() -> UrlUtil.pathMatch(List.of("/path/method"), "/path/method"));
+        Assertions.assertDoesNotThrow(() -> UrlUtil.pathMatch(List.of("/path/method1"), "/path/method2"));
+        Assertions.assertDoesNotThrow(() -> UrlUtil.pathMatch(List.of("/path/**"), "/path/method"));
+
+    }
+
 
     @Test
     @DisplayName("Deve validar path maker")

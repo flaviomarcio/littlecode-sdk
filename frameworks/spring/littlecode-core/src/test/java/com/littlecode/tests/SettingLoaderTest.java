@@ -169,9 +169,9 @@ public class SettingLoaderTest {
 
             Assertions.assertNotNull(settingFile);
             Assertions.assertFalse(settingFile.exists());
+            Assertions.assertDoesNotThrow(() -> setting.save(null));
             Assertions.assertDoesNotThrow(() -> setting.save());
             Assertions.assertDoesNotThrow(() -> setting.save(setting.getSettingFile()));
-            Assertions.assertDoesNotThrow(() -> setting.save(null));
             Assertions.assertTrue(IOUtil.target(setting.getSettingFile()).exists());
         }
 
