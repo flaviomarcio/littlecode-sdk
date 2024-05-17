@@ -69,7 +69,7 @@ public class MQTest {
         var setting=Mockito.mock(MQSetting.class);
         Mockito.when(setting.getEngine()).thenReturn(MQAdapter.class.getCanonicalName());
         var mq=new MQ(setting);
-        Assertions.assertDoesNotThrow(mq::getSetting);
+        Assertions.assertDoesNotThrow(() -> mq.getSetting().getEnvironmentUtil());
         Assertions.assertDoesNotThrow(mq::getAdapter);
         Assertions.assertNotNull(mq.getSetting());
         Assertions.assertDoesNotThrow(mq::setting);

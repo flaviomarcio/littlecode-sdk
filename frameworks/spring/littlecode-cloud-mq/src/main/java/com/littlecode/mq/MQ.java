@@ -188,7 +188,7 @@ public class MQ {
 
             @Transient
             public Class<?> getTypeClass() {
-                return ObjectContainer.classByName(this.type);
+                return ObjectContainer.classBy(this.type);
             }
 
             @Transient
@@ -211,7 +211,7 @@ public class MQ {
 
             @Transient
             public <T> T asObject(Object valueType) {
-                Class<?> aClass = ObjectContainer.classByName(valueType);
+                Class<?> aClass = ObjectContainer.classBy(valueType);
                 if (aClass == null)
                     throw ExceptionBuilder.ofFrameWork("Class not found");
                 var o = ObjectUtil.createFromString(aClass, this.asString());

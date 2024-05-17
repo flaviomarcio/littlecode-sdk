@@ -70,37 +70,6 @@ public class MQSetting {
         this.queueNameDispatcher = envUtil.asString("littlecode.mq.name.dispatcher");
     }
 
-//    public int getHeartbeat() {
-//        if (this.heartbeat <= 0)
-//            return this.heartbeat = 30;
-//        return this.heartbeat;
-//    }
-//
-//    public int getRecoveryInterval() {
-//        if (this.recoveryInterval <= 0)
-//            return this.recoveryInterval = 60;
-//        return this.recoveryInterval;
-//    }
-//
-//    public int getQueueConsumers() {
-//        if (this.queueConsumers <= 0)
-//            return this.queueConsumers = 1;
-//        return this.queueConsumers;
-//    }
-//
-//    public int getQueueMaxNumber() {
-//        if (this.queueMaxNumber <= 0)
-//            return this.queueMaxNumber = 1;
-//        return this.queueMaxNumber;
-//    }
-//
-//    public int getQueueIdleSleep() {
-//        if(this.queueIdleSleep<=0)
-//            return this.queueIdleSleep=1000;
-//        return this.queueIdleSleep;
-//    }
-
-
     public List<String> getQueueNameConsumers() {
         if (this.queueName!=null && !this.queueName.trim().isEmpty())
             return List.of(this.queueName.split(","));
