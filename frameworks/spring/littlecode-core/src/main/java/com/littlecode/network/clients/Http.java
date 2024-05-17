@@ -20,11 +20,8 @@ public class Http implements RequestClient {
                 : HttpRequest.BodyPublishers.ofString(rqUtil.getBody());
 
         final var rqResponse = rqUtil.response();
+        final var timeout=Duration.ofSeconds(rqUtil.getTimeout());
         try {
-
-            HttpClient httpClient = HttpClient.newBuilder()
-                    .connectTimeout(Duration.ofSeconds(5)) // Configura um tempo limite de conexão de 5 segundos
-                    .build();
 
             HttpRequest.Builder requestBuilder;
 
@@ -32,35 +29,35 @@ public class Http implements RequestClient {
                 case POST:
                     requestBuilder = HttpRequest.newBuilder()
                             .uri(URI.create(rqUtil.url()))
-                            .timeout(Duration.ofSeconds(10))
+                            .timeout(timeout)
                             .POST(requestBody);
                     ; // Configura um tempo limite de leitura de 10 segundos
                     break;
                 case PUT:
                     requestBuilder = HttpRequest.newBuilder()
                             .uri(URI.create(rqUtil.url()))
-                            .timeout(Duration.ofSeconds(10))
+                            .timeout(timeout)
                             .PUT(requestBody);
                     ; // Configura um tempo limite de leitura de 10 segundos
                     break;
                 case DELETE:
                     requestBuilder = HttpRequest.newBuilder()
                             .uri(URI.create(rqUtil.url()))
-                            .timeout(Duration.ofSeconds(10))
+                            .timeout(timeout)
                             .DELETE();
                     ; // Configura um tempo limite de leitura de 10 segundos
                     break;
                 default:
                     requestBuilder = HttpRequest.newBuilder()
                             .uri(URI.create(rqUtil.url()))
-                            .timeout(Duration.ofSeconds(10))
-                            .GET();
+                            .timeout(timeout)
+                            .method(rqUtil.method().name(), requestBody);
                     ; // Configura um tempo limite de leitura de 10 segundos
                     break;
             }
 
+            HttpClient httpClient = this.createHttpClient(rqUtil);
             rqUtil.headers().forEach(requestBuilder::header);
-
             HttpRequest request = requestBuilder.build();
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
@@ -74,5 +71,12 @@ public class Http implements RequestClient {
             rqResponse.setStatus(-1);
             rqResponse.setReasonPhrase(e.getMessage());
         }
+    }
+
+    @Override
+    public HttpClient createHttpClient(RequestUtil rqUtil) {
+        return HttpClient.newBuilder()
+                .connectTimeout(Duration.ofSeconds(rqUtil.getTimeout()))
+                .build();
     }
 }

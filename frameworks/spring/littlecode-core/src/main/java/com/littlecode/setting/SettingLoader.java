@@ -32,16 +32,26 @@ public class SettingLoader<T>  {
 
     public static File parseExtension(final File file, FileFormat fileFormat) {
         if (file != null && fileFormat!=null){
-            var ext = IOUtil.target(file).extension();
-            if (!ext.isEmpty())
-                return file;
-            ext = getExtension(fileFormat);
+            var extFormat = getExtension(fileFormat).toLowerCase();
             var fileName=file.getAbsolutePath().toLowerCase();
-            if (fileName.endsWith(ext))
-                return file;
-            return new File(file + ext);
+            return
+                    (fileName.endsWith(extFormat))
+                            ?file
+                            :new File(file + extFormat);
         }
         return null;
+    }
+
+    public static void staticObjectSave(File fileSave, Object objectSrv, FileFormat fileFormat) {
+        if(fileSave==null || objectSrv==null || fileFormat==null)
+            throw new NullPointerException("Invalid args");
+
+        try {
+            var objectMapper = UtilCoreConfig.newObjectMapper(fileFormat);
+            objectMapper.writeValue(fileSave, objectSrv);
+        } catch (Exception e) {
+            throw new FrameworkException(e.getMessage());
+        }
     }
 
     public static boolean save(Object object, final File file, FileFormat fileFormat) {
@@ -52,12 +62,7 @@ public class SettingLoader<T>  {
                 var fileSave = file.exists()
                         ? file
                         : parseExtension(file, fileFormat);
-                var objectMapper = UtilCoreConfig.newObjectMapper(fileFormat);
-                try {
-                    objectMapper.writeValue(fileSave, object);
-                    return true;
-                } catch (Exception ignored) {
-                }
+                staticObjectSave(fileSave, object, fileFormat);
             }
         }
         return false;

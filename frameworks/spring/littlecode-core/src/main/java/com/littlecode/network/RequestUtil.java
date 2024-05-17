@@ -37,6 +37,8 @@ public class RequestUtil {
     private final Response response= new Response(this);
     @Getter
     private String body;
+    @Getter
+    int timeout=10;
 
     public static RequestUtil builder() {
         return new RequestUtil();
@@ -117,7 +119,6 @@ public class RequestUtil {
         return response.isOK();
     }
 
-
     public boolean printOnFail() {
         return this.printOnFail;
     }
@@ -180,6 +181,11 @@ public class RequestUtil {
         return this;
     }
 
+    public RequestUtil timeout(int timeout) {
+        this.timeout=timeout;
+        return this;
+    }
+
     public RequestUtil body(Object newBody) {
         if (newBody != null) {
             try {
@@ -194,8 +200,39 @@ public class RequestUtil {
         return this;
     }
 
+
+    public RequestUtil CONNECT() {
+        this.method = Method.TRACE;
+        return this;
+    }
+
+    public RequestUtil DELETE() {
+        this.method = Method.DELETE;
+        return this;
+    }
+
     public RequestUtil GET() {
         this.method = Method.GET;
+        return this;
+    }
+
+    public RequestUtil HEAD() {
+        this.method = Method.HEAD;
+        return this;
+    }
+
+    public RequestUtil LIST() {
+        this.method = Method.LIST;
+        return this;
+    }
+
+    public RequestUtil OPTIONS() {
+        this.method = Method.OPTIONS;
+        return this;
+    }
+
+    public RequestUtil PATCH() {
+        this.method = Method.PATCH;
         return this;
     }
 
@@ -209,8 +246,8 @@ public class RequestUtil {
         return this;
     }
 
-    public RequestUtil DELETE() {
-        this.method = Method.DELETE;
+    public RequestUtil TRACE() {
+        this.method = Method.TRACE;
         return this;
     }
 
@@ -277,13 +314,8 @@ public class RequestUtil {
                 this.getOnSuccessful().execute();
         }
         else{
-            if (this.getOnFail() != null) {
-                try {
-                    this.getOnFail().execute();
-                } catch (Throwable ex) {
-                    throw new FrameworkException(ex.getMessage());
-                }
-            }
+            if (this.getOnFail() != null)
+                this.getOnFail().execute();
             if (this.exceptionOnFail())
                 throw new FrameworkException(this.response.toString());
             else if (this.printOnFail())
@@ -295,12 +327,17 @@ public class RequestUtil {
         return this;
     }
 
-
     public enum Method {
+        CONNECT,
+        DELETE,
         GET,
+        HEAD,
+        LIST,
+        OPTIONS,
+        PATCH,
         POST,
         PUT,
-        DELETE
+        TRACE,
     }
 
     @FunctionalInterface

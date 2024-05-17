@@ -1,6 +1,7 @@
 package com.littlecode.tests;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.littlecode.exceptions.FrameworkException;
 import com.littlecode.files.FileFormat;
 import com.littlecode.files.IOUtil;
 import com.littlecode.setting.SettingLoader;
@@ -59,10 +60,19 @@ public class SettingLoaderTest {
                         .build()
                 )
                 .build()
+                .settingFile(IOUtil.newFile(IOUtil.tempDir(), UUID.randomUUID(), UUID.randomUUID().toString()).getAbsolutePath())
                 .settingFile(IOUtil.newFile(IOUtil.tempDir(), UUID.randomUUID(), UUID.randomUUID().toString()))
                 .fileFormat(fileFormat)
                 .clear();
 
+    }
+
+    @Test
+    public void UT_VALID_Getter(){
+        SettingTest setting = makeSetting(FileFormat.JSON);
+        Assertions.assertDoesNotThrow(()->setting.getSettingFile());
+        setting.setSettingFile(null);
+        Assertions.assertDoesNotThrow(()->setting.getSettingFile());
     }
 
     @Test
@@ -97,7 +107,7 @@ public class SettingLoaderTest {
     @Test
     @DisplayName("Deve validar parser extensions")
     public void UT_CHECKER_parseExtension() {
-        var file=new File("/tmp/file.json");
+        var file=new File("/tmp/file");
         var fileJson=new File("/tmp/file.json");
 
         Assertions.assertDoesNotThrow(()->SettingTest.parseExtension(file,FileFormat.JSON).getAbsolutePath());
@@ -105,13 +115,10 @@ public class SettingLoaderTest {
         Assertions.assertDoesNotThrow(()->SettingTest.parseExtension(fileJson,FileFormat.JSON).getAbsolutePath());
         Assertions.assertDoesNotThrow(()->SettingTest.parseExtension(fileJson,FileFormat.JSON));
         Assertions.assertDoesNotThrow(()->SettingTest.parseExtension(fileJson,null));
-        Assertions.assertDoesNotThrow(()->SettingTest.parseExtension(null, FileFormat.JSON));
         Assertions.assertDoesNotThrow(()->SettingTest.parseExtension(null, null));
 
-        Assertions.assertEquals(SettingTest.parseExtension(file,FileFormat.JSON).getAbsolutePath(),file.getAbsolutePath());
-        Assertions.assertEquals(SettingTest.parseExtension(fileJson,FileFormat.JSON).getAbsolutePath(),fileJson.getAbsolutePath());
-        Assertions.assertEquals(SettingTest.parseExtension(fileJson,FileFormat.JSON).getAbsolutePath(),fileJson.getAbsolutePath());
-        Assertions.assertEquals(SettingTest.parseExtension(fileJson,FileFormat.JSON),fileJson);
+        Assertions.assertEquals(SettingTest.parseExtension(file,FileFormat.JSON).getAbsolutePath(),fileJson.getAbsolutePath());
+        Assertions.assertEquals(SettingTest.parseExtension(fileJson,FileFormat.JSON).getAbsolutePath(), fileJson.getAbsolutePath());
         Assertions.assertNull(SettingTest.parseExtension(fileJson,null));
         Assertions.assertNull(SettingTest.parseExtension(null, FileFormat.JSON));
         Assertions.assertNull(SettingTest.parseExtension(null, null));
@@ -119,8 +126,37 @@ public class SettingLoaderTest {
     }
 
     @Test
-    @DisplayName("Deve validar loaders")
-    public void UT_CHECKER_SAVE_LOAD() {
+    @DisplayName("Deve validar load")
+    public void UT_CHECKER_LOAD() {
+
+        var objSrc=Map.of("a","test");
+
+        Assertions.assertDoesNotThrow(() -> SettingLoader.staticObjectSave(new File("/tmp/file.json"),objSrc, FileFormat.JSON));
+        Assertions.assertThrows(FrameworkException.class, () -> SettingLoader.staticObjectSave(new File("/tmp/file.json"),new Object(), FileFormat.JSON));
+        Assertions.assertThrows(NullPointerException.class, () -> SettingLoader.staticObjectSave(new File("/tmp/file.json"),new Object(), null));
+        Assertions.assertThrows(NullPointerException.class, () -> SettingLoader.staticObjectSave(new File("/tmp/file.json"),null, null));
+        Assertions.assertThrows(NullPointerException.class, () -> SettingLoader.staticObjectSave(null,null, null));
+
+        for (FileFormat fileFormat : SettingLoader.FILE_FORMAT_ACCEPTED) {
+            Map<FileFormat, File> settingFiles = new HashMap<>();
+            SettingTest setting = makeSetting(fileFormat);
+            var settingFile = setting
+                    .settingFile(IOUtil.createFileTemp())
+                    .getSettingFile();
+            settingFiles.put(fileFormat, settingFile);
+
+            Assertions.assertNotNull(settingFile);
+            Assertions.assertFalse(settingFile.exists());
+            Assertions.assertDoesNotThrow(() -> setting.load());
+            Assertions.assertDoesNotThrow(() -> setting.load(setting.getSettingFile()));
+            Assertions.assertDoesNotThrow(() -> setting.load(null, fileFormat));
+        }
+
+    }
+
+    @Test
+    @DisplayName("Deve validar save")
+    public void UT_CHECKER_SAVE() {
 
         Map<FileFormat, File> settingFiles = new HashMap<>();
 
@@ -134,6 +170,8 @@ public class SettingLoaderTest {
             Assertions.assertNotNull(settingFile);
             Assertions.assertFalse(settingFile.exists());
             Assertions.assertDoesNotThrow(() -> setting.save());
+            Assertions.assertDoesNotThrow(() -> setting.save(setting.getSettingFile()));
+            Assertions.assertDoesNotThrow(() -> setting.save(null));
             Assertions.assertTrue(IOUtil.target(setting.getSettingFile()).exists());
         }
 
