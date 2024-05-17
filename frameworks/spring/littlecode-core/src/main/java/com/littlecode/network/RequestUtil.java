@@ -202,7 +202,7 @@ public class RequestUtil {
 
 
     public RequestUtil CONNECT() {
-        this.method = Method.TRACE;
+        this.method = Method.CONNECT;
         return this;
     }
 

@@ -268,7 +268,13 @@ public class RequestUtilTest {
 
         request.exceptionOnFail(false);
         request.printOnFail(true);
-        Assertions.assertDoesNotThrow(()-> request.call());
+        Assertions.assertDoesNotThrow(()-> request.CONNECT().call());
+
+        for(var method: RequestUtil.Method.values()){
+            Assertions.assertDoesNotThrow(()-> request.body("[1,2,3,4]").method(method).call());
+            Assertions.assertDoesNotThrow(()-> request.body(null).method(method).call());
+
+        }
 
     }
 
