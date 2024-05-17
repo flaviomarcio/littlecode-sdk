@@ -24,6 +24,8 @@ public class UrlUtilTest {
         Assertions.assertDoesNotThrow(urlUtil::getTrustedUrl);
         Assertions.assertDoesNotThrow(urlUtil::getTrustedOpenUrl);
         Assertions.assertDoesNotThrow(urlUtil::getContextPath);
+        urlUtil.contextPath(null);
+        Assertions.assertDoesNotThrow(urlUtil::getContextPath);
 
         Assertions.assertDoesNotThrow(() -> urlUtil.contextPath("/api"));
         Assertions.assertDoesNotThrow(() -> urlUtil.trustedUrls(new ArrayList<>()));

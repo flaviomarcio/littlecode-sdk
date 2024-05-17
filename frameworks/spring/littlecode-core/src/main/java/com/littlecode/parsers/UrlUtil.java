@@ -34,7 +34,7 @@ public class UrlUtil {
     }
 
     public UrlUtil contextPath(String contextPath) {
-        this.contextPath = pathParse(contextPath);
+        this.contextPath = contextPath==null?null:pathParse(contextPath);
         return this;
     }
 
