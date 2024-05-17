@@ -81,6 +81,10 @@ public class PrimitiveUtilTest {
     @Test
     @DisplayName("Deve validar toString")
     public void UI_CHECK_toString() {
+        List.of("0",12D,1L,1,LocalDate.now(),LocalTime.now(), LocalDateTime.now(),UUID.randomUUID())
+                .forEach(value -> {
+                    Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString(value));
+                });
 
         var dt = LocalDate.of(2000, 1, 3);
         var tm = LocalTime.of(22, 37, 12);
@@ -135,6 +139,12 @@ public class PrimitiveUtilTest {
     @Test
     @DisplayName("Deve validar toLong")
     public void UI_CHECK_toLong() {
+
+        List.of("0",12D,1L,1,LocalDate.now(),LocalTime.now(), LocalDateTime.now(),UUID.randomUUID())
+                        .forEach(value -> {
+                            Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toLong(value));
+                        });
+
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toLong(""));
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toLong((String)null));
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toLong("100"));
@@ -169,6 +179,11 @@ public class PrimitiveUtilTest {
     @Test
     @DisplayName("Deve validar toInt")
     public void UI_CHECK_toInt() {
+
+        List.of("0",12D,1L,1,LocalDate.now(),LocalTime.now(), LocalDateTime.now(),UUID.randomUUID())
+                .forEach(value -> {
+                    Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toInt(value));
+                });
 
         Assertions.assertDoesNotThrow(()-> PrimitiveUtil.toInt((String)null));
         Assertions.assertDoesNotThrow(()-> PrimitiveUtil.toInt(""));
@@ -206,6 +221,11 @@ public class PrimitiveUtilTest {
     @Test
     @DisplayName("Deve validar toDouble")
     public void UI_CHECK_toDouble() {
+
+        List.of("0",12D,1L,1,LocalDate.now(),LocalTime.now(), LocalDateTime.now(),UUID.randomUUID())
+                .forEach(value -> {
+                    Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toDouble(value));
+                });
 
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toDouble((String)null));
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toDouble(""));

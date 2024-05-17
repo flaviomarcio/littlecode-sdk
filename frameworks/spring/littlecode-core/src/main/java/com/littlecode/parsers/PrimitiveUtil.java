@@ -55,6 +55,25 @@ public class PrimitiveUtil {
         return 0;
     }
 
+    public static int toInt(Object v) {
+        if( v instanceof Integer value)
+            return value;
+        else if( v instanceof Long value)
+            return value.intValue();
+        else if( v instanceof Double value)
+            return value.intValue();
+        else if( v instanceof String value)
+            return Integer.parseInt(value);
+        else if( v instanceof LocalDate value)
+            return Double.valueOf(value.toEpochDay()).intValue();
+        else if( v instanceof LocalTime value)
+            return Double.valueOf(value.toSecondOfDay()).intValue();
+        else if( v instanceof LocalDateTime value)
+            return Double.valueOf(value.toEpochSecond(ZoneOffset.UTC)).intValue();
+        else
+            return 0;
+    }
+
     public static int toInt(double v) {
         return (int) v;
     }
@@ -77,6 +96,25 @@ public class PrimitiveUtil {
 
     public static int toInt(LocalDateTime v) {
         return v==null ? 0 : (int)v.toEpochSecond(ZoneOffset.UTC);
+    }
+
+    public static long toLong(Object v) {
+        if( v instanceof Long value)
+            return value;
+        else if( v instanceof Integer value)
+            return value.longValue();
+        else if( v instanceof Double value)
+            return value.longValue();
+        else if( v instanceof String value)
+            return Long.parseLong(value);
+        else if( v instanceof LocalDate value)
+            return Double.valueOf(value.toEpochDay()).longValue();
+        else if( v instanceof LocalTime value)
+            return Double.valueOf(value.toSecondOfDay()).longValue();
+        else if( v instanceof LocalDateTime value)
+            return Double.valueOf(value.toEpochSecond(ZoneOffset.UTC)).longValue();
+        else
+            return 0;
     }
 
     public static long toLong(String v) {
@@ -107,6 +145,25 @@ public class PrimitiveUtil {
 
     public static long toLong(LocalDateTime v) {
         return v==null ? 0 : v.toEpochSecond(ZoneOffset.UTC);
+    }
+
+    public static double toDouble(Object v) {
+        if( v instanceof Double value)
+            return value;
+        else if( v instanceof Integer value)
+            return value.doubleValue();
+        else if( v instanceof Long value)
+            return value.doubleValue();
+        else if( v instanceof String value)
+            return Double.parseDouble(value);
+        else if( v instanceof LocalDate value)
+            return Double.valueOf(value.toEpochDay()).doubleValue();
+        else if( v instanceof LocalTime value)
+            return Double.valueOf(value.toSecondOfDay()).doubleValue();
+        else if( v instanceof LocalDateTime value)
+            return Double.valueOf(value.toEpochSecond(ZoneOffset.UTC)).doubleValue();
+        else
+            return 0;
     }
 
     public static double toDouble(String v) {
@@ -361,7 +418,6 @@ public class PrimitiveUtil {
     public static String toString(boolean v) {
         return v ? "true" : "false";
     }
-
 
     public static String toString(LocalDate v) {
         if (v == null)
