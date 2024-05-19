@@ -16,7 +16,7 @@ public class MQAdapter {
     public MQAdapter(MQ mq) {
         if(mq==null)
             throw new NullPointerException("MQ is null");
-        this.mq = new MQ();
+        this.mq = mq;
     }
 
     public final MQ mq() {

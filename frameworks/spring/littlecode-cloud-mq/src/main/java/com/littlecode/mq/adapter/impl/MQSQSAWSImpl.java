@@ -217,6 +217,13 @@ public class MQSQSAWSImpl extends MQAdapter {
                 throw ExceptionBuilder.ofInvalid("message is empty");
             try (var sqsClient = adapter.newClient()) {
                 var queueName = adapter.queueSelector(sqsClient, this.queue());
+
+                if (queueName.isEmpty() && this.setting.isAutoCreate()){
+                    for (var queue: this.queue())
+                        adapter.queueCreate(sqsClient, queue);
+                    queueName = adapter.queueSelector(sqsClient, this.queue());
+                }
+
                 if (queueName.isEmpty())
                     throw ExceptionBuilder.ofFrameWork("Dispatcher Invalid queue name");
                 log.debug("Queue:[{}], dispatcher a new message", queueName);

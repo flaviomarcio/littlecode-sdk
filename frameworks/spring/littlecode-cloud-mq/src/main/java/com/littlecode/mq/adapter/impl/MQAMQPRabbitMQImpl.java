@@ -188,7 +188,6 @@ public class MQAMQPRabbitMQImpl extends MQAdapter {
         public List<String> queue() {
             var queueNames = this.queue;
             if (PrimitiveUtil.isEmpty(queueNames))
-                //noinspection unchecked
                 queueNames = BeanUtil.of(MQ.MQ_BEAN_NAME_DISPATCHER).as(List.class);
             if (PrimitiveUtil.isEmpty(queueNames))
                 queueNames = setting.getQueueNameDispatchers();
@@ -220,7 +219,14 @@ public class MQAMQPRabbitMQImpl extends MQAdapter {
                     throw ExceptionBuilder.ofFrameWork("Invalid channelDispatcher");
 
                 final var queueExchange = adapter.setting().getQueueExchange();
-                final var queueName = adapter.queueSelector(queueChannel, this.queue());
+                var queueName = adapter.queueSelector(queueChannel, this.queue());
+
+                if (queueName.isEmpty() && this.setting.isAutoCreate()){
+                    for (var queue: this.queue())
+                        adapter.queueCreate(queueChannel, queue);
+                    queueName = adapter.queueSelector(queueChannel, this.queue());
+                }
+
                 if (queueName.isEmpty())
                     throw ExceptionBuilder.ofFrameWork("Invalid dispatcher queue name");
                 log.debug("Queue:[{}], dispatcher a new message", queueName);
