@@ -1,58 +1,100 @@
-//package com.littlecode.parsers;
-//
-//import com.littlecode.exceptions.FrameworkException;
-//import lombok.extern.slf4j.Slf4j;
-//
-//import java.lang.reflect.Field;
-//import java.util.ArrayList;
-//import java.util.HashMap;
-//import java.util.List;
-//import java.util.Map;
-//
-//@Slf4j
-//public class CollectionUtil {
-//
-//    public static <K, V> Map<?, V> toMap(String fieldName, List<V> values) {
-//        if (values == null || values.isEmpty())
-//            return new HashMap<>();
-//        Map<K, V> __return = new HashMap<>();
-//        Class<?> keyFieldClass = null;
-//        Field keyField = null;
-//        for (var value : values) {
-//            try {
-//                if (keyField != null && !value.getClass().equals(keyFieldClass)) {
-//                    keyField = null;
-//                    keyFieldClass = null;
-//                }
-//
-//                if (keyField == null) {
-//                    keyField = ObjectUtil.toFieldByName(value.getClass(), fieldName);
-//                    if (keyField == null)
-//                        throw new FrameworkException("Invalid key conversion");
-//                    keyFieldClass = value.getClass();
-//                }
-//                var o = keyField.get(value);
-//                @SuppressWarnings("unchecked")
-//                var k = (K) o;
-//                //noinspection ConstantValue
-//                if (k == null && o != null)
-//                    throw new FrameworkException("Invalid key conversion");
-//                __return.put(k, value);
-//            } catch (IllegalAccessException e) {
-//                throw new FrameworkException(e.getMessage());
-//            }
-//        }
-//        return __return;
-//    }
-//
-//    public static <V> List<V> toList(Map<?, V> values) {
-//        List<V> __return = new ArrayList<>();
-//        for (Map.Entry<?, V> entry : values.entrySet()) {
-//            V o = entry.getValue();
-//            if (!__return.contains(o))
-//                __return.add(o);
-//        }
-//        return __return;
-//    }
-//
-//}
+package com.littlecode.parsers;
+
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@Slf4j
+public class CollectionUtil <T>{
+    private final Object target;
+    private Filter<T> filter;
+
+    public CollectionUtil(List<T> target){
+        if(target==null)
+            throw ExceptionBuilder.ofNullPointer("Target is null");
+        this.target=target;
+    }
+
+    public CollectionUtil(Map<?,T> target){
+        if(target==null)
+            throw ExceptionBuilder.ofNullPointer("Target is null");
+        this.target=target.values();
+    }
+
+    public CollectionUtil filter(Filter filter){
+        this.filter=filter;
+        return this;
+    }
+
+    public List<Object> toObjectList(){
+        if(target instanceof List value)
+            return value;
+        return new ArrayList<>();
+    }
+
+    public T asItem() {
+        var list=this.toObjectList();
+        for(var v: list){
+            T item = (T)v;
+            var go=(this.filter==null || this.filter.matched(item));
+            if(go)
+                return item;
+        }
+        return null;
+    }
+
+    public Map<String, T> asMap(String fieldName) {
+        if (fieldName == null || fieldName.trim().isEmpty() || this.target==null)
+            return new HashMap<>();
+
+        var listObject=this.toObjectList();
+        if (listObject.isEmpty())
+            return new HashMap<>();
+
+        var oValues=ObjectValueUtil.of(listObject.get(0));
+
+        final var field=oValues.getField(fieldName);
+        if(field==null)
+            return new HashMap<>();
+
+        Map<String, T> __return = new HashMap<>();
+        for (var v : listObject) {
+            T item = (T)v;
+
+            var go=(this.filter==null || this.filter.matched(item));
+
+            if(go){
+                var k=oValues
+                        .target(v)
+                        .asString(field);
+                if(item!=null)
+                    __return.put(k, item);
+            }
+
+        }
+        return __return;
+    }
+
+    public List<T> asList() {
+        var list=this.toObjectList();
+        List<T> __return = new ArrayList<>();
+        for(var v: list){
+            T item = (T)v;
+            if (!__return.contains(item)) {
+                var go=(this.filter==null || this.filter.matched(item));
+                if(go)
+                    __return.add(item);
+            }
+        }
+        return __return;
+    }
+
+    @FunctionalInterface
+    public interface Filter<O> {
+        boolean matched(O item);
+    }
+
+}

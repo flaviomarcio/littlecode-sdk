@@ -24,6 +24,7 @@ import java.util.*;
 public class ObjectValueUtil {
     public static final FileFormat FILE_FORMAT_DEFAULT = UtilCoreConfig.FILE_FORMAT_DEFAULT;
     private Object target;
+    private Class targetClass;
     private final List<String> fieldNames=new ArrayList<>();
     private final List<Field> fieldList=new ArrayList<>();
     private final Map<String,Field> fieldMap=new HashMap<>();
@@ -32,6 +33,7 @@ public class ObjectValueUtil {
         if(target == null)
             throw new NullPointerException("Target is null");
         this.target=target;
+        this.targetClass=target.getClass();
         this.refresh();
     }
 
@@ -39,6 +41,7 @@ public class ObjectValueUtil {
         if(target == null)
             throw new NullPointerException("Target is null");
         this.target=target;
+        this.targetClass=target.getClass();
         this.refresh();
     }
 
@@ -51,6 +54,17 @@ public class ObjectValueUtil {
             this.fieldMap.put(field.getName().toLowerCase(), field);
             this.fieldNames.add(field.getName());
         }
+    }
+
+    public ObjectValueUtil target(Object target){
+        if(target==null)
+            throw ExceptionBuilder.ofNullPointer("Target is null");
+        this.target=target;
+        if(targetClass==null || !targetClass.equals(target.getClass())){
+            this.targetClass=target.getClass();
+            this.refresh();
+        }
+        return this;
     }
 
     public static ObjectValueUtil of(Object target){

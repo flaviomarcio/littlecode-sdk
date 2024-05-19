@@ -222,7 +222,7 @@ public class MQAMQPRabbitMQImpl extends MQAdapter {
                 final var queueExchange = adapter.setting().getQueueExchange();
                 final var queueName = adapter.queueSelector(queueChannel, this.queue());
                 if (queueName.isEmpty())
-                    throw ExceptionBuilder.ofFrameWork("Invalid queue name");
+                    throw ExceptionBuilder.ofFrameWork("Invalid dispatcher queue name");
                 log.debug("Queue:[{}], dispatcher a new message", queueName);
                 queueChannel.basicPublish(queueExchange, queueName, null, message.getBytes());
 

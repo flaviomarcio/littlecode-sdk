@@ -1,7 +1,5 @@
 package com.littlecode.tests;
 
-import com.littlecode.exceptions.FrameworkException;
-import com.littlecode.parsers.ObjectUtil;
 import com.littlecode.parsers.ObjectValueUtil;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +10,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.io.File;
 import java.lang.reflect.Field;
 import java.net.URI;
 import java.nio.file.Path;
@@ -28,11 +25,17 @@ public class ObjectValuedUtilTest {
 
     @Test
     @DisplayName("Deve validar constructors")
-    public void UT_000_CHECK_CONSTRUCTOR() {
+    public void UT_000_CHECK_CONSTRUCTOR_GETTTER() {
         Assertions.assertThrows(NullPointerException.class, () -> new ObjectValueUtil(null));
         Assertions.assertThrows(NullPointerException.class, () -> ObjectValueUtil.of(null));
-        Assertions.assertDoesNotThrow(() -> new ObjectValueUtil(new PrivateObject()));
-        Assertions.assertDoesNotThrow(() -> ObjectValueUtil.of(new PrivateObject()));
+        Assertions.assertThrows(NullPointerException.class, () -> ObjectValueUtil.of(null));
+        Assertions.assertThrows(NullPointerException.class, () -> ObjectValueUtil.of(null));
+        Assertions.assertThrows(NullPointerException.class, () -> ObjectValueUtil.of(new PrivateObjectA()).target(null));
+        Assertions.assertDoesNotThrow(() -> ObjectValueUtil.of(new PrivateObjectA()));
+        Assertions.assertDoesNotThrow(() -> ObjectValueUtil.of(new PrivateObjectA()).target(new PrivateObjectB()));
+        Assertions.assertDoesNotThrow(() -> ObjectValueUtil.of(new PrivateObjectA()).target(new PrivateObjectA()));
+        Assertions.assertDoesNotThrow(() -> ObjectValueUtil.of(new PrivateObjectA()).getTarget());
+        Assertions.assertDoesNotThrow(() -> ObjectValueUtil.of(new PrivateObjectA()).getTargetClass());
     }
 
     @Test
@@ -40,7 +43,7 @@ public class ObjectValuedUtilTest {
     public void UT_000_CHECK_TO_STRING() {
         Assertions.assertDoesNotThrow(()->ObjectValueUtil.toString(null));
         Assertions.assertDoesNotThrow(()->ObjectValueUtil.toString(""));
-        Assertions.assertDoesNotThrow(()->ObjectValueUtil.toString(new PrivateObject()));
+        Assertions.assertDoesNotThrow(()->ObjectValueUtil.toString(new PrivateObjectA()));
         Assertions.assertDoesNotThrow(()->ObjectValueUtil.toString(UUID.randomUUID()));
         Assertions.assertDoesNotThrow(()->ObjectValueUtil.toString(URI.create("http://localhost:8080")));
         Assertions.assertDoesNotThrow(()->ObjectValueUtil.toString(Path.of("/tmp/localhost:8080")));
@@ -58,10 +61,10 @@ public class ObjectValuedUtilTest {
     @Test
     @DisplayName("Deve validar class getters")
     public void UT_000_CHECK_GETTER() {
-        var objValueUtil=ObjectValueUtil.of(new PrivateObject());
+        var objValueUtil=ObjectValueUtil.of(new PrivateObjectA());
 
         Assertions.assertThrows(NullPointerException.class, () -> objValueUtil.setTarget(null));
-        Assertions.assertDoesNotThrow(() -> objValueUtil.setTarget(new PrivateObject()));
+        Assertions.assertDoesNotThrow(() -> objValueUtil.setTarget(new PrivateObjectA()));
 
         Assertions.assertDoesNotThrow(() -> objValueUtil.toString());
         Assertions.assertDoesNotThrow(() -> ObjectValueUtil.toString(new Object()));
@@ -91,16 +94,16 @@ public class ObjectValuedUtilTest {
     @DisplayName("Deve validar class fieldList")
     public void UT_000_CHECK_GET_FIELD_LIST() {
         Assertions.assertDoesNotThrow(() -> ObjectValueUtil.getFieldList(null));
-        Assertions.assertDoesNotThrow(() -> ObjectValueUtil.getFieldList(PrivateObject.class));
+        Assertions.assertDoesNotThrow(() -> ObjectValueUtil.getFieldList(PrivateObjectA.class));
         Assertions.assertNotNull(ObjectValueUtil.getFieldList(null));
-        Assertions.assertNotNull(ObjectValueUtil.getFieldList(PrivateObject.class));
+        Assertions.assertNotNull(ObjectValueUtil.getFieldList(PrivateObjectA.class));
 
     }
 
     @Test
     @DisplayName("Deve validar get values")
     public void UT_000_CHECK_GET_VALUES() {
-        var privateObject=new PrivateObject();
+        var privateObject=new PrivateObjectA();
         var objValueUtil=ObjectValueUtil.of(privateObject);
 
         Assertions.assertThrows(NullPointerException.class, ()-> objValueUtil.getFieldValue((String)null));
@@ -252,7 +255,7 @@ public class ObjectValuedUtilTest {
     }
 
     @Getter
-    private static class PrivateObject {
+    private static class PrivateObjectA {
         private final UUID vObject=null;
         private final String vString=UUID.randomUUID().toString();
         private final UUID vUUID=UUID.randomUUID();
@@ -266,5 +269,22 @@ public class ObjectValuedUtilTest {
         private final long vLong=112233454;
         private final Map<String,String> maps=Map.of("","");
     }
+
+    @Getter
+    private static class PrivateObjectB {
+        private final UUID vObject=null;
+        private final String vString=UUID.randomUUID().toString();
+        private final UUID vUUID=UUID.randomUUID();
+        private final URI vURI=URI.create("/tmp/file");
+        private final Path vPath=Path.of("/tmp/file");
+        private final LocalDate vLocalDate=LocalDate.now();
+        private final LocalTime vLocalTime=LocalTime.now();
+        private final LocalDateTime vLocalDateTime=LocalDateTime.now();
+        private final int vInt=12;
+        private final double vDouble=12;
+        private final long vLong=112233454;
+        private final Map<String,String> maps=Map.of("","");
+    }
+
 
 }

@@ -218,7 +218,7 @@ public class MQSQSAWSImpl extends MQAdapter {
             try (var sqsClient = adapter.newClient()) {
                 var queueName = adapter.queueSelector(sqsClient, this.queue());
                 if (queueName.isEmpty())
-                    throw ExceptionBuilder.ofFrameWork("Invalid queue name");
+                    throw ExceptionBuilder.ofFrameWork("Dispatcher Invalid queue name");
                 log.debug("Queue:[{}], dispatcher a new message", queueName);
                 try {
                     GetQueueUrlResponse getQueueUrlResponse = sqsClient.getQueueUrl(GetQueueUrlRequest.builder().queueName(queueName).build());
