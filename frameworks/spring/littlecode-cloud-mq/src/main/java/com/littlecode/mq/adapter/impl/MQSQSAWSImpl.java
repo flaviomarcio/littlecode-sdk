@@ -194,7 +194,7 @@ public class MQSQSAWSImpl extends MQAdapter {
 
         public MQ.Message.Response dispatcher(MQ.Message.Task task) {
             if (task == null)
-                throw ExceptionBuilder.of(MQ.Message.Task.class);
+                throw ExceptionBuilder.ofNullPointer(MQ.Message.Task.class);
 
             var message = ObjectUtil.toString(task);
             if (PrimitiveUtil.isEmpty(message))
@@ -203,12 +203,18 @@ public class MQSQSAWSImpl extends MQAdapter {
         }
 
         public MQ.Message.Response dispatcher(String message) {
-            if (message == null || message.trim().isEmpty())
-                throw ExceptionBuilder.ofFrameWork("Invalid message");
+            if (message == null)
+                throw ExceptionBuilder.ofNullPointer("Invalid message");
+            if (message.trim().isEmpty())
+                throw ExceptionBuilder.ofInvalid("message is empty");
             return this.internalDispatcher(message);
         }
 
         private MQ.Message.Response internalDispatcher(String message) {
+            if (message == null)
+                throw ExceptionBuilder.ofNullPointer("Invalid message");
+            if (message.trim().isEmpty())
+                throw ExceptionBuilder.ofInvalid("message is empty");
             try (var sqsClient = adapter.newClient()) {
                 var queueName = adapter.queueSelector(sqsClient, this.queue());
                 if (queueName.isEmpty())
@@ -356,7 +362,6 @@ public class MQSQSAWSImpl extends MQAdapter {
             }finally {
                 log.debug("Queue:[{}] finished", this.queueName);
             }
-
         }
     }
 }

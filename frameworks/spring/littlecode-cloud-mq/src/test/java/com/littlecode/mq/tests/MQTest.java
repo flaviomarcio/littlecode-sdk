@@ -106,10 +106,16 @@ public class MQTest {
         Assertions.assertDoesNotThrow(()->MQ.Message.Task.builder().messageId(UUID.randomUUID().toString()).build().asContainer());
         Assertions.assertDoesNotThrow(()->MQ.Message.Task.builder().build().asObject(Object.class));
         Assertions.assertDoesNotThrow(()->MQ.Message.Task.builder().build().canType(Object.class));
+        Assertions.assertDoesNotThrow(()->MQ.Message.Task.from(null));
         Assertions.assertDoesNotThrow(()->MQ.Message.Task.from("ancd"));
         Assertions.assertDoesNotThrow(()->MQ.Message.Task.from(ObjectUtil.toString(MQ.Message.Task.builder().messageId(UUID.randomUUID().toString()).build())));
+        Assertions.assertDoesNotThrow(()->MQ.Message.Task.of(null));
         Assertions.assertDoesNotThrow(()->MQ.Message.Task.of(new Object()));
         Assertions.assertDoesNotThrow(()->MQ.Message.Task.of("234","23423"));
+        Assertions.assertDoesNotThrow(()->MQ.Message.Task.of("234",null));
+        Assertions.assertDoesNotThrow(()->MQ.Message.Task.of(String.class,"23423"));
+        Assertions.assertDoesNotThrow(()->MQ.Message.Task.of(String.class,null));
+        Assertions.assertDoesNotThrow(()->MQ.Message.Task.of(new MQ.Message.Task()));
         Assertions.assertNotNull(MQ.Message.Task.builder().type(null).build().getType());
         Assertions.assertEquals(MQ.Message.Task.builder().type(Object.class.getCanonicalName()).build().getType(),Object.class.getCanonicalName());
 

@@ -157,11 +157,11 @@ public class PrimitiveUtil {
         else if( v instanceof String value)
             return Double.parseDouble(value);
         else if( v instanceof LocalDate value)
-            return Double.valueOf(value.toEpochDay()).doubleValue();
+            return Double.valueOf(value.toEpochDay());
         else if( v instanceof LocalTime value)
-            return Double.valueOf(value.toSecondOfDay()).doubleValue();
+            return Double.valueOf(value.toSecondOfDay());
         else if( v instanceof LocalDateTime value)
-            return Double.valueOf(value.toEpochSecond(ZoneOffset.UTC)).doubleValue();
+            return Double.valueOf(value.toEpochSecond(ZoneOffset.UTC));
         else
             return 0;
     }

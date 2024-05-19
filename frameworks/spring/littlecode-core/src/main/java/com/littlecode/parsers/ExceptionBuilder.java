@@ -88,6 +88,10 @@ public class ExceptionBuilder {
         return of(Type.Default, target);
     }
 
+    public static RuntimeException ofNullPointer(String message) {
+        return of(Type.NullPointer, message);
+    }
+
     public static RuntimeException ofArithmetical(String message) {
         return of(Type.Arithmetical, message);
     }
@@ -146,6 +150,10 @@ public class ExceptionBuilder {
 
     public static RuntimeException ofNetwork(String message) {
         return of(Type.Network, message);
+    }
+
+    public static RuntimeException ofNullPointer(Class<?> eClass) {
+        return of(Type.NullPointer, eClass);
     }
 
     public static RuntimeException ofArithmetical(Class<?> eClass) {
@@ -213,6 +221,10 @@ public class ExceptionBuilder {
         return of(Type.Default, eClass, message);
     }
 
+    public static RuntimeException ofNullPointer(Class<?> eClass, String message) {
+        return of(Type.NullPointer, eClass, message);
+    }
+
     public static RuntimeException ofArithmetical(Class<?> eClass, String message) {
         return of(Type.Arithmetical, eClass, message);
     }
@@ -278,6 +290,10 @@ public class ExceptionBuilder {
         return of(Type.Default, format, args);
     }
 
+    public static RuntimeException ofNullPointer(String format, Object... args) {
+        return of(Type.NullPointer, format, args);
+    }
+
     public static RuntimeException ofArithmetical(String format, Object... args) {
         return of(Type.Arithmetical, format, args);
     }
@@ -338,10 +354,6 @@ public class ExceptionBuilder {
         return of(Type.Network, format, args);
     }
 
-//    public void setArgs(Object[] args) {
-//        this.args = args;
-//    }
-
     private String makeMessage() {
         return makeMessage(this.type, this.target, this.args);
     }
@@ -352,6 +364,7 @@ public class ExceptionBuilder {
             case Invalid -> new InvalidException(message);
             case Unknown -> new UnknownException(message);
             case FrameWork -> new FrameworkException(message);
+            case NullPointer -> new NullPointerException(message);
             case Arithmetical -> new ArithmeticException(message);
             case BadRequest -> new BadRequestException(message);
             case Conflict -> new ConflictException(message);
@@ -372,6 +385,7 @@ public class ExceptionBuilder {
         Default,
         Invalid,
         Unknown,
+        NullPointer,
         Arithmetical,
         BadRequest,
         Conflict,

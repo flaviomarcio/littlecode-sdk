@@ -141,27 +141,43 @@ public class MQ {
             private String fail;
 
             public static Task of(Object type, Object body) {
-                var outType = ObjectUtil.classToName(type);
-                return Task
-                        .builder()
-                        .type(outType)
-                        .body(body)
-                        .build();
+                if(body instanceof Task task){
+                    return Task
+                            .builder()
+                            .type(task.type)
+                            .body(task.body)
+                            .build();
+                }
+                else{
+                    var outType = ObjectUtil.classToName(type);
+                    return Task
+                            .builder()
+                            .type(outType)
+                            .body(body)
+                            .build();
+                }
             }
 
             public static Task of(Object taskObject) {
-                var type = taskObject.getClass().equals(String.class)
-                        ? null
-                        : taskObject.getClass();
-                return of(type, taskObject);
+                if(taskObject!=null){
+                    if(taskObject instanceof String value)
+                        return of(null, value);
+                    return of(taskObject.getClass(), taskObject);
+                }
+                return null;
             }
 
-            public static Task from(String body) {
-                var values = ObjectUtil.toMapObject(body);
-                Task task = ObjectUtil.createFromValues(Task.class, values);
-                if (task != null)
-                    return task;
-                return Task.of(body);
+            public static Task from(Object body) {
+                if(body!=null){
+                    if(body instanceof String value){
+                        var values = ObjectUtil.toMapObject(value);
+                        Task task = ObjectUtil.createFromValues(Task.class, values);
+                        if (task != null)
+                            return task;
+                    }
+                    return Task.of(body);
+                }
+                return null;
             }
 
             public boolean canType(Object type) {

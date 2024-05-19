@@ -19,38 +19,37 @@ public class ExceptionBuilderTest {
     @Test
     @DisplayName("Deve validar constructor")
     public void UT_CHECK_OF_EXPTIONS() {
-        Assertions.assertDoesNotThrow(() -> new ArithmeticException("teste"));
-        Assertions.assertDoesNotThrow(() -> new ArithmeticException("teste"));
-        Assertions.assertDoesNotThrow(() -> new BadRequestException("teste"));
-        Assertions.assertDoesNotThrow(() -> new ConflictException("teste"));
-        Assertions.assertDoesNotThrow(() -> new ConversionException("teste"));
-        Assertions.assertDoesNotThrow(() -> new FrameworkException("teste"));
-        Assertions.assertDoesNotThrow(() -> new InvalidException("teste"));
-        Assertions.assertDoesNotThrow(() -> new InvalidObjectException("teste"));
-        Assertions.assertDoesNotThrow(() -> new InvalidSettingException("teste"));
-        Assertions.assertDoesNotThrow(() -> new NetworkException("teste"));
-        Assertions.assertDoesNotThrow(() -> new NoContentException("teste"));
-        Assertions.assertDoesNotThrow(() -> new NoImplementedException("teste"));
-        Assertions.assertDoesNotThrow(() -> new NotFoundException("teste"));
-        Assertions.assertDoesNotThrow(() -> new ParserException("teste"));
-        Assertions.assertDoesNotThrow(() -> new UnAuthorizationException("teste"));
-        Assertions.assertDoesNotThrow(() -> new UnknownException("teste"));
+        Assertions.assertDoesNotThrow(() -> new ArithmeticException("test"));
+        Assertions.assertDoesNotThrow(() -> new BadRequestException("test"));
+        Assertions.assertDoesNotThrow(() -> new ConflictException("test"));
+        Assertions.assertDoesNotThrow(() -> new ConversionException("test"));
+        Assertions.assertDoesNotThrow(() -> new FrameworkException("test"));
+        Assertions.assertDoesNotThrow(() -> new InvalidException("test"));
+        Assertions.assertDoesNotThrow(() -> new InvalidObjectException("test"));
+        Assertions.assertDoesNotThrow(() -> new InvalidSettingException("test"));
+        Assertions.assertDoesNotThrow(() -> new NetworkException("test"));
+        Assertions.assertDoesNotThrow(() -> new NoContentException("test"));
+        Assertions.assertDoesNotThrow(() -> new NoImplementedException("test"));
+        Assertions.assertDoesNotThrow(() -> new NotFoundException("test"));
+        Assertions.assertDoesNotThrow(() -> new ParserException("test"));
+        Assertions.assertDoesNotThrow(() -> new UnAuthorizationException("test"));
+        Assertions.assertDoesNotThrow(() -> new UnknownException("test"));
 
-        Assertions.assertThrows(ArithmeticException.class,() -> {throw new ArithmeticException("teste");});
-        Assertions.assertThrows(BadRequestException.class,() -> {throw new BadRequestException("teste");});
-        Assertions.assertThrows(ConflictException.class,() -> {throw new ConflictException("teste");});
-        Assertions.assertThrows(ConversionException.class,() -> {throw new ConversionException("teste");});
-        Assertions.assertThrows(FrameworkException.class,() -> {throw new FrameworkException("teste");});
-        Assertions.assertThrows(InvalidException.class,() -> {throw new InvalidException("teste");});
-        Assertions.assertThrows(InvalidObjectException.class,() -> {throw new InvalidObjectException("teste");});
-        Assertions.assertThrows(InvalidSettingException.class,() -> {throw new InvalidSettingException("teste");});
-        Assertions.assertThrows(NetworkException.class,() -> {throw new NetworkException("teste");});
-        Assertions.assertThrows(NoContentException.class,() -> {throw new NoContentException("teste");});
-        Assertions.assertThrows(NoImplementedException.class,() -> {throw new NoImplementedException("teste");});
-        Assertions.assertThrows(NotFoundException.class,() -> {throw new NotFoundException("teste");});
-        Assertions.assertThrows(ParserException.class,() -> {throw new ParserException("teste");});
-        Assertions.assertThrows(UnAuthorizationException.class,() -> {throw new UnAuthorizationException("teste");});
-        Assertions.assertThrows(UnknownException.class,() -> {throw new UnknownException("teste");});
+        Assertions.assertThrows(ArithmeticException.class,() -> {throw new ArithmeticException("test");});
+        Assertions.assertThrows(BadRequestException.class,() -> {throw new BadRequestException("test");});
+        Assertions.assertThrows(ConflictException.class,() -> {throw new ConflictException("test");});
+        Assertions.assertThrows(ConversionException.class,() -> {throw new ConversionException("test");});
+        Assertions.assertThrows(FrameworkException.class,() -> {throw new FrameworkException("test");});
+        Assertions.assertThrows(InvalidException.class,() -> {throw new InvalidException("test");});
+        Assertions.assertThrows(InvalidObjectException.class,() -> {throw new InvalidObjectException("test");});
+        Assertions.assertThrows(InvalidSettingException.class,() -> {throw new InvalidSettingException("test");});
+        Assertions.assertThrows(NetworkException.class,() -> {throw new NetworkException("test");});
+        Assertions.assertThrows(NoContentException.class,() -> {throw new NoContentException("test");});
+        Assertions.assertThrows(NoImplementedException.class,() -> {throw new NoImplementedException("test");});
+        Assertions.assertThrows(NotFoundException.class,() -> {throw new NotFoundException("test");});
+        Assertions.assertThrows(ParserException.class,() -> {throw new ParserException("test");});
+        Assertions.assertThrows(UnAuthorizationException.class,() -> {throw new UnAuthorizationException("test");});
+        Assertions.assertThrows(UnknownException.class,() -> {throw new UnknownException("test");});
 
     }
 
@@ -89,10 +88,10 @@ public class ExceptionBuilderTest {
             throw ExceptionBuilder.of(ExceptionBuilder.Type.FrameWork);
         });
         Assertions.assertThrows(FrameworkException.class, () -> {
-            throw ExceptionBuilder.of(ExceptionBuilder.Type.FrameWork, "teste");
+            throw ExceptionBuilder.of(ExceptionBuilder.Type.FrameWork, "test");
         });
         Assertions.assertThrows(FrameworkException.class, () -> {
-            throw ExceptionBuilder.of(ExceptionBuilder.Type.FrameWork, "teste", "teste");
+            throw ExceptionBuilder.of(ExceptionBuilder.Type.FrameWork, "test", "test");
         });
     }
 
@@ -109,6 +108,9 @@ public class ExceptionBuilderTest {
 
         Assertions.assertThrows(RuntimeException.class, () -> {
             throw ExceptionBuilder.ofDefault(Object.class);
+        });
+        Assertions.assertThrows(NullPointerException.class, () -> {
+            throw ExceptionBuilder.ofNullPointer(Object.class);
         });
         Assertions.assertThrows(ArithmeticException.class, () -> {
             throw ExceptionBuilder.ofArithmetical(Object.class);
@@ -163,6 +165,9 @@ public class ExceptionBuilderTest {
 
         Assertions.assertThrows(RuntimeException.class, () -> {
             throw ExceptionBuilder.ofDefault("test");
+        });
+        Assertions.assertThrows(NullPointerException.class, () -> {
+            throw ExceptionBuilder.ofNullPointer("test");
         });
         Assertions.assertThrows(ArithmeticException.class, () -> {
             throw ExceptionBuilder.ofArithmetical("test");
@@ -219,6 +224,9 @@ public class ExceptionBuilderTest {
         Assertions.assertThrows(RuntimeException.class, () -> {
             throw ExceptionBuilder.ofDefault("%s: %s", "test", Object.class);
         });
+        Assertions.assertThrows(NullPointerException.class, () -> {
+            throw ExceptionBuilder.ofNullPointer("%s: %s", "test", Object.class);
+        });
         Assertions.assertThrows(ArithmeticException.class, () -> {
             throw ExceptionBuilder.ofArithmetical("%s: %s", "test", Object.class);
         });
@@ -271,6 +279,9 @@ public class ExceptionBuilderTest {
     public void UT_CHECK_OF_CLASS_MESSAGE() {
         Assertions.assertThrows(RuntimeException.class, () -> {
             throw ExceptionBuilder.ofDefault(Object.class, "test");
+        });
+        Assertions.assertThrows(NullPointerException.class, () -> {
+            throw ExceptionBuilder.ofNullPointer(Object.class, "test");
         });
         Assertions.assertThrows(ArithmeticException.class, () -> {
             throw ExceptionBuilder.ofArithmetical(Object.class, "test");
