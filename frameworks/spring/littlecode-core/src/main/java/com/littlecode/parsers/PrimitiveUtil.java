@@ -204,6 +204,24 @@ public class PrimitiveUtil {
         return v==null ? 0 : v.toEpochSecond(ZoneOffset.UTC);
     }
 
+    public static LocalDate toDate(Object v) {
+        if(v!=null){
+            if(v instanceof String value)
+                return toDate(value);
+            else if(v instanceof Integer value)
+                return toDate(value.intValue());
+            else if(v instanceof Long value)
+                return toDate(value.longValue());
+            else if(v instanceof Double value)
+                return toDate(value.doubleValue());
+            else if(v instanceof LocalDate value)
+                return value;
+            else if(v instanceof LocalDateTime value)
+                return value.toLocalDate();
+        }
+        return null;
+    }
+
     public static LocalDate toDate(String v) {
         if (v != null) {
             var dt=PrimitiveUtil.toDateTime(v);
@@ -222,6 +240,24 @@ public class PrimitiveUtil {
 
     public static LocalDate toDate(double v){
         return LocalDate.ofEpochDay((long)v);
+    }
+
+    public static LocalTime toTime(Object v) {
+        if(v!=null){
+            if(v instanceof String value)
+                return toTime(value);
+            else if(v instanceof Integer value)
+                return toTime(value.intValue());
+            else if(v instanceof Long value)
+                return toTime(value.intValue());
+            else if(v instanceof Double value)
+                return toTime(value.doubleValue());
+            else if(v instanceof LocalTime value)
+                return value;
+            else if(v instanceof LocalDateTime value)
+                return value.toLocalTime();
+        }
+        return null;
     }
 
     public static LocalTime toTime(String v) {
@@ -255,6 +291,26 @@ public class PrimitiveUtil {
 
     public static LocalTime toTime(double v){
         return LocalTime.ofSecondOfDay((long)v);
+    }
+
+    public static LocalDateTime toDateTime(Object v) {
+        if(v!=null){
+            if(v instanceof String value)
+                return toDateTime(value);
+            else if(v instanceof Integer value)
+                return toDateTime(value.intValue());
+            else if(v instanceof Long value)
+                return toDateTime(value.longValue());
+            else if(v instanceof Double value)
+                return toDateTime(value.doubleValue());
+            else if(v instanceof LocalDate value)
+                return LocalDateTime.of(value,CorePublicConsts.MIN_LOCALTIME);
+            else if(v instanceof LocalTime value)
+                return LocalDateTime.of(CorePublicConsts.MIN_LOCALDATE, value);
+            else if(v instanceof LocalDateTime value)
+                return value;
+        }
+        return null;
     }
 
     public static LocalDateTime toDateTime(String v) {
@@ -308,7 +364,6 @@ public class PrimitiveUtil {
     public static LocalDateTime toDateTime(double v){
         Instant instant = Instant.ofEpochSecond((long) v);
         return LocalDateTime.ofInstant(instant, ZoneOffset.UTC);
-        //return LocalDateTime.ofEpochSecond((long)v,0, ZoneOffset.UTC);
     }
 
     public static boolean toBool(String v) {
@@ -372,7 +427,33 @@ public class PrimitiveUtil {
     }
 
     public static String toString(Object v) {
-        return ObjectUtil.toString(v);
+        if(v!=null){
+            if(v instanceof String value)
+                return value;
+            else if(v instanceof Integer value)
+                return value.toString();
+            else if(v instanceof Long value)
+                return value.toString();
+            else if(v instanceof Double value)
+                return value.toString();
+            else if(v instanceof LocalDate value)
+                return value.toString();
+            else if(v instanceof LocalTime value)
+                return value.toString();
+            else if(v instanceof LocalDateTime value)
+                return value.toString();
+            else if(v instanceof UUID value)
+                return value.toString();
+            else if(v instanceof URI value)
+                return value.toString();
+            else if(v instanceof Boolean value)
+                return value.toString();
+            else if(v instanceof File value)
+                return value.getAbsolutePath();
+            else
+                return ObjectUtil.toString(v);
+        }
+        return "";
     }
 
     public static String toString(String v) {

@@ -89,6 +89,25 @@ public class PrimitiveUtilTest {
         var dt = LocalDate.of(2000, 1, 3);
         var tm = LocalTime.of(22, 37, 12);
         Assertions.assertDoesNotThrow(() -> new PrimitiveUtil());
+
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString((Object)LocalDateTime.now()));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString((Object)LocalDate.now()));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString((Object)LocalTime.now()));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString(new Object()));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString((Object)true));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString((Object)false));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString((Object)10L));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString((Object)10.1D));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString((Object)10));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString((Object)""));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString((Object) null));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString((Object)new File("/tmp/test")));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString((Object)UUID.randomUUID()));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString((Object)URI.create("http://localhost:8080")));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString((Object)new URL("http://localhost:8080")));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString((Object)Path.of("http://localhost:8080")));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString((Object)Object.class));
+
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString(LocalDateTime.now()));
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString(LocalDate.now()));
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString(LocalTime.now()));
@@ -288,6 +307,18 @@ public class PrimitiveUtilTest {
     public void UI_CHECK_toDate() {
         var dt19010101 = LocalDate.of(1901, 1, 1);
 
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toDate((Object) null));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toDate("(Object)"));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toDate((Object)dt19010101.toString()));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toDate(LocalDate.now()));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toDate(LocalTime.now()));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toDate(LocalDateTime.now()));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toDate((Object)"1901-01-01"));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toDate((Object)0));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toDate((Object)0L));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toDate((Object) 0D));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toDate((Object) 0.01));
+
         Assertions.assertDoesNotThrow(()->PrimitiveUtil.toDate((String)null));
         Assertions.assertDoesNotThrow(()->PrimitiveUtil.toDate(""));
         Assertions.assertDoesNotThrow(()->PrimitiveUtil.toDate(dt19010101.toString()));
@@ -308,6 +339,24 @@ public class PrimitiveUtilTest {
     @DisplayName("Deve validar toTime")
     public void UI_CHECK_toTime() {
         var tm010203 = LocalTime.of(1, 2, 3);
+
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toTime((Object)""));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toTime(LocalDate.now()));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toTime(LocalTime.now()));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toTime(LocalDateTime.now()));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toTime(tm010203));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toTime((Object)tm010203.toString()));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toTime((Object)"01:02:03"));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toTime((Object)null));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toTime((Object)"23:59:59.111222333"));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toTime((Object)"23:59:59"));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toTime((Object)"23:59:00"));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toTime((Object)"23:59"));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toTime((Object)0));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toTime((Object)0L));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toTime((Object)0D));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toTime((Object)0.00));
+
 
         Assertions.assertDoesNotThrow(()->PrimitiveUtil.toTime(""));
         Assertions.assertDoesNotThrow(()->PrimitiveUtil.toTime((String)null));
@@ -340,6 +389,19 @@ public class PrimitiveUtilTest {
     @DisplayName("Deve validar toDateTime")
     public void UI_CHECK_toDateTime() {
         var dt19010101 = LocalDateTime.of(LocalDate.of(1901, 1, 1), LocalTime.of(1, 2, 3));
+
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toDateTime(LocalDate.now()));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toDateTime(LocalTime.now()));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toDateTime(LocalDateTime.now()));
+
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toDateTime((Object)null));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toDateTime((Object)""));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toDateTime(dt19010101));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toDateTime((Object)"1901-01-01T01:02:03"));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toDateTime((Object)0));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toDateTime((Object)1.715027295E9));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toDateTime((Object)0L));
+        Assertions.assertDoesNotThrow(()->PrimitiveUtil.toDateTime((Object) 0D));
 
         Assertions.assertDoesNotThrow(()->PrimitiveUtil.toDateTime((String)null));
         Assertions.assertDoesNotThrow(()->PrimitiveUtil.toDateTime(""));
@@ -413,6 +475,7 @@ public class PrimitiveUtilTest {
 
         //noinspection ConstantValue
         Assertions.assertTrue(PrimitiveUtil.isEmpty((Object)null));
+        Assertions.assertTrue(PrimitiveUtil.isEmpty((String)null));
         Assertions.assertTrue(PrimitiveUtil.isEmpty(""));
         Assertions.assertTrue(PrimitiveUtil.isEmpty(0));
         Assertions.assertTrue(PrimitiveUtil.isEmpty(0L));
