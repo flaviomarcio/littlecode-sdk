@@ -23,6 +23,39 @@ public class StringUtilTest {
     public static List<String> REPLACE_STRING = List.of(" ", "__", "+", "-");
 
     @Test
+    @DisplayName("Deve validar metodo pad left")
+    public void UT_METHOD_PAD_LEFT() {
+        String value="#";
+        Assertions.assertDoesNotThrow(() -> StringUtil.padLeft(10,'0',null));
+        Assertions.assertDoesNotThrow(() -> StringUtil.padLeft(10,'0',value));
+        var v=StringUtil.padLeft(10,'0',value);
+        Assertions.assertNotNull(v);
+        Assertions.assertEquals(v,"000000000#");
+    }
+
+    @Test
+    @DisplayName("Deve validar metodo pad right")
+    public void UT_METHOD_PAD_RIGHT() {
+        String value="#";
+        Assertions.assertDoesNotThrow(() -> StringUtil.padRight(10,'0',null));
+        Assertions.assertDoesNotThrow(() -> StringUtil.padRight(10,'0',value));
+        var v=StringUtil.padRight(10,'0',value);
+        Assertions.assertNotNull(v);
+        Assertions.assertEquals(v,"#000000000");
+    }
+
+    @Test
+    @DisplayName("Deve validar metodo pad center")
+    public void UT_METHOD_PAD_CENTER() {
+        String value="#";
+        Assertions.assertDoesNotThrow(() -> StringUtil.padCenter(10,'0',null));
+        Assertions.assertDoesNotThrow(() -> StringUtil.padCenter(10,'0',value));
+        var v=StringUtil.padCenter(10,'0',value);
+        Assertions.assertNotNull(v);
+        Assertions.assertEquals(v,"0000#00000");
+    }
+
+    @Test
     @DisplayName("Deve validar formatadores")
     public void UT_CAMEL_CASE_FORMAT() {
         List<Check> checkItems =

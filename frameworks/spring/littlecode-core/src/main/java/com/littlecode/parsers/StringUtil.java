@@ -164,4 +164,34 @@ public class StringUtil {
     public String toSnakeCase() {
         return toSnakeCase(this.getTarget());
     }
+
+    public static String padLeft(int length, char padChar, String value){
+        if(value==null)
+            value="";
+        while(value.length()<length)
+            value=padChar+value;
+        return value;
+    }
+
+    public static String padRight(int length, char padChar, String value){
+        if(value==null)
+            value="";
+        while(value.length()<length)
+            value+=padChar;
+        return value;
+    }
+
+    public static String padCenter(int length, char padChar, String value){
+        if(value==null)
+            value="";
+        var odd=true;
+        while(value.length()<length){
+            if(odd)
+                value+=padChar;
+            else
+                value=padChar+value;
+            odd=!odd;
+        }
+        return value;
+    }
 }

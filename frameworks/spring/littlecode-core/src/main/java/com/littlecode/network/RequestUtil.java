@@ -412,7 +412,7 @@ public class RequestUtil {
             return ObjectUtil.createFromString(aClass,body);
         }
 
-        public <T> List<?> bodyAsList(Class<T> aClass) {
+        public <T> List<T> bodyAsList(Class<T> aClass) {
             if(aClass!=null){
                 var __object = ObjectUtil.createFromString(Object.class,body);
                 if(__object != null){
@@ -420,9 +420,11 @@ public class RequestUtil {
                         return list;
                     else {
                         __object=ObjectUtil.createFromString(aClass,body);
-                        return __object==null
-                                ?null
-                                :List.of(__object);
+                        if(__object==null)
+                            return null;
+                        List<T> __return=new ArrayList<>();
+                        __return.add((T) __return);
+                        return __return;
                     }
                 }
             }
