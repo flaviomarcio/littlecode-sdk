@@ -22,6 +22,7 @@ import java.util.Map;
 @Slf4j
 public class DSFactory {
     private static final String STATIC_BASE_PACKAGE = "spring.datasource";
+    private static final String STATIC_HBM_2_DDL = "hibernate.hbm2ddl.auto";
     private final Environment environment;
     @Getter
     private final Database database;
@@ -143,13 +144,19 @@ public class DSFactory {
 
     private Map<String,String> __make_default_properties() {
         Map<String,String> properties=new HashMap<>();
-        var hibernate_envs= List.of(AvailableSettings.DIALECT,AvailableSettings.SHOW_SQL,AvailableSettings.FORMAT_SQL,AvailableSettings.USE_SQL_COMMENTS,AvailableSettings.PHYSICAL_NAMING_STRATEGY,AvailableSettings.IMPLICIT_NAMING_STRATEGY);
+
+
+
+        var hibernate_envs= List.of(STATIC_HBM_2_DDL, AvailableSettings.DIALECT,AvailableSettings.SHOW_SQL,AvailableSettings.FORMAT_SQL,AvailableSettings.USE_SQL_COMMENTS,AvailableSettings.PHYSICAL_NAMING_STRATEGY,AvailableSettings.IMPLICIT_NAMING_STRATEGY);
         for(var env: hibernate_envs)
             __property__add(properties, env);
         if(!properties.containsKey(AvailableSettings.PHYSICAL_NAMING_STRATEGY))
             __property__add(properties, AvailableSettings.PHYSICAL_NAMING_STRATEGY, CamelCaseToUnderscoresNamingStrategy.class.getCanonicalName());
         if(!properties.containsKey(AvailableSettings.IMPLICIT_NAMING_STRATEGY))
             __property__add(properties, AvailableSettings.IMPLICIT_NAMING_STRATEGY, SpringImplicitNamingStrategy.class.getCanonicalName());
+
+        if(!properties.containsKey(STATIC_HBM_2_DDL))
+            __property__add(properties, STATIC_HBM_2_DDL, "none");
 
         return properties;
     }
