@@ -167,9 +167,8 @@ public class S3ClientUtil {
 
         ResponseInputStream<GetObjectResponse> response = s3Client.getObject(GetObjectRequest.builder().bucket(this.bucket).key(filename).build());
         if(response!=null){
-            File outputFile = null;
             try {
-                outputFile = File.createTempFile(UUID.randomUUID().toString(),".tmp");
+                var outputFile = File.createTempFile(UUID.randomUUID().toString(),".tmp");
                 FileOutputStream outFile = new FileOutputStream(outputFile);
                 byte[] buffer = new byte[4096];
                 int bytesRead;
