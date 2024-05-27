@@ -8,19 +8,20 @@ import com.littlecode.parsers.PrimitiveUtil;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.awscore.exception.AwsServiceException;
 import software.amazon.awssdk.core.ResponseInputStream;
-import software.amazon.awssdk.core.exception.SdkClientException;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-
 
 //ref https://docs.aws.amazon.com/pt_br/AmazonS3/latest/userguide/checking-object-integrity.html
 @Slf4j
@@ -64,7 +65,6 @@ public class S3ClientUtil {
         var secretKey = this.getSecretKey() == null ? "" : this.getSecretKey().trim();
         var hashClient = HashUtil.toMd5Uuid(List.of(endpoint, region, bucket, accessKey, secretKey));
         if (this.s3Client != null && hashClient.equals(this.hashClient)){
-            this.s3Client.close();
             return this.s3Client;
         }
 
@@ -185,6 +185,8 @@ public class S3ClientUtil {
     public boolean put(Object source, String fileName) throws IOException {
         if (source instanceof File sourceValues) {
             return this.internalPut(sourceValues, fileName, false);
+        }else if (source instanceof Path sourceValues) {
+            return this.internalPut(sourceValues.toFile(), fileName, false);
         } else {
             var tmpFile = IOUtil.target(IOUtil.createFileTemp()).toFile();
             if (source instanceof InputStream sourceValues) {
@@ -206,15 +208,11 @@ public class S3ClientUtil {
 
     public boolean delete(String fileName) {
         try{
-            DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
-                    .bucket(this.bucket)
-                    .key(fileName)
-                    .build();
             var s3Client = this.newClient();
-            s3Client.deleteObject(deleteObjectRequest);
+            s3Client.deleteObject(DeleteObjectRequest.builder().bucket(this.bucket).key(fileName).build());
             return true;
-        } catch (Exception ignore) {
-            return false;
+        } finally {
+            //this.close();
         }
     }
 

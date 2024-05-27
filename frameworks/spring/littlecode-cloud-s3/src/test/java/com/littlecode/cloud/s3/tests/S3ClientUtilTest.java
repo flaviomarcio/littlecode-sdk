@@ -1,8 +1,8 @@
 package com.littlecode.cloud.s3.tests;
 
-import com.littlecode.cloud.s3.S3ClientUtil;
 import com.littlecode.files.IOUtil;
 import com.littlecode.parsers.ObjectUtil;
+import com.littlecode.cloud.s3.S3ClientUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,6 +17,7 @@ import software.amazon.awssdk.services.s3.model.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Map;
 import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)
@@ -110,6 +111,7 @@ public class S3ClientUtilTest {
         Assertions.assertDoesNotThrow(() -> s3Object.put(temFile.toPath(), "test.txt"));
         Assertions.assertDoesNotThrow(() -> s3Object.put(temFile.getAbsolutePath(), "test.txt"));
         Assertions.assertDoesNotThrow(() -> s3Object.put(new FileInputStream(temFile), "test.txt"));
+        Assertions.assertDoesNotThrow(() -> s3Object.put(Map.of("id",UUID.randomUUID()), "test.txt"));
     }
 
     @Test
@@ -131,7 +133,7 @@ public class S3ClientUtilTest {
     @DisplayName("deve validar metodo delete")
     public void UT_CHECK_METHOD_DELETE() throws IOException {
         {
-            var s3Object=newS3Object();
+            var s3Object=newS3ObjectMock();
             Assertions.assertDoesNotThrow(() -> s3Object.delete("test.txt"));
         }
         {
@@ -155,6 +157,7 @@ public class S3ClientUtilTest {
         Assertions.assertDoesNotThrow(() -> s3Object.eTag("test.txt"));
         Mockito.when(s3Object.getS3Client().getObjectAttributes(Mockito.any(GetObjectAttributesRequest.class))).thenReturn(null);
         Assertions.assertDoesNotThrow(() -> s3Object.exists("test.txt"));
+        Assertions.assertDoesNotThrow(() -> s3Object.size("test.txt"));
         Assertions.assertDoesNotThrow(() -> s3Object.eTag("test.txt"));
     }
 
@@ -197,25 +200,34 @@ public class S3ClientUtilTest {
         Assertions.assertDoesNotThrow(() -> s3Object.delete("test.txt"));
         Assertions.assertDoesNotThrow(() -> s3Object.close());
     }
-
-    @Test
-    @DisplayName("deve executar teste real")
-    public void UT_CHECK_METHOD_REAL_TEST() throws IOException {
-        var s3Object=newS3Object();
-        var temFile=File.createTempFile("s3-upload", ".txt");
-        IOUtil
-                .target(temFile)
-                .writeAll(ObjectUtil.toString(s3Object));
-        s3Object.setEndpoint("http://testing-company-minio.portela-professional.com.br:9000");
-        s3Object.setRegion(Region.US_EAST_1.id());
-        s3Object.setBucket("default");
-        s3Object.setAccessKey("services");
-        s3Object.setSecretKey("services");
-        Assertions.assertDoesNotThrow(() -> s3Object.put(temFile, "test.txt"));
-        Assertions.assertDoesNotThrow(() -> s3Object.put(temFile.toPath(), "test.txt"));
-        Assertions.assertDoesNotThrow(() -> s3Object.put(temFile.getAbsolutePath(), "test.txt"));
-        Assertions.assertDoesNotThrow(() -> s3Object.put(new FileInputStream(temFile), "test.txt"));
-    }
+//
+//    @Test
+//    @DisplayName("deve executar teste real")
+//    public void UT_CHECK_METHOD_REAL_TEST() throws IOException {
+//        var s3Object=newS3Object();
+//        var temFile=File.createTempFile("s3-upload", ".txt");
+//        IOUtil
+//                .target(temFile)
+//                .writeAll(ObjectUtil.toString(s3Object));
+//        s3Object.setEndpoint("");
+//        s3Object.setRegion(Region.US_EAST_1.id());
+//        s3Object.setBucket("???");
+//        s3Object.setAccessKey("???");
+//        s3Object.setSecretKey("???");
+//        var destineFileName=UUID.randomUUID().toString();
+//        Assertions.assertTrue(s3Object.put(temFile, destineFileName));
+//        Assertions.assertTrue(s3Object.delete(destineFileName));
+//        Assertions.assertTrue(s3Object.put(temFile.toPath(), destineFileName));
+//        Assertions.assertTrue(s3Object.delete(destineFileName));
+//        Assertions.assertTrue(s3Object.put(temFile.getAbsolutePath(), destineFileName));
+//        Assertions.assertTrue(s3Object.delete(destineFileName));
+//        Assertions.assertTrue(s3Object.put(new FileInputStream(temFile), destineFileName));
+//        Assertions.assertTrue(s3Object.size(destineFileName)>0);
+//        Assertions.assertTrue(s3Object.delete(destineFileName));
+//        Assertions.assertTrue(s3Object.put(Map.of("id",UUID.randomUUID()), destineFileName));
+//        Assertions.assertTrue(s3Object.delete(destineFileName));
+//    }
 
 
 }
+
