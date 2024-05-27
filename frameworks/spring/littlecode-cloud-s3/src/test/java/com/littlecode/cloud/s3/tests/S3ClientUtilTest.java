@@ -12,12 +12,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+import software.amazon.awssdk.services.s3.model.*;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)
 public class S3ClientUtilTest {
@@ -25,7 +25,7 @@ public class S3ClientUtilTest {
     private S3ClientUtil newS3Object() {
         var s3Object = new S3ClientUtil();
         s3Object.setEndpoint("http://localhost");
-        s3Object.setRegion(Region.AP_EAST_1.id());
+        s3Object.setRegion(Region.US_EAST_1.id());
         s3Object.setBucket("bucketName");
         s3Object.setAccessKey("accessKey");
         s3Object.setSecretKey("secretKey");
@@ -128,28 +128,94 @@ public class S3ClientUtilTest {
     }
 
     @Test
-    @DisplayName("deve validar metodo exists")
-    public void UT_CHECK_METHOD_EXISTS() throws IOException {
+    @DisplayName("deve validar metodo delete")
+    public void UT_CHECK_METHOD_DELETE() throws IOException {
+        {
+            var s3Object=newS3Object();
+            Assertions.assertDoesNotThrow(() -> s3Object.delete("test.txt"));
+        }
+        {
+            var s3Object=newS3ObjectMock();
+            Assertions.assertDoesNotThrow(() -> s3Object.delete("test.txt"));
+        }
+    }
+
+    @Test
+    @DisplayName("deve validar metodo exists e eTag")
+    public void UT_CHECK_METHOD_EXISTS_E_TAG() throws IOException {
         var temFile=File.createTempFile("s3-get-mock", ".txt");
         IOUtil
                 .target(temFile)
                 .writeAll(ObjectUtil.toString(this));
         var s3Object=newS3ObjectMock();
-        ResponseInputStream<GetObjectResponse> response = new ResponseInputStream(new Object(),new FileInputStream(temFile));
-        Mockito.when(s3Object.getS3Client().getObject(Mockito.any(GetObjectRequest.class))).thenReturn(response);
+        var getObjectAttributesResponse=Mockito.mock(GetObjectAttributesResponse.class);
+        Mockito.when(getObjectAttributesResponse.eTag()).thenReturn(UUID.randomUUID().toString());
+        Mockito.when(s3Object.getS3Client().getObjectAttributes(Mockito.any(GetObjectAttributesRequest.class))).thenReturn(getObjectAttributesResponse);
         Assertions.assertDoesNotThrow(() -> s3Object.exists("test.txt"));
-        Mockito.when(s3Object.getS3Client().getObject(Mockito.any(GetObjectRequest.class))).thenReturn(null);
+        Assertions.assertDoesNotThrow(() -> s3Object.eTag("test.txt"));
+        Mockito.when(s3Object.getS3Client().getObjectAttributes(Mockito.any(GetObjectAttributesRequest.class))).thenReturn(null);
         Assertions.assertDoesNotThrow(() -> s3Object.exists("test.txt"));
+        Assertions.assertDoesNotThrow(() -> s3Object.eTag("test.txt"));
     }
 
     @Test
-    @DisplayName("deve validar metodo delete")
-    public void UT_CHECK_METHOD_DELETE() throws IOException {
+    @DisplayName("deve validar metodo size")
+    public void UT_CHECK_METHOD_SIZE() throws IOException {
+        var temFile=File.createTempFile("s3-get-mock", ".txt");
+        IOUtil
+                .target(temFile)
+                .writeAll(ObjectUtil.toString(this));
         var s3Object=newS3ObjectMock();
-        Assertions.assertDoesNotThrow(() -> s3Object.delete("test.txt"));
-
+        var getObjectAttributesResponse=Mockito.mock(GetObjectAttributesResponse.class);
+        Mockito.when(getObjectAttributesResponse.objectSize()).thenReturn(1L);
+        Mockito.when(s3Object.getS3Client().getObjectAttributes(Mockito.any(GetObjectAttributesRequest.class))).thenReturn(getObjectAttributesResponse);
+        Assertions.assertDoesNotThrow(() -> s3Object.size("test.txt"));
+        Mockito.when(s3Object.getS3Client().getObjectAttributes(Mockito.any(GetObjectAttributesRequest.class))).thenReturn(null);
+        Assertions.assertDoesNotThrow(() -> s3Object.size("test.txt"));
     }
 
+    @Test
+    @DisplayName("deve validar metodo checksum")
+    public void UT_CHECK_METHOD_CHECKSUM() throws IOException {
+        var temFile=File.createTempFile("s3-get-mock", ".txt");
+        IOUtil
+                .target(temFile)
+                .writeAll(ObjectUtil.toString(this));
+        var s3Object=newS3ObjectMock();
+        var getObjectAttributesResponse=Mockito.mock(GetObjectAttributesResponse.class);
+        Mockito.when(getObjectAttributesResponse.checksum()).thenReturn(Mockito.mock(Checksum.class));
+        Mockito.when(s3Object.getS3Client().getObjectAttributes(Mockito.any(GetObjectAttributesRequest.class))).thenReturn(getObjectAttributesResponse);
+        Assertions.assertDoesNotThrow(() -> s3Object.checksum("test.txt"));
+        Mockito.when(s3Object.getS3Client().getObjectAttributes(Mockito.any(GetObjectAttributesRequest.class))).thenReturn(null);
+        Assertions.assertDoesNotThrow(() -> s3Object.checksum("test.txt"));
+    }
+
+    @Test
+    @DisplayName("deve validar metodo close")
+    public void UT_CHECK_METHOD_CLOSE() throws IOException {
+        var s3Object=newS3ObjectMock();
+        Assertions.assertDoesNotThrow(() -> s3Object.delete("test.txt"));
+        Assertions.assertDoesNotThrow(() -> s3Object.close());
+    }
+
+    @Test
+    @DisplayName("deve executar teste real")
+    public void UT_CHECK_METHOD_REAL_TEST() throws IOException {
+        var s3Object=newS3Object();
+        var temFile=File.createTempFile("s3-upload", ".txt");
+        IOUtil
+                .target(temFile)
+                .writeAll(ObjectUtil.toString(s3Object));
+        s3Object.setEndpoint("http://testing-company-minio.portela-professional.com.br:9000");
+        s3Object.setRegion(Region.US_EAST_1.id());
+        s3Object.setBucket("default");
+        s3Object.setAccessKey("services");
+        s3Object.setSecretKey("services");
+        Assertions.assertDoesNotThrow(() -> s3Object.put(temFile, "test.txt"));
+        Assertions.assertDoesNotThrow(() -> s3Object.put(temFile.toPath(), "test.txt"));
+        Assertions.assertDoesNotThrow(() -> s3Object.put(temFile.getAbsolutePath(), "test.txt"));
+        Assertions.assertDoesNotThrow(() -> s3Object.put(new FileInputStream(temFile), "test.txt"));
+    }
 
 
 }

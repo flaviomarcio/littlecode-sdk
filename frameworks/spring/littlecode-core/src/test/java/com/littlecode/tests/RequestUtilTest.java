@@ -4,11 +4,16 @@ import com.littlecode.exceptions.FrameworkException;
 import com.littlecode.network.RequestUtil;
 import com.littlecode.network.clients.Http;
 import com.littlecode.network.clients.RequestClient;
+import com.littlecode.parsers.ObjectUtil;
 import com.sun.net.httpserver.HttpServer;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -99,6 +104,37 @@ public class RequestUtilTest {
         Assertions.assertDoesNotThrow(() -> response.bodyAs(Object.class));
         Assertions.assertDoesNotThrow(() -> response.bodyAs(Object.class));
         Assertions.assertDoesNotThrow(() -> response.bodyAsList(List.class));
+
+
+        response.setBody("{}");
+        Assertions.assertNotNull(response.bodyAs(PrivateObject.class));
+        Assertions.assertFalse(response.bodyAsList(PrivateObject.class).isEmpty());
+
+        response.setBody("[]");
+        Assertions.assertNull(response.bodyAs(PrivateObject.class));
+        Assertions.assertTrue(response.bodyAsList(PrivateObject.class).isEmpty());
+
+        response.setBody("");
+        Assertions.assertNull(response.bodyAs(PrivateObject.class));
+        Assertions.assertTrue(response.bodyAsList(PrivateObject.class).isEmpty());;
+
+        response.setBody(null);
+        Assertions.assertNull(response.bodyAs(PrivateObject.class));
+        Assertions.assertTrue(response.bodyAsList(PrivateObject.class).isEmpty());
+
+        var itemA=new PrivateObject(UUID.randomUUID());
+        var itemB=new PrivateObject(UUID.randomUUID());
+
+        response.setBody(ObjectUtil.toString(itemA));
+        Assertions.assertNotNull(response.bodyAs(PrivateObject.class));
+        Assertions.assertEquals(response.bodyAs(PrivateObject.class).getId(),itemA.getId());
+        Assertions.assertFalse(response.bodyAsList(PrivateObject.class).isEmpty());
+        Assertions.assertEquals(response.bodyAsList(PrivateObject.class).get(0).getId(),itemA.getId());
+
+        response.setBody(ObjectUtil.toString(List.of(itemA, itemB)));
+        Assertions.assertDoesNotThrow(() -> response.bodyAsList(PrivateObject.class));
+        Assertions.assertEquals(response.bodyAsList(PrivateObject.class).get(0).getId(),itemA.getId());
+        Assertions.assertEquals(response.bodyAsList(PrivateObject.class).get(1).getId(),itemB.getId());
 
     }
 
@@ -330,6 +366,14 @@ public class RequestUtilTest {
         public HttpClient createHttpClient(RequestUtil rqUtil) {
             return mock_httpClient;
         }
+    }
+
+    @Builder
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class PrivateObject{
+        private UUID id;
     }
 
 }

@@ -209,13 +209,13 @@ public class ObjectUtilTest {
         Assertions.assertFalse(mapObjectA.isEmpty());
         Assertions.assertFalse(mapObjectB.isEmpty());
 
-        Assertions.assertDoesNotThrow(() -> ObjectUtil.createFromValues(ObjectCheck.class, mapObjectA));
-        Assertions.assertDoesNotThrow(() -> ObjectUtil.createFromValues(ObjectCheck.class, null));
-        Assertions.assertDoesNotThrow(() -> ObjectUtil.createFromValues(null, null));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.createFromObject(ObjectCheck.class, mapObjectA));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.createFromObject(ObjectCheck.class, null));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.createFromObject(null, null));
 
-        var objA = ObjectUtil.createFromValues(ObjectCheck.class, mapObjectA);
+        var objA = ObjectUtil.createFromObject(ObjectCheck.class, mapObjectA);
         Assertions.assertNotNull(objA);
-        var objB = ObjectUtil.createFromValues(ObjectCheck.class, mapObjectB);
+        var objB = ObjectUtil.createFromObject(ObjectCheck.class, mapObjectB);
         Assertions.assertNotNull(objB);
         Assertions.assertTrue(ObjectUtil.equal(objA, objB));
     }

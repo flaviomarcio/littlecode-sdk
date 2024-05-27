@@ -289,33 +289,10 @@ public class ObjectUtil {
         return createFromString(aClass, source);
     }
 
-    public static <T> T createFromValues(Class<T> aClass, final Map<String, Object> source) {
-        if (aClass!=null && source != null && !source.isEmpty()) {
-            var fieldsNew = toFieldsList(aClass);
-            if (!fieldsNew.isEmpty()) {
-                Map<String, Field> fieldsWriter = new HashMap<>();
-                fieldsNew.forEach(field -> fieldsWriter.put(field.getName().toLowerCase(), field));
-                if (!fieldsWriter.isEmpty()) {
-                    Map<String, Object> finaMapValues = new HashMap<>();
-                    for (Map.Entry<String, Object> entry : source.entrySet()) {
-                        String fieldName = entry.getKey();
-                        Object fieldValue = entry.getValue();
-                        var fieldWrite = fieldsWriter.get(fieldName.trim().toLowerCase());
-                        if (fieldWrite != null)
-                            finaMapValues.put(fieldWrite.getName(), fieldValue);
-                    }
-                    return UtilCoreConfig.newModelMapper().map(finaMapValues, aClass);
-                }
-            }
-        }
-        return null;
-    }
-
     public static <T> T createFromObject(Class<T> aClass, Object source) {
         if (aClass != null && source != null) {
-            var objectValues = toMapObject(source);
-            if (!objectValues.isEmpty())
-                return createFromValues(aClass, objectValues);
+            var bytes=toString(source);
+            return createFromString(aClass,bytes);
         }
         return null;
     }

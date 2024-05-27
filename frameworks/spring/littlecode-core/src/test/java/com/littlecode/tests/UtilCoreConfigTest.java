@@ -29,6 +29,8 @@ public class UtilCoreConfigTest {
         Assertions.assertDoesNotThrow(() -> new UtilCoreConfig(context, environment));
         Assertions.assertDoesNotThrow(UtilCoreConfig::getApplicationContext);
         Assertions.assertDoesNotThrow(UtilCoreConfig::getEnvironment);
+        Assertions.assertDoesNotThrow(() -> UtilCoreConfig.newObjectMapper());
+        Assertions.assertDoesNotThrow(() -> UtilCoreConfig.newModelMapper());
 
         Assertions.assertNotNull(UtilCoreConfig.getApplicationContext());
         Assertions.assertNotNull(UtilCoreConfig.getEnvironment());

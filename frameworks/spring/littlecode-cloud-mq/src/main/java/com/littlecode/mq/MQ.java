@@ -171,7 +171,7 @@ public class MQ {
                 if(body!=null){
                     if(body instanceof String value){
                         var values = ObjectUtil.toMapObject(value);
-                        Task task = ObjectUtil.createFromValues(Task.class, values);
+                        Task task = ObjectUtil.createFromObject(Task.class, values);
                         if (task != null)
                             return task;
                     }

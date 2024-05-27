@@ -413,22 +413,25 @@ public class RequestUtil {
         }
 
         public <T> List<T> bodyAsList(Class<T> aClass) {
+            List<T> __return=new ArrayList<>();
             if(aClass!=null){
                 var __object = ObjectUtil.createFromString(Object.class,body);
+                List<Object> list=new ArrayList<>();
                 if(__object != null){
-                    if(__object instanceof List list)
-                        return list;
+                    if(__object instanceof List value) {
+                        list.addAll(value);
+                    }
                     else {
-                        __object=ObjectUtil.createFromString(aClass,body);
-                        if(__object==null)
-                            return null;
-                        List<T> __return=new ArrayList<>();
-                        __return.add((T) __return);
-                        return __return;
+                        list.add(__object);
+                    }
+                    for(Object o:list){
+                        T __item=ObjectUtil.createFromObject(aClass,o);
+                        if(__item!=null)
+                            __return.add(__item);
                     }
                 }
             }
-            return null;
+            return __return;
         }
     }
 }

@@ -8,12 +8,12 @@ import com.littlecode.parsers.PrimitiveUtil;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.awscore.exception.AwsServiceException;
 import software.amazon.awssdk.core.ResponseInputStream;
+import software.amazon.awssdk.core.exception.SdkClientException;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.GetObjectResponse;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.*;
 
 import java.io.*;
 import java.net.URI;
@@ -48,16 +48,25 @@ public class S3ClientUtil {
     private S3Client s3Client;
     private UUID hashClient;
 
+    public S3ClientUtil close(){
+        if(this.s3Client!=null)
+            this.s3Client.close();
+        this.s3Client=null;
+        return this;
+    }
+
     public S3Client newClient() {
 
-        var endpoint=this.getEndpoint()==null?"":this.getEndpoint().trim();
-        var region=this.getRegion()==null?"":this.getRegion().trim();
-        var bucket=this.getBucket()==null?"":this.getBucket().trim();
-        var accessKey=this.getAccessKey()==null?"":this.getAccessKey().trim();
-        var secretKey=this.getSecretKey()==null?"":this.getSecretKey().trim();
-        var hashClient= HashUtil.toMd5Uuid(List.of(endpoint, region, bucket, accessKey, secretKey));
-        if(this.s3Client!=null && hashClient.equals(this.hashClient))
+        var endpoint = this.getEndpoint() == null ? "" : this.getEndpoint().trim();
+        var region = this.getRegion() == null ? "" : this.getRegion().trim();
+        var bucket = this.getBucket() == null ? "" : this.getBucket().trim();
+        var accessKey = this.getAccessKey() == null ? "" : this.getAccessKey().trim();
+        var secretKey = this.getSecretKey() == null ? "" : this.getSecretKey().trim();
+        var hashClient = HashUtil.toMd5Uuid(List.of(endpoint, region, bucket, accessKey, secretKey));
+        if (this.s3Client != null && hashClient.equals(this.hashClient)){
+            this.s3Client.close();
             return this.s3Client;
+        }
 
         if (PrimitiveUtil.isEmpty(region))
             throw ExceptionBuilder.ofNullPointer("Invalid clientSecret");
@@ -65,16 +74,16 @@ public class S3ClientUtil {
         if (PrimitiveUtil.isEmpty(bucket))
             throw ExceptionBuilder.ofNullPointer("Invalid bucket");
 
-        this.hashClient= hashClient;
+        this.hashClient = hashClient;
 
-        if (endpoint==null || endpoint.isEmpty()) {
-            return this.s3Client=S3Client.builder()
+        if (endpoint == null || endpoint.isEmpty()) {
+            return this.s3Client = S3Client.builder()
                     .credentialsProvider(this::createAwsBasicCredentials)
                     .region(Region.of(this.getRegion()))
                     .build();
         }
 
-        return this.s3Client=S3Client.builder()
+        return this.s3Client = S3Client.builder()
                 .endpointOverride(URI.create(endpoint))
                 .credentialsProvider(this::createAwsBasicCredentials)
                 .region(Region.of(this.getRegion()))
@@ -82,9 +91,9 @@ public class S3ClientUtil {
     }
 
     public AwsBasicCredentials createAwsBasicCredentials() {
-        var accessKey=this.getAccessKey()==null?"":this.getAccessKey().trim();
-        var secretKey=this.getSecretKey()==null?"":this.getSecretKey().trim();
-        if(accessKey.isEmpty() || secretKey.isEmpty())
+        var accessKey = this.getAccessKey() == null ? "" : this.getAccessKey().trim();
+        var secretKey = this.getSecretKey() == null ? "" : this.getSecretKey().trim();
+        if (accessKey.isEmpty() || secretKey.isEmpty())
             return null;
         return AwsBasicCredentials.create(accessKey, secretKey);
     }
@@ -95,7 +104,7 @@ public class S3ClientUtil {
                 .builder()
                 .bucket(this.getBucket())
                 .key(filename)
-                .contentLength(0L)//inputStream.available()
+                .contentLength(source.length())//inputStream.available()
                 .build();
         s3Client.putObject(putObjectRequest, source.toPath());
         if (deleteOnFinished)
@@ -103,14 +112,54 @@ public class S3ClientUtil {
         return true;
     }
 
+    public long size(String filename){
+        var s3Client = this.newClient();
+        GetObjectAttributesResponse objectAttributes =
+                s3Client
+                        .getObjectAttributes(
+                                GetObjectAttributesRequest
+                                        .builder()
+                                        .bucket(this.bucket)
+                                        .key(filename)
+                                        .objectAttributes(ObjectAttributes.OBJECT_SIZE)
+                                        .build()
+                        );
+        return objectAttributes==null?0:objectAttributes.objectSize();
+    }
+
+    public String eTag(String filename){
+        var s3Client = this.newClient();
+        GetObjectAttributesResponse objectAttributes =
+                s3Client
+                        .getObjectAttributes(
+                                GetObjectAttributesRequest
+                                        .builder()
+                                        .bucket(this.bucket)
+                                        .key(filename)
+                                        .objectAttributes(ObjectAttributes.E_TAG)
+                                        .build()
+                        );
+        return objectAttributes==null?"":objectAttributes.eTag();
+    }
+
+    public String checksum(String filename){
+        var s3Client = this.newClient();
+        GetObjectAttributesResponse objectAttributes =
+                s3Client
+                        .getObjectAttributes(
+                                GetObjectAttributesRequest
+                                        .builder()
+                                        .bucket(this.bucket)
+                                        .key(filename)
+                                        .objectAttributes(ObjectAttributes.CHECKSUM)
+                                        .build()
+                        );
+        return objectAttributes==null?"":objectAttributes.checksum().toString();
+    }
+
     public boolean exists(String filename) {
-        try (var s3Client = this.newClient()) {
-            ResponseInputStream<GetObjectResponse> response = s3Client.getObject(GetObjectRequest.builder().bucket(this.bucket).key(filename).build());
-            if(response!=null)
-                return response.read() > 0;
-        } catch (Exception ignored) {
-        }
-        return false;
+        var eTag=this.eTag(filename);
+        return !eTag.trim().isEmpty();
     }
 
     public File get(String filename) throws IOException {
@@ -156,7 +205,17 @@ public class S3ClientUtil {
     }
 
     public boolean delete(String fileName) {
-        return false;
+        try{
+            DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
+                    .bucket(this.bucket)
+                    .key(fileName)
+                    .build();
+            var s3Client = this.newClient();
+            s3Client.deleteObject(deleteObjectRequest);
+            return true;
+        } catch (Exception ignore) {
+            return false;
+        }
     }
 
 }
