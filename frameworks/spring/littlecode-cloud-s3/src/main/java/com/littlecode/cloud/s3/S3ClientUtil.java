@@ -162,58 +162,63 @@ public class S3ClientUtil {
         return !eTag.trim().isEmpty();
     }
 
-    public File get(String filename) throws IOException {
+    public File get(String filename){
         var s3Client = this.newClient();
 
         ResponseInputStream<GetObjectResponse> response = s3Client.getObject(GetObjectRequest.builder().bucket(this.bucket).key(filename).build());
         if(response!=null){
-            var outputFile = File.createTempFile(UUID.randomUUID().toString(),".tmp");
-            FileOutputStream outFile = new FileOutputStream(outputFile);
-            byte[] buffer = new byte[4096];
-            int bytesRead;
-            while ((bytesRead = response.read(buffer)) != -1) {
-                outFile.write(buffer, 0, bytesRead);
+            File outputFile = null;
+            try {
+                outputFile = File.createTempFile(UUID.randomUUID().toString(),".tmp");
+                FileOutputStream outFile = new FileOutputStream(outputFile);
+                byte[] buffer = new byte[4096];
+                int bytesRead;
+                while ((bytesRead = response.read(buffer)) != -1) {
+                    outFile.write(buffer, 0, bytesRead);
+                }
+                outFile.flush();
+                outFile.close();
+                s3Client.close();
+                return outputFile;
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-            outFile.flush();
-            outFile.close();
-            s3Client.close();
-            return outputFile;
         }
         return null;
     }
 
-    public boolean put(Object source, String fileName) throws IOException {
+    public boolean put(Object source, String fileName){
         if (source instanceof File sourceValues) {
             return this.internalPut(sourceValues, fileName, false);
         }else if (source instanceof Path sourceValues) {
             return this.internalPut(sourceValues.toFile(), fileName, false);
         } else {
             var tmpFile = IOUtil.target(IOUtil.createFileTemp()).toFile();
-            if (source instanceof InputStream sourceValues) {
-                IOUtil
-                        .target(tmpFile)
-                        .writeAll(Arrays.toString(sourceValues.readAllBytes()));
-            } else if (source instanceof String sourceValues) {
-                IOUtil
-                        .target(tmpFile)
-                        .writeAll(sourceValues);
-            } else {
-                IOUtil
-                        .target(tmpFile)
-                        .writeAll(ObjectUtil.toString(source));
+            try {
+                if (source instanceof InputStream sourceValues) {
+                    IOUtil
+                            .target(tmpFile)
+                            .writeAll(Arrays.toString(sourceValues.readAllBytes()));
+                } else if (source instanceof String sourceValues) {
+                    IOUtil
+                            .target(tmpFile)
+                            .writeAll(sourceValues);
+                } else {
+                    IOUtil
+                            .target(tmpFile)
+                            .writeAll(ObjectUtil.toString(source));
+                }
+                return this.internalPut(tmpFile, fileName, true);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-            return this.internalPut(tmpFile, fileName, true);
         }
     }
 
     public boolean delete(String fileName) {
-        try{
-            var s3Client = this.newClient();
-            s3Client.deleteObject(DeleteObjectRequest.builder().bucket(this.bucket).key(fileName).build());
-            return true;
-        } finally {
-            //this.close();
-        }
+        var s3Client = this.newClient();
+        s3Client.deleteObject(DeleteObjectRequest.builder().bucket(this.bucket).key(fileName).build());
+        return true;
     }
 
 }
