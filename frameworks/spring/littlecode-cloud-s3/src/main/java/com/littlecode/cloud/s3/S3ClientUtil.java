@@ -76,7 +76,7 @@ public class S3ClientUtil {
 
         this.hashClient = hashClient;
 
-        if (endpoint == null || endpoint.isEmpty()) {
+        if (endpoint == null || endpoint.trim().isEmpty()) {
             return this.s3Client = S3Client.builder()
                     .credentialsProvider(this::createAwsBasicCredentials)
                     .region(Region.of(this.getRegion()))
@@ -164,7 +164,6 @@ public class S3ClientUtil {
 
     public File get(String filename){
         var s3Client = this.newClient();
-
         ResponseInputStream<GetObjectResponse> response = s3Client.getObject(GetObjectRequest.builder().bucket(this.bucket).key(filename).build());
         if(response!=null){
             try {
@@ -177,7 +176,6 @@ public class S3ClientUtil {
                 }
                 outFile.flush();
                 outFile.close();
-                s3Client.close();
                 return outputFile;
             } catch (IOException e) {
                 throw new RuntimeException(e);
