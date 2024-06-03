@@ -9,6 +9,7 @@ import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.core.ResponseInputStream;
+import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
@@ -18,6 +19,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
@@ -98,18 +100,33 @@ public class S3ClientUtil {
         return AwsBasicCredentials.create(accessKey, secretKey);
     }
 
-    private boolean internalPut(File source, String filename, boolean deleteOnFinished) {
+    private boolean internalPut(File source, String filename, boolean deleteOnFinished){
         var s3Client = this.newClient();
-        var putObjectRequest = PutObjectRequest
-                .builder()
+//        var putObjectRequest = PutObjectRequest
+//                .builder()
+//                .bucket(this.getBucket())
+//                .key(filename)
+//                .contentLength(source.length())//inputStream.available()
+//                .build();
+//        s3Client.putObject(putObjectRequest, source.toPath());
+//        if (deleteOnFinished)
+//            source.delete();
+//        return true;
+
+        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(this.getBucket())
                 .key(filename)
-                .contentLength(source.length())//inputStream.available()
                 .build();
-        s3Client.putObject(putObjectRequest, source.toPath());
+
+        PutObjectResponse response = s3Client.putObject(putObjectRequest, RequestBody.fromFile(source));
+
+        var __return=(response.eTag()!=null && !response.eTag().trim().isEmpty());
+
         if (deleteOnFinished)
             source.delete();
-        return true;
+
+        return __return;
+
     }
 
     public long size(String filename){
