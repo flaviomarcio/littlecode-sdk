@@ -77,9 +77,11 @@ public class BeanUtil {
 
     public <T> T getBean(String beanName, Class<T> valueType) {
         try{
-            if(beanName==null || valueType==null)
+            if(valueType==null)
                 throw new FrameworkException("");
-            return context.getBean(beanName, valueType);
+            return (beanName==null)
+                    ?context.getBean(valueType)
+                    :context.getBean(beanName, valueType);
         }catch (Exception e){
             return null;
         }

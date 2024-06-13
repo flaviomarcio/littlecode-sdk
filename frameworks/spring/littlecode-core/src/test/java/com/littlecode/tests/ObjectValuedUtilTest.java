@@ -70,6 +70,7 @@ public class ObjectValuedUtilTest {
         Assertions.assertDoesNotThrow(() -> ObjectValueUtil.toString(new Object()));
         Assertions.assertDoesNotThrow(objValueUtil::getTarget);
         Assertions.assertDoesNotThrow(objValueUtil::getFieldMap);
+        Assertions.assertDoesNotThrow(() -> ObjectValueUtil.getFieldList(String.class));
         Assertions.assertDoesNotThrow(() -> ObjectValueUtil.getFieldList(Object.class));
         Assertions.assertDoesNotThrow(() -> ObjectValueUtil.getFieldValue(new Object(), null));
         Assertions.assertDoesNotThrow(() -> ObjectValueUtil.getFieldValue(null, null));

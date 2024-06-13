@@ -130,6 +130,9 @@ public class BeanUtilTest {
 
         Assertions.assertDoesNotThrow(()->beanUtil.getBean(AnnotationTestA.class));
         Assertions.assertDoesNotThrow(()->beanUtil.getBean("teste",AnnotationTestA.class));
+        Assertions.assertDoesNotThrow(()->beanUtil.getBean("",AnnotationTestA.class));
+        Assertions.assertDoesNotThrow(()->beanUtil.getBean(" ",AnnotationTestA.class));
+        Assertions.assertDoesNotThrow(()->beanUtil.getBean(null,AnnotationTestA.class));
         Assertions.assertDoesNotThrow(()->beanUtil.getBean(null,null));
         Assertions.assertDoesNotThrow(()->beanUtil.bean("beanString").as(String.class));
     }

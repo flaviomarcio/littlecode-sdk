@@ -152,15 +152,18 @@ public class ObjectValueUtil {
 
     public static List<Field> getFieldList(Class<?> tClass) {
         if(tClass!=null){
-            List<Field> __return = new ArrayList<>();
-            Field[] fieldList = tClass.getDeclaredFields();
-            for (Field field : fieldList) {
-                if (!Modifier.isStatic(field.getModifiers())){
-                    field.setAccessible(true);
-                    __return.add(field);
+            try{
+                List<Field> __return = new ArrayList<>();
+                Field[] fieldList = tClass.getDeclaredFields();
+                for (Field field : fieldList) {
+                    if (!Modifier.isStatic(field.getModifiers())){
+                        field.setAccessible(true);
+                        __return.add(field);
+                    }
                 }
+                return __return;
+            } catch (Exception ignore) {
             }
-            return __return;
         }
         return new ArrayList<>();
     }
