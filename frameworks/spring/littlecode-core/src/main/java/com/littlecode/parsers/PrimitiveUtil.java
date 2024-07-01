@@ -1,6 +1,8 @@
 package com.littlecode.parsers;
 
 import com.littlecode.config.CorePublicConsts;
+import com.littlecode.config.UtilCoreConfig;
+import com.littlecode.files.FileFormat;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -12,10 +14,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class PrimitiveUtil {
 
@@ -545,6 +544,58 @@ public class PrimitiveUtil {
         return(v==null)
                 ?null
                 :new File(v);
+    }
+
+    public static Map<String, Object> toMap(String v){
+        var mapper = UtilCoreConfig.newObjectMapper(FileFormat.JSON);
+        Object o=null;
+        try {
+            o= mapper.readValue(v, Object.class);
+        } catch (Exception ignored) {
+        }
+        Map<String, Object> __return=new HashMap<>();
+        if(o instanceof Map<?,?> map)
+            map.forEach((key, value) -> __return.put(toString(key), value));
+        return __return;
+    }
+
+    public static List<Object> toList(String v){
+        if(v==null || v.isEmpty())
+            return new ArrayList<>();
+        var mapper = UtilCoreConfig.newObjectMapper(FileFormat.JSON);
+        Object o=null;
+        try {
+            o= mapper.readValue(v, Object.class);
+        } catch (Exception ignored) {
+        }
+        List<Object> __return=new ArrayList<>();
+        if(o instanceof List<?> list){
+            for(var i : list)
+                __return.add(i);
+        }
+        return __return;
+    }
+
+    public static List<String> toStringList(String v){
+        if(v==null || v.isEmpty())
+            return new ArrayList<>();
+        var mapper = UtilCoreConfig.newObjectMapper(FileFormat.JSON);
+        Object o=null;
+        try {
+            o= mapper.readValue(v, Object.class);
+        } catch (Exception ignored) {
+        }
+        List<String> __return=new ArrayList<>();
+        if(o instanceof List<?> list){
+            for(var i : list){
+                var s=toString(i);
+                if(s!=null && !s.isEmpty())
+                    __return.add(s);
+            }
+        }
+        else if(!v.trim().isEmpty())
+            __return.add(v);
+        return __return;
     }
 
 }

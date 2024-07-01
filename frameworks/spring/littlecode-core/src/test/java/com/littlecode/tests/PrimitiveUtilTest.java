@@ -596,6 +596,71 @@ public class PrimitiveUtilTest {
         Assertions.assertEquals(PrimitiveUtil.toPath("/tmp/tmp"), Path.of("/tmp/tmp"));
     }
 
+
+    @Test
+    @DisplayName("Deve validar toMap")
+    public void UI_CHECK_toMap() {
+        Assertions.assertTrue(PrimitiveUtil.toMap(null).isEmpty());
+        Assertions.assertTrue(PrimitiveUtil.toMap("").isEmpty());
+        Assertions.assertTrue(PrimitiveUtil.toMap("...").isEmpty());
+        Assertions.assertTrue(PrimitiveUtil.toMap("{}").isEmpty());
+        {
+            var map=PrimitiveUtil.toMap("{\"a1\":\"v1\"}");
+            Assertions.assertEquals(map.size(), 1);
+            map=PrimitiveUtil.toMap("{\"a1\":\"v1\",\"a2\":\"v2\"}");
+            Assertions.assertEquals(map.size(), 2);
+            map=PrimitiveUtil.toMap("{\"a1\":\"v1\",\"a2\":\"v2\",\"a3\":\"v3\"}");
+            Assertions.assertEquals(map.size(), 3);
+            map=PrimitiveUtil.toMap("{\"a1\":\"v1\",\"a2\":\"v2\",\"a3\":\"v3\",\"a4\":\"v4\"}");
+            Assertions.assertEquals(map.size(), 4);
+        }
+    }
+
+    @Test
+    @DisplayName("Deve validar toList")
+    public void UI_CHECK_toList() {
+        Assertions.assertTrue(PrimitiveUtil.toList(null).isEmpty());
+        Assertions.assertTrue(PrimitiveUtil.toList("...").isEmpty());
+        Assertions.assertTrue(PrimitiveUtil.toList("").isEmpty());
+        Assertions.assertTrue(PrimitiveUtil.toList("[]").isEmpty());
+
+        {
+            var list=PrimitiveUtil.toList("[1,2,3,4]");
+            Assertions.assertEquals(list.size(), 4);
+            list=PrimitiveUtil.toList("[\"1\"]");
+            Assertions.assertEquals(list.size(), 1);
+            list=PrimitiveUtil.toList("[\"1\",\"2\"]");
+            Assertions.assertEquals(list.size(), 2);
+            list=PrimitiveUtil.toList("[\"1\",\"2\",\"3\"]");
+            Assertions.assertEquals(list.size(), 3);
+            list=PrimitiveUtil.toList("[\"1\",\"2\",\"3\",\"4\"]");
+            Assertions.assertEquals(list.size(), 4);
+        }
+    }
+
+    @Test
+    @DisplayName("Deve validar toStringList")
+    public void UI_CHECK_toStringList() {
+        Assertions.assertTrue(PrimitiveUtil.toStringList(null).isEmpty());
+        Assertions.assertEquals(PrimitiveUtil.toStringList("...").size(),1);
+        Assertions.assertTrue(PrimitiveUtil.toStringList("").isEmpty());
+        Assertions.assertTrue(PrimitiveUtil.toStringList("[]").isEmpty());
+
+        {
+            var list=PrimitiveUtil.toStringList("[1,2,3,4]");
+            Assertions.assertEquals(list.size(), 4);
+            list=PrimitiveUtil.toStringList("[\"1\"]");
+            Assertions.assertEquals(list.size(), 1);
+            list=PrimitiveUtil.toStringList("[\"1\",\"2\"]");
+            Assertions.assertEquals(list.size(), 2);
+            list=PrimitiveUtil.toStringList("[\"1\",\"2\",\"3\"]");
+            Assertions.assertEquals(list.size(), 3);
+            list=PrimitiveUtil.toStringList("[\"1\",\"2\",\"3\",\"4\"]");
+            Assertions.assertEquals(list.size(), 4);
+        }
+
+    }
+
     @Test
     @DisplayName("Deve validar toPath")
     public void UI_CHECK_toPath() {
