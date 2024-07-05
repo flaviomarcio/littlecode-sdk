@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -70,4 +71,19 @@ public class DateUtilTest {
         Assertions.assertEquals(DateUtil.toMin(value = null).toString(), TEST_MIN_LOCALDATETIME.toString());
     }
 
+    @Test
+    @DisplayName("Deve validar toDuration")
+    public void UI_toDuration() {
+
+        Assertions.assertEquals(DateUtil.toDuration(null), Duration.ZERO);
+        Assertions.assertEquals(DateUtil.toDuration(""), Duration.ZERO);
+        Assertions.assertEquals(DateUtil.toDuration(" "), Duration.ZERO);
+
+        Assertions.assertEquals(DateUtil.toDuration("1"), Duration.ofMillis(1));
+        Assertions.assertEquals(DateUtil.toDuration("1s"), Duration.ofSeconds(1));
+        Assertions.assertEquals(DateUtil.toDuration("1m"), Duration.ofMinutes(1));
+        Assertions.assertEquals(DateUtil.toDuration("1h"), Duration.ofHours(1));
+        Assertions.assertEquals(DateUtil.toDuration("1d"), Duration.ofDays(1));
+        Assertions.assertEquals(DateUtil.toDuration("1?"), Duration.ZERO);
+    }
 }

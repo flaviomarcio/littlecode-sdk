@@ -2,6 +2,7 @@ package com.littlecode.parsers;
 
 import com.littlecode.config.CorePublicConsts;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -34,6 +35,35 @@ public class DateUtil {
         return v == null
                 ? CorePublicConsts.MIN_LOCALDATETIME
                 : LocalDateTime.of(v.toLocalDate(), CorePublicConsts.MIN_LOCALTIME);
+    }
+
+    public static Duration toDuration(String input){
+        if(input==null)
+            return Duration.ZERO;
+        input=input.trim();
+
+        if (input.isEmpty())
+            return Duration.ZERO;
+
+        var num=PrimitiveUtil.toLong(input);
+        if(num>0)
+            return Duration.ofMillis(num);
+
+        String valuePart = input.substring(0, input.length() - 1);
+        String unitPart = input.substring(input.length() - 1).toLowerCase();
+
+        var value=PrimitiveUtil.toLong(valuePart);
+
+        long durationMillis = switch (unitPart) {
+            case "s" -> value * 1000;
+            case "m" -> value * 60 * 1000;
+            case "h" -> value * 60 * 60 * 1000;
+            case "d" -> value * 24 * 60 * 60 * 1000;
+            default -> 0;
+        };
+        return durationMillis==0
+                ?Duration.ZERO
+                :Duration.ofMillis(durationMillis);
     }
 
 }
