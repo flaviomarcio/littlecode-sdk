@@ -1,9 +1,7 @@
 package com.littlecode.parsers;
 
 import com.littlecode.exceptions.ParserException;
-import lombok.SneakyThrows;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -15,7 +13,7 @@ public class HashUtil {
     public static final String MD5Strategy = "MD5";
     private static final Pattern UUID_REGEX = Pattern.compile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$");
 
-    public static MessageDigest createMessageDigest(String strategy){
+    public static MessageDigest createMessageDigest(String strategy) {
         try {
             return MessageDigest.getInstance(strategy);
         } catch (Exception ignored) {
@@ -46,11 +44,12 @@ public class HashUtil {
         return "";
     }
 
-    public static String readBytes(InputStream value){
-        if(value!=null){
+    public static String readBytes(InputStream value) {
+        if (value != null) {
             try {
                 return new String(value.readAllBytes());
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
         return "";
     }
@@ -66,7 +65,7 @@ public class HashUtil {
     }
 
     public static UUID toUuid(String value) {
-        if(value!=null && !value.trim().isEmpty()){
+        if (value != null && !value.trim().isEmpty()) {
             try {
                 return UUID.fromString(formatStringToMd5(value));
             } catch (Exception ignored) {
@@ -75,12 +74,12 @@ public class HashUtil {
         return null;
     }
 
-    public static UUID toMd5Uuid(InputStream value){
+    public static UUID toMd5Uuid(InputStream value) {
         return toMd5Uuid(readBytes(value));
     }
 
     public static UUID toMd5Uuid(String format, Object... args) {
-        if(format!=null && args!=null && args.length>0){
+        if (format != null && args != null && args.length > 0) {
             var bytes = String.format(format, args);
             return toMd5Uuid(bytes);
         }
@@ -90,14 +89,14 @@ public class HashUtil {
     public static UUID toMd5Uuid(Object o) {
         if (o != null) {
             var value = ObjectUtil.toString(o);
-            if(!value.isEmpty()){
+            if (!value.isEmpty()) {
 
-                var __response=toUuid(value);
-                if(__response!=null)
+                var __response = toUuid(value);
+                if (__response != null)
                     return __response;
 
                 var md = createMessageDigest(MD5Strategy);
-                if(md!=null){
+                if (md != null) {
                     var messageDigest = md.digest(value.getBytes());
                     var hexString = new StringBuilder();
                     for (byte b : messageDigest) {
@@ -168,7 +167,7 @@ public class HashUtil {
     }
 
     public static String fromHex(String hexEncoded) {
-        if(hexEncoded==null || hexEncoded.isEmpty())
+        if (hexEncoded == null || hexEncoded.isEmpty())
             return "";
         byte[] decodedBytes = new byte[hexEncoded.length() / 2];
         for (int i = 0; i < decodedBytes.length; i++)

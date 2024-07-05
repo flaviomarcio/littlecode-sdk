@@ -41,17 +41,17 @@ public class ObjectContainerTest {
     @Test
     @DisplayName("Deve validar metodos As")
     public void UT_CHECK_AS() {
-        var objectCheck=new ObjectCheck();
+        var objectCheck = new ObjectCheck();
         var objectContainer = ObjectContainer.of(objectCheck);
         Assertions.assertDoesNotThrow(objectContainer::asString);
         Assertions.assertDoesNotThrow(() -> objectContainer.asObject(ObjectCheck.class));
 
         {
             var container = ObjectContainer.of(objectCheck);
-            Assertions.assertDoesNotThrow(()->container.asObject(ObjectCheck.class));
-            Assertions.assertDoesNotThrow(()->container.asObject((Class)null));
-            Assertions.assertDoesNotThrow(()->container.asObject((String)null));
-            Assertions.assertThrows(FrameworkException.class, ()->container.asObject("test"));
+            Assertions.assertDoesNotThrow(() -> container.asObject(ObjectCheck.class));
+            Assertions.assertDoesNotThrow(() -> container.asObject((Class) null));
+            Assertions.assertDoesNotThrow(() -> container.asObject((String) null));
+            Assertions.assertThrows(FrameworkException.class, () -> container.asObject("test"));
             Assertions.assertNotNull(container.asObject(ObjectCheck.class));
             Assertions.assertNotNull(container.asObject(ObjectCheck.class.getName()));
             Assertions.assertThrows(FrameworkException.class, () -> container.asObject(ObjectCheck.class.getSimpleName()));
@@ -154,10 +154,10 @@ public class ObjectContainerTest {
         Assertions.assertDoesNotThrow(() -> ObjectContainer.classToString(ObjectCheck.class));
         Assertions.assertDoesNotThrow(() -> ObjectContainer.classToString(new ObjectCheck()));
 
-        Assertions.assertEquals(ObjectContainer.classToString(null),"");
-        Assertions.assertEquals(ObjectContainer.classToString("test"),"");
-        Assertions.assertEquals(ObjectContainer.classToString(ObjectCheck.class),ObjectCheck.class.getName());
-        Assertions.assertEquals(ObjectContainer.classToString(new ObjectCheck()),ObjectCheck.class.getName());
+        Assertions.assertEquals(ObjectContainer.classToString(null), "");
+        Assertions.assertEquals(ObjectContainer.classToString("test"), "");
+        Assertions.assertEquals(ObjectContainer.classToString(ObjectCheck.class), ObjectCheck.class.getName());
+        Assertions.assertEquals(ObjectContainer.classToString(new ObjectCheck()), ObjectCheck.class.getName());
     }
 
     @Test
@@ -168,7 +168,7 @@ public class ObjectContainerTest {
         }
         Assertions.assertDoesNotThrow(() -> ObjectContainer.of(UUID.randomUUID(), new ObjectCheck()));
         Assertions.assertDoesNotThrow(() -> ObjectContainer.of(UUID.randomUUID(), null));
-        Assertions.assertDoesNotThrow(() -> ObjectContainer.of((UUID)null, null));
+        Assertions.assertDoesNotThrow(() -> ObjectContainer.of((UUID) null, null));
         Assertions.assertDoesNotThrow(() -> ObjectContainer.of(EnumCheck.EnumA, new ObjectCheck()));
         Assertions.assertDoesNotThrow(() -> ObjectContainer.of(EnumCheck.EnumA, null));
         Assertions.assertDoesNotThrow(() -> ObjectContainer.of(null, null));
@@ -183,7 +183,7 @@ public class ObjectContainerTest {
         enum EnumCheck {
             EnumA, EnumB
         }
-        var objectContainer=ObjectContainer.of(UUID.randomUUID(), new ObjectCheck());
+        var objectContainer = ObjectContainer.of(UUID.randomUUID(), new ObjectCheck());
         Assertions.assertDoesNotThrow(() -> objectContainer.canType(null));
         Assertions.assertDoesNotThrow(() -> objectContainer.canType(ObjectCheck.class));
 

@@ -3,7 +3,6 @@ package com.littlecode.tests;
 import com.littlecode.config.UtilCoreConfig;
 import com.littlecode.exceptions.FrameworkException;
 import com.littlecode.util.BeanUtil;
-
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -46,31 +45,31 @@ public class BeanUtilTest {
         UtilCoreConfig.setApplicationContext(null);
         UtilCoreConfig.setEnvironment(null);
 
-        Assertions.assertThrows(FrameworkException.class,() -> new BeanUtil());
-        Assertions.assertThrows(FrameworkException.class,() -> new BeanUtil((String)null));
-        Assertions.assertThrows(FrameworkException.class,() -> new BeanUtil((ApplicationContext)null));
-        Assertions.assertThrows(FrameworkException.class,() -> new BeanUtil(null,null));
+        Assertions.assertThrows(FrameworkException.class, () -> new BeanUtil());
+        Assertions.assertThrows(FrameworkException.class, () -> new BeanUtil((String) null));
+        Assertions.assertThrows(FrameworkException.class, () -> new BeanUtil((ApplicationContext) null));
+        Assertions.assertThrows(FrameworkException.class, () -> new BeanUtil(null, null));
 
-        Assertions.assertThrows(FrameworkException.class,() -> BeanUtil.of((String)null));
-        Assertions.assertThrows(FrameworkException.class,() -> BeanUtil.of(""));
-        Assertions.assertThrows(FrameworkException.class,() -> BeanUtil.of((ApplicationContext)null));
-        Assertions.assertThrows(FrameworkException.class,() -> BeanUtil.of(null,null));
+        Assertions.assertThrows(FrameworkException.class, () -> BeanUtil.of((String) null));
+        Assertions.assertThrows(FrameworkException.class, () -> BeanUtil.of(""));
+        Assertions.assertThrows(FrameworkException.class, () -> BeanUtil.of((ApplicationContext) null));
+        Assertions.assertThrows(FrameworkException.class, () -> BeanUtil.of(null, null));
 
         UtilCoreConfig.setApplicationContext(Mockito.mock(ApplicationContext.class));
         UtilCoreConfig.setEnvironment(Mockito.mock(Environment.class));
 
         Assertions.assertDoesNotThrow(() -> new BeanUtil());
-        Assertions.assertDoesNotThrow(() -> new BeanUtil((String)null));
+        Assertions.assertDoesNotThrow(() -> new BeanUtil((String) null));
         Assertions.assertDoesNotThrow(() -> new BeanUtil(""));
         Assertions.assertDoesNotThrow(() -> new BeanUtil(Mockito.mock(ApplicationContext.class)));
-        Assertions.assertDoesNotThrow(() -> new BeanUtil(Mockito.mock(ApplicationContext.class),null));
-        Assertions.assertDoesNotThrow(() -> BeanUtil.of((String)null));
+        Assertions.assertDoesNotThrow(() -> new BeanUtil(Mockito.mock(ApplicationContext.class), null));
+        Assertions.assertDoesNotThrow(() -> BeanUtil.of((String) null));
         Assertions.assertDoesNotThrow(() -> BeanUtil.of(Mockito.mock(ApplicationContext.class)));
-        Assertions.assertDoesNotThrow(() -> BeanUtil.of(Mockito.mock(ApplicationContext.class),null));
+        Assertions.assertDoesNotThrow(() -> BeanUtil.of(Mockito.mock(ApplicationContext.class), null));
 
-        Assertions.assertDoesNotThrow(() -> BeanUtil.of(Mockito.mock(ApplicationContext.class),null).getBean());
-        Assertions.assertNull(BeanUtil.of(Mockito.mock(ApplicationContext.class),null).getBean());
-        Assertions.assertNotNull(BeanUtil.of(Mockito.mock(ApplicationContext.class),"teste").getBean());
+        Assertions.assertDoesNotThrow(() -> BeanUtil.of(Mockito.mock(ApplicationContext.class), null).getBean());
+        Assertions.assertNull(BeanUtil.of(Mockito.mock(ApplicationContext.class), null).getBean());
+        Assertions.assertNotNull(BeanUtil.of(Mockito.mock(ApplicationContext.class), "teste").getBean());
     }
 
     @Test
@@ -98,12 +97,12 @@ public class BeanUtilTest {
         var beanUtil = BeanUtil.of(context);
 
         Assertions.assertDoesNotThrow(beanUtil::getBeanNames);
-        Assertions.assertDoesNotThrow(()->beanUtil.asAnnotation(AnnotationTestA.class).isEmpty());
-        Assertions.assertDoesNotThrow(()->beanUtil.asAnnotation(AnnotationTestB.class).isEmpty());
-        Assertions.assertDoesNotThrow(()->beanUtil.getBeanNames().isEmpty());
-        Assertions.assertDoesNotThrow(()->beanUtil.bean(BEAN_STRING).bean());
-        Assertions.assertDoesNotThrow(()->beanUtil.bean(BEAN_STRING).bean());
-        Assertions.assertDoesNotThrow(()->beanUtil.bean(BEAN_STRING).setBean("beanString"));
+        Assertions.assertDoesNotThrow(() -> beanUtil.asAnnotation(AnnotationTestA.class).isEmpty());
+        Assertions.assertDoesNotThrow(() -> beanUtil.asAnnotation(AnnotationTestB.class).isEmpty());
+        Assertions.assertDoesNotThrow(() -> beanUtil.getBeanNames().isEmpty());
+        Assertions.assertDoesNotThrow(() -> beanUtil.bean(BEAN_STRING).bean());
+        Assertions.assertDoesNotThrow(() -> beanUtil.bean(BEAN_STRING).bean());
+        Assertions.assertDoesNotThrow(() -> beanUtil.bean(BEAN_STRING).setBean("beanString"));
 
 
         Assertions.assertNotNull(beanUtil.getBeanNames());
@@ -113,7 +112,7 @@ public class BeanUtilTest {
         Assertions.assertFalse(beanUtil.asAnnotation(AnnotationTestA.class).isEmpty());
         Assertions.assertFalse(beanUtil.getBeanNames().isEmpty());
         Assertions.assertEquals(beanUtil.bean(BEAN_STRING).bean(), BEAN_STRING);
-        Assertions.assertDoesNotThrow(()->beanUtil.bean(BEAN_STRING).bean());
+        Assertions.assertDoesNotThrow(() -> beanUtil.bean(BEAN_STRING).bean());
         Assertions.assertNotNull(beanUtil.bean(BEAN_STRING).bean());
         Assertions.assertEquals(beanUtil.bean("beanString").as(String.class), "A");
         Assertions.assertEquals(beanUtil.bean("beanDouble").as(Double.class), 0.5789);
@@ -128,13 +127,13 @@ public class BeanUtilTest {
         Assertions.assertEquals(beanUtil.bean("beanListLong").as(List.class), listLong);
         Assertions.assertEquals(beanUtil.bean("beanListDouble").as(List.class), listDouble);
 
-        Assertions.assertDoesNotThrow(()->beanUtil.getBean(AnnotationTestA.class));
-        Assertions.assertDoesNotThrow(()->beanUtil.getBean("teste",AnnotationTestA.class));
-        Assertions.assertDoesNotThrow(()->beanUtil.getBean("",AnnotationTestA.class));
-        Assertions.assertDoesNotThrow(()->beanUtil.getBean(" ",AnnotationTestA.class));
-        Assertions.assertDoesNotThrow(()->beanUtil.getBean(null,AnnotationTestA.class));
-        Assertions.assertDoesNotThrow(()->beanUtil.getBean(null,null));
-        Assertions.assertDoesNotThrow(()->beanUtil.bean("beanString").as(String.class));
+        Assertions.assertDoesNotThrow(() -> beanUtil.getBean(AnnotationTestA.class));
+        Assertions.assertDoesNotThrow(() -> beanUtil.getBean("teste", AnnotationTestA.class));
+        Assertions.assertDoesNotThrow(() -> beanUtil.getBean("", AnnotationTestA.class));
+        Assertions.assertDoesNotThrow(() -> beanUtil.getBean(" ", AnnotationTestA.class));
+        Assertions.assertDoesNotThrow(() -> beanUtil.getBean(null, AnnotationTestA.class));
+        Assertions.assertDoesNotThrow(() -> beanUtil.getBean(null, null));
+        Assertions.assertDoesNotThrow(() -> beanUtil.bean("beanString").as(String.class));
     }
 
     @Test
@@ -145,7 +144,7 @@ public class BeanUtilTest {
         Mockito.when(context.getBeanNamesForAnnotation(AnnotationTestB.class)).thenReturn(new String[]{});
         var beanUtil = BeanUtil.of(context);
 
-        Assertions.assertDoesNotThrow(()->beanUtil.asAnnotation(AnnotationTestA.class));
+        Assertions.assertDoesNotThrow(() -> beanUtil.asAnnotation(AnnotationTestA.class));
 
         Assertions.assertNotNull(beanUtil.asAnnotation(AnnotationTestA.class));
         Assertions.assertFalse(beanUtil.asAnnotation(AnnotationTestA.class).isEmpty());

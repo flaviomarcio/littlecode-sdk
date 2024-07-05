@@ -35,21 +35,51 @@ public class ExceptionBuilderTest {
         Assertions.assertDoesNotThrow(() -> new UnAuthorizationException("test"));
         Assertions.assertDoesNotThrow(() -> new UnknownException("test"));
 
-        Assertions.assertThrows(ArithmeticException.class,() -> {throw new ArithmeticException("test");});
-        Assertions.assertThrows(BadRequestException.class,() -> {throw new BadRequestException("test");});
-        Assertions.assertThrows(ConflictException.class,() -> {throw new ConflictException("test");});
-        Assertions.assertThrows(ConversionException.class,() -> {throw new ConversionException("test");});
-        Assertions.assertThrows(FrameworkException.class,() -> {throw new FrameworkException("test");});
-        Assertions.assertThrows(InvalidException.class,() -> {throw new InvalidException("test");});
-        Assertions.assertThrows(InvalidObjectException.class,() -> {throw new InvalidObjectException("test");});
-        Assertions.assertThrows(InvalidSettingException.class,() -> {throw new InvalidSettingException("test");});
-        Assertions.assertThrows(NetworkException.class,() -> {throw new NetworkException("test");});
-        Assertions.assertThrows(NoContentException.class,() -> {throw new NoContentException("test");});
-        Assertions.assertThrows(NoImplementedException.class,() -> {throw new NoImplementedException("test");});
-        Assertions.assertThrows(NotFoundException.class,() -> {throw new NotFoundException("test");});
-        Assertions.assertThrows(ParserException.class,() -> {throw new ParserException("test");});
-        Assertions.assertThrows(UnAuthorizationException.class,() -> {throw new UnAuthorizationException("test");});
-        Assertions.assertThrows(UnknownException.class,() -> {throw new UnknownException("test");});
+        Assertions.assertThrows(ArithmeticException.class, () -> {
+            throw new ArithmeticException("test");
+        });
+        Assertions.assertThrows(BadRequestException.class, () -> {
+            throw new BadRequestException("test");
+        });
+        Assertions.assertThrows(ConflictException.class, () -> {
+            throw new ConflictException("test");
+        });
+        Assertions.assertThrows(ConversionException.class, () -> {
+            throw new ConversionException("test");
+        });
+        Assertions.assertThrows(FrameworkException.class, () -> {
+            throw new FrameworkException("test");
+        });
+        Assertions.assertThrows(InvalidException.class, () -> {
+            throw new InvalidException("test");
+        });
+        Assertions.assertThrows(InvalidObjectException.class, () -> {
+            throw new InvalidObjectException("test");
+        });
+        Assertions.assertThrows(InvalidSettingException.class, () -> {
+            throw new InvalidSettingException("test");
+        });
+        Assertions.assertThrows(NetworkException.class, () -> {
+            throw new NetworkException("test");
+        });
+        Assertions.assertThrows(NoContentException.class, () -> {
+            throw new NoContentException("test");
+        });
+        Assertions.assertThrows(NoImplementedException.class, () -> {
+            throw new NoImplementedException("test");
+        });
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            throw new NotFoundException("test");
+        });
+        Assertions.assertThrows(ParserException.class, () -> {
+            throw new ParserException("test");
+        });
+        Assertions.assertThrows(UnAuthorizationException.class, () -> {
+            throw new UnAuthorizationException("test");
+        });
+        Assertions.assertThrows(UnknownException.class, () -> {
+            throw new UnknownException("test");
+        });
 
     }
 

@@ -36,7 +36,7 @@ public class ObjectContainer {
     }
 
     public static Class<?> classDictionaryByName(Object classType) {
-        if(classType==null)
+        if (classType == null)
             return null;
         var className = ObjectUtil.classToName(classType);
         if (className.isEmpty())
@@ -76,10 +76,10 @@ public class ObjectContainer {
             return List.of(string, names.get(names.size() - 1));
         }
 
-        var aClass=
+        var aClass =
                 (o instanceof Class aClass1)
-                        ?aClass1
-                        :o.getClass();
+                        ? aClass1
+                        : o.getClass();
 
         return List.of(aClass.getName(), aClass.getSimpleName(), aClass.toString());
     }
@@ -102,7 +102,7 @@ public class ObjectContainer {
     }
 
     public static ObjectContainer of(UUID id, Object taskObject) {
-        var aClass=taskObject==null?null:taskObject.getClass();
+        var aClass = taskObject == null ? null : taskObject.getClass();
         return of(id, aClass, taskObject);
     }
 
@@ -111,14 +111,14 @@ public class ObjectContainer {
     }
 
     public static ObjectContainer of(Object taskObject) {
-        var aClass=taskObject==null?null:taskObject.getClass();
+        var aClass = taskObject == null ? null : taskObject.getClass();
         return of(null, aClass, taskObject);
     }
 
     public static String classToString(Object o) {
-        if(o==null || (o instanceof String))
+        if (o == null || (o instanceof String))
             return "";
-        else if(o instanceof Class aClass)
+        else if (o instanceof Class aClass)
             return aClass.getName();
         else
             return o.getClass().getName();
@@ -160,7 +160,7 @@ public class ObjectContainer {
 
     @Transient
     public <T> T asObject(String className) {
-        if(className==null || className.trim().isEmpty())
+        if (className == null || className.trim().isEmpty())
             return null;
 
         Class<?> aClass = ObjectContainer.classBy(className);

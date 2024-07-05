@@ -50,7 +50,7 @@ public class CronUtil {
 //"0 0 0 ? * MON#1" = the first Monday in the month at midnight
 
     private static String check(String val) {
-        return (val!=null && val.trim().isEmpty()) ? "*" : val;
+        return (val != null && val.trim().isEmpty()) ? "*" : val;
     }
 
     public static String ofCron(String seconds, String minutes, String hours, String days, String months, String dayOfWeek) {
@@ -62,7 +62,7 @@ public class CronUtil {
                 check(months),
                 check(dayOfWeek)
         );
-        if (CronExpression.isValidExpression(expression)){
+        if (CronExpression.isValidExpression(expression)) {
             var cronExpression = CronExpression.parse(expression);
             return cronExpression.toString();
         }
@@ -155,11 +155,11 @@ public class CronUtil {
     }
 
     public LocalDateTime next() {
-        if (CronExpression.isValidExpression(this.expression) && this.temporal!=null){
+        if (CronExpression.isValidExpression(this.expression) && this.temporal != null) {
             var cron = CronExpression.parse(this.expression);
             var temporal = cron.next(this.temporal);
             if (temporal != null)
-               return LocalDateTime.of(temporal.toLocalDate(), temporal.toLocalTime());
+                return LocalDateTime.of(temporal.toLocalDate(), temporal.toLocalTime());
         }
         return null;
     }

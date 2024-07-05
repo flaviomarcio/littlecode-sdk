@@ -1,6 +1,5 @@
 package com.littlecode.network.clients;
 
-import com.littlecode.exceptions.FrameworkException;
 import com.littlecode.network.RequestUtil;
 import lombok.NoArgsConstructor;
 
@@ -20,7 +19,7 @@ public class Http implements RequestClient {
                 : HttpRequest.BodyPublishers.ofString(rqUtil.getBody());
 
         final var rqResponse = rqUtil.response();
-        final var timeout=Duration.ofSeconds(rqUtil.getTimeout());
+        final var timeout = Duration.ofSeconds(rqUtil.getTimeout());
         try {
 
             HttpRequest.Builder requestBuilder;

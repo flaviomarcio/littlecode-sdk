@@ -33,9 +33,9 @@ public class SystemUtil {
         }
 
         public static String getSystemProperty(String propertyName, String defaultValue) {
-            if(propertyName!=null){
+            if (propertyName != null) {
                 var value = System.getProperty(propertyName);
-                if (value!=null)
+                if (value != null)
                     return value.trim();
             }
             return defaultValue == null ? "" : defaultValue.trim();
@@ -44,11 +44,11 @@ public class SystemUtil {
         public static String getProperty(String propertyName, String defaultValue) {
             if (propertyName != null && !propertyName.trim().isEmpty()) {
                 var environment = UtilCoreConfig.getEnvironment();
-                if(environment.containsProperty(propertyName))
+                if (environment.containsProperty(propertyName))
                     return environment.getProperty(propertyName);
 
                 var value = System.getProperty(propertyName);
-                if (value!=null)
+                if (value != null)
                     return value.trim();
             }
             return defaultValue == null ? "" : defaultValue.trim();

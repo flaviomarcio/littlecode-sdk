@@ -22,16 +22,15 @@ import java.util.Objects;
 @Setter
 @Slf4j
 public class IOUtil {
+    public static final int EOF = -1;
+    public static final int LF = 10;
     private static final int CR = 13;
     private static final int DEFAULT_BUFFER_SIZE = 8192;
-    private static final String DIR_SEPARATOR=String.valueOf(File.separatorChar);
+    private static final String DIR_SEPARATOR = String.valueOf(File.separatorChar);
     private static final String DIR_SEPARATOR_DOUBLE = DIR_SEPARATOR + DIR_SEPARATOR;
     private static final char DIR_SEPARATOR_UNIX = '/';
     private static final char DIR_SEPARATOR_WINDOWS = '\\';
     private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
-
-    public static final int EOF = -1;
-    public static final int LF = 10;
     private static String PREFIX_TEMP_FILE = "tmp";
     private Object target;
 
@@ -64,11 +63,11 @@ public class IOUtil {
     }
 
     public static String[] split(Object target) {
-        if(target!=null){
-            var values=toString(target);
-            if(!values.isEmpty()){
-                while(values.contains(DIR_SEPARATOR_DOUBLE))
-                    values=values.replace(DIR_SEPARATOR_DOUBLE,DIR_SEPARATOR);
+        if (target != null) {
+            var values = toString(target);
+            if (!values.isEmpty()) {
+                while (values.contains(DIR_SEPARATOR_DOUBLE))
+                    values = values.replace(DIR_SEPARATOR_DOUBLE, DIR_SEPARATOR);
                 return values.split(DIR_SEPARATOR);
             }
         }
@@ -119,7 +118,7 @@ public class IOUtil {
 
     public static boolean createFile(Object target) {
         var file = toFile(target);
-        if(file.exists())
+        if (file.exists())
             return false;
         return createFileEmpty(file);
     }
@@ -139,16 +138,16 @@ public class IOUtil {
     }
 
     public static String baseName(Object target) {
-        if(target!=null){
+        if (target != null) {
             var list = split(target);
-            return (list==null || list.length==0)?"":list[list.length - 1].trim();
+            return (list == null || list.length == 0) ? "" : list[list.length - 1].trim();
         }
         return "";
     }
 
     public static File basePath(Object target) {
         var list = split(target);
-        if (list==null || list.length == 0)
+        if (list == null || list.length == 0)
             return null;
         var out = new StringBuilder();
         for (int i = 0; i <= list.length - 2; i++) {
@@ -161,7 +160,7 @@ public class IOUtil {
     }
 
     public static String readAll(File target) {
-        if(target!=null){
+        if (target != null) {
             try (var inputStream = new FileInputStream(target)) {
                 StringBuilder str = new StringBuilder();
                 int content;
@@ -175,19 +174,19 @@ public class IOUtil {
     }
 
     public static String readAll(Path target) {
-        if(target!=null)
+        if (target != null)
             return readAll(target.toFile());
         return "";
     }
 
     public static String readAll(String target) {
-        if(target!=null)
+        if (target != null)
             return readAll(new File(target));
         return "";
     }
 
     public static List<String> readLines(Path target) {
-        if (target != null){
+        if (target != null) {
             try {
                 return Files.readAllLines(target);
             } catch (Exception ignored) {
@@ -210,9 +209,9 @@ public class IOUtil {
 
 
     public static boolean writeAll(File file, String body) {
-        if (file != null && body!=null){
+        if (file != null && body != null) {
             var basePath = IOUtil.target(file).basePath();
-            if (IOUtil.target(basePath).createDir().exists()){
+            if (IOUtil.target(basePath).createDir().exists()) {
                 try (FileWriter writer = new FileWriter(file)) {
                     writer.write(body);
                     writer.flush();
@@ -226,9 +225,9 @@ public class IOUtil {
 
     public static boolean writeLines(File file, List<String> lines) {
         final int LF = 10;
-        if (file != null && lines!=null){
+        if (file != null && lines != null) {
             var basePath = IOUtil.target(file).basePath();
-            if (IOUtil.target(basePath).createDir().exists()){
+            if (IOUtil.target(basePath).createDir().exists()) {
                 try (FileWriter writer = new FileWriter(file)) {
                     for (var line : lines) {
                         writer.write(line);
@@ -263,7 +262,7 @@ public class IOUtil {
     }
 
     public static File createFileTemp(String prefix, String suffix, File directory) {
-        if(prefix!=null || suffix!=null || directory!=null){
+        if (prefix != null || suffix != null || directory != null) {
             try {
                 return File.createTempFile(
                         prefix == null ? PREFIX_TEMP_FILE : prefix.trim(),
@@ -276,7 +275,7 @@ public class IOUtil {
     }
 
     public static boolean createFileEmpty(File file) {
-        if(file!=null){
+        if (file != null) {
             try {
                 FileWriter fileWriter = new FileWriter(file);
                 fileWriter.write(Arrays.toString(EMPTY_BYTE_ARRAY));
@@ -289,7 +288,7 @@ public class IOUtil {
     }
 
     public static boolean createFileEmpty(String fileName) {
-        if(fileName!=null && !fileName.trim().isEmpty())
+        if (fileName != null && !fileName.trim().isEmpty())
             return createFileEmpty(new File(fileName));
         return false;
     }
@@ -307,7 +306,7 @@ public class IOUtil {
     }
 
     public boolean isEmpty() {
-        return this.target==null || isEmpty(toString());
+        return this.target == null || isEmpty(toString());
     }
 
     public String[] split() {

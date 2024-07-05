@@ -14,7 +14,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,26 +67,26 @@ public class SettingLoaderTest {
     }
 
     @Test
-    public void UT_VALID_Getter(){
+    public void UT_VALID_Getter() {
         SettingTest setting = makeSetting(FileFormat.JSON);
-        Assertions.assertDoesNotThrow(()->setting.getSettingFile());
+        Assertions.assertDoesNotThrow(() -> setting.getSettingFile());
         setting.setSettingFile(null);
-        Assertions.assertDoesNotThrow(()->setting.getSettingFile());
+        Assertions.assertDoesNotThrow(() -> setting.getSettingFile());
     }
 
     @Test
     @DisplayName("Deve validar fileFormat")
     public void UT_CHECKER_fileFormat() {
-        var settingTest=new SettingTest();
+        var settingTest = new SettingTest();
         Assertions.assertDoesNotThrow(() -> settingTest.setFileFormat(null));
         Assertions.assertDoesNotThrow(settingTest::getFileFormat);
         Assertions.assertNotNull(settingTest.getFileFormat());
-        Assertions.assertEquals(settingTest.getFileFormat(),SettingTest.FILE_FORMAT_DEFAULT);
+        Assertions.assertEquals(settingTest.getFileFormat(), SettingTest.FILE_FORMAT_DEFAULT);
 
         Assertions.assertDoesNotThrow(() -> settingTest.setFileFormat(FileFormat.JSON));
         Assertions.assertDoesNotThrow(settingTest::getFileFormat);
         Assertions.assertNotNull(settingTest.getFileFormat());
-        Assertions.assertEquals(settingTest.getFileFormat(),FileFormat.JSON);
+        Assertions.assertEquals(settingTest.getFileFormat(), FileFormat.JSON);
 
     }
 
@@ -99,27 +98,27 @@ public class SettingLoaderTest {
             Assertions.assertEquals(SettingTest.getExtension(e), "." + e.name().toLowerCase());
         }
 
-        Assertions.assertDoesNotThrow(()->SettingTest.getExtension(null));
-        Assertions.assertEquals(SettingTest.getExtension(null),"");
+        Assertions.assertDoesNotThrow(() -> SettingTest.getExtension(null));
+        Assertions.assertEquals(SettingTest.getExtension(null), "");
 
     }
 
     @Test
     @DisplayName("Deve validar parser extensions")
     public void UT_CHECKER_parseExtension() {
-        var file=new File("/tmp/file");
-        var fileJson=new File("/tmp/file.json");
+        var file = new File("/tmp/file");
+        var fileJson = new File("/tmp/file.json");
 
-        Assertions.assertDoesNotThrow(()->SettingTest.parseExtension(file,FileFormat.JSON).getAbsolutePath());
-        Assertions.assertDoesNotThrow(()->SettingTest.parseExtension(fileJson,FileFormat.JSON).getAbsolutePath());
-        Assertions.assertDoesNotThrow(()->SettingTest.parseExtension(fileJson,FileFormat.JSON).getAbsolutePath());
-        Assertions.assertDoesNotThrow(()->SettingTest.parseExtension(fileJson,FileFormat.JSON));
-        Assertions.assertDoesNotThrow(()->SettingTest.parseExtension(fileJson,null));
-        Assertions.assertDoesNotThrow(()->SettingTest.parseExtension(null, null));
+        Assertions.assertDoesNotThrow(() -> SettingTest.parseExtension(file, FileFormat.JSON).getAbsolutePath());
+        Assertions.assertDoesNotThrow(() -> SettingTest.parseExtension(fileJson, FileFormat.JSON).getAbsolutePath());
+        Assertions.assertDoesNotThrow(() -> SettingTest.parseExtension(fileJson, FileFormat.JSON).getAbsolutePath());
+        Assertions.assertDoesNotThrow(() -> SettingTest.parseExtension(fileJson, FileFormat.JSON));
+        Assertions.assertDoesNotThrow(() -> SettingTest.parseExtension(fileJson, null));
+        Assertions.assertDoesNotThrow(() -> SettingTest.parseExtension(null, null));
 
-        Assertions.assertEquals(SettingTest.parseExtension(file,FileFormat.JSON).getAbsolutePath(),fileJson.getAbsolutePath());
-        Assertions.assertEquals(SettingTest.parseExtension(fileJson,FileFormat.JSON).getAbsolutePath(), fileJson.getAbsolutePath());
-        Assertions.assertNull(SettingTest.parseExtension(fileJson,null));
+        Assertions.assertEquals(SettingTest.parseExtension(file, FileFormat.JSON).getAbsolutePath(), fileJson.getAbsolutePath());
+        Assertions.assertEquals(SettingTest.parseExtension(fileJson, FileFormat.JSON).getAbsolutePath(), fileJson.getAbsolutePath());
+        Assertions.assertNull(SettingTest.parseExtension(fileJson, null));
         Assertions.assertNull(SettingTest.parseExtension(null, FileFormat.JSON));
         Assertions.assertNull(SettingTest.parseExtension(null, null));
 
@@ -129,13 +128,13 @@ public class SettingLoaderTest {
     @DisplayName("Deve validar load")
     public void UT_CHECKER_LOAD() {
 
-        var objSrc=Map.of("a","test");
+        var objSrc = Map.of("a", "test");
 
-        Assertions.assertDoesNotThrow(() -> SettingLoader.staticObjectSave(new File("/tmp/file.json"),objSrc, FileFormat.JSON));
-        Assertions.assertThrows(FrameworkException.class, () -> SettingLoader.staticObjectSave(new File("/tmp/file.json"),new Object(), FileFormat.JSON));
-        Assertions.assertThrows(NullPointerException.class, () -> SettingLoader.staticObjectSave(new File("/tmp/file.json"),new Object(), null));
-        Assertions.assertThrows(NullPointerException.class, () -> SettingLoader.staticObjectSave(new File("/tmp/file.json"),null, null));
-        Assertions.assertThrows(NullPointerException.class, () -> SettingLoader.staticObjectSave(null,null, null));
+        Assertions.assertDoesNotThrow(() -> SettingLoader.staticObjectSave(new File("/tmp/file.json"), objSrc, FileFormat.JSON));
+        Assertions.assertThrows(FrameworkException.class, () -> SettingLoader.staticObjectSave(new File("/tmp/file.json"), new Object(), FileFormat.JSON));
+        Assertions.assertThrows(NullPointerException.class, () -> SettingLoader.staticObjectSave(new File("/tmp/file.json"), new Object(), null));
+        Assertions.assertThrows(NullPointerException.class, () -> SettingLoader.staticObjectSave(new File("/tmp/file.json"), null, null));
+        Assertions.assertThrows(NullPointerException.class, () -> SettingLoader.staticObjectSave(null, null, null));
 
         for (FileFormat fileFormat : SettingLoader.FILE_FORMAT_ACCEPTED) {
             Map<FileFormat, File> settingFiles = new HashMap<>();

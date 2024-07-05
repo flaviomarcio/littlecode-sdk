@@ -20,13 +20,13 @@ public class EnvironmentUtil {
 
     public EnvironmentUtil() {
         this.environment = UtilCoreConfig.getEnvironment();
-        if(this.environment == null)
+        if (this.environment == null)
             throw ExceptionBuilder.ofFrameWork("environment is null");
     }
 
     public EnvironmentUtil(Environment environment) {
         this.environment = environment;
-        if(this.environment == null)
+        if (this.environment == null)
             throw ExceptionBuilder.ofFrameWork("environment is null");
     }
 
@@ -110,10 +110,10 @@ public class EnvironmentUtil {
     }
 
     public <T> T asEnum(String env, Class<T> enumClass, T defaultValue) {
-        if (enumClass != null && enumClass.isEnum()){
+        if (enumClass != null && enumClass.isEnum()) {
             var enumList = enumClass.getEnumConstants();
-            var eValue=envValue(env);
-            if(eValue!=null){
+            var eValue = envValue(env);
+            if (eValue != null) {
                 for (var e : enumList) {
                     if (eValue.equalsIgnoreCase(e.toString()))
                         return e;
@@ -132,10 +132,10 @@ public class EnvironmentUtil {
     }
 
     public <T> List<T> asEnums(String env, Class<?> enumClass, List<T> defaultValue) {
-        if (enumClass != null && enumClass.isEnum()){
+        if (enumClass != null && enumClass.isEnum()) {
             var enumList = enumClass.getEnumConstants();
-            var eValue=envValue(env);
-            if(eValue!=null){
+            var eValue = envValue(env);
+            if (eValue != null) {
                 List<T> __return = new ArrayList<>();
                 var values = eValue.split(",");
                 for (var s : values) {
@@ -147,16 +147,16 @@ public class EnvironmentUtil {
                 return __return;
             }
         }
-        return defaultValue==null?new ArrayList<>():defaultValue;
+        return defaultValue == null ? new ArrayList<>() : defaultValue;
     }
 
     public List<String> asListOfString(String env) {
-        return this.asListOfString(env,null);
+        return this.asListOfString(env, null);
     }
 
     public List<String> asListOfString(String env, List<String> defaultValue) {
         var eValue = envValue(env);
-        if(eValue!=null){
+        if (eValue != null) {
             var values = List.of(eValue.split(","));
             List<String> out = new ArrayList<>();
             for (String s : values) {
@@ -165,17 +165,17 @@ public class EnvironmentUtil {
             }
             return out;
         }
-        return defaultValue==null?new ArrayList<>():defaultValue;
+        return defaultValue == null ? new ArrayList<>() : defaultValue;
     }
 
     public List<Long> asListOfLong(String env) {
-        return this.asListOfLong(env,null);
+        return this.asListOfLong(env, null);
     }
 
     public List<Long> asListOfLong(String env, List<Long> defaultValue) {
         var eValue = envValue(env);
         List<Long> out = new ArrayList<>();
-        if(eValue!=null){
+        if (eValue != null) {
             var values = List.of(eValue.split(","));
             for (String s : values) {
                 if (s != null && !s.trim().isEmpty()) {
@@ -186,16 +186,16 @@ public class EnvironmentUtil {
             }
             return out;
         }
-        return defaultValue==null?new ArrayList<>():defaultValue;
+        return defaultValue == null ? new ArrayList<>() : defaultValue;
     }
 
     public List<Integer> asListOfInt(String env) {
-        return this.asListOfInt(env,null);
+        return this.asListOfInt(env, null);
     }
 
     public List<Integer> asListOfInt(String env, List<Integer> defaultValue) {
         var eValue = envValue(env);
-        if(eValue!=null){
+        if (eValue != null) {
             List<Integer> out = new ArrayList<>();
             var values = List.of(eValue.split(","));
             for (String s : values) {
@@ -207,7 +207,7 @@ public class EnvironmentUtil {
             }
             return out;
         }
-        return defaultValue==null?new ArrayList<>():defaultValue;
+        return defaultValue == null ? new ArrayList<>() : defaultValue;
     }
 
 }

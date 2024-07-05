@@ -3,9 +3,11 @@ package com.littlecode.util;
 import com.littlecode.config.UtilCoreConfig;
 import com.littlecode.exceptions.FrameworkException;
 import com.littlecode.parsers.ExceptionBuilder;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
+
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,30 +19,30 @@ public class BeanUtil {
     @Setter
     private String bean;
 
-    public BeanUtil(){
-        this.context=UtilCoreConfig.getApplicationContext();
-        if(this.context==null)
+    public BeanUtil() {
+        this.context = UtilCoreConfig.getApplicationContext();
+        if (this.context == null)
             throw ExceptionBuilder.ofFrameWork("context is null");
     }
 
-    public BeanUtil(ApplicationContext context){
-        this.context=context;
-        if(this.context==null)
+    public BeanUtil(ApplicationContext context) {
+        this.context = context;
+        if (this.context == null)
             throw ExceptionBuilder.ofFrameWork("context is null");
     }
 
-    public BeanUtil(String bean){
-        this.context=UtilCoreConfig.getApplicationContext();
-        if(this.context==null)
+    public BeanUtil(String bean) {
+        this.context = UtilCoreConfig.getApplicationContext();
+        if (this.context == null)
             throw ExceptionBuilder.ofFrameWork("context is null");
-        this.bean=bean;
+        this.bean = bean;
     }
 
-    public BeanUtil(ApplicationContext context, String bean){
-        this.context=context;
-        if(this.context==null)
+    public BeanUtil(ApplicationContext context, String bean) {
+        this.context = context;
+        if (this.context == null)
             throw ExceptionBuilder.ofFrameWork("context is null");
-        this.bean=bean;
+        this.bean = bean;
     }
 
     public static BeanUtil of(ApplicationContext context) {
@@ -69,20 +71,20 @@ public class BeanUtil {
     }
 
     public List<String> asAnnotation(Class<? extends Annotation> valueType) {
-        var beans=context.getBeanNamesForAnnotation(valueType);
-        return (beans.length==0)
-                ?new ArrayList<>()
-                :List.of(beans);
+        var beans = context.getBeanNamesForAnnotation(valueType);
+        return (beans.length == 0)
+                ? new ArrayList<>()
+                : List.of(beans);
     }
 
     public <T> T getBean(String beanName, Class<T> valueType) {
-        try{
-            if(valueType==null)
+        try {
+            if (valueType == null)
                 throw new FrameworkException("");
-            return (beanName==null)
-                    ?context.getBean(valueType)
-                    :context.getBean(beanName, valueType);
-        }catch (Exception e){
+            return (beanName == null)
+                    ? context.getBean(valueType)
+                    : context.getBean(beanName, valueType);
+        } catch (Exception e) {
             return null;
         }
     }

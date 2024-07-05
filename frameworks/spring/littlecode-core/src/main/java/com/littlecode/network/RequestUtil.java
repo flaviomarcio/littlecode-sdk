@@ -6,7 +6,10 @@ import com.littlecode.files.FileFormat;
 import com.littlecode.network.clients.Http;
 import com.littlecode.network.clients.RequestClient;
 import com.littlecode.parsers.ObjectUtil;
-import lombok.*;
+import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.URI;
@@ -15,6 +18,10 @@ import java.util.*;
 @Slf4j
 public class RequestUtil {
     private static final FileFormat FILE_FORMAT_DEFAULT = FileFormat.JSON;
+    private final Map<String, String> headers = new HashMap<>();
+    private final Response response = new Response(this);
+    @Getter
+    int timeout = 10;
     private RequestClient client;
     @Getter
     private Executable onStarted = null;
@@ -30,15 +37,11 @@ public class RequestUtil {
     @Getter
     @Setter
     private boolean exceptionOnFail;
-    private Method method =Method.GET;
+    private Method method = Method.GET;
     private URI uri;
     private String path;
-    private final Map<String, String> headers =new HashMap<>();
-    private final Response response= new Response(this);
     @Getter
     private String body;
-    @Getter
-    int timeout=10;
 
     public static RequestUtil builder() {
         return new RequestUtil();
@@ -52,16 +55,16 @@ public class RequestUtil {
         return response.toString();
     }
 
-    public RequestClient getClient(){
-        if(this.client ==null)
-            this.client =new Http();
+    public RequestClient getClient() {
+        if (this.client == null)
+            this.client = new Http();
         return this.client;
     }
 
-    public RequestUtil client(RequestClient client){
-        if(client==null)
+    public RequestUtil client(RequestClient client) {
+        if (client == null)
             throw new NullPointerException("client is null");
-        this.client =client;
+        this.client = client;
         return this;
     }
 
@@ -97,7 +100,7 @@ public class RequestUtil {
     }
 
     public List<String> printLines() {
-        var method=this.method();
+        var method = this.method();
         List<String> lines = new ArrayList<>();
         lines.add(String.format("curl -i -X %s \\", method.name().toUpperCase()));
         this.headers().forEach((key, value) -> {
@@ -143,7 +146,7 @@ public class RequestUtil {
 
     public RequestUtil headers(Map<String, String> newHeaders) {
         this.headers.clear();
-        if(newHeaders!=null)
+        if (newHeaders != null)
             this.headers.putAll(newHeaders);
         return this;
     }
@@ -164,7 +167,7 @@ public class RequestUtil {
     }
 
     public RequestUtil headersAuthBasic(String clientId, String secret) {
-        if((clientId!=null && !clientId.trim().isEmpty()) && (secret!=null && !secret.trim().isEmpty())){
+        if ((clientId != null && !clientId.trim().isEmpty()) && (secret != null && !secret.trim().isEmpty())) {
             String credentials = String.format("%s:%s", clientId, secret);
             return this.headersAuthBasic(Base64.getEncoder().encodeToString(credentials.getBytes()));
         }
@@ -182,7 +185,7 @@ public class RequestUtil {
     }
 
     public RequestUtil timeout(int timeout) {
-        this.timeout=timeout;
+        this.timeout = timeout;
         return this;
     }
 
@@ -193,8 +196,7 @@ public class RequestUtil {
                 this.body = mapper.writeValueAsString(newBody);
             } catch (Exception ignored) {
             }
-        }
-        else{
+        } else {
             this.body = null;
         }
         return this;
@@ -258,8 +260,8 @@ public class RequestUtil {
     public RequestUtil method(Method newMethod) {
         method =
                 (newMethod == null)
-                        ?Method.GET
-                        :newMethod;
+                        ? Method.GET
+                        : newMethod;
         return this;
     }
 
@@ -269,14 +271,14 @@ public class RequestUtil {
     }
 
     public URI uri() {
-        if(uri==null)
-            return uri =URI.create("http://localhost");
+        if (uri == null)
+            return uri = URI.create("http://localhost");
         return uri;
     }
 
     public RequestUtil uri(String newUri) {
-        if(newUri==null || newUri.trim().isEmpty())
-            this.uri=null;
+        if (newUri == null || newUri.trim().isEmpty())
+            this.uri = null;
         else
             this.uri = URI.create(newUri);
         return this;
@@ -309,11 +311,10 @@ public class RequestUtil {
 
         this.getClient().call(this);
 
-        if(this.response.isOK()){
+        if (this.response.isOK()) {
             if (this.getOnSuccessful() != null)
                 this.getOnSuccessful().execute();
-        }
-        else{
+        } else {
             if (this.getOnFail() != null)
                 this.getOnFail().execute();
             if (this.exceptionOnFail())
@@ -350,22 +351,22 @@ public class RequestUtil {
     public static class Response {
 
         private final RequestUtil request;
+        private final Map<String, List<String>> headers = new HashMap<>();
         private String url;
-        private final Map<String, List<String>> headers=new HashMap<>();
-        private int status=-1;
+        private int status = -1;
         private String body;
         private String reasonPhrase;
 
-        public void clear(){
-            this.url="";
-            this.status=-1;
-            this.body=null;
-            this.reasonPhrase=null;
+        public void clear() {
+            this.url = "";
+            this.status = -1;
+            this.body = null;
+            this.reasonPhrase = null;
         }
 
-        public void setHeaders(Map<String, String> headers){
+        public void setHeaders(Map<String, String> headers) {
             this.headers.clear();
-            if(headers!=null){
+            if (headers != null) {
                 for (Map.Entry<String, String> entry : headers.entrySet()) {
                     var k = entry.getKey();
                     var v = entry.getValue();
@@ -375,7 +376,7 @@ public class RequestUtil {
         }
 
         public String toString() {
-            if (!this.isOK()){
+            if (!this.isOK()) {
                 var str = new StringBuilder();
                 str
                         .append(String.format("fail: statusCode: %d, reasonPhrase: %s", this.status, this.reasonPhrase))
@@ -409,24 +410,23 @@ public class RequestUtil {
         }
 
         public <T> T bodyAs(Class<T> aClass) {
-            return ObjectUtil.createFromString(aClass,body);
+            return ObjectUtil.createFromString(aClass, body);
         }
 
         public <T> List<T> bodyAsList(Class<T> aClass) {
-            List<T> __return=new ArrayList<>();
-            if(aClass!=null){
-                var __object = ObjectUtil.createFromString(Object.class,body);
-                List<Object> list=new ArrayList<>();
-                if(__object != null){
-                    if(__object instanceof List value) {
+            List<T> __return = new ArrayList<>();
+            if (aClass != null) {
+                var __object = ObjectUtil.createFromString(Object.class, body);
+                List<Object> list = new ArrayList<>();
+                if (__object != null) {
+                    if (__object instanceof List value) {
                         list.addAll(value);
-                    }
-                    else {
+                    } else {
                         list.add(__object);
                     }
-                    for(Object o:list){
-                        T __item=ObjectUtil.createFromObject(aClass,o);
-                        if(__item!=null)
+                    for (Object o : list) {
+                        T __item = ObjectUtil.createFromObject(aClass, o);
+                        if (__item != null)
                             __return.add(__item);
                     }
                 }

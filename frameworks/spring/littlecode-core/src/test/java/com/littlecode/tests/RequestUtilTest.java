@@ -5,11 +5,6 @@ import com.littlecode.network.RequestUtil;
 import com.littlecode.network.clients.Http;
 import com.littlecode.network.clients.RequestClient;
 import com.littlecode.parsers.ObjectUtil;
-import com.sun.net.httpserver.HttpServer;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,17 +16,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.server.reactive.HttpHandler;
-import org.springframework.http.server.reactive.ServerHttpRequest;
-import org.springframework.http.server.reactive.ServerHttpResponse;
-import org.springframework.web.service.annotation.HttpExchange;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.http.HttpClient;
-import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -42,8 +29,8 @@ public class RequestUtilTest {
     public static HttpClient mock_httpClient;
 
     @BeforeAll()
-    public static void setup(){
-        mock_httpClient= Mockito.mock(HttpClient.class);
+    public static void setup() {
+        mock_httpClient = Mockito.mock(HttpClient.class);
 
 
     }
@@ -52,7 +39,7 @@ public class RequestUtilTest {
     @DisplayName("Deve validar methods")
     public void UT_000_CHECK_CONSTRUCTOR_GETTER() {
         Assertions.assertDoesNotThrow(() -> RequestUtil.builder().build());
-        var request=RequestUtil.builder().build();
+        var request = RequestUtil.builder().build();
         Assertions.assertDoesNotThrow(request::getClient);
         Assertions.assertDoesNotThrow(request::getOnFinished);
         Assertions.assertDoesNotThrow(request::getOnFail);
@@ -65,17 +52,17 @@ public class RequestUtilTest {
         Assertions.assertDoesNotThrow(() -> request.setExceptionOnFail(false));
         Assertions.assertDoesNotThrow(request::getBody);
 
-        Assertions.assertDoesNotThrow(()->request.client(new Http()));
-        Assertions.assertDoesNotThrow(()->request.onFinished(null));
-        Assertions.assertDoesNotThrow(()->request.onFail(null));
-        Assertions.assertDoesNotThrow(()->request.onStarted(null));
-        Assertions.assertDoesNotThrow(()->request.onSuccessful(null));
+        Assertions.assertDoesNotThrow(() -> request.client(new Http()));
+        Assertions.assertDoesNotThrow(() -> request.onFinished(null));
+        Assertions.assertDoesNotThrow(() -> request.onFail(null));
+        Assertions.assertDoesNotThrow(() -> request.onStarted(null));
+        Assertions.assertDoesNotThrow(() -> request.onSuccessful(null));
     }
 
     @Test
     @DisplayName("Deve validar methods")
     public void UT_000_CHECK_METHODS() {
-        var request=RequestUtil.builder().build();
+        var request = RequestUtil.builder().build();
         Assertions.assertEquals(request.GET().method(), RequestUtil.Method.GET);
         Assertions.assertEquals(request.POST().method(), RequestUtil.Method.POST);
         Assertions.assertEquals(request.PUT().method(), RequestUtil.Method.PUT);
@@ -86,8 +73,8 @@ public class RequestUtilTest {
     @Test
     @DisplayName("Deve validar Response")
     public void UT_000_CHECK_RESPONSE() {
-        Assertions.assertDoesNotThrow(()-> new RequestUtil.Response(null));
-        var response=(new RequestUtil()).response();
+        Assertions.assertDoesNotThrow(() -> new RequestUtil.Response(null));
+        var response = (new RequestUtil()).response();
         response.setStatus(-1);
         Assertions.assertDoesNotThrow(response::toString);
         response.setStatus(200);
@@ -116,28 +103,28 @@ public class RequestUtilTest {
 
         response.setBody("");
         Assertions.assertNull(response.bodyAs(PrivateObject.class));
-        Assertions.assertTrue(response.bodyAsList(PrivateObject.class).isEmpty());;
+        Assertions.assertTrue(response.bodyAsList(PrivateObject.class).isEmpty());
+        ;
 
         response.setBody(null);
         Assertions.assertNull(response.bodyAs(PrivateObject.class));
         Assertions.assertTrue(response.bodyAsList(PrivateObject.class).isEmpty());
 
-        var itemA=new PrivateObject(UUID.randomUUID());
-        var itemB=new PrivateObject(UUID.randomUUID());
+        var itemA = new PrivateObject(UUID.randomUUID());
+        var itemB = new PrivateObject(UUID.randomUUID());
 
         response.setBody(ObjectUtil.toString(itemA));
         Assertions.assertNotNull(response.bodyAs(PrivateObject.class));
-        Assertions.assertEquals(response.bodyAs(PrivateObject.class).getId(),itemA.getId());
+        Assertions.assertEquals(response.bodyAs(PrivateObject.class).getId(), itemA.getId());
         Assertions.assertFalse(response.bodyAsList(PrivateObject.class).isEmpty());
-        Assertions.assertEquals(response.bodyAsList(PrivateObject.class).get(0).getId(),itemA.getId());
+        Assertions.assertEquals(response.bodyAsList(PrivateObject.class).get(0).getId(), itemA.getId());
 
         response.setBody(ObjectUtil.toString(List.of(itemA, itemB)));
         Assertions.assertDoesNotThrow(() -> response.bodyAsList(PrivateObject.class));
-        Assertions.assertEquals(response.bodyAsList(PrivateObject.class).get(0).getId(),itemA.getId());
-        Assertions.assertEquals(response.bodyAsList(PrivateObject.class).get(1).getId(),itemB.getId());
+        Assertions.assertEquals(response.bodyAsList(PrivateObject.class).get(0).getId(), itemA.getId());
+        Assertions.assertEquals(response.bodyAsList(PrivateObject.class).get(1).getId(), itemB.getId());
 
     }
-
 
 
     @Test
@@ -146,7 +133,7 @@ public class RequestUtilTest {
 
         Assertions.assertDoesNotThrow(RequestUtil::new);
         Assertions.assertDoesNotThrow(() -> RequestUtil.builder().build());
-        var request=RequestUtil.builder().build();
+        var request = RequestUtil.builder().build();
         Assertions.assertDoesNotThrow(request::clear);
         Assertions.assertDoesNotThrow(request::toString);
         Assertions.assertDoesNotThrow(() -> request.response().getRequest());
@@ -174,7 +161,7 @@ public class RequestUtilTest {
             request.response().bodyAsList(Object.class);
         });
 
-        Assertions.assertDoesNotThrow(() -> request.response().setHeaders(Map.of("header","value")));
+        Assertions.assertDoesNotThrow(() -> request.response().setHeaders(Map.of("header", "value")));
         Assertions.assertDoesNotThrow(() -> request.response().clear());
         Assertions.assertDoesNotThrow(() -> request.response().toString());
         Assertions.assertDoesNotThrow(() -> {
@@ -191,7 +178,8 @@ public class RequestUtilTest {
         Assertions.assertDoesNotThrow(request::PATCH);
         Assertions.assertDoesNotThrow(request::POST);
         Assertions.assertDoesNotThrow(request::PUT);
-        Assertions.assertDoesNotThrow(request::TRACE);        Assertions.assertDoesNotThrow(() -> request.method());
+        Assertions.assertDoesNotThrow(request::TRACE);
+        Assertions.assertDoesNotThrow(() -> request.method());
         Assertions.assertDoesNotThrow(() -> request.method(RequestUtil.Method.POST));
         Assertions.assertDoesNotThrow(() -> request.method(null));
         Assertions.assertDoesNotThrow(() -> request.uri());
@@ -199,25 +187,25 @@ public class RequestUtilTest {
         Assertions.assertDoesNotThrow(() -> request.uri(URI.create("https://littlecode.com")));
         Assertions.assertDoesNotThrow(request::url);
         Assertions.assertDoesNotThrow(() -> request.headers());
-        Assertions.assertDoesNotThrow(() -> request.headers("a","b"));
-        Assertions.assertDoesNotThrow(() -> request.headers("a",null));
-        Assertions.assertDoesNotThrow(() -> request.headers(null,"b"));
-        Assertions.assertDoesNotThrow(() -> request.headers(null,null));
-        Assertions.assertDoesNotThrow(() -> request.headers(Map.of("teste","teste")));
+        Assertions.assertDoesNotThrow(() -> request.headers("a", "b"));
+        Assertions.assertDoesNotThrow(() -> request.headers("a", null));
+        Assertions.assertDoesNotThrow(() -> request.headers(null, "b"));
+        Assertions.assertDoesNotThrow(() -> request.headers(null, null));
+        Assertions.assertDoesNotThrow(() -> request.headers(Map.of("teste", "teste")));
         Assertions.assertDoesNotThrow(request::headersJSON);
         Assertions.assertDoesNotThrow(() -> request.headersAuthBasic(""));
         Assertions.assertDoesNotThrow(() -> request.headersAuthBasic(null));
-        Assertions.assertDoesNotThrow(() -> request.headersAuthBasic("a","b"));
-        Assertions.assertDoesNotThrow(() -> request.headersAuthBasic("a",null));
-        Assertions.assertDoesNotThrow(() -> request.headersAuthBasic(null,"b"));
-        Assertions.assertDoesNotThrow(() -> request.headersAuthBasic(null,null));
+        Assertions.assertDoesNotThrow(() -> request.headersAuthBasic("a", "b"));
+        Assertions.assertDoesNotThrow(() -> request.headersAuthBasic("a", null));
+        Assertions.assertDoesNotThrow(() -> request.headersAuthBasic(null, "b"));
+        Assertions.assertDoesNotThrow(() -> request.headersAuthBasic(null, null));
         Assertions.assertDoesNotThrow(() -> request.headersAuthBearer(""));
         Assertions.assertDoesNotThrow(() -> request.headersAuthBearer(null));
         Assertions.assertDoesNotThrow(request::getBody);
         Assertions.assertDoesNotThrow(() -> request.body(new Object()));
         Assertions.assertDoesNotThrow(() -> request.body(""));
         Assertions.assertDoesNotThrow(() -> request.timeout(10));
-        Assertions.assertDoesNotThrow(() -> request.body((String)null ));
+        Assertions.assertDoesNotThrow(() -> request.body((String) null));
         Assertions.assertDoesNotThrow(() -> request.body((Object) null));
         Assertions.assertDoesNotThrow(() -> request.body("teste"));
         Assertions.assertDoesNotThrow(() -> request.response().getBody());
@@ -238,9 +226,9 @@ public class RequestUtilTest {
     @Test
     @DisplayName("Deve validar metodo prints")
     public void UT_CHECK_METHOD_PRINT() {
-        var request=RequestUtil.builder().build();
+        var request = RequestUtil.builder().build();
         Assertions.assertDoesNotThrow(() -> request.printOnFail());
-        Assertions.assertDoesNotThrow(() -> request.headers("a","b"));
+        Assertions.assertDoesNotThrow(() -> request.headers("a", "b"));
         Assertions.assertDoesNotThrow(request::POST);
         Assertions.assertDoesNotThrow(request::printLines);
         Assertions.assertDoesNotThrow(() -> request.printOnFail(false));
@@ -251,23 +239,27 @@ public class RequestUtilTest {
     @Test
     @DisplayName("Deve validar metodo call com sucesso")
     public void UT_CHECK_METHOD_CALL_COM_SUCESSO() {
-        var request=RequestUtil.builder().build();
+        var request = RequestUtil.builder().build();
         request
                 .client(new PrivateRequestClient())
                 .uri("http://localhost:8080")
                 .path("/test")
-                .onStarted(() -> {})
-                .onFail(() -> {})
-                .onSuccessful(() -> {})
-                .onFinished(() -> {});
+                .onStarted(() -> {
+                })
+                .onFail(() -> {
+                })
+                .onSuccessful(() -> {
+                })
+                .onFinished(() -> {
+                });
         Assertions.assertDoesNotThrow(request::getClient);
-        Assertions.assertDoesNotThrow(() -> request.uri((URI)null).uri());
+        Assertions.assertDoesNotThrow(() -> request.uri((URI) null).uri());
         Assertions.assertDoesNotThrow(() -> request.path(" ").path());
         Assertions.assertDoesNotThrow(() -> request.path("").path());
         Assertions.assertDoesNotThrow(() -> request.path(null).path());
         Assertions.assertDoesNotThrow(() -> request.uri(" ").uri());
         Assertions.assertDoesNotThrow(() -> request.uri("http://localhost:8080").uri());
-        Assertions.assertDoesNotThrow(() -> request.uri((String)null).uri());
+        Assertions.assertDoesNotThrow(() -> request.uri((String) null).uri());
         Assertions.assertDoesNotThrow(() -> request.client(new PrivateRequestClient()));
         Assertions.assertDoesNotThrow(request::call);
         Assertions.assertDoesNotThrow(request::response);
@@ -276,22 +268,26 @@ public class RequestUtilTest {
     @Test
     @DisplayName("Deve validar metodo call com falha")
     public void UT_CHECK_METHOD_CALL_COM_FALHA() {
-        var request=RequestUtil.builder().build();
+        var request = RequestUtil.builder().build();
         request
                 .uri("http://localhost:8080")
                 .path("/test")
-                .onStarted(() -> {})
-                .onFail(() -> {})
-                .onSuccessful(() -> {})
-                .onFinished(() -> {});
+                .onStarted(() -> {
+                })
+                .onFail(() -> {
+                })
+                .onSuccessful(() -> {
+                })
+                .onFinished(() -> {
+                });
         Assertions.assertDoesNotThrow(request::getClient);
-        Assertions.assertDoesNotThrow(() -> request.uri((URI)null).uri());
+        Assertions.assertDoesNotThrow(() -> request.uri((URI) null).uri());
         Assertions.assertDoesNotThrow(() -> request.path(" ").path());
         Assertions.assertDoesNotThrow(() -> request.path("").path());
         Assertions.assertDoesNotThrow(() -> request.path(null).path());
         Assertions.assertDoesNotThrow(() -> request.uri(" ").uri());
         Assertions.assertDoesNotThrow(() -> request.uri("http://localhost:8080").uri());
-        Assertions.assertDoesNotThrow(() -> request.uri((String)null).uri());
+        Assertions.assertDoesNotThrow(() -> request.uri((String) null).uri());
 
         request.exceptionOnFail(false);
         request.printOnFail(false);
@@ -300,15 +296,15 @@ public class RequestUtilTest {
 
         request.exceptionOnFail(true);
         request.printOnFail(false);
-        Assertions.assertThrows(FrameworkException.class, ()-> request.call());
+        Assertions.assertThrows(FrameworkException.class, () -> request.call());
 
         request.exceptionOnFail(false);
         request.printOnFail(true);
-        Assertions.assertDoesNotThrow(()-> request.CONNECT().call());
+        Assertions.assertDoesNotThrow(() -> request.CONNECT().call());
 
-        for(var method: RequestUtil.Method.values()){
-            Assertions.assertDoesNotThrow(()-> request.body("[1,2,3,4]").method(method).call());
-            Assertions.assertDoesNotThrow(()-> request.body(null).method(method).call());
+        for (var method : RequestUtil.Method.values()) {
+            Assertions.assertDoesNotThrow(() -> request.body("[1,2,3,4]").method(method).call());
+            Assertions.assertDoesNotThrow(() -> request.body(null).method(method).call());
 
         }
 
@@ -319,20 +315,24 @@ public class RequestUtilTest {
     public void UT_CHECK_CLASS_HTTP_COM_SUCESSO() {
         Assertions.assertDoesNotThrow(Http::new);
         {
-            var request=RequestUtil.builder().build();
+            var request = RequestUtil.builder().build();
             Assertions.assertDoesNotThrow(() -> request.client(new Http()));
             Assertions.assertThrows(NullPointerException.class, () -> request.client(null));
         }
-        var rq=RequestUtil.builder().build();
+        var rq = RequestUtil.builder().build();
 
         rq
                 .client(new PrivateRequestClient())
                 .uri("http://localhost:8080")
                 .path("/test")
-                .onStarted(() -> {})
-                .onFail(() -> {})
-                .onSuccessful(() -> {})
-                .onFinished(() -> {});
+                .onStarted(() -> {
+                })
+                .onFail(() -> {
+                })
+                .onSuccessful(() -> {
+                })
+                .onFinished(() -> {
+                });
 
         Assertions.assertDoesNotThrow(() -> rq.GET().call());
         Assertions.assertDoesNotThrow(() -> rq.POST().call());
@@ -346,7 +346,7 @@ public class RequestUtilTest {
     @DisplayName("Deve validar class Execute")
     public void UT_CHECK_CLASS_EXECUTE() {
         Assertions.assertDoesNotThrow(() -> {
-            RequestUtil.Executable e=new RequestUtil.Executable() {
+            RequestUtil.Executable e = new RequestUtil.Executable() {
                 @Override
                 public void execute() {
 
@@ -356,7 +356,7 @@ public class RequestUtilTest {
         });
     }
 
-    public static class PrivateRequestClient implements RequestClient{
+    public static class PrivateRequestClient implements RequestClient {
         @Override
         public void call(RequestUtil rqUtil) {
             rqUtil.response().setStatus(200);
@@ -372,7 +372,7 @@ public class RequestUtilTest {
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class PrivateObject{
+    public static class PrivateObject {
         private UUID id;
     }
 

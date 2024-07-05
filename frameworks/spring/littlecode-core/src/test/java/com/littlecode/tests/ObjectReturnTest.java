@@ -20,20 +20,20 @@ public class ObjectReturnTest {
     @DisplayName("Deve validar ObjectReturn.type")
     public void UT_DIRECT_RETURN_TYPE() {
 
-        Assertions.assertDoesNotThrow(()->ObjectReturn.type(ObjectReturn.Type.Success));
-        Assertions.assertDoesNotThrow(()->ObjectReturn.type(ObjectReturn.Type.Success, Object.class));
-        Assertions.assertDoesNotThrow(()->ObjectReturn.type(ObjectReturn.Type.Success, (Class<?>) null));
-        Assertions.assertDoesNotThrow(()->ObjectReturn.type(ObjectReturn.Type.Success, (String) null));
-        Assertions.assertDoesNotThrow(()->ObjectReturn.type(ObjectReturn.Type.Success, "teste"));
+        Assertions.assertDoesNotThrow(() -> ObjectReturn.type(ObjectReturn.Type.Success));
+        Assertions.assertDoesNotThrow(() -> ObjectReturn.type(ObjectReturn.Type.Success, Object.class));
+        Assertions.assertDoesNotThrow(() -> ObjectReturn.type(ObjectReturn.Type.Success, (Class<?>) null));
+        Assertions.assertDoesNotThrow(() -> ObjectReturn.type(ObjectReturn.Type.Success, (String) null));
+        Assertions.assertDoesNotThrow(() -> ObjectReturn.type(ObjectReturn.Type.Success, "teste"));
 
-        Assertions.assertDoesNotThrow(()->ObjectReturn.Empty().getType());
-        Assertions.assertEquals(ObjectReturn.Empty().getType(),ObjectReturn.Type.Success);
+        Assertions.assertDoesNotThrow(() -> ObjectReturn.Empty().getType());
+        Assertions.assertEquals(ObjectReturn.Empty().getType(), ObjectReturn.Type.Success);
 
-        Assertions.assertDoesNotThrow(()->ObjectReturn.type(null));
-        Assertions.assertDoesNotThrow(()->ObjectReturn.type(null, Object.class));
-        Assertions.assertDoesNotThrow(()->ObjectReturn.type(null, (Class<?>) null));
-        Assertions.assertDoesNotThrow(()->ObjectReturn.type(null, (String) null));
-        Assertions.assertDoesNotThrow(()->ObjectReturn.type(null, "teste"));
+        Assertions.assertDoesNotThrow(() -> ObjectReturn.type(null));
+        Assertions.assertDoesNotThrow(() -> ObjectReturn.type(null, Object.class));
+        Assertions.assertDoesNotThrow(() -> ObjectReturn.type(null, (Class<?>) null));
+        Assertions.assertDoesNotThrow(() -> ObjectReturn.type(null, (String) null));
+        Assertions.assertDoesNotThrow(() -> ObjectReturn.type(null, "teste"));
 
         Assertions.assertNotNull(ObjectReturn.type(ObjectReturn.Type.Success));
         Assertions.assertNotNull(ObjectReturn.type(ObjectReturn.Type.Success, Object.class));
@@ -142,8 +142,8 @@ public class ObjectReturnTest {
         ObjectReturn objectReturn = new ObjectReturn();
         Assertions.assertTrue(objectReturn.isOK());
 
-        Assertions.assertDoesNotThrow(()-> ObjectReturn.of(ObjectReturn.Empty()));
-        Assertions.assertDoesNotThrow(()-> ObjectReturn.of((ObjectReturn)null));
+        Assertions.assertDoesNotThrow(() -> ObjectReturn.of(ObjectReturn.Empty()));
+        Assertions.assertDoesNotThrow(() -> ObjectReturn.of((ObjectReturn) null));
 
         Assertions.assertTrue(ObjectReturn.of(new Object()).isOK());
         Assertions.assertEquals(ObjectReturn.of(new Object()).getType(), ObjectReturn.Type.Success);
@@ -219,7 +219,7 @@ public class ObjectReturnTest {
     public void UT_CHECK_RETURN_BY_MESSAGES_SUCESS() {
         var listReturn = List.of(
                 ObjectReturn.Empty(),
-                ObjectReturn.of(Map.of("a","b"))
+                ObjectReturn.of(Map.of("a", "b"))
         );
 
         for (var oReturn : listReturn) {
@@ -257,7 +257,7 @@ public class ObjectReturnTest {
     public void UT_CHECK_RETURN_BY_RESULT_INFO() {
         Assertions.assertDoesNotThrow(() -> new ObjectReturn.ResultInfo());
 
-        var resultInfo=new ObjectReturn.ResultInfo();
+        var resultInfo = new ObjectReturn.ResultInfo();
         Assertions.assertDoesNotThrow(resultInfo::getResult);
         Assertions.assertDoesNotThrow(resultInfo::getPage);
         Assertions.assertDoesNotThrow(resultInfo::getCode);
@@ -286,7 +286,7 @@ public class ObjectReturnTest {
         Assertions.assertDoesNotThrow(() -> new ObjectReturn.Message());
         Assertions.assertDoesNotThrow(() -> ObjectReturn.Message.builder().build());
 
-        var message=ObjectReturn.Message.builder().build();
+        var message = ObjectReturn.Message.builder().build();
         Assertions.assertDoesNotThrow(message::getMessage);
         Assertions.assertDoesNotThrow(message::getCode);
         Assertions.assertDoesNotThrow(message::getType);
@@ -313,95 +313,95 @@ public class ObjectReturnTest {
     public void UT_CHECK_RETURN_BY_MESSAGE_MAKER() {
         Assertions.assertDoesNotThrow(() -> new ObjectReturn.MessageMaker(ObjectReturn.Empty()));
 
-        var messageMaker=new ObjectReturn.MessageMaker(ObjectReturn.Empty());
+        var messageMaker = new ObjectReturn.MessageMaker(ObjectReturn.Empty());
         Assertions.assertDoesNotThrow(() -> messageMaker.clear());
         Assertions.assertDoesNotThrow(() -> messageMaker.end());
         Assertions.assertDoesNotThrow(() -> messageMaker.type(null));
         Assertions.assertDoesNotThrow(() -> messageMaker.type(ObjectReturn.Type.NoContent));
-        Assertions.assertDoesNotThrow(() -> messageMaker.type(ObjectReturn.Type.NoContent,"test"));
-        Assertions.assertDoesNotThrow(() -> messageMaker.type(ObjectReturn.Type.NoContent,null));
-        Assertions.assertDoesNotThrow(() -> messageMaker.type(null,null));
-        Assertions.assertDoesNotThrow(() -> messageMaker.type(ObjectReturn.Type.NoContent,"%s", "test"));
-        Assertions.assertDoesNotThrow(() -> messageMaker.type(ObjectReturn.Type.NoContent,"%s", null));
-        Assertions.assertDoesNotThrow(() -> messageMaker.type(ObjectReturn.Type.NoContent,null, null));
-        Assertions.assertDoesNotThrow(() -> messageMaker.type(null,null, null));
+        Assertions.assertDoesNotThrow(() -> messageMaker.type(ObjectReturn.Type.NoContent, "test"));
+        Assertions.assertDoesNotThrow(() -> messageMaker.type(ObjectReturn.Type.NoContent, null));
+        Assertions.assertDoesNotThrow(() -> messageMaker.type(null, null));
+        Assertions.assertDoesNotThrow(() -> messageMaker.type(ObjectReturn.Type.NoContent, "%s", "test"));
+        Assertions.assertDoesNotThrow(() -> messageMaker.type(ObjectReturn.Type.NoContent, "%s", null));
+        Assertions.assertDoesNotThrow(() -> messageMaker.type(ObjectReturn.Type.NoContent, null, null));
+        Assertions.assertDoesNotThrow(() -> messageMaker.type(null, null, null));
 
         Assertions.assertDoesNotThrow(() -> messageMaker.code(null));
         Assertions.assertDoesNotThrow(() -> messageMaker.code(1L));
 
-        Assertions.assertDoesNotThrow(() -> messageMaker.message((String)null));
+        Assertions.assertDoesNotThrow(() -> messageMaker.message((String) null));
         Assertions.assertDoesNotThrow(() -> messageMaker.message("test"));
         Assertions.assertDoesNotThrow(() -> messageMaker.message(Object.class));
-        Assertions.assertDoesNotThrow(() -> messageMaker.message((Class)null));
-        Assertions.assertDoesNotThrow(() -> messageMaker.message("%s","test"));
-        Assertions.assertDoesNotThrow(() -> messageMaker.message("%s",null));
-        Assertions.assertDoesNotThrow(() -> messageMaker.message(null,null));
+        Assertions.assertDoesNotThrow(() -> messageMaker.message((Class) null));
+        Assertions.assertDoesNotThrow(() -> messageMaker.message("%s", "test"));
+        Assertions.assertDoesNotThrow(() -> messageMaker.message("%s", null));
+        Assertions.assertDoesNotThrow(() -> messageMaker.message(null, null));
 
         Assertions.assertDoesNotThrow(() -> messageMaker.Success());
         Assertions.assertDoesNotThrow(() -> messageMaker.Success(null));
-        Assertions.assertDoesNotThrow(() -> messageMaker.Success("%s","test"));
-        Assertions.assertDoesNotThrow(() -> messageMaker.Success("%s",null));
-        Assertions.assertDoesNotThrow(() -> messageMaker.Success(null,null));
+        Assertions.assertDoesNotThrow(() -> messageMaker.Success("%s", "test"));
+        Assertions.assertDoesNotThrow(() -> messageMaker.Success("%s", null));
+        Assertions.assertDoesNotThrow(() -> messageMaker.Success(null, null));
 
         Assertions.assertDoesNotThrow(() -> messageMaker.Accepted());
         Assertions.assertDoesNotThrow(() -> messageMaker.Accepted(null));
-        Assertions.assertDoesNotThrow(() -> messageMaker.Accepted("%s","test"));
-        Assertions.assertDoesNotThrow(() -> messageMaker.Accepted("%s",null));
-        Assertions.assertDoesNotThrow(() -> messageMaker.Accepted(null,null));
+        Assertions.assertDoesNotThrow(() -> messageMaker.Accepted("%s", "test"));
+        Assertions.assertDoesNotThrow(() -> messageMaker.Accepted("%s", null));
+        Assertions.assertDoesNotThrow(() -> messageMaker.Accepted(null, null));
 
         Assertions.assertDoesNotThrow(() -> messageMaker.NoContent());
         Assertions.assertDoesNotThrow(() -> messageMaker.NoContent(null));
-        Assertions.assertDoesNotThrow(() -> messageMaker.NoContent("%s","test"));
-        Assertions.assertDoesNotThrow(() -> messageMaker.NoContent("%s",null));
-        Assertions.assertDoesNotThrow(() -> messageMaker.NoContent(null,null));
+        Assertions.assertDoesNotThrow(() -> messageMaker.NoContent("%s", "test"));
+        Assertions.assertDoesNotThrow(() -> messageMaker.NoContent("%s", null));
+        Assertions.assertDoesNotThrow(() -> messageMaker.NoContent(null, null));
 
         Assertions.assertDoesNotThrow(() -> messageMaker.BadRequest());
         Assertions.assertDoesNotThrow(() -> messageMaker.BadRequest(null));
-        Assertions.assertDoesNotThrow(() -> messageMaker.BadRequest("%s","test"));
-        Assertions.assertDoesNotThrow(() -> messageMaker.BadRequest("%s",null));
-        Assertions.assertDoesNotThrow(() -> messageMaker.BadRequest(null,null));
+        Assertions.assertDoesNotThrow(() -> messageMaker.BadRequest("%s", "test"));
+        Assertions.assertDoesNotThrow(() -> messageMaker.BadRequest("%s", null));
+        Assertions.assertDoesNotThrow(() -> messageMaker.BadRequest(null, null));
 
         Assertions.assertDoesNotThrow(() -> messageMaker.Forbidden());
         Assertions.assertDoesNotThrow(() -> messageMaker.Forbidden(null));
-        Assertions.assertDoesNotThrow(() -> messageMaker.Forbidden("%s","test"));
-        Assertions.assertDoesNotThrow(() -> messageMaker.Forbidden("%s",null));
-        Assertions.assertDoesNotThrow(() -> messageMaker.Forbidden(null,null));
+        Assertions.assertDoesNotThrow(() -> messageMaker.Forbidden("%s", "test"));
+        Assertions.assertDoesNotThrow(() -> messageMaker.Forbidden("%s", null));
+        Assertions.assertDoesNotThrow(() -> messageMaker.Forbidden(null, null));
 
         Assertions.assertDoesNotThrow(() -> messageMaker.Conflict());
         Assertions.assertDoesNotThrow(() -> messageMaker.Conflict(null));
-        Assertions.assertDoesNotThrow(() -> messageMaker.Conflict("%s","test"));
-        Assertions.assertDoesNotThrow(() -> messageMaker.Conflict("%s",null));
-        Assertions.assertDoesNotThrow(() -> messageMaker.Conflict(null,null));
+        Assertions.assertDoesNotThrow(() -> messageMaker.Conflict("%s", "test"));
+        Assertions.assertDoesNotThrow(() -> messageMaker.Conflict("%s", null));
+        Assertions.assertDoesNotThrow(() -> messageMaker.Conflict(null, null));
 
         Assertions.assertDoesNotThrow(() -> messageMaker.NotAllowed());
         Assertions.assertDoesNotThrow(() -> messageMaker.NotAllowed(null));
-        Assertions.assertDoesNotThrow(() -> messageMaker.NotAllowed("%s","test"));
-        Assertions.assertDoesNotThrow(() -> messageMaker.NotAllowed("%s",null));
-        Assertions.assertDoesNotThrow(() -> messageMaker.NotAllowed(null,null));
+        Assertions.assertDoesNotThrow(() -> messageMaker.NotAllowed("%s", "test"));
+        Assertions.assertDoesNotThrow(() -> messageMaker.NotAllowed("%s", null));
+        Assertions.assertDoesNotThrow(() -> messageMaker.NotAllowed(null, null));
 
         Assertions.assertDoesNotThrow(() -> messageMaker.NotAcceptable());
         Assertions.assertDoesNotThrow(() -> messageMaker.NotAcceptable(null));
-        Assertions.assertDoesNotThrow(() -> messageMaker.NotAcceptable("%s","test"));
-        Assertions.assertDoesNotThrow(() -> messageMaker.NotAcceptable("%s",null));
-        Assertions.assertDoesNotThrow(() -> messageMaker.NotAcceptable(null,null));
+        Assertions.assertDoesNotThrow(() -> messageMaker.NotAcceptable("%s", "test"));
+        Assertions.assertDoesNotThrow(() -> messageMaker.NotAcceptable("%s", null));
+        Assertions.assertDoesNotThrow(() -> messageMaker.NotAcceptable(null, null));
 
         Assertions.assertDoesNotThrow(() -> messageMaker.Unauthorized());
         Assertions.assertDoesNotThrow(() -> messageMaker.Unauthorized(null));
-        Assertions.assertDoesNotThrow(() -> messageMaker.Unauthorized("%s","test"));
-        Assertions.assertDoesNotThrow(() -> messageMaker.Unauthorized("%s",null));
-        Assertions.assertDoesNotThrow(() -> messageMaker.Unauthorized(null,null));
+        Assertions.assertDoesNotThrow(() -> messageMaker.Unauthorized("%s", "test"));
+        Assertions.assertDoesNotThrow(() -> messageMaker.Unauthorized("%s", null));
+        Assertions.assertDoesNotThrow(() -> messageMaker.Unauthorized(null, null));
 
         Assertions.assertDoesNotThrow(() -> messageMaker.NotImplemented());
         Assertions.assertDoesNotThrow(() -> messageMaker.NotImplemented(null));
-        Assertions.assertDoesNotThrow(() -> messageMaker.NotImplemented("%s","test"));
-        Assertions.assertDoesNotThrow(() -> messageMaker.NotImplemented("%s",null));
-        Assertions.assertDoesNotThrow(() -> messageMaker.NotImplemented(null,null));
+        Assertions.assertDoesNotThrow(() -> messageMaker.NotImplemented("%s", "test"));
+        Assertions.assertDoesNotThrow(() -> messageMaker.NotImplemented("%s", null));
+        Assertions.assertDoesNotThrow(() -> messageMaker.NotImplemented(null, null));
 
         Assertions.assertDoesNotThrow(() -> messageMaker.Fail());
         Assertions.assertDoesNotThrow(() -> messageMaker.Fail(null));
-        Assertions.assertDoesNotThrow(() -> messageMaker.Fail("%s","test"));
-        Assertions.assertDoesNotThrow(() -> messageMaker.Fail("%s",null));
-        Assertions.assertDoesNotThrow(() -> messageMaker.Fail(null,null));
+        Assertions.assertDoesNotThrow(() -> messageMaker.Fail("%s", "test"));
+        Assertions.assertDoesNotThrow(() -> messageMaker.Fail("%s", null));
+        Assertions.assertDoesNotThrow(() -> messageMaker.Fail(null, null));
 
     }
 

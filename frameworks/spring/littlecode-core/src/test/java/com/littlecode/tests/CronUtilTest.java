@@ -49,7 +49,7 @@ public class CronUtilTest {
         Assertions.assertDoesNotThrow(() -> CronUtil.everySecond());
         Assertions.assertDoesNotThrow(() -> CronUtil.everyMinute());
         Assertions.assertDoesNotThrow(() -> CronUtil.everyDay());
-        var cronUtil=CronUtil.builder();
+        var cronUtil = CronUtil.builder();
         Assertions.assertDoesNotThrow(() -> cronUtil.temporal(null));
         Assertions.assertDoesNotThrow(() -> cronUtil
                 .temporal(LocalDateTime.now())

@@ -3,12 +3,11 @@ package com.littlecode.parsers;
 import java.util.List;
 
 public class UrlUtil {
-    private static final String PATH_LIST_DELIMIT = " ";
     public static final String PATH_DELIMIT = "/";
     public static final String PATH_AUTH_END = "/**";
     public static final List<String> DEFAULT_TRUSTED_URLS = List.of("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html");
     public static final List<String> DEFAULT_TRUSTED_URLS_OPEN = List.of("/login/**", "/swagger-ui/**", "/v3/api-docs/**", "/actuator/**", "/prometheus/**");
-
+    private static final String PATH_LIST_DELIMIT = " ";
     private String contextPath;
     private List<String> trustedUrls;
     private List<String> trustedUrlsOpen;
@@ -34,7 +33,7 @@ public class UrlUtil {
     }
 
     public UrlUtil contextPath(String contextPath) {
-        this.contextPath = contextPath==null?null:pathParse(contextPath);
+        this.contextPath = contextPath == null ? null : pathParse(contextPath);
         return this;
     }
 
@@ -86,7 +85,7 @@ public class UrlUtil {
         final var pathCheck = urlPath == null ? "" : urlPath.trim().toLowerCase();
         final var paths = List.of(pathMaker(pathList));
         for (var path : paths) {
-            path=path.toLowerCase().trim();
+            path = path.toLowerCase().trim();
             if (path.equals(pathCheck))
                 return true;
             if (path.endsWith(PATH_AUTH_END)) {

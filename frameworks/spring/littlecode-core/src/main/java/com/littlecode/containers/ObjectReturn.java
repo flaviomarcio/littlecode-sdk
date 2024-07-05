@@ -288,7 +288,7 @@ public class ObjectReturn {
     }
 
     public ObjectReturn.Type getType() {
-        if (!internalMessages.isEmpty()){
+        if (!internalMessages.isEmpty()) {
             for (var e : internalMessages) {
                 if (!e.isSuccess())
                     return e.type;
@@ -435,7 +435,7 @@ public class ObjectReturn {
         private String message;
 
         public boolean isSuccess() {
-            return this.type!=null && (this.type.equals(Type.Success) || this.type.equals(Type.Accepted));
+            return this.type != null && (this.type.equals(Type.Success) || this.type.equals(Type.Accepted));
         }
     }
 
@@ -498,18 +498,18 @@ public class ObjectReturn {
         }
 
         public MessageMaker message(String message) {
-            this.message = message==null?"":message;
+            this.message = message == null ? "" : message;
             return this;
         }
 
         public <T> MessageMaker message(Class<T> aClass) {
-            return aClass==null
-                    ?this
-                    :this.message(String.format(INVALID_OBJECT_OF_TYPE, aClass));
+            return aClass == null
+                    ? this
+                    : this.message(String.format(INVALID_OBJECT_OF_TYPE, aClass));
         }
 
         public MessageMaker message(String format, Object... args) {
-            if(format!=null && args!=null)
+            if (format != null && args != null)
                 return this.message(String.format(format, args));
             return this;
         }

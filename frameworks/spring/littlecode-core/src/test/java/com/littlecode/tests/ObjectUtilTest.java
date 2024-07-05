@@ -37,6 +37,8 @@ public class ObjectUtilTest {
     private static final LocalDate MAX_DATE = LocalDate.of(1901, 1, 1);
     private static final LocalTime MAX_TIME = LocalTime.of(23, 59, 59);
     private static final LocalDateTime MAX_DATETIME = LocalDateTime.of(MAX_DATE, MAX_TIME);
+    private static final UUID uuidOut1 = UUID.randomUUID();
+    private static final UUID uuidOut2 = UUID.randomUUID();
     private static final ObjectCheck objectSrc = getObjectChecker();
     private static final String objectSrcString = getObjectString(objectSrc);
     //estatico para garantir que o md5 está sendo gerado como esperado
@@ -45,8 +47,6 @@ public class ObjectUtilTest {
             .replace("-", "")
             .replace("{", "")
             .replace("}", "");
-    private static final UUID uuidOut1 = UUID.randomUUID();
-    private static final UUID uuidOut2 = UUID.randomUUID();
 
     @SuppressWarnings("SameParameterValue")
     private static String getObjectString(Object o) {
@@ -113,19 +113,19 @@ public class ObjectUtilTest {
     @Test
     @DisplayName("Deve validar equals")
     public void UT_000_CHECK_EQUAL() {
-        Assertions.assertDoesNotThrow(()->ObjectUtil.equal(objectSrc, objectSrc));
-        Assertions.assertDoesNotThrow(()->ObjectUtil.equal(objectSrc, null));
-        Assertions.assertDoesNotThrow(()->ObjectUtil.equal(null, null));
-        Assertions.assertDoesNotThrow(()->ObjectUtil.equal(objectSrc, this));
-        Assertions.assertDoesNotThrow(()->ObjectUtil.equal(UUID.randomUUID(), UUID.randomUUID().toString()));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.equal(objectSrc, objectSrc));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.equal(objectSrc, null));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.equal(null, null));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.equal(objectSrc, this));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.equal(UUID.randomUUID(), UUID.randomUUID().toString()));
 
         Assertions.assertTrue(ObjectUtil.equal(null, null));
         Assertions.assertTrue(ObjectUtil.equal(objectSrc, objectSrc));
         Assertions.assertFalse(ObjectUtil.equal(objectSrc, null));
         Assertions.assertFalse(ObjectUtil.equal(objectSrc, this));
         Assertions.assertFalse(ObjectUtil.equal(UUID.randomUUID(), UUID.randomUUID()));
-        var uuid=UUID.randomUUID();
-        Assertions.assertTrue(ObjectUtil.equal(uuid,uuid.toString()));
+        var uuid = UUID.randomUUID();
+        Assertions.assertTrue(ObjectUtil.equal(uuid, uuid.toString()));
     }
 
 
@@ -155,23 +155,23 @@ public class ObjectUtilTest {
     @Test
     @DisplayName("Deve validar from values")
     public void UT_000_CREATE_FROM() {
-        Assertions.assertDoesNotThrow(()->ObjectUtil.createFromYML(ObjectCheck.class, objectSrcString));
-        Assertions.assertDoesNotThrow(()->ObjectUtil.createFromPROPS(ObjectCheck.class, objectSrcString));
-        Assertions.assertDoesNotThrow(()->ObjectUtil.createFromObject(ObjectCheck.class, objectSrcString));
-        Assertions.assertDoesNotThrow(()->ObjectUtil.createFromXML(ObjectCheck.class, objectSrcString));
-        Assertions.assertDoesNotThrow(()->ObjectUtil.createFromJSON(ObjectCheck.class, objectSrcString));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.createFromYML(ObjectCheck.class, objectSrcString));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.createFromPROPS(ObjectCheck.class, objectSrcString));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.createFromObject(ObjectCheck.class, objectSrcString));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.createFromXML(ObjectCheck.class, objectSrcString));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.createFromJSON(ObjectCheck.class, objectSrcString));
 
-        Assertions.assertDoesNotThrow(()->ObjectUtil.createFromYML(ObjectCheck.class, null));
-        Assertions.assertDoesNotThrow(()->ObjectUtil.createFromPROPS(ObjectCheck.class, null));
-        Assertions.assertDoesNotThrow(()->ObjectUtil.createFromObject(ObjectCheck.class, null));
-        Assertions.assertDoesNotThrow(()->ObjectUtil.createFromXML(ObjectCheck.class, null));
-        Assertions.assertDoesNotThrow(()->ObjectUtil.createFromJSON(ObjectCheck.class, null));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.createFromYML(ObjectCheck.class, null));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.createFromPROPS(ObjectCheck.class, null));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.createFromObject(ObjectCheck.class, null));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.createFromXML(ObjectCheck.class, null));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.createFromJSON(ObjectCheck.class, null));
 
-        Assertions.assertDoesNotThrow(()->ObjectUtil.createFromYML(null, null));
-        Assertions.assertDoesNotThrow(()->ObjectUtil.createFromPROPS(null, null));
-        Assertions.assertDoesNotThrow(()->ObjectUtil.createFromObject(null, null));
-        Assertions.assertDoesNotThrow(()->ObjectUtil.createFromXML(null, null));
-        Assertions.assertDoesNotThrow(()->ObjectUtil.createFromJSON(null, null));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.createFromYML(null, null));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.createFromPROPS(null, null));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.createFromObject(null, null));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.createFromXML(null, null));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.createFromJSON(null, null));
 
         Assertions.assertNotNull(ObjectUtil.createFromYML(ObjectCheck.class, objectSrcString));
         Assertions.assertNotNull(ObjectUtil.createFromPROPS(ObjectCheck.class, objectSrcString));
@@ -185,22 +185,22 @@ public class ObjectUtilTest {
     @DisplayName("Deve validar toMap")
     public void UT_000_CHECK_MAPS() {
         Assertions.assertDoesNotThrow(() -> ObjectUtil.toMapObject(objectSrcString));
-        Assertions.assertDoesNotThrow(() -> ObjectUtil.toMapObject(Map.of("","")));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.toMapObject(Map.of("", "")));
         Assertions.assertDoesNotThrow(() -> ObjectUtil.toMapObject(null));
 
         Assertions.assertNotNull(ObjectUtil.toMapObject(objectSrcString));
-        Assertions.assertNotNull(ObjectUtil.toMapObject(Map.of("","")));
+        Assertions.assertNotNull(ObjectUtil.toMapObject(Map.of("", "")));
         Assertions.assertNotNull(ObjectUtil.toMapObject(null));
 
         Assertions.assertDoesNotThrow(() -> ObjectUtil.toMapOfString(""));
         Assertions.assertDoesNotThrow(() -> ObjectUtil.toMapOfString("--"));
         Assertions.assertDoesNotThrow(() -> ObjectUtil.toMapOfString(objectSrcString));
-        Assertions.assertDoesNotThrow(() -> ObjectUtil.toMapOfString(Map.of("","")));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.toMapOfString(Map.of("", "")));
         Assertions.assertDoesNotThrow(() -> ObjectUtil.toMapOfString(null));
         Assertions.assertDoesNotThrow(() -> ObjectUtil.toMapOfString(new Object()));
 
         Assertions.assertNotNull(ObjectUtil.toMapOfString(objectSrcString));
-        Assertions.assertNotNull(ObjectUtil.toMapOfString(Map.of("","")));
+        Assertions.assertNotNull(ObjectUtil.toMapOfString(Map.of("", "")));
         Assertions.assertNotNull(ObjectUtil.toMapOfString(null));
         Assertions.assertNotNull(ObjectUtil.toMapOfString(new Object()));
 
@@ -224,29 +224,29 @@ public class ObjectUtilTest {
     @DisplayName("Deve validar toFields")
     public void UT_000_CHECK_FIELD() {
 
-        Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldByAnnotation(ObjectCheck.class, NotNull.class));
-        Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldByAnnotation(SubObjectCheck.class, NotNull.class));
-        Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldByAnnotation(SubObjectCheck.class, null));
-        Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldByAnnotation(null, null));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.toFieldByAnnotation(ObjectCheck.class, NotNull.class));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.toFieldByAnnotation(SubObjectCheck.class, NotNull.class));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.toFieldByAnnotation(SubObjectCheck.class, null));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.toFieldByAnnotation(null, null));
 
-        Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldsByAnnotation(ObjectCheck.class, NotNull.class));
-        Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldsByAnnotation(SubObjectCheck.class, NotNull.class));
-        Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldsByAnnotation(SubObjectCheck.class, null));
-        Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldsByAnnotation(null, null));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.toFieldsByAnnotation(ObjectCheck.class, NotNull.class));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.toFieldsByAnnotation(SubObjectCheck.class, NotNull.class));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.toFieldsByAnnotation(SubObjectCheck.class, null));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.toFieldsByAnnotation(null, null));
 
-        Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldByName(ObjectCheck.class, "id"));
-        Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldByName(ObjectCheck.class, null));
-        Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldByName(null, null));
-        Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldByName(ObjectCheck.class, "test"));
-        Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldByType(ObjectCheck.class, UUID.class));
-        Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldByType(SubObjectCheck.class, Long.class));
-        Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldByType(SubObjectCheck.class, null));
-        Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldByType(null, null));
-        Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldsByType(ObjectCheck.class, UUID.class));
-        Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldsByType(ObjectCheck.class, null));
-        Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldsByType(null, null));
-        Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldsByType(ObjectCheck.class, UUID.class).isEmpty());
-        Assertions.assertDoesNotThrow(()->ObjectUtil.toFieldsByType(SubObjectCheck.class, Long.class).isEmpty());
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.toFieldByName(ObjectCheck.class, "id"));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.toFieldByName(ObjectCheck.class, null));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.toFieldByName(null, null));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.toFieldByName(ObjectCheck.class, "test"));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.toFieldByType(ObjectCheck.class, UUID.class));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.toFieldByType(SubObjectCheck.class, Long.class));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.toFieldByType(SubObjectCheck.class, null));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.toFieldByType(null, null));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.toFieldsByType(ObjectCheck.class, UUID.class));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.toFieldsByType(ObjectCheck.class, null));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.toFieldsByType(null, null));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.toFieldsByType(ObjectCheck.class, UUID.class).isEmpty());
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.toFieldsByType(SubObjectCheck.class, Long.class).isEmpty());
 
 
         Assertions.assertNotNull(ObjectUtil.toFieldByAnnotation(ObjectCheck.class, NotNull.class));
@@ -274,11 +274,11 @@ public class ObjectUtilTest {
         //check 1
         var objNew = ObjectUtil.createFromObject(ObjectCheck.class, objectSrc);
 
-        var byteSrc=ObjectUtil.toString(objNew);
-        var fileSrc=new File("/tmp/oj.json");
-        IOUtil.writeAll(fileSrc,byteSrc);
+        var byteSrc = ObjectUtil.toString(objNew);
+        var fileSrc = new File("/tmp/oj.json");
+        IOUtil.writeAll(fileSrc, byteSrc);
 
-        Assertions.assertDoesNotThrow(() -> ObjectUtil.update(new ObjectCheck(),ObjectCheck.builder()));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.update(new ObjectCheck(), ObjectCheck.builder()));
         Assertions.assertDoesNotThrow(() -> ObjectUtil.update(new ObjectCheck(), byteSrc));
         Assertions.assertDoesNotThrow(() -> ObjectUtil.update(new ObjectCheck(), fileSrc));
         Assertions.assertDoesNotThrow(() -> ObjectUtil.update(new ObjectCheck(), new File("/tmp/fake-file")));
@@ -305,10 +305,10 @@ public class ObjectUtilTest {
             } catch (IOException e) {
                 throw new FrameworkException(e.getMessage());
             }
-            Assertions.assertDoesNotThrow(() -> ObjectUtil.createFromStream(null,(InputStream) null));
-            Assertions.assertDoesNotThrow(() -> ObjectUtil.createFromStream(Object.class,(InputStream) null));
-            Assertions.assertThrows(FileNotFoundException.class,() -> ObjectUtil.createFromStream(String.class, new FileInputStream(new File(UUID.randomUUID().toString()))));
-            Assertions.assertNull(ObjectUtil.createFromStream(null,(InputStream) null));
+            Assertions.assertDoesNotThrow(() -> ObjectUtil.createFromStream(null, (InputStream) null));
+            Assertions.assertDoesNotThrow(() -> ObjectUtil.createFromStream(Object.class, (InputStream) null));
+            Assertions.assertThrows(FileNotFoundException.class, () -> ObjectUtil.createFromStream(String.class, new FileInputStream(new File(UUID.randomUUID().toString()))));
+            Assertions.assertNull(ObjectUtil.createFromStream(null, (InputStream) null));
 
 
             Assertions.assertDoesNotThrow(() -> ObjectUtil.createFromFile(ObjectCheck.class, file));
@@ -334,8 +334,8 @@ public class ObjectUtilTest {
         Assertions.assertNotNull(objNew);
         Assertions.assertEquals(objNew.getClass(), ObjectCheck.class);
 
-        Assertions.assertDoesNotThrow(()->ObjectUtil.createWithArgsConstructor(null));
-        Assertions.assertDoesNotThrow(()->ObjectUtil.createWithArgsConstructor(ObjectBaseException.class,UUID.randomUUID()));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.createWithArgsConstructor(null));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.createWithArgsConstructor(ObjectBaseException.class, UUID.randomUUID()));
         Assertions.assertNull(ObjectUtil.createWithArgsConstructor(ObjectCheckWithArgs.class));
         Assertions.assertNull(ObjectUtil.createWithArgsConstructor(ObjectCheckWithArgs.class, UUID.randomUUID()));
         Assertions.assertNull(ObjectUtil.createWithArgsConstructor(ObjectCheckWithArgs.class, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()));
@@ -359,16 +359,15 @@ public class ObjectUtilTest {
         Assertions.assertNotNull(ObjectUtil.classToName(null));
         Assertions.assertNotNull(ObjectUtil.classToName(ObjectCheckType.class));
         Assertions.assertNotNull(ObjectUtil.classToName(ObjectCheckType.Type1));
-        Assertions.assertEquals(ObjectUtil.classToName(null),"");
-        Assertions.assertNotNull(ObjectUtil.classToName(""),String.class.getName());
-        Assertions.assertNotNull(ObjectUtil.classToName(ObjectCheckType.Type1),ObjectCheckType.class.getName());
+        Assertions.assertEquals(ObjectUtil.classToName(null), "");
+        Assertions.assertNotNull(ObjectUtil.classToName(""), String.class.getName());
+        Assertions.assertNotNull(ObjectUtil.classToName(ObjectCheckType.Type1), ObjectCheckType.class.getName());
 
 
         Assertions.assertDoesNotThrow(() -> ObjectUtil.getClassesBySorted(null));
         Assertions.assertDoesNotThrow(() -> ObjectUtil.getClassesBySorted(Set.of(String.class, Integer.class)));
         Assertions.assertNotNull(ObjectUtil.getClassesBySorted(null));
         Assertions.assertNotNull(ObjectUtil.getClassesBySorted(Set.of(String.class, Integer.class)));
-
 
 
         Assertions.assertNotNull(ObjectUtil.getClassByName(ObjectCheckType.class.getName()));
@@ -399,7 +398,7 @@ public class ObjectUtilTest {
     }
 
     public static class ObjectBaseException {
-        public ObjectBaseException(UUID uuid){
+        public ObjectBaseException(UUID uuid) {
             throw new RuntimeException(uuid.toString());
         }
 

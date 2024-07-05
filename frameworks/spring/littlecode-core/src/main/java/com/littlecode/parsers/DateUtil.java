@@ -37,22 +37,22 @@ public class DateUtil {
                 : LocalDateTime.of(v.toLocalDate(), CorePublicConsts.MIN_LOCALTIME);
     }
 
-    public static Duration toDuration(String input){
-        if(input==null)
+    public static Duration toDuration(String input) {
+        if (input == null)
             return Duration.ZERO;
-        input=input.trim();
+        input = input.trim();
 
         if (input.isEmpty())
             return Duration.ZERO;
 
-        var num=PrimitiveUtil.toLong(input);
-        if(num>0)
+        var num = PrimitiveUtil.toLong(input);
+        if (num > 0)
             return Duration.ofMillis(num);
 
         String valuePart = input.substring(0, input.length() - 1);
         String unitPart = input.substring(input.length() - 1).toLowerCase();
 
-        var value=PrimitiveUtil.toLong(valuePart);
+        var value = PrimitiveUtil.toLong(valuePart);
 
         long durationMillis = switch (unitPart) {
             case "s" -> value * 1000;
@@ -61,9 +61,9 @@ public class DateUtil {
             case "d" -> value * 24 * 60 * 60 * 1000;
             default -> 0;
         };
-        return durationMillis==0
-                ?Duration.ZERO
-                :Duration.ofMillis(durationMillis);
+        return durationMillis == 0
+                ? Duration.ZERO
+                : Duration.ofMillis(durationMillis);
     }
 
 }

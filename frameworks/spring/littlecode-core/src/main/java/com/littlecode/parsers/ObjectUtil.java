@@ -4,9 +4,10 @@ import com.littlecode.config.UtilCoreConfig;
 import com.littlecode.exceptions.FrameworkException;
 import com.littlecode.files.FileFormat;
 import com.littlecode.files.IOUtil;
-import lombok.extern.slf4j.Slf4j;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -16,7 +17,7 @@ import java.util.*;
 public class ObjectUtil {
 
     public static String inputReadAll(InputStream source) {
-        if(source!=null){
+        if (source != null) {
             try {
                 return new String(source.readAllBytes());
             } catch (Exception ignored) {
@@ -29,7 +30,7 @@ public class ObjectUtil {
         if (o != null) {
             if (o instanceof String string)
                 return string;
-            else if (o instanceof Class<?> aClass )
+            else if (o instanceof Class<?> aClass)
                 return aClass.getName();
             else if (o.getClass().isEnum())
                 return o.toString();
@@ -75,7 +76,7 @@ public class ObjectUtil {
     }
 
     public static boolean update(Object object, Object newValues) {
-        if (object != null && newValues!=null){
+        if (object != null && newValues != null) {
             try {
                 var objectMapper = UtilCoreConfig.newObjectMapper(UtilCoreConfig.FILE_FORMAT_DEFAULT);
                 objectMapper.updateValue(object, newValues);
@@ -86,10 +87,10 @@ public class ObjectUtil {
     }
 
     public static boolean update(Object object, File newValues) {
-        if (object != null && newValues!=null){
+        if (object != null && newValues != null) {
             try {
-                if(!newValues.exists())
-                    throw new FrameworkException("Invalid file: "+newValues);
+                if (!newValues.exists())
+                    throw new FrameworkException("Invalid file: " + newValues);
                 var updateBytes = IOUtil.readAll(newValues).trim();
                 var objectMapper = UtilCoreConfig.newObjectMapper(UtilCoreConfig.FILE_FORMAT_DEFAULT);
                 objectMapper.updateValue(object, updateBytes);
@@ -100,7 +101,7 @@ public class ObjectUtil {
     }
 
     public static boolean update(Object object, Path newValues) {
-        return update(object,newValues.toFile());
+        return update(object, newValues.toFile());
     }
 
     public static synchronized Field toFieldByName(Class<?> tClass, String fieldName) {
@@ -178,8 +179,8 @@ public class ObjectUtil {
     public static synchronized List<Field> toFieldsList(Object o) {
         return
                 (o != null && !PrimitiveUtil.isPrimitiveValue(o))
-                        ?toFieldsList(o.getClass())
-                        :new ArrayList<>();
+                        ? toFieldsList(o.getClass())
+                        : new ArrayList<>();
     }
 
     public static synchronized Map<String, Field> toFieldsMap(Class<?> tClass) {
@@ -202,7 +203,7 @@ public class ObjectUtil {
             return false;
         var md5A = toMd5Uuid(a);
         var md5B = toMd5Uuid(b);
-        return (md5A==md5B) || (md5A.toString().equals(md5B.toString()));
+        return (md5A == md5B) || (md5A.toString().equals(md5B.toString()));
     }
 
     public static <T> T create(Class<?> classType) {
@@ -231,7 +232,7 @@ public class ObjectUtil {
                         }
                     }
 
-                    if (constructor != null){
+                    if (constructor != null) {
                         constructor.setAccessible(true);
                         return (T) constructor.newInstance(initArgs);
                     }
@@ -258,7 +259,7 @@ public class ObjectUtil {
     }
 
     public static <T> T createFromFile(Class<T> aClass, File source) {
-        if(aClass!=null && source!=null){
+        if (aClass != null && source != null) {
             try {
                 return createFromStream(aClass, new FileInputStream(source));
             } catch (Exception ignored) {
@@ -268,7 +269,7 @@ public class ObjectUtil {
     }
 
     public static <T> T createFromStream(Class<T> aClass, InputStream source) {
-        if(aClass!=null && source!=null)
+        if (aClass != null && source != null)
             return createFromString(aClass, inputReadAll(source), ObjectValueUtil.FILE_FORMAT_DEFAULT);
         return null;
     }
@@ -291,8 +292,8 @@ public class ObjectUtil {
 
     public static <T> T createFromObject(Class<T> aClass, Object source) {
         if (aClass != null && source != null) {
-            var bytes=toString(source);
-            return createFromString(aClass,bytes);
+            var bytes = toString(source);
+            return createFromString(aClass, bytes);
         }
         return null;
     }
@@ -302,7 +303,7 @@ public class ObjectUtil {
     }
 
     public static String toString(Object o, FileFormat fileFormat) {
-        return ObjectValueUtil.toString(o,fileFormat);
+        return ObjectValueUtil.toString(o, fileFormat);
     }
 
     public static synchronized Map<String, Object> toMapObject(final Object o) {
@@ -312,11 +313,9 @@ public class ObjectUtil {
                 Map<String, Object> fieldValues = new HashMap<>();
                 fieldValues.putAll(mapValues);
                 return fieldValues;
-            }
-            else if(o instanceof Map map){
+            } else if (o instanceof Map map) {
                 return map;
-            }
-            else if(!PrimitiveUtil.isPrimitiveValue(o.getClass())){
+            } else if (!PrimitiveUtil.isPrimitiveValue(o.getClass())) {
                 return ObjectValueUtil.of(o).asMap();
             }
         }
@@ -325,17 +324,15 @@ public class ObjectUtil {
 
     public static synchronized Map<String, String> toMapOfString(final Object o) {
         if (o != null) {
-            if(o instanceof String string) {
+            if (o instanceof String string) {
                 var mapper = UtilCoreConfig.newObjectMapper(UtilCoreConfig.FILE_FORMAT_DEFAULT);
                 try {
                     return mapper.readValue(string, Map.class);
                 } catch (Exception ignored) {
                 }
-            }
-            else if(o instanceof Map map){
+            } else if (o instanceof Map map) {
                 return map;
-            }
-            else{
+            } else {
                 return ObjectValueUtil
                         .of(o)
                         .asMapString();

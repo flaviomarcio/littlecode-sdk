@@ -49,11 +49,11 @@ public class IOUtilTest {
         Assertions.assertDoesNotThrow(() -> IOUtil.target("/tmp").toString());
         Assertions.assertDoesNotThrow(() -> IOUtil.target(null).toString());
 
-        Assertions.assertEquals(IOUtil.toString("/tmp"),"/tmp");
-        Assertions.assertEquals(IOUtil.toString(null),"");
+        Assertions.assertEquals(IOUtil.toString("/tmp"), "/tmp");
+        Assertions.assertEquals(IOUtil.toString(null), "");
 
-        Assertions.assertEquals(IOUtil.target("/tmp").toString(),"/tmp");
-        Assertions.assertEquals(IOUtil.target(null).toString(),"");
+        Assertions.assertEquals(IOUtil.target("/tmp").toString(), "/tmp");
+        Assertions.assertEquals(IOUtil.target(null).toString(), "");
 
     }
 
@@ -67,13 +67,13 @@ public class IOUtilTest {
         Assertions.assertDoesNotThrow(() -> IOUtil.basePath("///"));
         Assertions.assertDoesNotThrow(() -> IOUtil.basePath("/tmp"));
 
-        Assertions.assertDoesNotThrow(()-> IOUtil.baseName(null));
-        Assertions.assertDoesNotThrow(()-> IOUtil.baseName(""));
-        Assertions.assertDoesNotThrow(()-> IOUtil.baseName(" "));
-        Assertions.assertDoesNotThrow(()-> IOUtil.baseName("file"));
-        Assertions.assertDoesNotThrow(()-> IOUtil.baseName("/"));
-        Assertions.assertDoesNotThrow(()-> IOUtil.baseName("///"));
-        Assertions.assertDoesNotThrow(()-> IOUtil.baseName("/tmp/test"));
+        Assertions.assertDoesNotThrow(() -> IOUtil.baseName(null));
+        Assertions.assertDoesNotThrow(() -> IOUtil.baseName(""));
+        Assertions.assertDoesNotThrow(() -> IOUtil.baseName(" "));
+        Assertions.assertDoesNotThrow(() -> IOUtil.baseName("file"));
+        Assertions.assertDoesNotThrow(() -> IOUtil.baseName("/"));
+        Assertions.assertDoesNotThrow(() -> IOUtil.baseName("///"));
+        Assertions.assertDoesNotThrow(() -> IOUtil.baseName("/tmp/test"));
     }
 
 
@@ -90,28 +90,28 @@ public class IOUtilTest {
 
         Assertions.assertDoesNotThrow(() -> IOUtil.writeLines(null, null));
         Assertions.assertDoesNotThrow(() -> IOUtil.writeLines(new File("/tmp/test.txt"), null));
-        Assertions.assertDoesNotThrow(() -> IOUtil.writeLines(new File("/tmp/test.txt"), List.of("line1","line2")));
+        Assertions.assertDoesNotThrow(() -> IOUtil.writeLines(new File("/tmp/test.txt"), List.of("line1", "line2")));
 
-        Assertions.assertDoesNotThrow(() -> IOUtil.readAll((String)null));
-        Assertions.assertDoesNotThrow(() -> IOUtil.readAll((File)null));
-        Assertions.assertDoesNotThrow(() -> IOUtil.readAll((Path)null));
+        Assertions.assertDoesNotThrow(() -> IOUtil.readAll((String) null));
+        Assertions.assertDoesNotThrow(() -> IOUtil.readAll((File) null));
+        Assertions.assertDoesNotThrow(() -> IOUtil.readAll((Path) null));
         Assertions.assertDoesNotThrow(() -> IOUtil.readAll("/tmp/test.txt"));
         Assertions.assertDoesNotThrow(() -> IOUtil.readAll(Path.of("/tmp/test.txt")));
         Assertions.assertDoesNotThrow(() -> IOUtil.readAll(new File("/tmp/test.txt")));
-        Assertions.assertEquals(IOUtil.readAll((String)null),"");
-        Assertions.assertEquals(IOUtil.readAll((Path) null),"");
-        Assertions.assertEquals(IOUtil.readAll((File)null),"");
+        Assertions.assertEquals(IOUtil.readAll((String) null), "");
+        Assertions.assertEquals(IOUtil.readAll((Path) null), "");
+        Assertions.assertEquals(IOUtil.readAll((File) null), "");
 
-        Assertions.assertDoesNotThrow(() -> IOUtil.readLines((String)null ));
-        Assertions.assertDoesNotThrow(() -> IOUtil.readLines((File)null ));
-        Assertions.assertDoesNotThrow(() -> IOUtil.readLines((Path)null ));
+        Assertions.assertDoesNotThrow(() -> IOUtil.readLines((String) null));
+        Assertions.assertDoesNotThrow(() -> IOUtil.readLines((File) null));
+        Assertions.assertDoesNotThrow(() -> IOUtil.readLines((Path) null));
         Assertions.assertDoesNotThrow(() -> IOUtil.readLines(Mockito.mock(Path.class)));
         Assertions.assertDoesNotThrow(() -> IOUtil.readLines(new File("/tmp/test.txt")));
         Assertions.assertDoesNotThrow(() -> IOUtil.readLines(Path.of("/tmp/test.txt")));
         Assertions.assertDoesNotThrow(() -> IOUtil.readLines("/tmp/test.txt"));
-        Assertions.assertTrue(IOUtil.readLines((String)null ).isEmpty());
-        Assertions.assertTrue(IOUtil.readLines((File)null ).isEmpty());
-        Assertions.assertTrue(IOUtil.readLines((Path)null ).isEmpty());
+        Assertions.assertTrue(IOUtil.readLines((String) null).isEmpty());
+        Assertions.assertTrue(IOUtil.readLines((File) null).isEmpty());
+        Assertions.assertTrue(IOUtil.readLines((Path) null).isEmpty());
 
 
         Assertions.assertDoesNotThrow(() -> ioUtil.delete());
@@ -162,23 +162,23 @@ public class IOUtilTest {
         }
 
 
-        Assertions.assertDoesNotThrow(() -> IOUtil.createFileTemp((File)null));
+        Assertions.assertDoesNotThrow(() -> IOUtil.createFileTemp((File) null));
         Assertions.assertDoesNotThrow(() -> IOUtil.createFileTemp(new File("/tmp/test.txt")));
-        Assertions.assertDoesNotThrow(() -> IOUtil.createFileTemp("a","b", new File("/tmp")));
-        Assertions.assertDoesNotThrow(() -> IOUtil.createFileTemp("a","b", null));
-        Assertions.assertDoesNotThrow(() -> IOUtil.createFileTemp("a",null, null));
-        Assertions.assertDoesNotThrow(() -> IOUtil.createFileTemp(null,null, null));
-        Assertions.assertNull(IOUtil.createFileTemp(null,null, null));
+        Assertions.assertDoesNotThrow(() -> IOUtil.createFileTemp("a", "b", new File("/tmp")));
+        Assertions.assertDoesNotThrow(() -> IOUtil.createFileTemp("a", "b", null));
+        Assertions.assertDoesNotThrow(() -> IOUtil.createFileTemp("a", null, null));
+        Assertions.assertDoesNotThrow(() -> IOUtil.createFileTemp(null, null, null));
+        Assertions.assertNull(IOUtil.createFileTemp(null, null, null));
 
-        Assertions.assertDoesNotThrow(() -> IOUtil.createFileEmpty((String)null));
+        Assertions.assertDoesNotThrow(() -> IOUtil.createFileEmpty((String) null));
         Assertions.assertDoesNotThrow(() -> IOUtil.createFileEmpty(""));
-        Assertions.assertDoesNotThrow(() -> IOUtil.createFileEmpty((File)null));
+        Assertions.assertDoesNotThrow(() -> IOUtil.createFileEmpty((File) null));
         Assertions.assertDoesNotThrow(() -> IOUtil.createFileEmpty(new File("/tmp/file.txt")));
         Assertions.assertDoesNotThrow(() -> IOUtil.createFileEmpty("/tmp/file.txt"));
         Assertions.assertFalse(IOUtil.createFileEmpty(new File("/tmp")));
         Assertions.assertFalse(IOUtil.createFileEmpty("/tmp"));
         Assertions.assertFalse(IOUtil.createFileEmpty(""));
-        Assertions.assertFalse(IOUtil.createFileEmpty((String)null));
+        Assertions.assertFalse(IOUtil.createFileEmpty((String) null));
         Assertions.assertFalse(IOUtil.createFileEmpty((File) null));
         Assertions.assertDoesNotThrow(() -> IOUtil.createFileTemp());
 
@@ -223,7 +223,7 @@ public class IOUtilTest {
 
         Assertions.assertThrows(FrameworkException.class, IOUtil::newFile);
         Assertions.assertThrows(FrameworkException.class, () -> IOUtil.newFile(null));
-        Assertions.assertDoesNotThrow(() -> IOUtil.newFile("/tmp",UUID.randomUUID()));
+        Assertions.assertDoesNotThrow(() -> IOUtil.newFile("/tmp", UUID.randomUUID()));
 
     }
 
@@ -231,8 +231,8 @@ public class IOUtilTest {
     @DisplayName("Deve validar metodo create file")
     public void UT_CHECK_METHOD_CREATE_FILE() {
 
-        Assertions.assertDoesNotThrow(() -> IOUtil.target("/tmp/"+UUID.randomUUID()));
-        var io=IOUtil.target("/tmp/"+UUID.randomUUID());
+        Assertions.assertDoesNotThrow(() -> IOUtil.target("/tmp/" + UUID.randomUUID()));
+        var io = IOUtil.target("/tmp/" + UUID.randomUUID());
         Assertions.assertDoesNotThrow(() -> io.readAll());
         io.createFile();
         Assertions.assertDoesNotThrow(() -> io.readAll());
@@ -242,15 +242,15 @@ public class IOUtilTest {
     @DisplayName("Deve validar metodo read all lines")
     public void UT_CHECK_METHOD_READ_ALL_LINES() {
 
-        Assertions.assertDoesNotThrow(() -> IOUtil.target("/tmp/"+UUID.randomUUID()));
+        Assertions.assertDoesNotThrow(() -> IOUtil.target("/tmp/" + UUID.randomUUID()));
         {
-            var io=IOUtil.target("/tmp/"+UUID.randomUUID());
+            var io = IOUtil.target("/tmp/" + UUID.randomUUID());
             Assertions.assertDoesNotThrow(() -> io.createFile());
             Assertions.assertFalse(io.createFile());
         }
 
         {
-            var io=IOUtil.target("/tmp/"+UUID.randomUUID()).createDir();
+            var io = IOUtil.target("/tmp/" + UUID.randomUUID()).createDir();
             Assertions.assertDoesNotThrow(() -> io.createFile());
             Assertions.assertFalse(io.createFile());
         }
@@ -262,17 +262,17 @@ public class IOUtilTest {
     public void UT_CHECK_METHOD_DELETE() {
 
         {
-            var io = IOUtil.target("/tmp/"+UUID.randomUUID());
+            var io = IOUtil.target("/tmp/" + UUID.randomUUID());
             io.createFile();
             Assertions.assertDoesNotThrow(() -> io.createDir().delete());
         }
 
         {
-            var dir="/tmp/"+UUID.randomUUID();
+            var dir = "/tmp/" + UUID.randomUUID();
             var io = IOUtil.target(dir);
             Assertions.assertDoesNotThrow(() -> io.delete());
             Assertions.assertDoesNotThrow(() -> io.createDir());
-            IOUtil.target(dir+"/"+UUID.randomUUID()).createFile();
+            IOUtil.target(dir + "/" + UUID.randomUUID()).createFile();
             Assertions.assertDoesNotThrow(() -> io.createDir().delete());
         }
 

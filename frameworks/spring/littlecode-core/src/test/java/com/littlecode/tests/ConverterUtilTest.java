@@ -1,7 +1,7 @@
 package com.littlecode.tests;
 
-import com.littlecode.parsers.ConverterUtil;
 import com.littlecode.config.CorePublicConsts;
+import com.littlecode.parsers.ConverterUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -97,7 +97,7 @@ public class ConverterUtilTest {
         Assertions.assertDoesNotThrow(() -> new ConverterUtil(new File("/tmp/file")).toString());
         Assertions.assertDoesNotThrow(() -> new ConverterUtil(UUID.randomUUID()).toString());
 
-        var path=Path.of("/tmp/file");
+        var path = Path.of("/tmp/file");
         Assertions.assertEquals(new ConverterUtil(path.toString()).toString(), path.toString());
         Assertions.assertEquals(new ConverterUtil(path).toString(), path.toString());
         Assertions.assertEquals(new ConverterUtil(path.toUri()).toString(), path.toUri().toString());
@@ -154,7 +154,7 @@ public class ConverterUtilTest {
         Assertions.assertDoesNotThrow(() -> new ConverterUtil(LocalDateTime.now()).toInt());
         Assertions.assertDoesNotThrow(() -> new ConverterUtil(UUID.randomUUID()).toInt());
 
-        Assertions.assertEquals(new ConverterUtil("").toInt(),0);
+        Assertions.assertEquals(new ConverterUtil("").toInt(), 0);
     }
 
     @Test
@@ -173,7 +173,7 @@ public class ConverterUtilTest {
         Assertions.assertDoesNotThrow(() -> new ConverterUtil(LocalDateTime.now()).toLong());
         Assertions.assertDoesNotThrow(() -> new ConverterUtil(UUID.randomUUID()).toLong());
 
-        Assertions.assertEquals(new ConverterUtil("").toLong(),0L);
+        Assertions.assertEquals(new ConverterUtil("").toLong(), 0L);
     }
 
     @Test
@@ -192,7 +192,7 @@ public class ConverterUtilTest {
         Assertions.assertDoesNotThrow(() -> new ConverterUtil(LocalDateTime.now()).toDouble());
         Assertions.assertDoesNotThrow(() -> new ConverterUtil(UUID.randomUUID()).toDouble());
 
-        Assertions.assertEquals(new ConverterUtil("0").toDouble(),0L);
+        Assertions.assertEquals(new ConverterUtil("0").toDouble(), 0L);
     }
 
     @Test
@@ -211,7 +211,7 @@ public class ConverterUtilTest {
         Assertions.assertDoesNotThrow(() -> new ConverterUtil(LocalDateTime.now()).toLocalDate());
         Assertions.assertDoesNotThrow(() -> new ConverterUtil(UUID.randomUUID()).toLocalDate());
 
-        Assertions.assertEquals(new ConverterUtil("1901-01-01").toLocalDate(),LocalDate.of(1901,1,1));
+        Assertions.assertEquals(new ConverterUtil("1901-01-01").toLocalDate(), LocalDate.of(1901, 1, 1));
     }
 
     @Test
@@ -230,9 +230,9 @@ public class ConverterUtilTest {
         Assertions.assertDoesNotThrow(() -> new ConverterUtil(LocalDateTime.now()).toLocalTime());
         Assertions.assertDoesNotThrow(() -> new ConverterUtil(UUID.randomUUID()).toLocalTime());
 
-        Assertions.assertEquals(new ConverterUtil("23:59:59").toLocalTime(),LocalTime.of(23,59,59));
-        Assertions.assertEquals(new ConverterUtil("23:59:00").toLocalTime(),LocalTime.of(23,59,00));
-        Assertions.assertEquals(new ConverterUtil("23:59").toLocalTime(),LocalTime.of(23,59,00));
+        Assertions.assertEquals(new ConverterUtil("23:59:59").toLocalTime(), LocalTime.of(23, 59, 59));
+        Assertions.assertEquals(new ConverterUtil("23:59:00").toLocalTime(), LocalTime.of(23, 59, 00));
+        Assertions.assertEquals(new ConverterUtil("23:59").toLocalTime(), LocalTime.of(23, 59, 00));
     }
 
     @Test
@@ -272,7 +272,7 @@ public class ConverterUtilTest {
         Assertions.assertDoesNotThrow(() -> new ConverterUtil(UUID.randomUUID().toString()).toUUID());
         Assertions.assertDoesNotThrow(() -> new ConverterUtil(LocalDateTime.now()).toUUID());
 
-        var uuid=UUID.randomUUID();
+        var uuid = UUID.randomUUID();
         Assertions.assertEquals(new ConverterUtil(uuid).toUUID(), uuid);
         Assertions.assertEquals(new ConverterUtil(uuid.toString()).toUUID(), uuid);
         Assertions.assertNull(new ConverterUtil(LocalDateTime.now()).toUUID());
@@ -287,7 +287,7 @@ public class ConverterUtilTest {
         Assertions.assertDoesNotThrow(() -> new ConverterUtil(new File("/tmp/tmp")).toURI());
         Assertions.assertDoesNotThrow(() -> new ConverterUtil(LocalDateTime.now()).toURI());
 
-        var path=Path.of("/tmp/tmp");
+        var path = Path.of("/tmp/tmp");
         Assertions.assertEquals(new ConverterUtil(path).toURI(), path.toUri());
         Assertions.assertEquals(new ConverterUtil(path.toUri()).toURI(), path.toUri());
         Assertions.assertEquals(new ConverterUtil(path.toFile()).toURI(), path.toUri());
@@ -304,7 +304,7 @@ public class ConverterUtilTest {
         Assertions.assertDoesNotThrow(() -> new ConverterUtil(new File("/tmp/tmp")).toPath());
         Assertions.assertDoesNotThrow(() -> new ConverterUtil(LocalDateTime.now()).toPath());
 
-        var path=Path.of("/tmp/tmp");
+        var path = Path.of("/tmp/tmp");
         Assertions.assertEquals(new ConverterUtil(path).toPath(), path);
         Assertions.assertEquals(new ConverterUtil(path.toUri()).toURI(), path.toUri());
         Assertions.assertEquals(new ConverterUtil(path.toFile()).toPath(), path);

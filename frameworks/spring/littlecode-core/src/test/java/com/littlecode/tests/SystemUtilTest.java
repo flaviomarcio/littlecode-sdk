@@ -58,13 +58,13 @@ public class SystemUtilTest {
     public void UT_CHECK_ENV_GET() {
 
         {
-            var originalEnvironment=UtilCoreConfig.getEnvironment();
-            var env=Mockito.mock(Environment.class);
+            var originalEnvironment = UtilCoreConfig.getEnvironment();
+            var env = Mockito.mock(Environment.class);
             UtilCoreConfig.setEnvironment(env);
             Assertions.assertDoesNotThrow(() -> SystemUtil.Env.getSystemProperty("test"));
             Assertions.assertDoesNotThrow(() -> SystemUtil.Env.getSystemProperty(null));
-            Assertions.assertDoesNotThrow(() -> SystemUtil.Env.getSystemProperty("test",null));
-            Assertions.assertDoesNotThrow(() -> SystemUtil.Env.getSystemProperty(null,null));
+            Assertions.assertDoesNotThrow(() -> SystemUtil.Env.getSystemProperty("test", null));
+            Assertions.assertDoesNotThrow(() -> SystemUtil.Env.getSystemProperty(null, null));
             UtilCoreConfig.setEnvironment(originalEnvironment);
         }
 
@@ -79,7 +79,7 @@ public class SystemUtilTest {
         Assertions.assertEquals(SystemUtil.Env.getProperty("test", "aaaa"), "aaaa");
 
         Assertions.assertEquals(SystemUtil.Env.getProperty(null), "");
-        Assertions.assertEquals(SystemUtil.Env.getProperty(null,"bbbb"), "bbbb");
+        Assertions.assertEquals(SystemUtil.Env.getProperty(null, "bbbb"), "bbbb");
         Assertions.assertEquals(SystemUtil.Env.getProperty(PROPERTY_A), PROPERTY_A_VALUE);
         Assertions.assertEquals(SystemUtil.Env.getProperty(PROPERTY_A, ""), PROPERTY_A_VALUE);
     }

@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -40,7 +39,7 @@ public class HashUtilTest {
         Assertions.assertEquals(HashUtil.readBytes(new FileInputStream(finalFile)), "test");
         Assertions.assertNotNull(HashUtil.readBytes(new FileInputStream(finalFile)));
         Assertions.assertNotNull(HashUtil.readBytes(null));
-        Assertions.assertEquals(HashUtil.readBytes(null),"");
+        Assertions.assertEquals(HashUtil.readBytes(null), "");
     }
 
     @Test

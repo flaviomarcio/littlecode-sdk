@@ -44,7 +44,6 @@ public class UtilCoreConfigConvertersTest {
     }
 
 
-
     @Test
     @DisplayName("Deve validar converters")
     void UT_CHECK_UtilCoreConfigConverters() {
@@ -61,25 +60,24 @@ public class UtilCoreConfigConvertersTest {
         Assertions.assertNotNull(UtilCoreConfigConverters.toLocalDateTimeString);
 
 
+        var mappingContext = Mockito.mock(MappingContext.class);
 
-        var mappingContext= Mockito.mock(MappingContext.class);
 
-
-        Assertions.assertDoesNotThrow(()->UtilCoreConfigConverters.toLocalDate.convert(mappingContext));
-        Assertions.assertDoesNotThrow(()->UtilCoreConfigConverters.toLocalDateString.convert(mappingContext));
-        Assertions.assertDoesNotThrow(()->UtilCoreConfigConverters.toLocalTime.convert(mappingContext));
-        Assertions.assertDoesNotThrow(()->UtilCoreConfigConverters.toLocalTimeString.convert(mappingContext));
-        Assertions.assertDoesNotThrow(()->UtilCoreConfigConverters.toLocalDateTimeByStr.convert(mappingContext));
-        Assertions.assertDoesNotThrow(()->UtilCoreConfigConverters.toLocalDateTimeByDbl.convert(mappingContext));
-        Assertions.assertDoesNotThrow(()->UtilCoreConfigConverters.toLocalDateTimeByLng.convert(mappingContext));
-        Assertions.assertDoesNotThrow(()->UtilCoreConfigConverters.toLocalDateTimeByInt.convert(mappingContext));
-        Assertions.assertDoesNotThrow(()->UtilCoreConfigConverters.toLocalDateTimeString.convert(mappingContext));
+        Assertions.assertDoesNotThrow(() -> UtilCoreConfigConverters.toLocalDate.convert(mappingContext));
+        Assertions.assertDoesNotThrow(() -> UtilCoreConfigConverters.toLocalDateString.convert(mappingContext));
+        Assertions.assertDoesNotThrow(() -> UtilCoreConfigConverters.toLocalTime.convert(mappingContext));
+        Assertions.assertDoesNotThrow(() -> UtilCoreConfigConverters.toLocalTimeString.convert(mappingContext));
+        Assertions.assertDoesNotThrow(() -> UtilCoreConfigConverters.toLocalDateTimeByStr.convert(mappingContext));
+        Assertions.assertDoesNotThrow(() -> UtilCoreConfigConverters.toLocalDateTimeByDbl.convert(mappingContext));
+        Assertions.assertDoesNotThrow(() -> UtilCoreConfigConverters.toLocalDateTimeByLng.convert(mappingContext));
+        Assertions.assertDoesNotThrow(() -> UtilCoreConfigConverters.toLocalDateTimeByInt.convert(mappingContext));
+        Assertions.assertDoesNotThrow(() -> UtilCoreConfigConverters.toLocalDateTimeString.convert(mappingContext));
     }
 
     @Test
     @DisplayName("Deve validar converters")
     void UT_CHECK_MapperConfigModules() {
-        var objectMapper= UtilCoreConfig.newObjectMapper();
+        var objectMapper = UtilCoreConfig.newObjectMapper();
         Assertions.assertDoesNotThrow(() -> objectMapper.writeValueAsString(new PrivateModuleObjectTest()));
         Assertions.assertDoesNotThrow(() -> objectMapper.readValue(ObjectUtil.toString(new PrivateModuleObjectTest()), PrivateModuleObjectTest.class));
 //        Assertions.assertDoesNotThrow(() -> objectMapper.readValue("{\"dt\":100}", PrivateModuleObjectTest.class));
@@ -92,8 +90,8 @@ public class UtilCoreConfigConvertersTest {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class PrivateModuleObjectTest {
-        private LocalDateTime dt=LocalDateTime.now();
-        private LocalDate date=LocalDate.now();
-        private LocalTime times=LocalTime.now();
+        private LocalDateTime dt = LocalDateTime.now();
+        private LocalDate date = LocalDate.now();
+        private LocalTime times = LocalTime.now();
     }
 }

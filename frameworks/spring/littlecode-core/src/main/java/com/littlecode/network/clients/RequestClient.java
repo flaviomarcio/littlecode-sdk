@@ -6,5 +6,6 @@ import java.net.http.HttpClient;
 
 public interface RequestClient {
     void call(RequestUtil rqUtil);
+
     HttpClient createHttpClient(RequestUtil rqUtil);
 }

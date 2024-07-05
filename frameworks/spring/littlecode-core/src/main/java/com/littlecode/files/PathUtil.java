@@ -1,6 +1,5 @@
 package com.littlecode.files;
 
-import com.littlecode.exceptions.FrameworkException;
 import com.littlecode.util.SystemUtil;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,7 +14,7 @@ import java.util.UUID;
 
 @Builder
 public class PathUtil {
-    private static final String DIR_SEPARATOR=String.valueOf(File.separatorChar);
+    private static final String DIR_SEPARATOR = String.valueOf(File.separatorChar);
     public final List<String> pathParts = new ArrayList<>();
     @Getter
     @Setter
@@ -133,11 +132,11 @@ public class PathUtil {
     }
 
     public static boolean mkDir(String target) {
-        return target!=null && mkDir(new File(target));
+        return target != null && mkDir(new File(target));
     }
 
     public static boolean mkDir(Path target) {
-        return target!=null && mkDir(target.toFile());
+        return target != null && mkDir(target.toFile());
     }
 
     public static boolean rmDir(File file) {
@@ -145,11 +144,11 @@ public class PathUtil {
     }
 
     public static boolean rmDir(Path target) {
-        return target!=null && mkDir(target.toFile());
+        return target != null && mkDir(target.toFile());
     }
 
     public static boolean rmDir(String target) {
-        return target!=null && mkDir(new File(target));
+        return target != null && mkDir(new File(target));
     }
 
     public PathUtil clear() {
