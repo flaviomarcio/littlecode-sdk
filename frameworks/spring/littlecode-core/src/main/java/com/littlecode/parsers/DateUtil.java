@@ -51,7 +51,6 @@ public class DateUtil {
 
         String valuePart = input.substring(0, input.length() - 1);
         String unitPart = input.substring(input.length() - 1).toLowerCase();
-
         var value = PrimitiveUtil.toLong(valuePart);
 
         long durationMillis = switch (unitPart) {
