@@ -3,8 +3,10 @@ package com.littlecode.tests;
 import com.littlecode.exceptions.FrameworkException;
 import com.littlecode.exceptions.ParserException;
 import com.littlecode.parsers.HashUtil;
+import com.littlecode.parsers.PrimitiveUtil;
 import lombok.Builder;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,8 +15,11 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.*;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
+@Slf4j
 @ExtendWith(MockitoExtension.class)
 public class HashUtilTest {
 
@@ -45,11 +50,21 @@ public class HashUtilTest {
     @Test
     @DisplayName("Deve validar toUUID")
     public void UT_toUuid() {
-        String bytesOut = "c4ca4238a0b923820dcc509a6f75849b";
-        UUID uuidOut = UUID.fromString("c4ca4238-a0b9-2382-0dcc-509a6f75849b");
-        Assertions.assertTrue(HashUtil.isUuid(bytesOut));
-        Assertions.assertEquals(HashUtil.toUuid(bytesOut), uuidOut);
-
+        var list= Map.of(
+                "38b3eff8baf56627478ec76a704e9b52","38b3eff8-baf5-6627-478e-c76a704e9b52",
+                "008a6f9464ef81308da1dcc6ed9106d9","008a6f94-64ef-8130-8da1-dcc6ed9106d9",
+                "c4ca4238a0b923820dcc509a6f75849b","c4ca4238-a0b9-2382-0dcc-509a6f75849b"
+        );
+        for (Map.Entry<String, String> entry : list.entrySet()) {
+            var bytesIn = entry.getKey();
+            var bytesOut = entry.getValue();
+            UUID uuidOut = UUID.fromString(bytesOut);
+            Assertions.assertEquals(uuidOut.toString(),bytesOut);
+            Assertions.assertTrue(HashUtil.isUuid(bytesIn));
+            Assertions.assertTrue(HashUtil.isUuid(bytesOut));
+            Assertions.assertEquals(HashUtil.toUuid(bytesIn), uuidOut);
+            Assertions.assertEquals(HashUtil.toUuid(bytesOut), uuidOut);
+        }
     }
 
     @Test
