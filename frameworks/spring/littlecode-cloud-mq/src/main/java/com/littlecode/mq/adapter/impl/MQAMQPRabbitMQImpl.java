@@ -9,9 +9,8 @@ import com.littlecode.parsers.PrimitiveUtil;
 import com.littlecode.util.BeanUtil;
 import com.rabbitmq.client.*;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -173,8 +172,9 @@ public class MQAMQPRabbitMQImpl extends MQAdapter {
         try {
             channelDispatcher.queueDeclare(queueName, false, false, false, null);
             return true;
-        } catch (IOException ignored) {
-            return true;
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            return false;
         }
     }
 
@@ -250,7 +250,7 @@ public class MQAMQPRabbitMQImpl extends MQAdapter {
     @Slf4j
     @RequiredArgsConstructor
     public static class Listener {
-        private final MQAMQPRabbitMQImpl rabbitMQ;
+        private final MQAMQPRabbitMQImpl adapter;
         private final MQSetting setting;
         private final String queueName;
         private final int queueConsumer;
@@ -320,22 +320,46 @@ public class MQAMQPRabbitMQImpl extends MQAdapter {
             }
         }
 
+        @SneakyThrows
+        private void internalQueueChecker(){
+            Connection queueClient=null;
+            Channel queueChannel=null;
+            if(!setting.isAutoCreate())
+                return;
+            try{
+                queueClient = MQAMQPRabbitMQImpl.newClient(this.adapter.setting());
+                queueChannel = queueClient.createChannel();
+                log.info("Queue: [{}], creating queue", queueName);
+                adapter.queueCreate(queueChannel, queueName);
+            } catch (IOException e){
+                log.error(e.getMessage());
+            }
+            finally {
+                if(queueChannel!=null)
+                    queueChannel.close();
+                if(queueClient!=null)
+                    queueClient.close();
+            }
+
+        }
+
         private void internalRun(String logPrefix) {
 
             this.stop();
 
             try {
                 log.info("{}: connecting", logPrefix);
-                queueClient = MQAMQPRabbitMQImpl.newClient(this.rabbitMQ.setting());
+                queueClient = MQAMQPRabbitMQImpl.newClient(this.adapter.setting());
                 if (queueClient == null) {
                     log.error("{}: fail on connect", logPrefix);
                     return;
                 }
                 log.info("{}: connected", logPrefix);
+                internalQueueChecker();
                 queueChannel = queueClient.createChannel();
                 queueChannel.basicQos(setting.getQueueMaxNumber());
 
-                while (!this.rabbitMQ.queueExists(queueChannel, queueName)) {
+                while (!this.adapter.queueExists(queueChannel, queueName)) {
                     log.error("{} queue[{}] not found", queueName, logPrefix);
                     sleep(setting.getQueueIdleSleep());
                 }

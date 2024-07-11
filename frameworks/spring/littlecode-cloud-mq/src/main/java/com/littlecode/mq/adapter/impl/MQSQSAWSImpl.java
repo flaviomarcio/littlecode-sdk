@@ -330,6 +330,10 @@ public class MQSQSAWSImpl extends MQAdapter {
                 try (var sqsClient = adapter.newClient()) {
                     while (!this.adapter.queueExists(sqsClient, queueName)) {
                         log.error("Queue: [{}], not found", queueName);
+                        if(setting.isAutoCreate()){
+                            log.info("Queue: [{}], creating", queueName);
+                            adapter.queueCreate(sqsClient, queueName);
+                        }
                         sleep(queueIdleSleep);
                     }
                     var queueUrl = sqsClient.getQueueUrl(GetQueueUrlRequest.builder().queueName(queueName).build()).queueUrl();
