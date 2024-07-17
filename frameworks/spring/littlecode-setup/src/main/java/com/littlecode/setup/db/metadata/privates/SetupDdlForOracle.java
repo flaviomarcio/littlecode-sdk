@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.HashMap;
 
 @Slf4j
-public class SetupDdlForOracle extends SetupDdlForAnsi {
+public class SetupDdlForOracle extends SetupDdlBase {
     private static final String FORMAT_DROP_TABLE = "DROP TABLE %s CASCADE CONSTRAINTS";
     private static final HashMap<MetaDataClasses.DataType, String> DATA_TYPE_VS_SQL_TYPE = new HashMap<>();
 
@@ -64,8 +64,6 @@ public class SetupDdlForOracle extends SetupDdlForAnsi {
 
     @Override
     public String FORMAT_DROP_TABLE() {
-        return isUpperCase()
-                ? FORMAT_DROP_TABLE.toUpperCase()
-                : FORMAT_DROP_TABLE;
+        return FORMAT_DROP_TABLE;
     }
 }

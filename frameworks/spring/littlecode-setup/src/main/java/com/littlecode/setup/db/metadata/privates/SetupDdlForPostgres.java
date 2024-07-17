@@ -5,7 +5,7 @@ import com.littlecode.setup.db.metadata.MetaDataClasses;
 import java.util.HashMap;
 import java.util.List;
 
-public class SetupDdlForPostgres extends SetupDdlForAnsi {
+public class SetupDdlForPostgres extends SetupDdlBase {
     public static final String FORMAT_CREATE_INDEX = "create %s index if exists %s on %s(%s)";
     private static final String FORMAT_ALTER_TABLE = "alter table if exists %s ";
     private static final String FORMAT_ALTER_TABLE_ADD_COLUMN = FORMAT_ALTER_TABLE + "add if not exists %s";
@@ -26,6 +26,7 @@ public class SetupDdlForPostgres extends SetupDdlForAnsi {
         DATA_TYPE_VS_SQL_TYPE.put(MetaDataClasses.DataType.DateTime, "timestamp");
         DATA_TYPE_VS_SQL_TYPE.put(MetaDataClasses.DataType.Time, "time");
         DATA_TYPE_VS_SQL_TYPE.put(MetaDataClasses.DataType.Uuid, "uuid");
+        DATA_TYPE_VS_SQL_TYPE.put(MetaDataClasses.DataType.Integer, "int");
     }
 
     @Override
@@ -79,16 +80,6 @@ public class SetupDdlForPostgres extends SetupDdlForAnsi {
     public String FORMAT_ALTER_TABLE_ADD_COLUMN() {
         return FORMAT_ALTER_TABLE_ADD_COLUMN;
     }
-
-//    @Override
-//    public String FORMAT_CONSTRAINT_NAME_FK() {
-//        return SetupDdlInterface.super.FORMAT_CONSTRAINT_NAME_FK();
-//    }
-
-//    @Override
-//    public String FORMAT_CONSTRAINT_NAME_PK(){
-//        return SetupDdlInterface.super.FORMAT_CONSTRAINT_NAME_PK();
-//    }
 
     @Override
     public String FORMAT_TABLE_FK() {

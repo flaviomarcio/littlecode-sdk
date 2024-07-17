@@ -16,15 +16,15 @@ import java.util.*;
 public class MetaDataEngineBase<T> {
     private final List<MetaDataClasses.MetaTable> sources = new ArrayList<>();
 
-    public static Database databaseOf(Connection connection) {
-        if (connection == null)
-            return null;
-        try {
-            return databaseOf(connection.getMetaData().getDatabaseProductName());
-        } catch (SQLException e) {
-            return Database.H2;
-        }
-    }
+//    public static Database databaseOf(Connection connection) {
+//        if (connection == null)
+//            return null;
+//        try {
+//            return databaseOf(connection.getMetaData().getDatabaseProductName());
+//        } catch (SQLException e) {
+//            return Database.H2;
+//        }
+//    }
 
     public static Database databaseOf(String databaseEnumName) {
         if (databaseEnumName == null || databaseEnumName.trim().isEmpty())
@@ -70,33 +70,33 @@ public class MetaDataEngineBase<T> {
         return new SetupDdlForAnsi();
     }
 
-    public SetupDdlInterface ddlInterface(String databaseEnumName) {
-        return ddlInterface(databaseOf(databaseEnumName));
-    }
+//    public SetupDdlInterface ddlInterface(String databaseEnumName) {
+//        return ddlInterface(databaseOf(databaseEnumName));
+//    }
 
-    public List<SetupDdlInterface> ddlInterface(Database[] databases) {
-        if (databases == null || databases.length == 0)
-            return new ArrayList<>();
-        List<SetupDdlInterface> __return = new ArrayList<>();
-        for (var e : databases) {
-            var i = this.ddlInterface(e.name());
-            if (i != null)
-                __return.add(i);
-        }
-        return __return;
-    }
+//    public List<SetupDdlInterface> ddlInterface(Database[] databases) {
+//        if (databases == null || databases.length == 0)
+//            return new ArrayList<>();
+//        List<SetupDdlInterface> __return = new ArrayList<>();
+//        for (var e : databases) {
+//            var i = this.ddlInterface(e.name());
+//            if (i != null)
+//                __return.add(i);
+//        }
+//        return __return;
+//    }
 
-    public List<SetupDdlInterface> ddlInterface(List<Database> databases) {
-        if (databases == null || databases.isEmpty())
-            return new ArrayList<>();
-        List<SetupDdlInterface> __return = new ArrayList<>();
-        for (var e : databases) {
-            var i = this.ddlInterface(e.name());
-            if (i != null)
-                __return.add(i);
-        }
-        return __return;
-    }
+//    public List<SetupDdlInterface> ddlInterface(List<Database> databases) {
+//        if (databases == null || databases.isEmpty())
+//            return new ArrayList<>();
+//        List<SetupDdlInterface> __return = new ArrayList<>();
+//        for (var e : databases) {
+//            var i = this.ddlInterface(e.name());
+//            if (i != null)
+//                __return.add(i);
+//        }
+//        return __return;
+//    }
 
     public SetupDdlInterface ddlInterface() {
         return this.ddlInterface(databaseOf());
@@ -113,17 +113,17 @@ public class MetaDataEngineBase<T> {
         return (T) this;
     }
 
-    public final Map<Database, List<SetupClassesDB.StatementItem>> getStatements(List<Database> database) {
-        if (database == null || database.isEmpty())
-            return new HashMap<>();
-
-        Map<Database, List<SetupClassesDB.StatementItem>> __return = new HashMap<>();
-
-        for (var e : database)
-            __return.put(e, getStatements(e));
-
-        return __return;
-    }
+//    public final Map<Database, List<SetupClassesDB.StatementItem>> getStatements(List<Database> database) {
+//        if (database == null || database.isEmpty())
+//            return new HashMap<>();
+//
+//        Map<Database, List<SetupClassesDB.StatementItem>> __return = new HashMap<>();
+//
+//        for (var e : database)
+//            __return.put(e, getStatements(e));
+//
+//        return __return;
+//    }
 
     public final List<SetupClassesDB.StatementItem> getStatements() {
         return getStatements(databaseOf());
@@ -146,90 +146,87 @@ public class MetaDataEngineBase<T> {
         if (ddlInterface == null)
             throw ExceptionBuilder.ofFrameWork("Invalid database, %s", database);
 
-        this.getSources()
-                .forEach(table -> {
-                    ddlInterface
-                            .makeSources(table);
-                    var name = table.getSchemaName().trim().toLowerCase();
-                    if (!PrimitiveUtil.isEmpty(name) && !schemaNames.contains(name))
-                        schemaNames.add(name);
-                });
+        for (MetaDataClasses.MetaTable metaTable : this.getSources()) {
+            ddlInterface
+                    .makeSources(metaTable);
+            var name = metaTable.getSchemaName().trim().toLowerCase();
+            if (!PrimitiveUtil.isEmpty(name) && !schemaNames.contains(name))
+                schemaNames.add(name);
+        }
 
         if (!schemaNames.isEmpty()) {
             Collections.sort(schemaNames);
             deduplicateLines(schemaNames);
 
-            schemaNames.forEach(
-                    schemaName -> {
-                        var sttIn = statementsMap.get(SetupClassesDB.Target.Schemas);
-                        if (sttIn == null) {
-                            statementsMap.put(
-                                    SetupClassesDB.Target.Schemas,
-                                    sttIn = SetupClassesDB.StatementItem
-                                            .builder()
-                                            .directory(getSetting().getDatabase().getDDL().getExporterDirName())
-                                            .target(SetupClassesDB.Target.Schemas)
-                                            .build()
-                            );
-                        }
-                        if (!ddlInterface.FORMAT_CREATE_SCHEMA().isEmpty()) {
-                            sttIn.getSource().add(ddlInterface.SQL_COMMAND_COMMENT());
-                            sttIn.getSource().add(ddlInterface.SQL_COMMAND_COMMENT() + "schema name: " + schemaName);
-                            sttIn.getSource().add(ddlInterface.SQL_COMMAND_COMMENT());
-                            sttIn.getSource().add(String.format(ddlInterface.FORMAT_CREATE_SCHEMA(), schemaName));
-                            sttIn.getSource().add(String.format(ddlInterface.FORMAT_SET_DEFAULT_SCHEMA(), schemaName));
-                        }
-                        if (!ddlInterface.SQL_DEFAULT_CMD().isEmpty()) {
-                            sttIn.getSource().add(ddlInterface.SQL_COMMAND_COMMENT());
-                            sttIn.getSource().add(ddlInterface.SQL_COMMAND_COMMENT() + "default command: ");
-                            sttIn.getSource().add(ddlInterface.SQL_COMMAND_COMMENT());
-                            sttIn.getSource().addAll(ddlInterface.SQL_DEFAULT_CMD());
-                        }
+            for (String schemaName : schemaNames) {
+                var sttIn = statementsMap.get(SetupClassesDB.Target.Schemas);
+                if (sttIn == null) {
+                    statementsMap.put(
+                            SetupClassesDB.Target.Schemas,
+                            sttIn = SetupClassesDB.StatementItem
+                                    .builder()
+                                    .directory(getSetting().getDatabase().getDDL().getExporterDirName())
+                                    .target(SetupClassesDB.Target.Schemas)
+                                    .build()
+                    );
+                }
+                if (!ddlInterface.FORMAT_CREATE_SCHEMA().isEmpty()) {
+                    sttIn.getSource().add(ddlInterface.SQL_COMMAND_COMMENT());
+                    sttIn.getSource().add(ddlInterface.SQL_COMMAND_COMMENT() + "schema name: " + schemaName);
+                    sttIn.getSource().add(ddlInterface.SQL_COMMAND_COMMENT());
+                    sttIn.getSource().add(String.format(ddlInterface.FORMAT_CREATE_SCHEMA(), schemaName));
+                    sttIn.getSource().add(String.format(ddlInterface.FORMAT_SET_DEFAULT_SCHEMA(), schemaName));
+                }
+                if (!ddlInterface.SQL_DEFAULT_CMD().isEmpty()) {
+                    sttIn.getSource().add(ddlInterface.SQL_COMMAND_COMMENT());
+                    sttIn.getSource().add(ddlInterface.SQL_COMMAND_COMMENT() + "default command: ");
+                    sttIn.getSource().add(ddlInterface.SQL_COMMAND_COMMENT());
+                    sttIn.getSource().addAll(ddlInterface.SQL_DEFAULT_CMD());
+                }
 
-                        sttIn = statementsMap.get(SetupClassesDB.Target.Drops);
-                        if (sttIn == null) {
-                            statementsMap.put(
-                                    SetupClassesDB.Target.Drops,
-                                    sttIn = SetupClassesDB.StatementItem
-                                            .builder()
-                                            .directory(getSetting().getDatabase().getDDL().getExporterDirName())
-                                            .target(SetupClassesDB.Target.Drops)
-                                            .build()
-                            );
-                        }
+                sttIn = statementsMap.get(SetupClassesDB.Target.Drops);
+                if (sttIn == null) {
+                    statementsMap.put(
+                            SetupClassesDB.Target.Drops,
+                            sttIn = SetupClassesDB.StatementItem
+                                    .builder()
+                                    .directory(getSetting().getDatabase().getDDL().getExporterDirName())
+                                    .target(SetupClassesDB.Target.Drops)
+                                    .build()
+                    );
+                }
 
-                        if (!ddlInterface.FORMAT_DROP_SCHEMA().isEmpty()) {
-                            sttIn.getSource().add(ddlInterface.SQL_COMMAND_COMMENT());
-                            sttIn.getSource().add(ddlInterface.SQL_COMMAND_COMMENT() + "schema name: " + schemaName);
-                            sttIn.getSource().add(ddlInterface.SQL_COMMAND_COMMENT());
-                            sttIn.getSource().add(String.format(ddlInterface.FORMAT_DROP_SCHEMA(), schemaName));
-                        }
-                    });
+                if (!ddlInterface.FORMAT_DROP_SCHEMA().isEmpty()) {
+                    sttIn.getSource().add(ddlInterface.SQL_COMMAND_COMMENT());
+                    sttIn.getSource().add(ddlInterface.SQL_COMMAND_COMMENT() + "schema name: " + schemaName);
+                    sttIn.getSource().add(ddlInterface.SQL_COMMAND_COMMENT());
+                    sttIn.getSource().add(String.format(ddlInterface.FORMAT_DROP_SCHEMA(), schemaName));
+                }
+            }
         }
 
-        this.getSources()
-                .forEach(table -> {
-                    var sttMap = Map.of(
-                            SetupClassesDB.Target.Drops, parserDrops(table.getDrops()),
-                            //SetupClassesDB.Target.Schemas,parserStatements(table.getSchemas()),
-                            SetupClassesDB.Target.Tables, parserStatements(table.getTable()),
-                            SetupClassesDB.Target.ConstraintsPK, parserStatements(table.getConstraintsPK()),
-                            SetupClassesDB.Target.ConstraintsFK, parserStatements(table.getConstraintsFK()),
-                            SetupClassesDB.Target.Indexes, parserStatements(table.getIndexes()),
-                            SetupClassesDB.Target.Triggers, parserStatements(table.getTriggers())
-                    );
+        for (MetaDataClasses.MetaTable table : this.getSources()) {
+            var sttMap = Map.of(
+                    SetupClassesDB.Target.Drops, parserDrops(table.getDrops()),
+                    //SetupClassesDB.Target.Schemas,parserStatements(table.getSchemas()),
+                    SetupClassesDB.Target.Tables, parserStatements(table.getTable()),
+                    SetupClassesDB.Target.ConstraintsPK, parserStatements(table.getConstraintsPK()),
+                    SetupClassesDB.Target.ConstraintsFK, parserStatements(table.getConstraintsFK()),
+                    SetupClassesDB.Target.Indexes, parserStatements(table.getIndexes()),
+                    SetupClassesDB.Target.Triggers, parserStatements(table.getTriggers())
+            );
 
-                    sttMap.forEach((target, lines) -> {
-                        if (lines == null || lines.isEmpty())
-                            return;
-                        var stt = statementsMap.containsKey(target)
-                                ? statementsMap.get(target)
-                                : SetupClassesDB.StatementItem.builder().target(target).build();
-                        stt.getSource().addAll(lines);
-                        statementsMap.put(target, stt);
-                    });
+            sttMap.forEach((target, lines) -> {
+                if (lines == null || lines.isEmpty())
+                    return;
+                var stt = statementsMap.containsKey(target)
+                        ? statementsMap.get(target)
+                        : SetupClassesDB.StatementItem.builder().target(target).build();
+                stt.getSource().addAll(lines);
+                statementsMap.put(target, stt);
+            });
 
-                });
+        }
 
         List<SetupClassesDB.StatementItem> statementItemOut = new ArrayList<>();
         statementsMap.forEach((target, statementItem) -> {

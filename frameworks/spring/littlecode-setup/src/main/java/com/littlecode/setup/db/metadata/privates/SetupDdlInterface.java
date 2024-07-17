@@ -12,8 +12,6 @@ public interface SetupDdlInterface {
         var sqlType = MetaDataUtil.getSQLFieldTypeByClass(dataType);
         return sqlType == null
                 ? ""
-                : isUpperCase()
-                ? sqlType.toUpperCase()
                 : sqlType;
     }
 
@@ -47,15 +45,11 @@ public interface SetupDdlInterface {
     }
 
     default String SQL_NOT_NULL() {
-        return isUpperCase()
-                ? MetaDataClasses.SQL_NOT_NULL.toUpperCase()
-                : MetaDataClasses.SQL_NOT_NULL;
+        return MetaDataClasses.SQL_NOT_NULL;
     }
 
     default String SQL_DEFAULT() {
-        return isUpperCase()
-                ? MetaDataClasses.SQL_DEFAULT.toUpperCase()
-                : MetaDataClasses.SQL_DEFAULT;
+        return MetaDataClasses.SQL_DEFAULT;
     }
 
     default int SQL_NAME_MAX_LENGTH() {
@@ -63,69 +57,47 @@ public interface SetupDdlInterface {
     }
 
     default String FORMAT_CREATE_SCHEMA() {
-        return isUpperCase()
-                ? MetaDataClasses.FORMAT_CREATE_SCHEMA.toUpperCase()
-                : MetaDataClasses.FORMAT_CREATE_SCHEMA;
+        return MetaDataClasses.FORMAT_CREATE_SCHEMA;
     }
 
     default String FORMAT_DROP_SCHEMA() {
-        return isUpperCase()
-                ? MetaDataClasses.FORMAT_DROP_SCHEMA.toUpperCase()
-                : MetaDataClasses.FORMAT_DROP_SCHEMA;
+        return MetaDataClasses.FORMAT_DROP_SCHEMA;
     }
 
     default String FORMAT_SET_DEFAULT_SCHEMA() {
-        return isUpperCase()
-                ? MetaDataClasses.FORMAT_SET_DEFAULT_SCHEMA.toUpperCase()
-                : MetaDataClasses.FORMAT_SET_DEFAULT_SCHEMA;
+        return MetaDataClasses.FORMAT_SET_DEFAULT_SCHEMA;
     }
 
     default String FORMAT_CREATE_TABLE() {
-        return isUpperCase()
-                ? MetaDataClasses.FORMAT_CREATE_TABLE.toUpperCase()
-                : MetaDataClasses.FORMAT_CREATE_TABLE;
+        return MetaDataClasses.FORMAT_CREATE_TABLE;
     }
 
     default String FORMAT_DROP_TABLE() {
-        return isUpperCase()
-                ? MetaDataClasses.FORMAT_DROP_TABLE.toUpperCase()
-                : MetaDataClasses.FORMAT_DROP_TABLE;
+        return MetaDataClasses.FORMAT_DROP_TABLE;
     }
 
     default String FORMAT_ALTER_TABLE() {
-        return isUpperCase()
-                ? MetaDataClasses.FORMAT_ALTER_TABLE.toUpperCase()
-                : MetaDataClasses.FORMAT_ALTER_TABLE;
+        return MetaDataClasses.FORMAT_ALTER_TABLE;
     }
 
     default String FORMAT_ALTER_TABLE_ADD_COLUMN() {
-        return isUpperCase()
-                ? MetaDataClasses.FORMAT_ALTER_TABLE_ADD_COLUMN.toUpperCase()
-                : MetaDataClasses.FORMAT_ALTER_TABLE_ADD_COLUMN;
+        return MetaDataClasses.FORMAT_ALTER_TABLE_ADD_COLUMN;
     }
 
     default String FORMAT_CONSTRAINT_NAME_FK() {
-        return isUpperCase()
-                ? MetaDataClasses.FORMAT_CONSTRAINT_NAME_FK.toUpperCase()
-                : MetaDataClasses.FORMAT_CONSTRAINT_NAME_FK;
+        return MetaDataClasses.FORMAT_CONSTRAINT_NAME_FK;
     }
 
     default String FORMAT_CONSTRAINT_NAME_PK() {
-        return isUpperCase()
-                ? MetaDataClasses.FORMAT_CONSTRAINT_NAME_PK.toUpperCase()
-                : MetaDataClasses.FORMAT_CONSTRAINT_NAME_PK;
+        return MetaDataClasses.FORMAT_CONSTRAINT_NAME_PK;
     }
 
     default String FORMAT_TABLE_FK() {
-        return isUpperCase()
-                ? MetaDataClasses.FORMAT_TABLE_FK.toUpperCase()
-                : MetaDataClasses.FORMAT_TABLE_FK;
+        return MetaDataClasses.FORMAT_TABLE_FK;
     }
 
     default String FORMAT_TABLE_PK() {
-        return isUpperCase()
-                ? MetaDataClasses.FORMAT_TABLE_PK.toUpperCase()
-                : MetaDataClasses.FORMAT_TABLE_PK;
+        return MetaDataClasses.FORMAT_TABLE_PK;
     }
 
     default String FORMAT_COMMENT_COLUMN() {

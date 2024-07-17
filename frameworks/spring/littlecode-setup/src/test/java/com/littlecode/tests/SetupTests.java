@@ -13,8 +13,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.orm.jpa.vendor.Database;
 
 import java.sql.SQLException;
+import java.util.List;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
@@ -69,7 +71,12 @@ public class SetupTests {
     @Test
     public void UT_CHECK_EXECUTE() {
         Assertions.assertNotNull(factory.getSetup());
-        Assertions.assertDoesNotThrow(() -> factory.getSetup().execute());
+        var setup = factory.getSetup();
+        for(var e:List.of(Database.POSTGRESQL)/*Database.values()*/){
+            setup.getSetting().getDatabase().getTarget().getDatabases().clear();
+            setup.getSetting().getDatabase().getTarget().getDatabases().add(e);
+            Assertions.assertDoesNotThrow(() -> setup.execute());
+        }
     }
 
     @Test
