@@ -18,6 +18,13 @@ public class TestsUtil {
     private static final String CLASS_NAME = TestsUtil.class.getSimpleName();
     //public static final String TEMP_DIR = System.getProperty("java.io.tmpdir").replace("\\", "/");
 
+    private static List<Method> getMethods(Class<?> aClass) {
+        List<Method> methods = new ArrayList<>();
+        methods.addAll(Arrays.asList(aClass.getMethods()));
+        methods.addAll(Arrays.asList(aClass.getDeclaredMethods()));
+        return methods;
+    }
+
     private static Method getM(Class<?> aClass, String name, Class<?> argType) {
         try {
             return aClass.getMethod(name, argType);
@@ -46,8 +53,7 @@ public class TestsUtil {
     public static Object methodGetValue(Object e, String methodName) {
         try {
             var method = getM(e.getClass(), methodName);
-            if (method != null)
-                method.invoke(e);
+            method.invoke(e);
         } catch (Exception ignored) {
         }
         return null;
@@ -107,12 +113,11 @@ public class TestsUtil {
     }
 
     public static void checkGetterSetter(Object e) {
-        var aClass = e.getClass();
-        List<Method> methods = new ArrayList<>();
-        methods.addAll(Arrays.asList(aClass.getMethods()));
-        methods.addAll(Arrays.asList(aClass.getDeclaredMethods()));
+        List<Method> methods = getMethods(e.getClass());
         for (var m : methods) {
             if (m.getName().startsWith("get"))
+                methodGetValue(e, m.getName());
+            else if (m.getName().startsWith("is"))
                 methodGetValue(e, m.getName());
             else if (m.getName().startsWith("set"))
                 methodSetValue(e, m.getName(), makeValueForSetMethod(m));
@@ -120,32 +125,31 @@ public class TestsUtil {
     }
 
     private static Object makeValueForSetMethod(Method m) {
-        if (m.getParameterCount() > 0) {
-            var argType = m.getParameters()[0].getType();
-            if (Integer.class.equals(argType))
-                return 0;
-            else if (Double.class.equals(argType))
-                return 0D;
-            else if (LocalDate.class.equals(argType))
-                return LocalDate.now();
-            else if (LocalTime.class.equals(argType))
-                return LocalTime.now();
-            else if (LocalDateTime.class.equals(argType))
-                return LocalDateTime.now();
-            else if (Boolean.class.equals(argType))
-                return Boolean.TRUE;
-            else if (UUID.class.equals(argType))
-                return UUID.randomUUID();
-            else if (URI.class.equals(argType))
-                return URI.create("http://localhost:8080");
-            else if (argType.toString().equals("boolean"))
-                return true;
-            else if (argType.toString().equals("int"))
-                return 0;
-            else if (argType.toString().equals("double"))
-                return 0D;
-        }
-        return null;
+        var argType = m.getParameters()[0].getType();
+        if (Integer.class.equals(argType))
+            return 0;
+        else if (Double.class.equals(argType))
+            return 0D;
+        else if (LocalDate.class.equals(argType))
+            return LocalDate.now();
+        else if (LocalTime.class.equals(argType))
+            return LocalTime.now();
+        else if (LocalDateTime.class.equals(argType))
+            return LocalDateTime.now();
+        else if (Boolean.class.equals(argType))
+            return Boolean.TRUE;
+        else if (UUID.class.equals(argType))
+            return UUID.randomUUID();
+        else if (URI.class.equals(argType))
+            return URI.create("http://localhost:8080");
+        else if (argType.toString().equals("boolean"))
+            return true;
+        else if (argType.toString().equals("int"))
+            return 0;
+        else if (argType.toString().equals("double"))
+            return 0D;
+        else
+            return null;
     }
 
     public static void checkObject(Object... list) {
