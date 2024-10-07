@@ -21,13 +21,18 @@ import java.util.UUID;
 @ExtendWith(MockitoExtension.class)
 public class TestsUtilTest {
     @Test
-    @DisplayName("Deve validar class")
-    void deveValidarClass() {
+    @DisplayName("Deve validar classes")
+    void deveValidarClasses() {
         Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(new DTO_Class_Clean()));
         Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(new DTO_Class_GetId_IsEnabled_001()));
         Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(new DTO_Class_GetId_IsEnabled_002()));
         Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(new DTO_Class_GetId_IsEnabled_003()));
         Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(new DTO_Class_B()));
+    }
+
+    @Test
+    @DisplayName("Deve validar enums")
+    void deveValidarEnums() {
         Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(Enum_A.values()));
         Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(Enum_B.values()));
         Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(Enum_C.values()));
