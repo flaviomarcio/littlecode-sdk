@@ -24,10 +24,7 @@ public class TestsUtilTest {
     @DisplayName("Deve validar classes")
     void deveValidarClasses() {
         Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(new DTO_Class_Clean()));
-        Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(new DTO_Class_GetId_IsEnabled_001()));
-        Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(new DTO_Class_GetId_IsEnabled_002()));
-        Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(new DTO_Class_GetId_IsEnabled_003()));
-        Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(new DTO_Class_B()));
+        Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(new DTO_Class_AllTypes()));
     }
 
     @Test
@@ -91,14 +88,7 @@ public class TestsUtilTest {
     }
 
     @Data
-    public static class DTO_Class_GetId_IsEnabled_001 {
-        private final boolean enabled = false;
-        private final Boolean active = false;
-        private Object id;
-    }
-
-    @Data
-    public static class DTO_Class_GetId_IsEnabled_002 {
+    public static class DTO_Class_AllTypes {
         private Object id;
         private Boolean argBoolean;
         private boolean argBool;
@@ -114,19 +104,4 @@ public class TestsUtilTest {
         private Double argDouble;
         private double argDbl;
     }
-
-    @Data
-    public static class DTO_Class_GetId_IsEnabled_003 {
-        private Object id;
-        private Integer enabld;
-        private Double active;
-    }
-
-    @Data
-    @Getter
-    public static class DTO_Class_B {
-        private UUID field123;
-    }
-
-
 }
