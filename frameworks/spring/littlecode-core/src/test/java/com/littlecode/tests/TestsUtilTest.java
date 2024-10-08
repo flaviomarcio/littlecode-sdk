@@ -103,5 +103,10 @@ public class TestsUtilTest {
         private Long argLong;
         private Double argDouble;
         private double argDbl;
+
+        public static void setArgs1(Object arg1){
+        }
+        public static void setArgs2(Object arg1, Object arg2){
+        }
     }
 }

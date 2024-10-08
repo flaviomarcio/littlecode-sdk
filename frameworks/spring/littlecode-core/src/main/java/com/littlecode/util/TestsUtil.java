@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -15,8 +16,6 @@ import java.util.UUID;
 
 @Slf4j
 public class TestsUtil {
-    private static final String CLASS_NAME = TestsUtil.class.getSimpleName();
-    //public static final String TEMP_DIR = System.getProperty("java.io.tmpdir").replace("\\", "/");
 
     private static List<Method> getMethods(Class<?> aClass) {
         List<Method> methods = new ArrayList<>();
@@ -50,25 +49,34 @@ public class TestsUtil {
         return getM(aClass, name, Object.class);
     }
 
-    public static Object methodGetValue(Object e, String methodName) {
+    private static Object methodGetValue(Object e, String methodName) {
         try {
             var method = getM(e.getClass(), methodName);
-            method.invoke(e);
+            return method.invoke(Modifier.isStatic(method.getModifiers())?null:e);
         } catch (Exception ignored) {
         }
         return null;
     }
 
-    public static void methodSetValue(Object e, String methodName, Object... args) {
+    private static void methodSetValue(Object e, String methodName, Object... args) {
         try {
             var method = getM(e.getClass(), methodName);
-            if (method != null)
-                method.invoke(e, args);
-        } catch (InvocationTargetException | IllegalAccessException ignored) {
+            if (method != null){
+                var parent=Modifier.isStatic(method.getModifiers())?null:e;
+                if(method.getParameterCount()>=1){
+                    if(method.getParameterCount()>1)
+                        method.invoke(parent,args);
+                    else{
+                        for(var i:args)
+                            method.invoke(parent,i);
+                    }
+                }
+            }
+        } catch (Exception ignored) {
         }
     }
 
-    public static void checkGetterSetterEnum(Object e) {
+    private static void checkGetterSetterEnum(Object e) {
         if (!e.getClass().isEnum())
             return;
         List<Object> vJsonValues = new ArrayList<>();
@@ -81,7 +89,7 @@ public class TestsUtil {
 
     }
 
-    public static void checkGetterSetterFields(Object e) {
+    private static void checkGetterSetterFields(Object e) {
         final var aClass = e.getClass();
         try {
             for (var field : e.getClass().getDeclaredFields()) {
@@ -96,8 +104,9 @@ public class TestsUtil {
 
                 {
                     var method = getM(aClass, "get" + field.getName(), field.getType());
-                    if (method != null)
-                        method.invoke(e);
+                    if (method != null){
+                        method.invoke(Modifier.isStatic(method.getModifiers())?null:e);
+                    }
                 }
 
                 {
@@ -105,14 +114,14 @@ public class TestsUtil {
                     var v = field.get(e);
                     var method = getM(aClass, "set" + field.getName(), field.getType());
                     if (method != null)
-                        method.invoke(e, v);
+                        method.invoke(Modifier.isStatic(method.getModifiers())?null:e, v);
                 }
             }
         } catch (InvocationTargetException | IllegalAccessException ignored) {
         }
     }
 
-    public static void checkGetterSetter(Object e) {
+    private static void checkGetterSetter(Object e) {
         List<Method> methods = getMethods(e.getClass());
         for (var m : methods) {
             if (m.getName().startsWith("get"))
