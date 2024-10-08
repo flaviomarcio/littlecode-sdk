@@ -9,7 +9,7 @@
     </parent>
     <groupId>com.littlecode</groupId>
     <artifactId>cloud-mq-extensions-spring</artifactId>
-    <version>1.0.0</version>
+    <version>3.2.4</version>
     <name>app</name>
     <description>Little code cloud message queue - extensions</description>
     <properties>
@@ -18,7 +18,7 @@
         <java.version>17</java.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <littlecode-version>1.0.0</littlecode-version>
+        <littlecode-version>3.2.4</littlecode-version>
         <jackson-version>2.17.0</jackson-version>
         <modelmapper-version>3.2.0</modelmapper-version>
         <reflections-version>0.10.2</reflections-version>

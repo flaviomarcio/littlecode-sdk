@@ -10,7 +10,7 @@
         <java.version>17</java.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <littlecode-version>1.0.0</littlecode-version>
+        <littlecode-version>3.2.4</littlecode-version>
         ...
     </properties>
     ...

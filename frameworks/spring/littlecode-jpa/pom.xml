@@ -9,7 +9,7 @@
     </parent>
     <groupId>com.littlecode</groupId>
     <artifactId>jpa-spring</artifactId>
-    <version>1.0.0</version>
+    <version>3.2.4</version>
     <name>app</name>
     <description>Little code for jpa</description>
     <properties>
@@ -17,7 +17,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>17</java.version>
         <spring-boot-version>3.2.4</spring-boot-version>
-        <littlecode-version>1.0.0</littlecode-version>
+        <littlecode-version>3.2.4</littlecode-version>
     </properties>
     <dependencyManagement>
         <dependencies>
