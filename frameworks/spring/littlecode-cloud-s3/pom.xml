@@ -5,11 +5,11 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.4</version>
+        <version>3.2.5</version>
     </parent>
     <groupId>com.littlecode</groupId>
     <artifactId>cloud-s3-spring</artifactId>
-    <version>3.2.4</version>
+    <version>3.2.5</version>
     <name>app</name>
     <description>Little code cloud s3</description>
     <properties>
@@ -18,9 +18,9 @@
         <java.version>17</java.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <littlecode-version>3.2.4</littlecode-version>
+        <littlecode-version>3.2.5</littlecode-version>
         <modelmapper-version>3.2.0</modelmapper-version>
-        <spring-boot-version>3.2.4</spring-boot-version>
+        <spring-boot-version>3.2.5</spring-boot-version>
         <spring-cloud-aws.version>3.2.0-M1</spring-cloud-aws.version>
     </properties>
     <dependencyManagement>

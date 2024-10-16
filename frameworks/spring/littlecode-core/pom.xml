@@ -5,11 +5,11 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.4</version>
+        <version>3.2.5</version>
     </parent>
     <groupId>com.littlecode</groupId>
     <artifactId>core-spring</artifactId>
-    <version>3.2.4</version>
+    <version>3.2.5</version>
     <url>https://github.com/flaviomarcio/littlecode-sdk-build</url>
     <name>littlecode-core</name>
     <description>Little code core</description>
@@ -28,7 +28,7 @@
         <java.version>17</java.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <littlecode-version>3.2.4</littlecode-version>
+        <littlecode-version>3.2.5</littlecode-version>
         <commons-io-version>2.15.1</commons-io-version>
         <commons-lang3-version>3.14.0</commons-lang3-version>
         <h2.version>2.2.220</h2.version>
@@ -37,7 +37,7 @@
         <modelmapper-version>3.2.0</modelmapper-version>
         <reflections-version>0.10.2</reflections-version>
         <snakeyaml-version>2.2</snakeyaml-version>
-        <spring-boot-version>3.2.4</spring-boot-version>
+        <spring-boot-version>3.2.5</spring-boot-version>
         <lombok.version>1.18.32</lombok.version>
         <jakarta.servlet-api.version>6.1.0-M2</jakarta.servlet-api.version>
     </properties>

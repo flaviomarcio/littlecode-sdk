@@ -1,1 +1,1 @@
-release/spring-3.2.4
+release/spring-3.2.5

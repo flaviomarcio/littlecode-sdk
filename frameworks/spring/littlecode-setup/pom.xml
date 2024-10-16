@@ -5,11 +5,11 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.4</version>
+        <version>3.2.5</version>
     </parent>
     <groupId>com.littlecode</groupId>
     <artifactId>setup-spring</artifactId>
-    <version>3.2.4</version>
+    <version>3.2.5</version>
     <name>app</name>
     <description>Little code setup app</description>
     <properties>
@@ -18,12 +18,12 @@
         <java.version>17</java.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <littlecode-version>3.2.4</littlecode-version>
+        <littlecode-version>3.2.5</littlecode-version>
         <HikariCP.version>5.1.0</HikariCP.version>
         <jackson-version>2.16.1</jackson-version>
         <modelmapper-version>3.2.0</modelmapper-version>
         <reflections-version>0.10.2</reflections-version>
-        <spring-boot-version>3.2.4</spring-boot-version>
+        <spring-boot-version>3.2.5</spring-boot-version>
     </properties>
     <dependencyManagement>
         <dependencies>
