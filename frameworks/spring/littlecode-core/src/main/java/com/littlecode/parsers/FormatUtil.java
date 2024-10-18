@@ -60,8 +60,16 @@ public class FormatUtil {
         return value == null ? "" : DATE_FORMAT.format(value);
     }
 
+    public static String formatDate(LocalDateTime value) {
+        return value == null ? "" : DATE_FORMAT.format(value.toLocalDate());
+    }
+
     public static String formatTime(LocalTime value) {
         return value == null ? "" : TIME_FORMAT.format(value);
+    }
+
+    public static String formatTime(LocalDateTime value) {
+        return value == null ? "" : TIME_FORMAT.format(value.toLocalTime());
     }
 
     public static String formatValue(Object value) {
