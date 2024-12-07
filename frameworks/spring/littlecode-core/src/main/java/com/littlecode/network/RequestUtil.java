@@ -107,7 +107,7 @@ public class RequestUtil {
             lines.add(String.format("             --header '%s: %s' \\", key, value));
         });
         lines.add(String.format("             --location '%s' \\", this.url()));
-        if (method == Method.POST || method == Method.PUT)
+        if (method == Method.POST || method == Method.PUT || method == Method.PATCH)
             lines.add(String.format("             --data '%s' ", this.getBody()));
         return lines;
 
