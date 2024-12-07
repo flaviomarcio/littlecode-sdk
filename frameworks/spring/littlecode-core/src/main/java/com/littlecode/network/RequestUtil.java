@@ -419,6 +419,7 @@ public class RequestUtil {
                 var __object = ObjectUtil.createFromString(Object.class, body);
                 List<Object> list = new ArrayList<>();
                 if (__object != null) {
+                    //noinspection rawtypes
                     if (__object instanceof List value) {
                         list.addAll(value);
                     } else {
