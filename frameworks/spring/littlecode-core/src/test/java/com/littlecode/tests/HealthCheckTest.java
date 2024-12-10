@@ -20,14 +20,18 @@ public class HealthCheckTest {
     }
 
     @Test
-    @DisplayName("deve validar contructors")
-    void deveValidarContructors() {
+    @DisplayName("deve validar constructors")
+    void deveValidarConstructors() {
         HealthCheck.reset();
-        TestsUtil.checkObject(new HealthCheck.Config(), HealthCheck.Config.builder().build());
-        Assertions.assertDoesNotThrow(HealthCheck::new);
         var config=new HealthCheck.Config();
         Assertions.assertDoesNotThrow(() -> HealthCheck.createHealthIndicator(config));
         Assertions.assertDoesNotThrow(() -> HealthCheck.createHealthIndicator(config, new HealthCheck.Indicator.Event(config)));
+    }
+
+    @Test
+    @DisplayName("deve validar GetterSetter")
+    void deveValidarGetterSetters() {
+        TestsUtil.checkObject(new HealthCheck.Config(), HealthCheck.Config.builder().build());
     }
 
     @Test

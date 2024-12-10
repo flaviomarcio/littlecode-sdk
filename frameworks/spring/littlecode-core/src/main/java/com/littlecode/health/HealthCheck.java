@@ -12,11 +12,8 @@ import java.time.LocalDateTime;
 
 @Slf4j
 public class HealthCheck {
-    @Getter
-    @Setter
+
     private static LocalDateTime staticStartExecution=LocalDateTime.now();
-    @Getter
-    @Setter
     private static LocalDateTime staticLastExecution;
     private static String staticFailMessage;
 
@@ -26,6 +23,13 @@ public class HealthCheck {
         staticFailMessage=null;
     }
 
+    public static void setStaticStartExecution(LocalDateTime staticStartExecution) {
+        HealthCheck.staticStartExecution = staticStartExecution;
+    }
+
+    public static void setStaticLastExecution(LocalDateTime staticLastExecution) {
+        HealthCheck.staticLastExecution = staticLastExecution;
+    }
 
     public static void executionNotify() {
         staticLastExecution = LocalDateTime.now();
@@ -43,7 +47,8 @@ public class HealthCheck {
         return new Indicator(config,event);
     }
 
-    @Data
+    @Getter
+    @Setter
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor

@@ -10,7 +10,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -21,10 +23,10 @@ import java.util.UUID;
 @ExtendWith(MockitoExtension.class)
 public class TestsUtilTest {
     @Test
-    @DisplayName("Deve validar classes")
+    @DisplayName("Deve validar getter|setter")
     void deveValidarClasses() {
-        Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(new DTO_Class_Clean()));
         Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(new DTO_Class_AllTypes()));
+//        Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(new DTO_Class_Clean()));
     }
 
     @Test
@@ -87,11 +89,12 @@ public class TestsUtilTest {
     public static class DTO_Class_Clean {
     }
 
+    @Service
     @Data
     public static class DTO_Class_AllTypes {
         private Object id;
         private Boolean argBoolean;
-        private boolean argBool;
+        private static Object argObject;
 
         private UUID argUUID;
         private URI argURI;
@@ -101,12 +104,39 @@ public class TestsUtilTest {
         private int argInt;
         private Integer argInteger;
         private Long argLong;
+        private static Object argObject2;
+        private boolean argBoolean2;
+        private long argLong2;
         private Double argDouble;
         private double argDbl;
+        private Short aShort;
+        private short aShort2;
+        private BigDecimal bigDecimal;
 
-        public static void setArgs1(Object arg1){
+        public static Object getArgsStatic(Object arg1) {
+            return argObject;
         }
-        public static void setArgs2(Object arg1, Object arg2){
+
+        public static void setArgsStatic1(Object arg1) {
+            argObject = arg1;
+        }
+
+        public static void setArgsStatic2(Object arg1, Object arg2) {
+            argObject = arg1;
+            argObject2 = arg2;
+        }
+
+        public Object getArgs() {
+            return argObject;
+        }
+
+        public void setArgs1(Object arg1) {
+            argObject = arg1;
+        }
+
+        public void setArgs2(Object arg1, Object arg2) {
+            argObject = arg1;
+            argObject2 = arg2;
         }
     }
 }

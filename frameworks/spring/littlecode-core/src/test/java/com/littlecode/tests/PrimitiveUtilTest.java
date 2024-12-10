@@ -79,6 +79,34 @@ public class PrimitiveUtilTest {
     }
 
     @Test
+    @DisplayName("Deve validar getString")
+    public void UI_CHECK_getString() {
+        Assertions.assertEquals(PrimitiveUtil.getString(null).orElse(null), null);
+        Assertions.assertEquals(PrimitiveUtil.getString("").orElse(null), null);
+        Assertions.assertEquals(PrimitiveUtil.getString(" ").orElse(null), null);
+
+        {
+            Map<Object, String> mapValues = Map.of(
+                    LocalDate.of(2000, 1, 3), "2000-01-03",
+                    LocalTime.of(22, 37, 12), "22:37:12",
+                    LocalDateTime.of(LocalDate.of(2000, 1, 3), LocalTime.of(22, 37, 12)), "2000-01-03T22:37:12",
+                    1000, "1000",
+                    111.12, "111.12",
+                    true, "true",
+                    -1000, "-1000"
+            );
+
+            for (Map.Entry<Object, String> entry : mapValues.entrySet()) {
+                Object v = entry.getKey();
+                String s = entry.getValue();
+                Assertions.assertEquals(PrimitiveUtil.getString(v).orElse(null), s);
+            }
+        }
+
+
+    }
+
+    @Test
     @DisplayName("Deve validar toString")
     public void UI_CHECK_toString() {
         List.of("0", 12D, 1L, 1, LocalDate.now(), LocalTime.now(), LocalDateTime.now(), UUID.randomUUID())
@@ -88,7 +116,7 @@ public class PrimitiveUtilTest {
 
         var dt = LocalDate.of(2000, 1, 3);
         var tm = LocalTime.of(22, 37, 12);
-        Assertions.assertDoesNotThrow(() -> new PrimitiveUtil());
+        Assertions.assertDoesNotThrow(PrimitiveUtil::new);
 
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString((Object) LocalDateTime.now()));
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString((Object) LocalDate.now()));

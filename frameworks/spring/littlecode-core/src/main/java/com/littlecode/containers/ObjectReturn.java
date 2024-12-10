@@ -1,5 +1,6 @@
 package com.littlecode.containers;
 
+import com.littlecode.parsers.HashUtil;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +34,21 @@ public class ObjectReturn {
                     .message(m.message)
                     .end();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (super.equals(obj))
+            return true;
+        var md5A = HashUtil.toMd5Uuid(this);
+        var md5B = HashUtil.toMd5Uuid(obj);
+        return md5A.equals(md5B);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(HashUtil.toMd5Uuid(this));
+    }
+
 
     public static MessageMaker create() {
         return new ObjectReturn().m();

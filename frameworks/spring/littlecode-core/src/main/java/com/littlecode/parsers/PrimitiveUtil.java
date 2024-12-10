@@ -420,6 +420,15 @@ public class PrimitiveUtil {
         return ((value != null) && (begin != null && end != null)) && (!value.isBefore(begin) && !value.isAfter(end));
     }
 
+    public static Optional<String> getString(Object v) {
+        if (v == null)
+            return Optional.empty();
+        var out = toString(v).trim();
+        if (out.isEmpty())
+            return Optional.empty();
+        return Optional.of(out);
+    }
+
     public static String toString(Object v) {
         if (v != null) {
             if (v instanceof String value)

@@ -17,6 +17,20 @@ import java.util.UUID;
 public class ObjectReturnTest {
 
     @Test
+    @DisplayName("Deve validar equals and hashCode")
+    public void UT_DEVE_VALIDAR_EQUALS_AND_HASHCODE() {
+        var objA = ObjectReturn.of(Map.of("id", 12345));
+        var objB = ObjectReturn.of(Map.of("id", 12345));
+        var objC = ObjectReturn.of(Map.of("id", UUID.randomUUID()));
+        Assertions.assertTrue(objA.equals(objA));
+        Assertions.assertTrue(objA.equals(objB));
+        Assertions.assertTrue(objA.hashCode() == objB.hashCode());
+        Assertions.assertFalse(objA.equals(objC));
+        Assertions.assertFalse(objA.hashCode() == objC.hashCode());
+    }
+
+
+    @Test
     @DisplayName("Deve validar ObjectReturn.type")
     public void UT_DIRECT_RETURN_TYPE() {
 
