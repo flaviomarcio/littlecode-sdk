@@ -4,6 +4,9 @@ import com.littlecode.config.UtilCoreConfig;
 import com.littlecode.exceptions.FrameworkException;
 import com.littlecode.files.FileFormat;
 import com.littlecode.files.IOUtil;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,8 +17,11 @@ import java.lang.reflect.Modifier;
 import java.nio.file.Path;
 import java.util.*;
 
+@Slf4j
 public class ObjectUtil {
-
+    @Getter
+    @Setter
+    private static boolean printLog = false;
     public static String inputReadAll(InputStream source) {
         if (source != null) {
             try {
@@ -80,7 +86,9 @@ public class ObjectUtil {
             try {
                 var objectMapper = UtilCoreConfig.newObjectMapper(UtilCoreConfig.FILE_FORMAT_DEFAULT);
                 objectMapper.updateValue(object, newValues);
-            } catch (Exception ignored) {
+            } catch (Exception e) {
+                if(ObjectUtil.isPrintLog())
+                    log.error(e.getMessage());
             }
         }
         return false;
@@ -94,7 +102,9 @@ public class ObjectUtil {
                 var updateBytes = IOUtil.readAll(newValues).trim();
                 var objectMapper = UtilCoreConfig.newObjectMapper(UtilCoreConfig.FILE_FORMAT_DEFAULT);
                 objectMapper.updateValue(object, updateBytes);
-            } catch (Exception ignored) {
+            } catch (Exception e) {
+                if(ObjectUtil.isPrintLog())
+                    log.error(e.getMessage());
             }
         }
         return false;
@@ -212,6 +222,8 @@ public class ObjectUtil {
             c.setAccessible(true);
             return (T) c.newInstance();
         } catch (Exception e) {
+            if(ObjectUtil.isPrintLog())
+                log.error(e.getMessage());
         }
         return null;
     }
@@ -238,7 +250,9 @@ public class ObjectUtil {
                     }
                 }
 
-            } catch (Exception ignored) {
+            } catch (Exception e) {
+                if(ObjectUtil.isPrintLog())
+                    log.error(e.getMessage());
                 return null;
             }
         }
@@ -249,7 +263,9 @@ public class ObjectUtil {
         var mapper = UtilCoreConfig.newObjectMapper(fileFormat);
         try {
             return mapper.readValue(source, aClass);
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            if(ObjectUtil.isPrintLog())
+                log.error(e.getMessage());
         }
         return null;
     }
@@ -262,7 +278,9 @@ public class ObjectUtil {
         if (aClass != null && source != null) {
             try {
                 return createFromStream(aClass, new FileInputStream(source));
-            } catch (Exception ignored) {
+            } catch (Exception e) {
+                if(ObjectUtil.isPrintLog())
+                    log.error(e.getMessage());
             }
         }
         return null;
@@ -310,9 +328,7 @@ public class ObjectUtil {
         if (o != null) {
             if (o instanceof String string) {
                 var mapValues = toMapOfString(string);
-                Map<String, Object> fieldValues = new HashMap<>();
-                fieldValues.putAll(mapValues);
-                return fieldValues;
+                return new HashMap<>(mapValues);
             } else if (o instanceof Map map) {
                 return map;
             } else if (!PrimitiveUtil.isPrimitiveValue(o.getClass())) {

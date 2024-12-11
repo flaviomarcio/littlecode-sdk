@@ -24,6 +24,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 
+import java.util.List;
 import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)
@@ -274,9 +275,12 @@ public class MQTest {
             Assertions.assertEquals(task.asString(), bodyJson);
             Assertions.assertNotNull(task.asContainer());
             Assertions.assertTrue(MQ.Message.Task.of(objectCheck).canType(ObjectCheck.class));
-            Assertions.assertTrue(task.canType(EnumCheck.EnumA));
-            Assertions.assertFalse(task.canType(EnumCheck.EnumB));
-            Assertions.assertFalse(task.canType(null));
+            for(var aBool: List.of(Boolean.TRUE, Boolean.FALSE)) {
+                task.setCompareTypeFullName(aBool);
+                Assertions.assertTrue(task.canType(EnumCheck.EnumA));
+                Assertions.assertFalse(task.canType(EnumCheck.EnumB));
+                Assertions.assertFalse(task.canType(null));
+            }
         }
 
 
@@ -290,11 +294,13 @@ public class MQTest {
             Assertions.assertNotNull(task.getType());
             Assertions.assertNotNull(task.getTypeName());
             Assertions.assertNotNull(task.getTypeClass());
+
             Assertions.assertDoesNotThrow(() -> task.asObject(ObjectCheck.class));
             Assertions.assertDoesNotThrow(() -> task.asObject(ObjectCheck.class.getName()));
             Assertions.assertDoesNotThrow(() -> task.asObject(ObjectCheck.class.getSimpleName()));
             Assertions.assertDoesNotThrow(() -> task.asObject(ObjectCheck.class.toString()));
             Assertions.assertEquals(task.asObject(ObjectCheck.class).getId(), objectCheck.getId());
+
         }
 
     }

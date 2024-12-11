@@ -13,7 +13,9 @@ import org.springframework.core.env.Environment;
 
 import java.beans.Transient;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
+import java.util.function.Function;
 
 @Slf4j
 @Getter
@@ -139,6 +141,7 @@ public class MQ {
             private UUID checksum;
             private Object body;
             private String fail;
+            private boolean compareTypeFullName;
 
             public static Task of(Object type, Object body) {
                 if(body instanceof Task task){
@@ -181,12 +184,24 @@ public class MQ {
             }
 
             public boolean canType(Object type) {
+                Function<Object,String> getName=new Function<Object, String>() {
+                    @Override
+                    public String apply(Object o) {
+                        var name=ObjectUtil.classToName(o);
+                        if(!compareTypeFullName){
+                            for(var separator: List.of("\\.","\\$")){
+                                var list = List.of(name.split(separator));
+                                name=list.get(list.size()-1);
+                            }
+                        }
+                        return name.toLowerCase();
+                    }
+                };
                 if (type != null && this.getType() != null){
-                    var eA = ObjectUtil.classToName(type);
-                    var eB = ObjectUtil.classToName(getType());
+                    var eA = getName.apply(type);
+                    var eB = getName.apply(getType());
                     if (eA.equals(eB))
                         return true;
-
                     var of = ObjectContainer.classDictionaryByName(eA);
                     return (of != null);
                 }
