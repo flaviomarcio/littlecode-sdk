@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.4</version>
+        <version>3.2.5</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.app</groupId>
@@ -20,14 +20,14 @@
         <java.version>17</java.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <littlecode-version>3.2.4</littlecode-version>
+        <littlecode-version>3.2.5</littlecode-version>
         <commons-io-version>2.15.1</commons-io-version>
         <commons-lang3-version>3.14.0</commons-lang3-version>
         <jackson-version>2.15.2</jackson-version>
         <java-jwt-version>4.2.1</java-jwt-version>
         <jwks-rsa-version>0.21.2</jwks-rsa-version>
         <modelmapper-version>3.2.0</modelmapper-version>
-        <spring-boot-version>3.2.4</spring-boot-version>
+        <spring-boot-version>3.2.5</spring-boot-version>
         <spring-cloud-version>2023.0.0</spring-cloud-version>
         <springdoc-version>1.7.0</springdoc-version>
         <!-- postgresql: version replaced with version without vulnerability -->

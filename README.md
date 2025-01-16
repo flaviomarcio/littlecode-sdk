@@ -79,7 +79,7 @@ Litlecode aims to reduce the verbosity of frameworks, thus providing classes and
         ```xml
         <properties>
             ...
-            <littlecode-version>3.2.4</littlecode-version>
+            <littlecode-version>3.2.5</littlecode-version>
             ...
         </properties>
         ...
@@ -151,7 +151,7 @@ Litlecode aims to reduce the verbosity of frameworks, thus providing classes and
         <parent>
             <groupId>com.littlecode</groupId>
             <artifactId>spring-boot-starter-parent</artifactId>
-            <version>3.2.4</version>
+            <version>3.2.5</version>
             <relativePath/>
         </parent>
         ...
@@ -160,14 +160,14 @@ Litlecode aims to reduce the verbosity of frameworks, thus providing classes and
                 <dependency>
                     <groupId>com.littlecode</groupId>
                     <artifactId>spring-boot-dependencies</artifactId>
-                    <version>3.2.4</version>
+                    <version>3.2.5</version>
                     <type>pom</type>
                     <scope>import</scope>
                 </dependency>
                 <dependency>
                     <groupId>com.littlecode</groupId>
                     <artifactId>spring-cloud-dependencies</artifactId>
-                    <version>3.2.4</version>
+                    <version>3.2.5</version>
                     <type>pom</type>
                     <scope>import</scope>
                 </dependency>

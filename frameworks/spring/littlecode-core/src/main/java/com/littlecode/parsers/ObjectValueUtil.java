@@ -67,7 +67,7 @@ public class ObjectValueUtil {
                     var mapper = UtilCoreConfig.newObjectMapper(fileFormat);
                     return mapper.writeValueAsString(o);
                 } catch (Exception e) {
-                    log.warn("unable to convert object[{}] to String, message: {}", o.getClass().getCanonicalName(), e.getMessage());
+                    log.warn("unable to convert object[{}] to String, message: {}",o.getClass().getCanonicalName(), e.getMessage());
                 }
             }
         }
