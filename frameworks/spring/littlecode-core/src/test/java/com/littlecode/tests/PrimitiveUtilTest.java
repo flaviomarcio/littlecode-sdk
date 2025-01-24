@@ -51,11 +51,12 @@ public class PrimitiveUtilTest {
     @Test
     @DisplayName("Deve validar isPrimitive")
     public void UI_CHECK_CHECK_isPrimitive() {
-        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.isPrimitiveValue(null));
-        Assertions.assertFalse(PrimitiveUtil.isPrimitiveValue(null));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.isPrimitiveValue((Class<?>) null));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.isPrimitiveValue(int.class));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.isPrimitiveValue(LocalDate.class));
+        Assertions.assertFalse(PrimitiveUtil.isPrimitiveValue((Object)null));
         Assertions.assertFalse(PrimitiveUtil.isPrimitiveValue(new Object()));
-
-        Assertions.assertFalse(PrimitiveUtil.isPrimitiveValue(new Object()));
+        Assertions.assertFalse(PrimitiveUtil.isPrimitiveValue(new StringBuilder()));
 
         var primitives = List.of(
                 String.class.getName(),
@@ -69,7 +70,10 @@ public class PrimitiveUtilTest {
                 BigInteger.class.getName(),
                 LocalDate.class.getName(),
                 LocalTime.class.getName(),
-                LocalDateTime.class.getName()
+                LocalDateTime.class.getName(),
+                int.class.getName(),
+                double.class.getName(),
+                long.class.getName()
         );
         Assertions.assertFalse(PrimitiveUtil.isPrimitiveValue(null));
         for (String c : primitives) {
@@ -124,6 +128,9 @@ public class PrimitiveUtilTest {
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString(new Object()));
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString((Object) true));
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString((Object) false));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString(Character.valueOf('0')));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString((Object) 10));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString((Object) 10.2));
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString((Object) 10L));
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString((Object) 10.1D));
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString((Object) 10));
@@ -277,6 +284,7 @@ public class PrimitiveUtilTest {
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toDouble((String) null));
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toDouble(""));
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toDouble(""));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toDouble((Double)null,0));
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toDouble(100.11001D, 2));
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toDouble(0D, 0));
 
@@ -417,6 +425,7 @@ public class PrimitiveUtilTest {
     public void UI_CHECK_toDateTime() {
         var dt19010101 = LocalDateTime.of(LocalDate.of(1901, 1, 1), LocalTime.of(1, 2, 3));
 
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toDateTime(UUID.randomUUID()));
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toDateTime(LocalDate.now()));
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toDateTime(LocalTime.now()));
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toDateTime(LocalDateTime.now()));
@@ -533,64 +542,75 @@ public class PrimitiveUtilTest {
             }
 
         }
-        ;
-        var curDate = LocalDate.now();
 
-        List<Check<LocalDate>> listDate = List.of(
-                new Check<>(curDate, curDate, curDate, true),
-                new Check<>(curDate, curDate.minusDays(1), curDate, true),
-                new Check<>(curDate, curDate, curDate.plusDays(1), true),
-                new Check<>(curDate, null, curDate, false),
-                new Check<>(curDate, curDate, null, false),
-                new Check<>(null, null, null, false),
-                new Check<>(curDate, curDate.plusDays(1), curDate, false),
-                new Check<>(curDate, curDate, curDate.minusDays(1), false)
-        );
-        for (var check : listDate) {
-            Assertions.assertDoesNotThrow(() -> PrimitiveUtil.inRange(check.v, check.begin, check.end));
-            Assertions.assertEquals(PrimitiveUtil.inRange(check.v, check.begin, check.end), check.r);
+        {
+            var curDate = LocalDate.now();
+            List<Check<LocalDate>> listDate = List.of(
+                    new Check<>(curDate, curDate, curDate, true),
+                    new Check<>(curDate, curDate.minusDays(1), curDate, true),
+                    new Check<>(curDate, curDate, curDate.plusDays(1), true),
+                    new Check<>(curDate, null, curDate, false),
+                    new Check<>(curDate, curDate, null, false),
+                    new Check<>(null, null, null, false),
+                    new Check<>(curDate, curDate.plusDays(1), curDate, false),
+                    new Check<>(curDate, curDate, curDate.minusDays(1), false)
+            );
+            for (var check : listDate) {
+                Assertions.assertDoesNotThrow(() -> PrimitiveUtil.inRange(check.v, check.begin, check.end));
+                Assertions.assertEquals(PrimitiveUtil.inRange(check.v, check.begin, check.end), check.r);
+            }
         }
 
-        var curTime = LocalTime.now();
-        List<Check<LocalTime>> listTime = List.of(
-                new Check<>(curTime, curTime, curTime, true),
-                new Check<>(curTime, curTime.minusMinutes(1), curTime, true),
-                new Check<>(curTime, curTime, curTime.plusSeconds(1), true),
-                new Check<>(curTime, null, curTime, false),
-                new Check<>(curTime, curTime, null, false),
-                new Check<>(null, null, null, false),
-                new Check<>(curTime, curTime.plusMinutes(1), curTime, false),
-                new Check<>(curTime, curTime, curTime.minusMinutes(1), false)
-        );
-        for (var check : listTime)
-            Assertions.assertEquals(PrimitiveUtil.inRange(check.v, check.begin, check.end), check.r);
+        {
+            var curTime = LocalTime.now();
+            List<Check<LocalTime>> listTime = List.of(
+                    new Check<>(curTime, curTime, curTime, true),
+                    new Check<>(curTime, curTime.minusMinutes(1), curTime, true),
+                    new Check<>(curTime, curTime, curTime.plusSeconds(1), true),
+                    new Check<>(curTime, null, curTime, false),
+                    new Check<>(curTime, curTime, null, false),
+                    new Check<>(null, null, null, false),
+                    new Check<>(curTime, curTime.plusMinutes(1), curTime, false),
+                    new Check<>(curTime, curTime, curTime.minusMinutes(1), false)
+            );
+            for (var check : listTime)
+                Assertions.assertEquals(PrimitiveUtil.inRange(check.v, check.begin, check.end), check.r);
+        }
 
-        var curDateTime = LocalDateTime.of(curDate, curTime);
-        List<Check<LocalDateTime>> listDateTime = List.of(
-                new Check<>(curDateTime, curDateTime, curDateTime, true),
-                new Check<>(curDateTime, curDateTime.minusSeconds(1), curDateTime, true),
-                new Check<>(curDateTime, curDateTime, curDateTime.plusSeconds(1), true),
-                new Check<>(curDateTime, null, curDateTime, false),
-                new Check<>(curDateTime, curDateTime, null, false),
-                new Check<>(null, null, null, false),
-                new Check<>(curDateTime, curDateTime.plusDays(1), curDateTime, false),
-                new Check<>(curDateTime, curDateTime, curDateTime.minusDays(1), false)
-        );
-        for (var check : listDateTime)
-            Assertions.assertEquals(PrimitiveUtil.inRange(check.v, check.begin, check.end), check.r);
+        {
+            var curDate = LocalDate.now();
+            var curTime = LocalTime.now();
+            var curDateTime = LocalDateTime.of(curDate, curTime);
+            List<Check<LocalDateTime>> listDateTime = List.of(
+                    new Check<>(curDateTime, curDateTime, curDateTime, true),
+                    new Check<>(curDateTime, curDateTime.minusSeconds(1), curDateTime, true),
+                    new Check<>(curDateTime, curDateTime, curDateTime.plusSeconds(1), true),
+                    new Check<>(curDateTime, null, curDateTime, false),
+                    new Check<>(curDateTime, curDateTime, null, false),
+                    new Check<>(null, null, null, false),
+                    new Check<>(curDateTime, curDateTime.plusDays(1), curDateTime, false),
+                    new Check<>(curDateTime, curDateTime, curDateTime.minusDays(1), false)
+            );
+            for (var check : listDateTime)
+                Assertions.assertEquals(PrimitiveUtil.inRange(check.v, check.begin, check.end), check.r);
+        }
 
 
-        List<Check<Double>> listDouble = List.of(
-                new Check<>(0D, 0D, 0D, true),
-                new Check<>(1D, 0D, 1D, true),
-                new Check<>(1D, 0D, 2D, true),
-                new Check<>(0D, 0D, 2D, true),
-                new Check<>(0D, -1D, 2D, true),
-                new Check<>(0D, 1D, 2D, false),
-                new Check<>(-1D, 1D, 2D, false)
-        );
-        for (var check : listDouble)
-            Assertions.assertEquals(PrimitiveUtil.inRange(check.v, check.begin, check.end), check.r);
+        {
+            List<Check<Double>> listDouble = List.of(
+                    new Check<>(0D, 0D, 0D, true),
+                    new Check<>(1D, 0D, 1D, true),
+                    new Check<>(1D, 0D, 2D, true),
+                    new Check<>(2D, 0D, 2D, true),
+                    new Check<>(3D, 0D, 2D, false),
+                    new Check<>(0D, 0D, 2D, true),
+                    new Check<>(0D, -1D, 2D, true),
+                    new Check<>(0D, 1D, 2D, false),
+                    new Check<>(-1D, 1D, 2D, false)
+            );
+            for (var check : listDouble)
+                Assertions.assertEquals(PrimitiveUtil.inRange(check.v, check.begin, check.end), check.r);
+        }
 
     }
 
@@ -674,16 +694,20 @@ public class PrimitiveUtilTest {
         Assertions.assertTrue(PrimitiveUtil.toStringList("[]").isEmpty());
 
         {
-            var list = PrimitiveUtil.toStringList("[1,2,3,4]");
-            Assertions.assertEquals(list.size(), 4);
-            list = PrimitiveUtil.toStringList("[\"1\"]");
-            Assertions.assertEquals(list.size(), 1);
-            list = PrimitiveUtil.toStringList("[\"1\",\"2\"]");
-            Assertions.assertEquals(list.size(), 2);
-            list = PrimitiveUtil.toStringList("[\"1\",\"2\",\"3\"]");
-            Assertions.assertEquals(list.size(), 3);
-            list = PrimitiveUtil.toStringList("[\"1\",\"2\",\"3\",\"4\"]");
-            Assertions.assertEquals(list.size(), 4);
+            {
+                var list = PrimitiveUtil.toStringList("[1,2,3,4]");
+                Assertions.assertEquals(list.size(), 4);
+                list = PrimitiveUtil.toStringList("[\"1\"]");
+                Assertions.assertEquals(list.size(), 1);
+                list = PrimitiveUtil.toStringList("[\"1\",\"2\"]");
+                Assertions.assertEquals(list.size(), 2);
+                list = PrimitiveUtil.toStringList("[\"1\",\"2\",\"3\"]");
+                Assertions.assertEquals(list.size(), 3);
+                list = PrimitiveUtil.toStringList("[\"1\",\"2\",\"3\",\"4\"]");
+                Assertions.assertEquals(list.size(), 4);
+                list = PrimitiveUtil.toStringList("[\"1\",\"2\",\"3\",\"4\",\"\"]");
+                Assertions.assertEquals(list.size(), 4);
+            }
         }
 
     }

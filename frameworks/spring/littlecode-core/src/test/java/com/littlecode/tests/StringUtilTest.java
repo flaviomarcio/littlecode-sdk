@@ -1,6 +1,7 @@
 package com.littlecode.tests;
 
 import com.littlecode.parsers.StringUtil;
+import com.littlecode.util.TestsUtil;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -20,131 +21,151 @@ import java.util.List;
 @ExtendWith(MockitoExtension.class)
 public class StringUtilTest {
 
-    public static List<String> REPLACE_STRING = List.of(" ", "__", "+", "-");
+
+    @Test
+    @DisplayName("Deve validar constructores")
+    public void deveValidarConstructores() {
+        Assertions.assertDoesNotThrow(() -> new StringUtil("0"));
+        Assertions.assertDoesNotThrow(() -> new StringUtil("#",""));
+    }
+
+    @Test
+    @DisplayName("Deve validar getter setter")
+    public void deveValidarGetterSetter() {
+        Assertions.assertEquals(new StringUtil("0").getValue(),"0");
+        Assertions.assertEquals(new StringUtil("0").getPadChar()," ");
+
+        Assertions.assertEquals(new StringUtil("0").getValue(),"0");
+        Assertions.assertEquals(new StringUtil("0","?").getPadChar(),"?");
+    }
+
+    @Test
+    @DisplayName("Deve validar toString")
+    public void deveValidarToString() {
+        Assertions.assertEquals(StringUtil.toString("0"),"0");
+        Assertions.assertEquals(StringUtil.of("0").asString(),"0");
+        Assertions.assertEquals(StringUtil.of("0").toString(),"0");
+    }
+
+    @Test
+    @DisplayName("Deve validar toNumber")
+    public void deveValidarToNumber() {
+        Assertions.assertEquals(StringUtil.toNumber("A0B1C2"),"012");
+        Assertions.assertEquals(StringUtil.toNumber("abc"),"");
+        Assertions.assertEquals(StringUtil.of("0").asString(),"0");
+        Assertions.assertEquals(StringUtil.of("A0B1C2").asNumber(),"012");
+    }
+
+    @Test
+    @DisplayName("Deve validar toAlpha")
+    public void deveValidarToAlpha() {
+        Assertions.assertEquals(StringUtil.toAlpha("A0B1C2"),"ABC");
+        Assertions.assertEquals(StringUtil.toAlpha("012"),"");
+        Assertions.assertEquals(StringUtil.of("A0B1C2").asAlpha(),"ABC");
+    }
+
+    @Test
+    @DisplayName("Deve validar toAlphaNumber")
+    public void deveValidarToAlphaNumber() {
+        Assertions.assertEquals(StringUtil.toAlphaNumber("A0B1C2"),"A0B1C2");
+        Assertions.assertEquals(StringUtil.toAlphaNumber("012"),"012");
+        Assertions.assertEquals(StringUtil.of("A0B1C2").asAlphaNumber(),"A0B1C2");
+    }
+
 
     @Test
     @DisplayName("Deve validar metodo pad left")
-    public void UT_METHOD_PAD_LEFT() {
+    public void deveValidarPadLeft() {
         String value = "#";
-        Assertions.assertDoesNotThrow(() -> StringUtil.padLeft(10, '0', null));
-        Assertions.assertDoesNotThrow(() -> StringUtil.padLeft(10, '0', value));
-        var v = StringUtil.padLeft(10, '0', value);
-        Assertions.assertNotNull(v);
-        Assertions.assertEquals(v, "000000000#");
+        Assertions.assertDoesNotThrow(() -> StringUtil.toLeftPad(10, "0", null));
+        Assertions.assertDoesNotThrow(() -> StringUtil.toLeftPad(10, "0", value));
+
+        {//deprecated
+            var v = StringUtil.leftPad(10, "0", value);
+            Assertions.assertNotNull(v);
+            Assertions.assertEquals(v, "000000000#");
+        }
+
+        {//aling abaixo do length
+            var v = StringUtil.toLeftPad(10, "0", value);
+            Assertions.assertNotNull(v);
+            Assertions.assertEquals(v, "000000000#");
+        }
+
+        {//aling acima do length
+            var v = StringUtil.toLeftPad(10, "0", "#000000000");
+            Assertions.assertNotNull(v);
+            Assertions.assertEquals(v, "#000000000");
+        }
+
+        {//builder
+            var v = StringUtil.of(value).padChar("0").asLeftPad(10);
+            Assertions.assertNotNull(v);
+            Assertions.assertEquals(v, "000000000#");
+        }
+
     }
 
     @Test
     @DisplayName("Deve validar metodo pad right")
-    public void UT_METHOD_PAD_RIGHT() {
+    public void deveValidarPadRight() {
         String value = "#";
-        Assertions.assertDoesNotThrow(() -> StringUtil.padRight(10, '0', null));
-        Assertions.assertDoesNotThrow(() -> StringUtil.padRight(10, '0', value));
-        var v = StringUtil.padRight(10, '0', value);
-        Assertions.assertNotNull(v);
-        Assertions.assertEquals(v, "#000000000");
+        Assertions.assertDoesNotThrow(() -> StringUtil.toRightPad(10, "0", null));
+        Assertions.assertDoesNotThrow(() -> StringUtil.toRightPad(10, "0", value));
+        {//deprecated
+            var v = StringUtil.rightPad(10, "0", value);
+            Assertions.assertNotNull(v);
+            Assertions.assertEquals(v, "#000000000");
+        }
+
+        {//aling abaixo do length
+            var v = StringUtil.toRightPad(10, "0", value);
+            Assertions.assertNotNull(v);
+            Assertions.assertEquals(v, "#000000000");
+        }
+
+        {//acima do length
+            var v = StringUtil.toRightPad(10, "0", "#000000000");
+            Assertions.assertNotNull(v);
+            Assertions.assertEquals(v, "#000000000");
+        }
+
+        {//builder
+            var v = StringUtil.of(value).padChar("0").asRightPad(10);
+            Assertions.assertNotNull(v);
+            Assertions.assertEquals(v, "#000000000");
+        }
     }
 
     @Test
     @DisplayName("Deve validar metodo pad center")
-    public void UT_METHOD_PAD_CENTER() {
+    public void deveValidarPadCenter() {
         String value = "#";
-        Assertions.assertDoesNotThrow(() -> StringUtil.padCenter(10, '0', null));
-        Assertions.assertDoesNotThrow(() -> StringUtil.padCenter(10, '0', value));
-        var v = StringUtil.padCenter(10, '0', value);
-        Assertions.assertNotNull(v);
-        Assertions.assertEquals(v, "0000#00000");
-    }
+        Assertions.assertDoesNotThrow(() -> StringUtil.toCenterPad(10, "0", null));
+        Assertions.assertDoesNotThrow(() -> StringUtil.toCenterPad(10, "0", value));
+        {//deprecated
+            var v = StringUtil.centerPad(10, "0", value);
+            Assertions.assertNotNull(v);
+            Assertions.assertEquals(v, "0000#00000");
+        }
 
-    @Test
-    @DisplayName("Deve validar formatadores")
-    public void UT_CAMEL_CASE_FORMAT() {
-        List<Check> checkItems =
-                List.of(
-                        Check.builder().camelCase("testName").snakeCase("test_name")
-                                .checkList(List.of("testName", "TEST_NAME", "TEST__NAME", "test_name", "_TEST_name", "test_name_", " test__name ")).build(),
-                        Check.builder().camelCase("test1Name").snakeCase("test1_name")
-                                .checkList(List.of("test1Name", "TEST1_NAME", "TEST__1NAME", "test1name", "_TEST_1name", "test1_name_", " test_1_name ")).build(),
-                        Check.builder().camelCase("m1TEst1234Name").snakeCase("m1_t_est1234_name")
-                                .checkList(List.of("M_1tEst1234Name", "M1t_est1234Name", "M_1t_Est1234Name", "__M_1t_Est1234Name")).build(),
-                        Check.builder().camelCase("1234Name").snakeCase("1234_name")
-                                .checkList(List.of("1234_NAME", "1234__NAME", "1234_name", "_1234_name", "1234_name_", " 1234__name ")).build(),
-                        Check.builder().camelCase("aa1234Name").snakeCase("aa1234_name")
-                                .checkList(List.of("AA1234_NAME", "Aa1234__NAME", "AA1234_name", "aa_1234_name", " aa1234__name ")).build(),
-                        Check.builder().camelCase("aA1234Name").snakeCase("a_a1234_name")
-                                .checkList(List.of("a_a_1234_name_", "a_a_1234_NAME_", "_A_A_1234_NAME_")).build(),
-                        Check.builder().camelCase("test").snakeCase("test")
-                                .checkList(List.of("_test_", "_test", "_test")).build(),
-                        Check.builder().camelCase("srcMd5").snakeCase("src_md5")
-                                .checkList(List.of("_src_md5_", "src_md5_", "_src_md5")).build(),
-                        Check.builder().camelCase("hashSrcMd5").snakeCase("hash_src_md5")
-                                .checkList(List.of("_hash_src_md5_", "hash_src_md5_", "_hash_src_md5")).build()
+        {//aling abaixo do length
+            var v = StringUtil.toCenterPad(10, "0", value);
+            Assertions.assertNotNull(v);
+            Assertions.assertEquals(v, "0000#00000");
+        }
 
-                );
+        {//aling acima do length
+            var v = StringUtil.toCenterPad(10, "0", "0000#00000");
+            Assertions.assertNotNull(v);
+            Assertions.assertEquals(v, "0000#00000");
+        }
 
-
-        checkItems.forEach(check ->
-                {
-                    List<String> checkList = new ArrayList<>();
-                    checkList.add(check.camelCase);
-                    REPLACE_STRING.forEach(replace ->
-                            check.checkList
-                                    .forEach(s ->
-                                            checkList.add(s.replace(StringUtil.SNAKE_CASE_SEPARATOR, replace))
-                                    )
-                    );
-                    checkList.forEach(
-                            sCheck ->
-                            {
-                                var stringUtil = StringUtil.target(sCheck);
-                                Assertions.assertEquals(stringUtil.getTarget(), sCheck);
-
-                                Assertions.assertDoesNotThrow(() -> StringUtil.target(stringUtil.toCamelCase()).getTarget());
-                                Assertions.assertDoesNotThrow(() -> StringUtil.target(stringUtil.toCamelCase()).setTarget("werw"));
-
-                                Assertions.assertDoesNotThrow(() -> StringUtil.toCamelCase(null));
-                                Assertions.assertEquals(StringUtil.toCamelCase(sCheck), check.camelCase);
-                                Assertions.assertEquals(stringUtil.toCamelCase(), check.camelCase);
-                                Assertions.assertTrue(StringUtil.target(stringUtil.toCamelCase()).isCamelCase());
-
-                                Assertions.assertEquals(StringUtil.toSnakeCase(sCheck), check.snakeCase);
-                                Assertions.assertEquals(stringUtil.toSnakeCase(), check.snakeCase);
-                                Assertions.assertTrue(StringUtil.target(stringUtil.toSnakeCase()).isSnakeCase());
-                                Assertions.assertDoesNotThrow(() -> StringUtil.target(stringUtil.toWord()));
-                                Assertions.assertDoesNotThrow(() -> StringUtil.target(stringUtil.toCamelCase()));
-                                Assertions.assertDoesNotThrow(() -> StringUtil.target(stringUtil.toSnakeCase()));
-                            }
-                    );
-                }
-        );
-
-        Assertions.assertDoesNotThrow(() -> StringUtil.toWord(null));
-        Assertions.assertDoesNotThrow(() -> StringUtil.toWord(" "));
-        Assertions.assertDoesNotThrow(() -> StringUtil.toWord("a"));
-        Assertions.assertEquals(StringUtil.target("TEST").toWord(), "Test");
-
-        Assertions.assertDoesNotThrow(() -> StringUtil.isCamelCase("TEST"));
-        Assertions.assertDoesNotThrow(() -> StringUtil.isCamelCase(""));
-        Assertions.assertDoesNotThrow(() -> StringUtil.isCamelCase(null));
-        Assertions.assertDoesNotThrow(() -> StringUtil.toCamelCase("test_teste"));
-        Assertions.assertDoesNotThrow(() -> StringUtil.toCamelCase("a"));
-        Assertions.assertDoesNotThrow(() -> StringUtil.toCamelCase(null));
-
-        Assertions.assertDoesNotThrow(() -> StringUtil.isSnakeCase("TEST"));
-        Assertions.assertDoesNotThrow(() -> StringUtil.isSnakeCase(""));
-        Assertions.assertDoesNotThrow(() -> StringUtil.isSnakeCase(null));
-        Assertions.assertDoesNotThrow(() -> StringUtil.toSnakeCase("testA"));
-        Assertions.assertDoesNotThrow(() -> StringUtil.toSnakeCase("a"));
-        Assertions.assertDoesNotThrow(() -> StringUtil.toSnakeCase(null));
-
-
-    }
-
-    @Getter
-    @Builder
-    private static class Check {
-        String camelCase;
-        String snakeCase;
-        List<String> checkList;
+        {//builder
+            var v = StringUtil.of(value).padChar("0").asCenterPad(10);
+            Assertions.assertNotNull(v);
+            Assertions.assertEquals(v, "0000#00000");
+        }
     }
 
 }

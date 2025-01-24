@@ -35,9 +35,11 @@ public class PrimitiveUtil {
     }
 
     public static boolean isPrimitiveValue(Class<?> aClass) {
-        return aClass != null && (
-                aClass.isPrimitive() || CorePublicConsts.PRIMITIVE_CLASSES.containsValue(aClass)
-        );
+        if(aClass!=null){
+            if(aClass.isPrimitive()) return true;
+            return CorePublicConsts.PRIMITIVE_CLASSES.containsValue(aClass);
+        }
+        return false;
     }
 
     public static boolean isPrimitiveValue(Object value) {
@@ -433,6 +435,8 @@ public class PrimitiveUtil {
         if (v != null) {
             if (v instanceof String value)
                 return value;
+            else if (v instanceof Character value)
+                return value.toString();
             else if (v instanceof Integer value)
                 return value.toString();
             else if (v instanceof Long value)
@@ -581,24 +585,27 @@ public class PrimitiveUtil {
     }
 
     public static List<String> toStringList(String v) {
-        if (v == null || v.isEmpty())
-            return new ArrayList<>();
-        var mapper = UtilCoreConfig.newObjectMapper(FileFormat.JSON);
-        Object o = null;
-        try {
-            o = mapper.readValue(v, Object.class);
-        } catch (Exception ignored) {
-        }
-        List<String> __return = new ArrayList<>();
-        if (o instanceof List<?> list) {
-            for (var i : list) {
-                var s = toString(i);
-                if (s != null && !s.isEmpty())
-                    __return.add(s);
+        if (v != null && !v.isEmpty()){
+            var mapper = UtilCoreConfig.newObjectMapper(FileFormat.JSON);
+            Object o = null;
+            try {
+                o = mapper.readValue(v, Object.class);
+            } catch (Exception ignored) {
             }
-        } else if (!v.trim().isEmpty())
-            __return.add(v);
-        return __return;
+            List<String> __return = new ArrayList<>();
+            if (o instanceof List<?> list) {
+                for (var i : list) {
+                    var s = toString(i);
+                    if (!PrimitiveUtil.isEmpty(s))
+                        __return.add(s);
+                }
+            } else {
+                __return.add(v);
+            }
+            return __return;
+        }
+        return new ArrayList<>();
+
     }
 
 }

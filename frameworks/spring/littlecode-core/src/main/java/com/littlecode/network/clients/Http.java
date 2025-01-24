@@ -1,6 +1,7 @@
 package com.littlecode.network.clients;
 
 import com.littlecode.network.RequestUtil;
+import com.littlecode.parsers.PrimitiveUtil;
 import lombok.NoArgsConstructor;
 
 import java.net.URI;
@@ -14,7 +15,7 @@ public class Http implements RequestClient {
 
     @Override
     public void call(RequestUtil rqUtil) {
-        var requestBody = (rqUtil.getBody() == null || rqUtil.getBody().trim().isEmpty())
+        var requestBody = (PrimitiveUtil.isEmpty(rqUtil.getBody()))
                 ? HttpRequest.BodyPublishers.noBody()
                 : HttpRequest.BodyPublishers.ofString(rqUtil.getBody());
 

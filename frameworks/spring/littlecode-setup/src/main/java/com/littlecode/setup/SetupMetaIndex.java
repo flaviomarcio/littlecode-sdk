@@ -10,6 +10,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Deprecated(since = "Descontinuar o uso")
 public class SetupMetaIndex {
     public static final String Default = "";
     private Integer sequence;

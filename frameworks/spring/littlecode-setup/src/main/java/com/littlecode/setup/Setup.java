@@ -12,6 +12,7 @@ import java.util.function.Function;
 
 @SuppressWarnings("LombokGetterMayBeUsed")
 @Slf4j
+@Deprecated(since = "Descontinuar o uso")
 public class Setup {
     public static final String STP_CONFIGURE_BEAN_CONTEXT = "beanEasySetupEngineContext";
     public static final String STP_CONFIGURE_BEAN_ENVIRONMENT = "beanEasySetupEngineEnvironment";

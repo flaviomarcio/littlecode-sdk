@@ -261,7 +261,8 @@ public class RequestUtilTest {
         Assertions.assertDoesNotThrow(() -> request.uri("http://localhost:8080").uri());
         Assertions.assertDoesNotThrow(() -> request.uri((String) null).uri());
         Assertions.assertDoesNotThrow(() -> request.client(new PrivateRequestClient()));
-        Assertions.assertDoesNotThrow(request::call);
+        Assertions.assertDoesNotThrow(() -> request.body(null).call());
+        Assertions.assertDoesNotThrow(() -> request.body("").call());
         Assertions.assertDoesNotThrow(request::response);
     }
 

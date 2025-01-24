@@ -213,7 +213,7 @@ public class ObjectUtil {
             return false;
         var md5A = toMd5Uuid(a);
         var md5B = toMd5Uuid(b);
-        return (md5A == md5B) || (md5A.toString().equals(md5B.toString()));
+        return md5A.toString().equals(md5B.toString());
     }
 
     public static <T> T create(Class<?> classType) {
@@ -278,9 +278,7 @@ public class ObjectUtil {
         if (aClass != null && source != null) {
             try {
                 return createFromStream(aClass, new FileInputStream(source));
-            } catch (Exception e) {
-                if(ObjectUtil.isPrintLog())
-                    log.error(e.getMessage());
+            } catch (Exception ignored) {
             }
         }
         return null;
@@ -331,7 +329,7 @@ public class ObjectUtil {
                 return new HashMap<>(mapValues);
             } else if (o instanceof Map map) {
                 return map;
-            } else if (!PrimitiveUtil.isPrimitiveValue(o.getClass())) {
+            } {
                 return ObjectValueUtil.of(o).asMap();
             }
         }

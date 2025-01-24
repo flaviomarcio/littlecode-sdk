@@ -2,195 +2,123 @@ package com.littlecode.parsers;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.SuperBuilder;
-
-import java.util.List;
 
 @Getter
 @Setter
-@SuperBuilder
 public class StringUtil {
-
-    public static String SNAKE_CASE_SEPARATOR = "_";
-    public static List<String> NUMERIC_CHARS = List.of("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
-
-    private String target;
-
-    public static StringUtil target(String target) {
-        return StringUtil.builder().target(target).build();
+    private Object value;
+    private String padChar;
+    public StringUtil(Object value) {
+        this.setValue(value);
+        this.setPadChar(" ");
     }
 
-    public static String toWord(String target) {
-        if (target == null || target.trim().isEmpty())
-            return "";
-        target = target.trim();
-        if (target.length() == 1)
-            return target.toUpperCase();
-        return target.substring(0, 1).toUpperCase() + target.substring(1).toLowerCase();
+    public StringUtil(Object value, Object padChar) {
+        this.setValue(value);
+        this.setPadChar(padChar);
     }
 
-    public static String toCamelCase(String target) {
-        if (target == null || target.trim().isEmpty())
-            return "";
-
-        target = target.trim().replaceAll("[^a-zA-Z0-9_]", "_");
-
-        while (target.startsWith(SNAKE_CASE_SEPARATOR))
-            target = target.substring(1);
-
-        while (target.endsWith(SNAKE_CASE_SEPARATOR))
-            target = target.substring(0, target.length() - 1);
-
-        if (target.contains(SNAKE_CASE_SEPARATOR)) {
-            var wordSplit = target.split(SNAKE_CASE_SEPARATOR);
-            var words = new StringBuilder();
-            for (var word : wordSplit) {
-                if (!word.isEmpty()) {
-                    words.append(
-                                    (word.equals(word.toUpperCase()) || word.equals(target.toLowerCase()))
-                                            ? word.toLowerCase()
-                                            : word
-                            )
-                            .append(SNAKE_CASE_SEPARATOR);
-                }
-            }
-            target = words.toString();
-        } else {
-            if (target.equals(target.toUpperCase()) || target.equals(target.toLowerCase()))
-                target = target.toLowerCase();
-        }
-
-
-        if (!target.isEmpty()) {//split word
-            var chars = target.toCharArray();
-            var isUpperLast = false;
-            var word = new StringBuilder();
-            for (var c : chars) {
-                String chr = Character.toString(c);
-                if (chr.equals(SNAKE_CASE_SEPARATOR)) {
-                    word.append(chr);
-                    isUpperLast = false;
-                } else {
-                    if (word.isEmpty())
-                        chr = chr.toUpperCase();
-                    if (isUpperLast)
-                        word.append(chr);
-                    else
-                        word.append(chr);
-                    isUpperLast = chr.equals(chr.toUpperCase());
-                }
-            }
-            target = word.toString();
-            ;
-        }
-
-        if (!target.isEmpty()) {
-            var chars = target.toCharArray();
-            var lastIsNumber = false;
-            var word = new StringBuilder();
-            for (var c : chars) {
-                String chr = Character.toString(c);
-                if (lastIsNumber)
-                    chr = chr.toUpperCase();
-                lastIsNumber = NUMERIC_CHARS.contains(chr);
-                word.append(chr);
-            }
-            target = word.toString();
-            ;
-        }
-
-
-        if (target.contains(SNAKE_CASE_SEPARATOR)) {
-            var wordSplit = target.split(SNAKE_CASE_SEPARATOR);
-            var words = new StringBuilder();
-            for (var word : wordSplit) {
-                if (!word.isEmpty()) {
-                    words
-                            .append(word.substring(0, 1).toUpperCase())
-                            .append(word.substring(1));
-                }
-            }
-            target = words.toString();
-        }
-        return target.substring(0, 1).toLowerCase() + target.substring(1);
+    public static StringUtil of(Object value) {
+        return new StringUtil(value);
     }
 
-    public static boolean isCamelCase(String target) {
-        if (target == null || target.isEmpty())
-            return false;
-        return !target.contains(SNAKE_CASE_SEPARATOR);
+    public void setPadChar(Object value) {
+        this.padChar = PrimitiveUtil.toString(value);
     }
 
-    public static boolean isSnakeCase(String target) {
-        if (target == null || target.isEmpty())
-            return false;
-        return target.equals(target.toLowerCase());
+    public StringUtil padChar(String padChar) {
+        this.setPadChar(padChar);
+        return this;
     }
 
-    public static String toSnakeCase(String target) {
-        if (target == null || target.isEmpty())
-            return "";
-        var chars = toCamelCase(target).toCharArray();
-        StringBuilder word = null;
-        for (var c : chars) {
-            String chr = Character.toString(c);
-            if (word == null)
-                word = new StringBuilder(chr);
-            else if (chr.equals(chr.toUpperCase()) && !NUMERIC_CHARS.contains(chr))
-                word.append(SNAKE_CASE_SEPARATOR).append(chr);
-            else
-                word.append(chr);
-        }
-        return (word == null) ? "" : word.toString().toLowerCase();
+    public static String toString(Object value) {
+        return PrimitiveUtil.toString(value);
     }
 
-    public static String padLeft(int length, char padChar, String value) {
-        if (value == null)
-            value = "";
-        while (value.length() < length)
-            value = padChar + value;
-        return value;
+    public String toString() {
+        return PrimitiveUtil.toString(this.value);
     }
 
-    public static String padRight(int length, char padChar, String value) {
-        if (value == null)
-            value = "";
-        while (value.length() < length)
-            value += padChar;
-        return value;
+    public String asString() {
+        return PrimitiveUtil.toString(this.value);
     }
 
-    public static String padCenter(int length, char padChar, String value) {
-        if (value == null)
-            value = "";
-        var odd = true;
-        while (value.length() < length) {
-            if (odd)
-                value += padChar;
-            else
-                value = padChar + value;
-            odd = !odd;
-        }
-        return value;
+    public static String toNumber(Object value) {
+        return PrimitiveUtil.toString(value).replaceAll("[^0-9]", "");
     }
 
-    public String toWord() {
-        return toWord(this.getTarget());
+    public String asNumber() {
+        return toNumber(this.value);
     }
 
-    public String toCamelCase() {
-        return toCamelCase(this.getTarget());
+    public static String toAlpha(Object value) {
+        return PrimitiveUtil.toString(value).replaceAll("[^a-zA-Z]", "");
     }
 
-    public boolean isCamelCase() {
-        return isCamelCase(this.getTarget());
+    public String asAlpha() {
+        return toAlpha(this.value);
     }
 
-    public boolean isSnakeCase() {
-        return isSnakeCase(this.getTarget());
+    public static String toAlphaNumber(Object value) {
+        return PrimitiveUtil.toString(value).replaceAll("[^a-zA-Z0-9]", "");
     }
 
-    public String toSnakeCase() {
-        return toSnakeCase(this.getTarget());
+    public String asAlphaNumber() {
+        return toAlphaNumber(this.value);
     }
+
+    @Deprecated(since = "rightPad is deprecated, use toLeftPad")
+    public static String leftPad(int length, String padChar, Object input) {
+        return toLeftPad(length, padChar, input);
+    }
+
+    public static String toLeftPad(int length, String padChar, Object input) {
+        final var input_s=PrimitiveUtil.toString(input);
+        final var padChar_s=PrimitiveUtil.toString(padChar);
+        if (input_s.length() >= length) return input_s;
+        int padding = length - input_s.length();
+        return padChar_s.repeat(padding) + input;
+    }
+
+    public String asLeftPad(int length) {
+        return toLeftPad(length, this.padChar, this.value);
+    }
+
+
+    @Deprecated(since = "rightPad is deprecated, use toRightPad")
+    public static String rightPad(int length, String padChar, Object input) {
+        return toRightPad(length, padChar, input);
+    }
+
+    public static String toRightPad(int length, String padChar, Object input) {
+        final var input_s=PrimitiveUtil.toString(input);
+        final var padChar_s=PrimitiveUtil.toString(padChar);
+        if (input_s.length() >= length) return input_s;
+        int padding = length - input_s.length();
+        return input_s + padChar_s.repeat(padding);
+    }
+
+    public String asRightPad(int length) {
+        return toRightPad(length, this.padChar, this.value);
+    }
+
+    @Deprecated(since = "rightPad is deprecated, use toCenterPad")
+    public static String centerPad(int length, String padChar, Object input) {
+        return toCenterPad(length, padChar, input);
+    }
+
+    public static String toCenterPad(int length, String padChar, Object input) {
+        final var input_s=PrimitiveUtil.toString(input);
+        final var padChar_s=PrimitiveUtil.toString(padChar);
+        if (input_s.length() >= length) return input_s;
+        int totalPadding = length - input_s.length();
+        int leftPadding = totalPadding / 2;
+        int rightPadding = totalPadding - leftPadding;
+        return padChar_s.repeat(leftPadding) + input_s + padChar_s.repeat(rightPadding);
+    }
+
+    public String asCenterPad(int length) {
+        return toCenterPad(length, this.padChar, this.value);
+    }
+
 }

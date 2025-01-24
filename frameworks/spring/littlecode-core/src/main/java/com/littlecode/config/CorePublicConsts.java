@@ -40,7 +40,10 @@ public class CorePublicConsts {
                 BigInteger.class,
                 LocalDate.class,
                 LocalTime.class,
-                LocalDateTime.class
+                LocalDateTime.class,
+                int.class,
+                double.class,
+                long.class
         );
         list.forEach(aClass -> PRIMITIVE_CLASSES.put(aClass.getName(), aClass));
         PRIMITIVE_CLASSES.put("java.lang.Class<?>", java.lang.Class.class);

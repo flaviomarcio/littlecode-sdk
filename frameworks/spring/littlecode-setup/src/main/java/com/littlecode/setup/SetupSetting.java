@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Data
+@Deprecated(since = "Descontinuar o uso")
 public class SetupSetting {
     public static final String env_auto_start = "littlecode.setup.auto-start";
     public static final String env_database_auto_apply = "littlecode.setup.database.auto-apply";

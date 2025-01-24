@@ -16,6 +16,7 @@ import java.net.URI;
 import java.util.*;
 
 @Slf4j
+@Deprecated(since = "Substituir RequestUtil por RestTemplate")
 public class RequestUtil {
     private static final FileFormat FILE_FORMAT_DEFAULT = FileFormat.JSON;
     private final Map<String, String> headers = new HashMap<>();

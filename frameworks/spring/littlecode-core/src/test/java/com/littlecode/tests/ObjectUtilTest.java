@@ -27,6 +27,7 @@ import java.lang.annotation.Target;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -91,6 +92,8 @@ public class ObjectUtilTest {
     @Test
     @DisplayName("Deve validar toFields")
     public void UT_000_CHECK_FIELDS() {
+        Assertions.assertNotNull(ObjectUtil.toFieldsList((Object) null));
+        Assertions.assertNotNull(ObjectUtil.toFieldsList((Object) 0));
         Assertions.assertNotNull(ObjectUtil.toFieldsList(objectSrc));
         Assertions.assertNotNull(ObjectUtil.toFieldsList(objectSrc.getClass()));
         Assertions.assertFalse(ObjectUtil.toFieldsList(objectSrc).isEmpty());
@@ -115,6 +118,7 @@ public class ObjectUtilTest {
     public void UT_000_CHECK_EQUAL() {
         Assertions.assertDoesNotThrow(() -> ObjectUtil.equal(objectSrc, objectSrc));
         Assertions.assertDoesNotThrow(() -> ObjectUtil.equal(objectSrc, null));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.equal(null, objectSrc));
         Assertions.assertDoesNotThrow(() -> ObjectUtil.equal(null, null));
         Assertions.assertDoesNotThrow(() -> ObjectUtil.equal(objectSrc, this));
         Assertions.assertDoesNotThrow(() -> ObjectUtil.equal(UUID.randomUUID(), UUID.randomUUID().toString()));
@@ -142,6 +146,12 @@ public class ObjectUtilTest {
     @Test
     @DisplayName("Deve validar toMd5")
     public void UT_000_CHECK_MD5() {
+        {
+            ObjectUtil.setPrintLog(true);
+            Assertions.assertDoesNotThrow(() -> ObjectUtil.createFromString(ObjectCheck.class, ";;;;"));
+            ObjectUtil.setPrintLog(false);
+            Assertions.assertDoesNotThrow(() -> ObjectUtil.createFromString(ObjectCheck.class, ";;;;"));
+        }
         var objectNew = ObjectUtil.createFromString(ObjectCheck.class, objectSrcString);
         Assertions.assertNotNull(objectNew);
         Assertions.assertEquals(objectSrc.getId(), objectNew.getId());
@@ -236,6 +246,7 @@ public class ObjectUtilTest {
 
         Assertions.assertDoesNotThrow(() -> ObjectUtil.toFieldByName(ObjectCheck.class, "id"));
         Assertions.assertDoesNotThrow(() -> ObjectUtil.toFieldByName(ObjectCheck.class, null));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.toFieldByName(null, "id"));
         Assertions.assertDoesNotThrow(() -> ObjectUtil.toFieldByName(null, null));
         Assertions.assertDoesNotThrow(() -> ObjectUtil.toFieldByName(ObjectCheck.class, "test"));
         Assertions.assertDoesNotThrow(() -> ObjectUtil.toFieldByType(ObjectCheck.class, UUID.class));
@@ -278,11 +289,19 @@ public class ObjectUtilTest {
         var fileSrc = new File("/tmp/oj.json");
         IOUtil.writeAll(fileSrc, byteSrc);
 
-        Assertions.assertDoesNotThrow(() -> ObjectUtil.update(new ObjectCheck(), ObjectCheck.builder()));
-        Assertions.assertDoesNotThrow(() -> ObjectUtil.update(new ObjectCheck(), byteSrc));
-        Assertions.assertDoesNotThrow(() -> ObjectUtil.update(new ObjectCheck(), fileSrc));
-        Assertions.assertDoesNotThrow(() -> ObjectUtil.update(new ObjectCheck(), new File("/tmp/fake-file")));
-        Assertions.assertDoesNotThrow(() -> ObjectUtil.update(new ObjectCheck(), fileSrc.toPath()));
+        for(var aBoolean : new boolean[]{true, false}) {
+            ObjectUtil.setPrintLog(aBoolean);
+            Assertions.assertDoesNotThrow(() -> ObjectUtil.update(new ObjectCheck(), (String)null));
+            Assertions.assertDoesNotThrow(() -> ObjectUtil.update((ObjectCheck)null, (String)null));
+            Assertions.assertDoesNotThrow(() -> ObjectUtil.update(new ObjectCheck(), "...."));
+            Assertions.assertDoesNotThrow(() -> ObjectUtil.update(new ObjectCheck(), ObjectCheck.builder()));
+            Assertions.assertDoesNotThrow(() -> ObjectUtil.update(new ObjectCheck(), byteSrc));
+            Assertions.assertDoesNotThrow(() -> ObjectUtil.update(new ObjectCheck(), fileSrc));
+            Assertions.assertDoesNotThrow(() -> ObjectUtil.update(new ObjectCheck(), new File("/tmp/fake-file")));
+            Assertions.assertDoesNotThrow(() -> ObjectUtil.update(new ObjectCheck(), (File)null));
+            Assertions.assertDoesNotThrow(() -> ObjectUtil.update((ObjectCheck)null, new File("/tmp/fake-file")));
+            Assertions.assertDoesNotThrow(() -> ObjectUtil.update(new ObjectCheck(), fileSrc.toPath()));
+        }
 
 
         Assertions.assertNotNull(objNew);
@@ -334,20 +353,25 @@ public class ObjectUtilTest {
         Assertions.assertNotNull(objNew);
         Assertions.assertEquals(objNew.getClass(), ObjectCheck.class);
 
-        Assertions.assertDoesNotThrow(() -> ObjectUtil.createWithArgsConstructor(null));
-        Assertions.assertDoesNotThrow(() -> ObjectUtil.createWithArgsConstructor(ObjectBaseException.class, UUID.randomUUID()));
-        Assertions.assertNull(ObjectUtil.createWithArgsConstructor(ObjectCheckWithArgs.class));
-        Assertions.assertNull(ObjectUtil.createWithArgsConstructor(ObjectCheckWithArgs.class, UUID.randomUUID()));
-        Assertions.assertNull(ObjectUtil.createWithArgsConstructor(ObjectCheckWithArgs.class, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()));
-        Assertions.assertNull(ObjectUtil.createWithArgsConstructor(ObjectCheckWithArgs.class, UUID.randomUUID(), UUID.randomUUID().toString()));
-        Assertions.assertNull(ObjectUtil.createWithArgsConstructor(ObjectCheckWithArgs.class, UUID.randomUUID(), UUID.randomUUID()));
+        for(var aBool : List.of(true,false)){
+            ObjectUtil.setPrintLog(aBool);
+            Assertions.assertDoesNotThrow(() -> ObjectUtil.createWithArgsConstructor(null));
+            Assertions.assertDoesNotThrow(() -> ObjectUtil.createWithArgsConstructor(null, (Object[]) null));
+            Assertions.assertDoesNotThrow(() -> ObjectUtil.createWithArgsConstructor(ObjectBaseException.class, UUID.randomUUID()));
+            Assertions.assertNull(ObjectUtil.createWithArgsConstructor(ObjectCheckWithArgs.class));
+            Assertions.assertNull(ObjectUtil.createWithArgsConstructor(ObjectCheckWithArgs.class, UUID.randomUUID()));
+            Assertions.assertNull(ObjectUtil.createWithArgsConstructor(ObjectCheckWithArgs.class, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()));
+            Assertions.assertNull(ObjectUtil.createWithArgsConstructor(ObjectCheckWithArgs.class, UUID.randomUUID(), UUID.randomUUID().toString()));
+            Assertions.assertNull(ObjectUtil.createWithArgsConstructor(ObjectCheckWithArgs.class, UUID.randomUUID(), UUID.randomUUID()));
 
-        var objArg = UUID.randomUUID();
-        ObjectCheckWithArgs objArgNew = ObjectUtil.createWithArgsConstructor(ObjectCheckWithArgs.class, objArg, MAX_DATETIME);
-        Assertions.assertNotNull(objArgNew);
-        Assertions.assertEquals(objArgNew.getClass(), ObjectCheckWithArgs.class);
-        Assertions.assertEquals(objArgNew.getId(), objArg);
-        Assertions.assertEquals(objArgNew.getDt(), MAX_DATETIME);
+            var objArg = UUID.randomUUID();
+            ObjectCheckWithArgs objArgNew = ObjectUtil.createWithArgsConstructor(ObjectCheckWithArgs.class, objArg, MAX_DATETIME);
+            Assertions.assertNotNull(objArgNew);
+            Assertions.assertEquals(objArgNew.getClass(), ObjectCheckWithArgs.class);
+            Assertions.assertEquals(objArgNew.getId(), objArg);
+            Assertions.assertEquals(objArgNew.getDt(), MAX_DATETIME);
+
+        }
 
     }
 
@@ -364,15 +388,19 @@ public class ObjectUtilTest {
         Assertions.assertNotNull(ObjectUtil.classToName(ObjectCheckType.Type1), ObjectCheckType.class.getName());
 
 
+
         Assertions.assertDoesNotThrow(() -> ObjectUtil.getClassesBySorted(null));
         Assertions.assertDoesNotThrow(() -> ObjectUtil.getClassesBySorted(Set.of(String.class, Integer.class)));
+        Assertions.assertDoesNotThrow(() -> ObjectUtil.getClassesBySorted(Set.of()));
         Assertions.assertNotNull(ObjectUtil.getClassesBySorted(null));
         Assertions.assertNotNull(ObjectUtil.getClassesBySorted(Set.of(String.class, Integer.class)));
 
 
+        Assertions.assertNull(ObjectUtil.getClassByName(null));
+        Assertions.assertNull(ObjectUtil.getClassByName(""));
+        Assertions.assertNull(ObjectUtil.getClassByName(UUID.randomUUID().toString()));
         Assertions.assertNotNull(ObjectUtil.getClassByName(ObjectCheckType.class.getName()));
         Assertions.assertNotNull(ObjectUtil.getClassByName(ObjectCheck.class.getName()));
-        Assertions.assertNull(ObjectUtil.getClassByName("abc.1234.c4"));
 
         Assertions.assertNotNull(ObjectUtil.getClassesByAnnotation(AnnTest.class));
         Assertions.assertNotNull(ObjectUtil.getClassesByInherits(ObjectBase.class));
