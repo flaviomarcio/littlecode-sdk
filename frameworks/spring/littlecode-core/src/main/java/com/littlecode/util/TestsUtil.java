@@ -68,7 +68,8 @@ public class TestsUtil {
 
     private static void checkGetterSetterFields(Object e) {
         log.info("Methods from: {}", e.getClass().getName());
-        var methods = getMethods(e.getClass());
+        final var methods = getMethods(e.getClass());
+        final var valuesFromObject = getObjectValues(e);
         for (var method : methods) {
             try {
                 method.setAccessible(true);
@@ -84,8 +85,7 @@ public class TestsUtil {
                     }
                 }
                 else if(method.getParameterCount() == 1) {
-                    var valuesFromClass = getObjectValues(e);
-                    for(var value : valuesFromClass) {
+                    for(var value : valuesFromObject) {
                         try{
                             if (Modifier.isStatic(method.getModifiers()))
                                 method.invoke(null, value);
