@@ -186,9 +186,6 @@ public class TestsUtil {
                 for (int i = 0; i < length; i++)
                     objectList.add(Array.get(e, i));
             }
-            else{
-                objectList.add(e);
-            }
             synchronized (classes) {
                 for(var o: objectList){
                     if (!classes.contains(o.getClass()))
