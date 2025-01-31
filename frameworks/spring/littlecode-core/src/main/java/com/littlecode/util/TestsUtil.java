@@ -177,6 +177,7 @@ public class TestsUtil {
     public static void checkObject(Object... list) {
         for (var e : list) {
             List<Object> objectList=new ArrayList<>();
+            objectList.add(e);
             if(e instanceof List l){
                 objectList.addAll(l);
             }
