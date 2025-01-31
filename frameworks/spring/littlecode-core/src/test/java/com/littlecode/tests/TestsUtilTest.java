@@ -33,6 +33,7 @@ public class TestsUtilTest {
     @Test
     @DisplayName("Deve validar enums")
     void deveValidarEnums() {
+        Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(UUID.class, UUID.randomUUID()));
         Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(Enum_A.values()));
         Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(List.of(Enum_B.values(),Enum_C.values())));
         Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(Enum_E.values(),Enum_D.values()));
