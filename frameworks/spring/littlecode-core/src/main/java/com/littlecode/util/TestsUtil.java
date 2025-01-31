@@ -1,5 +1,6 @@
 package com.littlecode.util;
 
+import com.littlecode.parsers.PrimitiveUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Array;
@@ -68,6 +69,8 @@ public class TestsUtil {
     }
 
     private static void checkGetterSetterFields(Object e) {
+        if(PrimitiveUtil.isPrimitiveValue(e))
+            return;
         log.info("Methods from: {}", e.getClass().getName());
         final var methods = getMethods(e.getClass());
         final var valuesFromObject = getObjectValues(e);
