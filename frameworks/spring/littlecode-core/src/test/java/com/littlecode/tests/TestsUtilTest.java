@@ -18,6 +18,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,10 +33,9 @@ public class TestsUtilTest {
     @Test
     @DisplayName("Deve validar enums")
     void deveValidarEnums() {
-        Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(Enum_D.values()));
         Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(Enum_A.values()));
-        Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(Enum_B.values()));
-        Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(Enum_C.values()));
+        Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(List.of(Enum_B.values(),Enum_C.values())));
+        Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(Enum_E.values(),Enum_D.values()));
 
     }
 
@@ -98,6 +98,30 @@ public class TestsUtilTest {
 
         @JsonCreator
         public static Enum_D of(Object id) {
+            if (id instanceof Integer v) {
+                return Arrays.stream(values())
+                        .filter(t -> t.getValue().equals(v))
+                        .findFirst()
+                        .orElseThrow(() -> new IllegalArgumentException("Invalid type value: " + v));
+            } else {
+                return Arrays.stream(values())
+                        .filter(t -> t.equals(id))
+                        .findFirst()
+                        .orElseThrow(() -> new IllegalArgumentException("Invalid type value: " + id));
+            }
+        }
+    }
+
+    @Getter
+    public enum Enum_E {
+        PROVIDER(0), PROFESSIONAL(1), CUSTOMER(2), SEGMENT(3), PRODUCT(4), PRODUCT_AVA(5), PROFESSION(6), ALL_CUSTOMER(7), ALL_PROFESSIONAL(8);
+        @JsonValue
+        private final Integer value;
+        Enum_E(int value){
+            this.value=value;
+        }
+        @JsonCreator
+        public static Enum_E of(Object id) {
             if (id instanceof Integer v) {
                 return Arrays.stream(values())
                         .filter(t -> t.getValue().equals(v))

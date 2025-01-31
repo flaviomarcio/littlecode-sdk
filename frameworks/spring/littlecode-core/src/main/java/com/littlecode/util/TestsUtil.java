@@ -2,6 +2,7 @@ package com.littlecode.util;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -72,8 +73,8 @@ public class TestsUtil {
         final var valuesFromObject = getObjectValues(e);
         for (var method : methods) {
             try {
-                method.setAccessible(true);
                 log.info("  Method checking: {}():{}", method.getName(), method.getReturnType());
+                method.setAccessible(true);
 
                 if (method.getParameterCount() == 0) {
                     try {
@@ -109,7 +110,8 @@ public class TestsUtil {
                         }
                     }
                 }
-            } catch (Exception ignored) {
+            } catch (Exception err) {
+                log.error("  Method checking: {}():{}, error: {}", method.getName(), method.getReturnType(), err.getMessage());
             }
         }
         log.info("Fields from: {}", e.getClass().getName());
@@ -174,10 +176,24 @@ public class TestsUtil {
 
     public static void checkObject(Object... list) {
         for (var e : list) {
+            List<Object> objectList=new ArrayList<>();
+            if(e instanceof List l){
+                objectList.addAll(l);
+            }
+            else if(e.getClass().isArray()){
+                int length = Array.getLength(e);
+                for (int i = 0; i < length; i++)
+                    objectList.add(Array.get(e, i));
+            }
+            else{
+                objectList.add(e);
+            }
             synchronized (classes) {
-                if (!classes.contains(e.getClass()))
-                    checkGetterSetterFields(e);
-                classes.add(e.getClass());
+                for(var o: objectList){
+                    if (!classes.contains(o.getClass()))
+                        checkGetterSetterFields(o);
+                    classes.add(o.getClass());
+                }
             }
         }
     }
