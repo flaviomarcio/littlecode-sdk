@@ -1,8 +1,12 @@
 package com.littlecode.tests;
 
 import com.littlecode.parsers.CollectionUtil;
+import com.littlecode.parsers.HashUtil;
+import com.littlecode.parsers.PrimitiveUtil;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -124,9 +128,44 @@ public class CollectionUtilTest {
         }
     }
 
+    @Test
+    @DisplayName("Deve validar Clone List")
+    public void UT_CHECK_CLONE_LIST() {
+        {//com sucesso
+            final var listA = List.of(
+                    Item.builder().id(UUID.randomUUID()).dt(LocalDateTime.now()).build(),
+                    Item.builder().id(UUID.randomUUID()).dt(LocalDateTime.now()).build()
+            );
+            var listB = CollectionUtil.cloneList(Item.class, listA);
+            Assertions.assertEquals(listB.size(), listB.size());
+            for (int i = 0; i < listB.size(); i++) {
+                var itemAmd5 = HashUtil.toMd5(listA.get(i));
+                var itemAmdB = HashUtil.toMd5(listB.get(i));
+                Assertions.assertEquals(itemAmd5, itemAmdB);
+            }
+        }
+
+        {//com erro
+            final var listA = List.of(
+                    ItemNoConstructor.builder().id(UUID.randomUUID()).dt(LocalDateTime.now()).build(),
+                    ItemNoConstructor.builder().id(UUID.randomUUID()).dt(LocalDateTime.now()).build()
+            );
+            Assertions.assertThrows(NullPointerException.class, () -> CollectionUtil.cloneList(ItemNoConstructor.class, listA));
+        }
+    }
+
     @Builder
     @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
     private static class Item {
+        private UUID id;
+        private LocalDateTime dt;
+    }
+
+    @Builder
+    @Getter
+    private static class ItemNoConstructor {
         private UUID id;
         private LocalDateTime dt;
     }
