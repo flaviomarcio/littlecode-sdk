@@ -39,7 +39,7 @@ public class TestsUtil {
                     if (method.getParameterCount() == 0) {
                         if (Modifier.isStatic(method.getModifiers())) {
                             var response = method.invoke(null);
-                            if (response != null)
+                            if (response != null && !__return.contains(response))
                                 __return.add(response);
                         } else {
                             var response = method.invoke(o);
@@ -57,7 +57,7 @@ public class TestsUtil {
                 try {
                     field.setAccessible(true);
                     var response=field.get(o);
-                    if (response != null)
+                    if (response != null && !__return.contains(response))
                         __return.add(response);
                 } catch (Exception ignored) {
                 }
