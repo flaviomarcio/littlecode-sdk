@@ -1,6 +1,7 @@
 package com.littlecode.util;
 
 import com.littlecode.parsers.PrimitiveUtil;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Array;
@@ -16,6 +17,8 @@ import java.util.*;
 
 @Slf4j
 public class TestsUtil {
+    @Setter
+    private static boolean printLog = false;
     private static final List<Class<?>> classes = new ArrayList<>();
 
     private static List<Method> getMethods(Class<?> aClass) {
@@ -71,12 +74,14 @@ public class TestsUtil {
     private static void checkGetterSetterFields(Object e) {
         if(PrimitiveUtil.isPrimitiveValue(e))
             return;
-        log.info("Methods from: {}", e.getClass().getName());
+        if(printLog)
+            log.info("Methods from: {}", e.getClass().getName());
         final var methods = getMethods(e.getClass());
         final var valuesFromObject = getObjectValues(e);
         for (var method : methods) {
             try {
-                log.info("  Method checking: {}():{}", method.getName(), method.getReturnType());
+                if(printLog)
+                    log.info("  Method checking: {}():{}", method.getName(), method.getReturnType());
                 method.setAccessible(true);
 
                 if (method.getParameterCount() == 0) {
@@ -89,7 +94,13 @@ public class TestsUtil {
                     }
                 }
                 else if(method.getParameterCount() == 1) {
-                    for(var value : valuesFromObject) {
+                    List<Object> list=new ArrayList<>();
+                    var type = method.getParameterTypes()[0];
+                    var typeObject=makeValueForClass(type);
+                    if(typeObject!=null)
+                        list.add(typeObject);
+                    list.addAll(valuesFromObject);
+                    for(var value : list) {
                         try{
                             if (Modifier.isStatic(method.getModifiers()))
                                 method.invoke(null, value);
@@ -117,12 +128,14 @@ public class TestsUtil {
                 log.error("  Method checking: {}():{}, error: {}", method.getName(), method.getReturnType(), err.getMessage());
             }
         }
-        log.info("Fields from: {}", e.getClass().getName());
+        if(printLog)
+            log.info("Fields from: {}", e.getClass().getName());
         var fields = getFields(e.getClass());
         for (var field : fields) {
             try {
                 var fieldType = field.getType();
-                log.info("  Field checking : {}:{}", field.getName(), fieldType);
+                if(printLog)
+                    log.info("  Field checking : {}:{}", field.getName(), fieldType);
                 field.setAccessible(true);
                 var v = field.get(e);
                 field.set(e, makeValueForClass(fieldType));
@@ -130,7 +143,7 @@ public class TestsUtil {
             } catch (Exception ignored) {
             }
         }
-        log.info("Finished: {}", e.getClass().getName());
+        //log.info("Finished: {}", e.getClass().getName());
     }
 
 //    private static void checkGetterSetter(Object e) {
@@ -174,6 +187,8 @@ public class TestsUtil {
             return UUID.randomUUID();
         if (URI.class.equals(argType))
             return URI.create("http://localhost:8080");
+        if(Object.class.equals(argType))
+            return new Object();
         return null;
     }
 

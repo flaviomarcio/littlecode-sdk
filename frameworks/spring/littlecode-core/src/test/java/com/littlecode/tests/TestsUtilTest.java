@@ -3,8 +3,7 @@ package com.littlecode.tests;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.littlecode.util.TestsUtil;
-import lombok.Data;
-import lombok.Getter;
+import lombok.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.stereotype.Service;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.time.LocalDate;
@@ -26,8 +26,8 @@ public class TestsUtilTest {
     @Test
     @DisplayName("Deve validar getter|setter")
     void deveValidarClasses() {
+        Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(new Person()));
         Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(new DTO_Class_AllTypes()));
-//        Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(new DTO_Class_Clean()));
     }
 
     @Test
@@ -186,5 +186,20 @@ public class TestsUtilTest {
             argObject = arg1;
             argObject2 = arg2;
         }
+    }
+
+    @Data
+    public static class Person{
+        private UUID id;
+        private LocalDateTime dt;
+        private UUID rev;
+
+        public Person() {
+        }
+
+        public static Person of(UUID personId) {
+            return new Person();
+        }
+
     }
 }
