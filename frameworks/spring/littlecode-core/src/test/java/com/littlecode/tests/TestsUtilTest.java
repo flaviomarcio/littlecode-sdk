@@ -32,6 +32,7 @@ public class TestsUtilTest {
     @Test
     @DisplayName("Deve validar enums")
     void deveValidarEnums() {
+        Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(Enum_D.values()));
         Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(Enum_A.values()));
         Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(Enum_B.values()));
         Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(Enum_C.values()));
@@ -86,7 +87,29 @@ public class TestsUtilTest {
         }
     }
 
-    public static class DTO_Class_Clean {
+    @Getter
+    public enum Enum_D {
+        CREDIT(0), DEBIT(1);
+        private final Integer value;
+
+        Enum_D(int value) {
+            this.value = value;
+        }
+
+        @JsonCreator
+        public static Enum_D of(Object id) {
+            if (id instanceof Integer v) {
+                return Arrays.stream(values())
+                        .filter(t -> t.getValue().equals(v))
+                        .findFirst()
+                        .orElseThrow(() -> new IllegalArgumentException("Invalid type value: " + v));
+            } else {
+                return Arrays.stream(values())
+                        .filter(t -> t.equals(id))
+                        .findFirst()
+                        .orElseThrow(() -> new IllegalArgumentException("Invalid type value: " + id));
+            }
+        }
     }
 
     @Service

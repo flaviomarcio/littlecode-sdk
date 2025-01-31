@@ -10,10 +10,7 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 public class TestsUtil {
@@ -29,78 +26,45 @@ public class TestsUtil {
     }
 
     private static List<Field> getFields(Class<?> aClass) {
-//        List<Field> list = new ArrayList<>(Arrays.asList(aClass.getDeclaredFields()));
-//        for (var field : aClass.getFields()){
-//            if(!list.contains(field))
-//                list.add(field);
-//        }
-//        return list;
         return List.of(aClass.getDeclaredFields());
     }
 
-
-//    private static Method getM(Class<?> aClass, String name, @SuppressWarnings("SameParameterValue") Class<?> argType) {
-//        try {
-//            return aClass.getMethod(name, argType);
-//        } catch (Exception ignored) {
-//        }
-//
-//        try {
-//            return aClass.getDeclaredMethod(name, argType);
-//        } catch (Exception ignored) {
-//        }
-//
-//        List<Method> methods = new ArrayList<>();
-//        methods.addAll(Arrays.asList(aClass.getMethods()));
-//        methods.addAll(Arrays.asList(aClass.getDeclaredMethods()));
-//        for (Method method : methods) {
-//            if (method.getName().equalsIgnoreCase(name))
-//                return method;
-//        }
-//        return null;
-//    }
-
-//    private static Method getM(Class<?> aClass, String name) {
-//        return getM(aClass, name, Object.class);
-//    }
-//
-//    private static Object methodGetValue(Object e, String methodName) {
-//        try {
-//            var method = getM(e.getClass(), methodName);
-//            return method.invoke(Modifier.isStatic(method.getModifiers())?null:e);
-//        } catch (Exception ignored) {
-//        }
-//        return null;
-//    }
-
-//    private static void methodSetValue(Object e, String methodName, Object... args) {
-//        try {
-//            var method = getM(e.getClass(), methodName);
-//            if (method != null){
-//                var parent=Modifier.isStatic(method.getModifiers())?null:e;
-//                if(method.getParameterCount()>=1){
-//                    if(method.getParameterCount()>1)
-//                        method.invoke(parent,args);
-//                    else{
-//                        for(var i:args)
-//                            method.invoke(parent,i);
-//                    }
-//                }
-//            }
-//        } catch (Exception ignored) {
-//        }
-//    }
-//
-//    private static void checkGetterSetterEnum(Object e) {
-//        List<Object> vJsonValues = new ArrayList<>();
-//        for (var methodName : List.of("name", "ordinal", "getId", "getValue"))
-//            vJsonValues.add(methodGetValue(e, methodName));
-//
-//        for (var methodName : List.of("valueOf", "of", "get"))
-//            for (var vValue : vJsonValues)
-//                methodSetValue(e, methodName, vValue);
-//
-//    }
+    private static List<Object> getObjectValues(Object o) {
+        List<Object> __return = new ArrayList<>();
+        {//methods
+            var methods = getMethods(o.getClass());
+            for (var method : methods) {
+                try {
+                    method.setAccessible(true);
+                    if (method.getParameterCount() == 0) {
+                        if (Modifier.isStatic(method.getModifiers())) {
+                            var response = method.invoke(null);
+                            if (response != null)
+                                __return.add(response);
+                        } else {
+                            var response = method.invoke(o);
+                            if (response != null)
+                                __return.add(response);
+                        }
+                    }
+                } catch (Exception ignored) {
+                }
+            }
+        }
+        {//methods
+            var fields = getFields(o.getClass());
+            for (var field : fields) {
+                try {
+                    field.setAccessible(true);
+                    var response=field.get(o);
+                    if (response != null)
+                        __return.add(response);
+                } catch (Exception ignored) {
+                }
+            }
+        }
+        return __return;
+    }
 
     private static void checkGetterSetterFields(Object e) {
         log.info("Methods from: {}", e.getClass().getName());
@@ -111,20 +75,39 @@ public class TestsUtil {
                 log.info("  Method checking: {}():{}", method.getName(), method.getReturnType());
 
                 if (method.getParameterCount() == 0) {
-                    if (Modifier.isStatic(method.getModifiers()))
-                        method.invoke(null);
-                    else
-                        method.invoke(e);
-                } else {
+                    try {
+                        if (Modifier.isStatic(method.getModifiers()))
+                            method.invoke(null);
+                        else
+                            method.invoke(e);
+                    } catch (Exception ignored) {
+                    }
+                }
+                else if(method.getParameterCount() == 1) {
+                    var valuesFromClass = getObjectValues(e);
+                    for(var value : valuesFromClass) {
+                        try{
+                            if (Modifier.isStatic(method.getModifiers()))
+                                method.invoke(null, value);
+                            else
+                                method.invoke(e, value);
+                        } catch (Exception ignored) {
+                        }
+                    }
+                }
+                else {
                     var ar = new Object[method.getParameterCount()];
                     for (var i = 0; i < ar.length; i++) {
-                        var type = method.getParameterTypes()[i];
-                        ar[i] = makeValueForClass(type);
+                        try{
+                            var type = method.getParameterTypes()[i];
+                            ar[i] = makeValueForClass(type);
+                            if (Modifier.isStatic(method.getModifiers()))
+                                method.invoke(null, ar);
+                            else
+                                method.invoke(e, ar);
+                        } catch (Exception ignored) {
+                        }
                     }
-                    if (Modifier.isStatic(method.getModifiers()))
-                        method.invoke(null, ar);
-                    else
-                        method.invoke(e, ar);
                 }
             } catch (Exception ignored) {
             }
