@@ -22,6 +22,7 @@
         <modelmapper-version>3.2.0</modelmapper-version>
         <spring-boot-version>3.2.5</spring-boot-version>
         <spring-cloud-aws.version>3.2.0-M1</spring-cloud-aws.version>
+        <minio.version>8.5.17</minio.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -74,6 +75,12 @@
         <dependency>
             <groupId>io.awspring.cloud</groupId>
             <artifactId>spring-cloud-aws-s3</artifactId>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/io.minio/minio -->
+        <dependency>
+            <groupId>io.minio</groupId>
+            <artifactId>minio</artifactId>
+            <version>${minio.version}</version>
         </dependency>
     </dependencies>
 </project>

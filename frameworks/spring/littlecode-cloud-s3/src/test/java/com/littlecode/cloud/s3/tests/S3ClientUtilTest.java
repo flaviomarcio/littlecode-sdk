@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import software.amazon.awssdk.core.ResponseInputStream;
+import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
@@ -64,11 +65,27 @@ public class S3ClientUtilTest {
     @DisplayName("deve construir credenciais")
     public void UT_CHECK_CONSTRUCTOR_create_AwsBasicCredentials() {
         var s3Object = newS3Object();
-        Assertions.assertDoesNotThrow(s3Object::createAwsBasicCredentials);
+
         s3Object.setAccessKey(null);
         s3Object.setSecretKey(null);
-        Assertions.assertDoesNotThrow(s3Object::createAwsBasicCredentials);
         Assertions.assertNull(s3Object.createAwsBasicCredentials());
+
+        s3Object.setAccessKey("");
+        s3Object.setSecretKey("");
+        Assertions.assertNull(s3Object.createAwsBasicCredentials());
+
+        s3Object.setAccessKey("a");
+        s3Object.setSecretKey("");
+        Assertions.assertNull(s3Object.createAwsBasicCredentials());
+
+        s3Object.setAccessKey("");
+        s3Object.setSecretKey("b");
+        Assertions.assertNull(s3Object.createAwsBasicCredentials());
+
+        s3Object.setAccessKey("a");
+        s3Object.setSecretKey("b");
+        Assertions.assertNotNull(s3Object.createAwsBasicCredentials());
+
     }
 
     @Test
@@ -104,6 +121,12 @@ public class S3ClientUtilTest {
     public void UT_CHECK_METHOD_PUT() throws IOException {
         var s3Object=newS3ObjectMock();
         var temFile=File.createTempFile("s3-upload", ".txt");
+        Mockito.when(
+                        s3Object
+                                .getS3Client()
+                                .putObject(Mockito.any(PutObjectRequest.class), Mockito.any(RequestBody.class))
+                )
+                .thenReturn(Mockito.mock(PutObjectResponse.class));
         IOUtil
                 .target(temFile)
                 .writeAll(ObjectUtil.toString(s3Object));
@@ -198,6 +221,9 @@ public class S3ClientUtilTest {
     public void UT_CHECK_METHOD_CLOSE() throws IOException {
         var s3Object=newS3ObjectMock();
         Assertions.assertDoesNotThrow(() -> s3Object.delete("test.txt"));
+
+        s3Object.setS3Client(Mockito.mock(S3Client.class));
+        Assertions.assertDoesNotThrow(() -> s3Object.close());
         Assertions.assertDoesNotThrow(() -> s3Object.close());
     }
 //

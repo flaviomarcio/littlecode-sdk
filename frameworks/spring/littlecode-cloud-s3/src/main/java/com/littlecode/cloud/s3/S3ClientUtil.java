@@ -78,7 +78,7 @@ public class S3ClientUtil {
 
         this.hashClient = hashClient;
 
-        if (endpoint == null || endpoint.trim().isEmpty()) {
+        if (endpoint.trim().isEmpty()) {
             return this.s3Client = S3Client.builder()
                     .credentialsProvider(this::createAwsBasicCredentials)
                     .region(Region.of(this.getRegion()))
@@ -101,7 +101,7 @@ public class S3ClientUtil {
     }
 
     private boolean internalPut(File source, String filename, boolean deleteOnFinished){
-        var s3Client = this.newClient();
+        this.s3Client = this.newClient();
 //        var putObjectRequest = PutObjectRequest
 //                .builder()
 //                .bucket(this.getBucket())
@@ -120,7 +120,7 @@ public class S3ClientUtil {
 
         PutObjectResponse response = s3Client.putObject(putObjectRequest, RequestBody.fromFile(source));
 
-        var __return=(response.eTag()!=null && !response.eTag().trim().isEmpty());
+        var __return=(!PrimitiveUtil.toString(response.eTag()).trim().isEmpty());
 
         if (deleteOnFinished)
             source.delete();
@@ -145,7 +145,7 @@ public class S3ClientUtil {
     }
 
     public String eTag(String filename){
-        var s3Client = this.newClient();
+        this.s3Client = this.newClient();
         GetObjectAttributesResponse objectAttributes =
                 s3Client
                         .getObjectAttributes(
@@ -160,7 +160,7 @@ public class S3ClientUtil {
     }
 
     public String checksum(String filename){
-        var s3Client = this.newClient();
+        this.s3Client = this.newClient();
         GetObjectAttributesResponse objectAttributes =
                 s3Client
                         .getObjectAttributes(
