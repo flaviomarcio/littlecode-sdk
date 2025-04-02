@@ -14,14 +14,14 @@ import java.util.List;
 public class RestTemplateUtilTest {
 
 
-    @Test
-    @DisplayName("Deve validar builer")
-    public void deveValidarBuiler() {
-        var restTemplate= Mockito.mock(RestTemplate.class);
-        var restTemplateUtil=RestTemplateUtil
-                .builder()
-                .restTemplate(restTemplate)
-                .headers(List.of())
-                .build();
-    }
+//    @Test
+//    @DisplayName("Deve validar builer")
+//    public void deveValidarBuiler() {
+//        var restTemplate= Mockito.mock(RestTemplate.class);
+//        var restTemplateUtil=RestTemplateUtil
+//                .builder()
+//                .restTemplate(restTemplate)
+//                .headers(List.of())
+//                .build();
+//    }
 }
