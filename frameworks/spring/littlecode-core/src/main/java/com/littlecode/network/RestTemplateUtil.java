@@ -1,5 +1,6 @@
 package com.littlecode.network;
 
+import com.littlecode.exceptions.FrameworkException;
 import com.littlecode.parsers.ObjectUtil;
 import com.littlecode.parsers.PrimitiveUtil;
 import lombok.*;
@@ -14,13 +15,12 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @NoArgsConstructor
-@AllArgsConstructor
 public class RestTemplateUtil {
     @Getter
     @Setter
@@ -35,14 +35,14 @@ public class RestTemplateUtil {
     @Getter
     private HttpEntity<String> entity;
     @Getter
-    private ResponseEntity<?> response;
+    private ResponseEntity<String> response;
 
     public static RestTemplateUtilBuilder builder() {
         return new  RestTemplateUtilBuilder();
     }
 
     public HttpMethod getMethod() {
-        return this.method==null?HttpMethod.GET:this.method;
+        return this.method=(this.method==null?HttpMethod.GET:this.method);
     }
 
     public void setMethod(HttpMethod method) {
@@ -51,7 +51,10 @@ public class RestTemplateUtil {
 
     public void setMethod(Object method) {
         var v=PrimitiveUtil.toString(method).trim().toUpperCase();
-        this.method = HttpMethod.valueOf(v.isEmpty()?HttpMethod.GET.name() :v);
+        this.method= Stream.of(HttpMethod.values())
+                .filter(x-> v.equalsIgnoreCase(x.name()))
+                .findFirst()
+                .orElse(null);
     }
 
     public MultiValueMap<String, String> getHeaders(){
@@ -60,7 +63,7 @@ public class RestTemplateUtil {
 
     public String getUrl() {
         return this.url = PrimitiveUtil.isEmpty(this.url)
-                ?"http://localhost:8080"
+                ?"http://localhost"
                 :this.url.trim();
     }
 
@@ -68,32 +71,43 @@ public class RestTemplateUtil {
         this.url = PrimitiveUtil.toString(url).trim();
     }
 
-    public ResponseEntity<?> exchange(){
-        return this.exchange(this.getRestTemplate());
+    public ResponseEntity<String> exchange() {
+        return this.exchange(this.getMethod(), this.getRestTemplate());
     }
 
-    public ResponseEntity<?> exchange(RestTemplate restTemplate){
+    public ResponseEntity<String> exchange(HttpMethod method) {
+        return this.exchange(method, this.getRestTemplate());
+    }
+
+    public ResponseEntity<String> exchange(RestTemplate restTemplate){
+        return this.exchange(this.getMethod(), restTemplate);
+    }
+
+    public ResponseEntity<String> exchange(HttpMethod method, RestTemplate restTemplate){
+        this.method=method;
         if(HttpMethod.POST.equals(this.method) || HttpMethod.PUT.equals(this.method) || HttpMethod.PATCH.equals(this.method))
             return this.exchangePOST_PUT_PATCH(this.getRestTemplate());
         return this.exchange_OPTION_GET_DELETE(restTemplate);
     }
 
-    private ResponseEntity<?> exchangePOST_PUT_PATCH(RestTemplate restTemplate){
+    private ResponseEntity<String> exchangePOST_PUT_PATCH(RestTemplate restTemplate){
         HttpEntity<String> entity = new HttpEntity<>(ObjectUtil.toString(this.getBody()), headers);
         return this.exchangeInternal(restTemplate, entity);
     }
 
-    private ResponseEntity<?> exchange_OPTION_GET_DELETE(RestTemplate restTemplate){
+    private ResponseEntity<String> exchange_OPTION_GET_DELETE(RestTemplate restTemplate){
         HttpEntity<String> entity=new HttpEntity<>(headers);
         return this.exchangeInternal(restTemplate, entity);
     }
 
-    private ResponseEntity<?> exchangeInternal(RestTemplate restTemplate, HttpEntity<String> entity){
+    private ResponseEntity<String> exchangeInternal(RestTemplate restTemplate, HttpEntity<String> entity){
         try{
+            this.entity=entity;
             return this.response=restTemplate.exchange(this.getUrl(), this.getMethod(), entity, String.class);
         } catch (Exception e) {
+            log.error(e.getMessage());
             this.print();
-            throw e;
+            throw new FrameworkException(e.getMessage());
         }
     }
 
@@ -126,11 +140,11 @@ public class RestTemplateUtil {
     public static class RestTemplateUtilBuilder{
         private RestTemplate restTemplate;
         private HttpMethod method;
-        private HttpHeaders headers;
+        private final HttpHeaders headers;
         private String scheme;
         private String host;
         private int port;
-        private MultiValueMap<String, String> queryParams;
+        private final MultiValueMap<String, String> queryParams;
         private String path;
         private Object body;
 
@@ -140,7 +154,7 @@ public class RestTemplateUtil {
             this.headers=new HttpHeaders();
             this.scheme="http";
             this.host="localhost";
-            this.port=80;
+            this.port=-1;
             this.queryParams=new LinkedMultiValueMap<>();
             this.path="";
             this.body=null;
@@ -163,6 +177,11 @@ public class RestTemplateUtil {
             return this;
         }
 
+        public RestTemplateUtilBuilder port(int port) {
+            this.port = port;
+            return this;
+        }
+
         public RestTemplateUtilBuilder method(HttpMethod method) {
             this.method = method==null?HttpMethod.GET:method;
             return this;
@@ -181,21 +200,12 @@ public class RestTemplateUtil {
             return this;
         }
 
-        public RestTemplateUtilBuilder headers(MultiValueMap<String, String> headers){
-            headers
-                    .forEach(this::header);
-            return this;
-        }
-
         public RestTemplateUtilBuilder headers(Map<String, String> headers){
-            headers
-                    .forEach(this::header);
+            headers.forEach(this::header);
             return this;
         }
 
         public RestTemplateUtilBuilder header(String headerName, Object headerValue){
-            if(this.headers==null)
-                this.headers=new HttpHeaders();
             List<String> listV=new ArrayList<>();
             if(headerValue instanceof List<?> lst){
                 lst.forEach(item->{
@@ -221,7 +231,6 @@ public class RestTemplateUtil {
             return this.uri(url);
         }
 
-
         public RestTemplateUtilBuilder uri(Object uri) {
             var v=PrimitiveUtil.toString(uri);
             UriComponents components = UriComponentsBuilder.fromUriString(v).build();
@@ -229,28 +238,37 @@ public class RestTemplateUtil {
             this.host=components.getHost();
             this.path=components.getPath();
             this.port=components.getPort();
-            this.queryParams=components.getQueryParams();
+            this.queryParams.clear();
+            this.queryParams.putAll(components.getQueryParams());
             return this;
         }
 
         public RestTemplateUtilBuilder path(String path){
-            this.path=PrimitiveUtil.toString(path).trim();
+            var v=PrimitiveUtil.toString(path).trim();
+            this.path=v.equals("/")?"":v;
             return this;
         }
 
         public RestTemplateUtilBuilder queryParams(MultiValueMap<String, String> queryParams) {
+            this.queryParams.clear();
+            queryParams.forEach(this::queryParam);
+            return this;
+        }
+
+        public RestTemplateUtilBuilder queryParams(Map<String, String> queryParams) {
+            this.queryParams.clear();
             queryParams.forEach(this::queryParam);
             return this;
         }
 
         public RestTemplateUtilBuilder queryParam(String paramName, Object paramValue) {
-            if(this.queryParams==null)
-                this.queryParams=new HttpHeaders();
-            var list=this.queryParams.get(paramName);
-            var v=PrimitiveUtil.toString(paramValue);
-            if(!list.contains(v))
-                list.add(v);
-            this.headers.put(paramName, list);
+            if(!PrimitiveUtil.isEmpty(paramName)){
+                List<String> lst=this.queryParams.getOrDefault(paramName, new ArrayList<>());
+                var v=PrimitiveUtil.toString(paramValue);
+                if(!v.isEmpty())
+                    lst.add(v);
+                this.queryParams.put(paramName, lst);
+            }
             return this;
         }
 

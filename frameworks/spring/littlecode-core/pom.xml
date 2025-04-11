@@ -40,7 +40,8 @@
         <spring-boot-version>3.2.5</spring-boot-version>
         <lombok.version>1.18.32</lombok.version>
         <jakarta.servlet-api.version>6.1.0-M2</jakarta.servlet-api.version>
-        <httpclient.version>5.4.3</httpclient.version>
+        <client5-httpclient.version>5.4.3</client5-httpclient.version>
+        <client5-httpcore.version>5.3.4</client5-httpcore.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -60,6 +61,14 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+<!--            &lt;!&ndash; https://mvnrepository.com/artifact/org.apache.httpcomponents.client5/httpclient5 &ndash;&gt;-->
+<!--            <dependency>-->
+<!--                <groupId>org.apache.httpcomponents.client5</groupId>-->
+<!--                <artifactId>httpclient5</artifactId>-->
+<!--                <version>${client5-httpcore.version}</version>-->
+<!--                <type>pom</type>-->
+<!--                <scope>import</scope>-->
+<!--            </dependency>-->
         </dependencies>
     </dependencyManagement>
     <dependencies>
@@ -167,7 +176,19 @@
         <dependency>
             <groupId>org.apache.httpcomponents.client5</groupId>
             <artifactId>httpclient5</artifactId>
-            <version>${httpclient.version}</version> <!-- Use a versão compatível com o seu projeto -->
+            <version>${client5-httpclient.version}</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents.core5/httpcore5 -->
+        <dependency>
+            <groupId>org.apache.httpcomponents.core5</groupId>
+            <artifactId>httpcore5</artifactId>
+            <version>${client5-httpcore.version}</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents.core5/httpcore5-h2 -->
+        <dependency>
+            <groupId>org.apache.httpcomponents.core5</groupId>
+            <artifactId>httpcore5-h2</artifactId>
+            <version>${client5-httpcore.version}</version>
         </dependency>
     </dependencies>
 </project>
