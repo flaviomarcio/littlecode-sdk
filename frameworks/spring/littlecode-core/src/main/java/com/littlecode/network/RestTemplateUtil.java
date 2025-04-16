@@ -144,8 +144,8 @@ public class RestTemplateUtil {
         private String scheme;
         private String host;
         private int port;
-        private final MultiValueMap<String, String> queryParams;
         private String path;
+        private final MultiValueMap<String, String> queryParams;
         private Object body;
 
         public RestTemplateUtilBuilder(){
@@ -155,42 +155,13 @@ public class RestTemplateUtil {
             this.scheme="http";
             this.host="localhost";
             this.port=-1;
-            this.queryParams=new LinkedMultiValueMap<>();
             this.path="";
+            this.queryParams=new LinkedMultiValueMap<>();
             this.body=null;
         }
 
         public RestTemplateUtilBuilder restTemplate(RestTemplate restTemplate){
             this.restTemplate = restTemplate;
-            return this;
-        }
-
-        public RestTemplateUtilBuilder scheme(Object scheme) {
-            var v=PrimitiveUtil.toString(scheme).trim().toUpperCase();
-            this.scheme = v.isEmpty()?"http":v.toLowerCase();
-            return this;
-        }
-
-        public RestTemplateUtilBuilder host(String host) {
-            var v=PrimitiveUtil.toString(host).trim();
-            this.host = v.isEmpty()?"localhost":v;
-            return this;
-        }
-
-        public RestTemplateUtilBuilder port(int port) {
-            this.port = port;
-            return this;
-        }
-
-        public RestTemplateUtilBuilder method(HttpMethod method) {
-            this.method = method==null?HttpMethod.GET:method;
-            return this;
-        }
-
-
-        public RestTemplateUtilBuilder method(Object method) {
-            var v=PrimitiveUtil.toString(method).trim().toUpperCase();
-            this.method = HttpMethod.valueOf(v.isEmpty()?HttpMethod.GET.name():v);
             return this;
         }
 
@@ -227,6 +198,27 @@ public class RestTemplateUtil {
             return this;
         }
 
+        public RestTemplateUtilBuilder scheme(Object scheme) {
+            this.scheme = PrimitiveUtil.toString(scheme).trim().toLowerCase();
+            return this;
+        }
+
+        public RestTemplateUtilBuilder method(HttpMethod method) {
+            this.method = method==null?HttpMethod.GET:method;
+            return this;
+        }
+
+        public RestTemplateUtilBuilder method(Object method) {
+            var v=PrimitiveUtil.toString(method).trim().toUpperCase();
+            this.method = HttpMethod.valueOf(v.isEmpty()?HttpMethod.GET.name():v);
+            return this;
+        }
+
+        public RestTemplateUtilBuilder host(String host) {
+            this.host = PrimitiveUtil.toString(host).trim();
+            return this;
+        }
+
         public RestTemplateUtilBuilder url(Object url){
             return this.uri(url);
         }
@@ -243,9 +235,13 @@ public class RestTemplateUtil {
             return this;
         }
 
+        public RestTemplateUtilBuilder port(int port) {
+            this.port = port;
+            return this;
+        }
+
         public RestTemplateUtilBuilder path(String path){
-            var v=PrimitiveUtil.toString(path).trim();
-            this.path=v.equals("/")?"":v;
+            this.path=PrimitiveUtil.toString(path).trim();
             return this;
         }
 
@@ -281,6 +277,14 @@ public class RestTemplateUtil {
             var restTemplateUtil= new RestTemplateUtil();
             restTemplateUtil.setRestTemplate(restTemplate);
             restTemplateUtil.setMethod(this.method);
+            if(PrimitiveUtil.isEmpty(this.scheme))
+                this.scheme="http";
+            if(PrimitiveUtil.isEmpty(this.host))
+                this.host="localhost";
+            if(PrimitiveUtil.isEmpty(this.path))
+                this.path="";
+            if(this.path.equals("/"))
+                this.path="";
             var url=UriComponentsBuilder
                     .fromHttpUrl("%s://%s".formatted(this.scheme,this.host))
                     .port(this.port)

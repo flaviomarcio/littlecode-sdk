@@ -84,7 +84,7 @@ public class RestTemplateUtilTest {
     @DisplayName("Deve validar Method host")
     public void deveValidarMethod_host() {
         {
-            var util = RestTemplateUtil
+            var util=RestTemplateUtil
                     .builder()
                     .host("remotehost")
                     .build();
