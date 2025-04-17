@@ -18,7 +18,7 @@ public class LockerUtil {
      */
     private final Object __locker = new Object();
     /**
-     * Cache dos scope
+     * Cache dos targets
      */
     private final ConcurrentMap<String, Target> targetCollection = new ConcurrentHashMap<String, Target>();
 
@@ -47,14 +47,14 @@ public class LockerUtil {
      */
     public Target target(String target) {
         if(target==null)
-            throw new IllegalArgumentException("scope cannot be null");
+            throw new IllegalArgumentException("target cannot be null");
         Target lock;
         synchronized (__locker) {
-            log.debug("scope get:{}", target);
+            log.debug("target get:{}", target);
             lock = targetCollection.get(target);
             if(lock==null){
                 this.targetCollection.put(target, lock = new Target(target,false));
-                log.debug("scope create:{}", lock.name);
+                log.debug("target create:{}", lock.name);
             }
         }
         return lock;
@@ -69,7 +69,7 @@ public class LockerUtil {
     }
 
     /**
-     * executa lock com scope
+     * executa lock com target
      * @param target
      * @return
      */
@@ -122,12 +122,12 @@ public class LockerUtil {
 
     /**
      * verifica se está locado com valor
-     * @param scope
+     * @param target
      * @return
      */
-    public boolean isLocked(String scope){
+    public boolean isLocked(String target){
         synchronized (__locker) {
-            if(this.target(scope).locked)
+            if(this.target(target).locked)
                 return true;
         }
         return false;
@@ -151,17 +151,17 @@ public class LockerUtil {
      * Gera maker para execução de metodo com valor default
      * @return
      */
-    public ExecutorMaker execute(){
-        return this.execute("");
+    public ExecutorMaker executor(){
+        return this.executor("");
     }
 
     /**
      * Gera maker para execução de metodo com valor
-     * @param scope
+     * @param target
      * @return
      */
-    public ExecutorMaker execute(String scope){
-        return new ExecutorMaker(this, scope);
+    public ExecutorMaker executor(String target){
+        return new ExecutorMaker(this, target);
     }
 
     /**

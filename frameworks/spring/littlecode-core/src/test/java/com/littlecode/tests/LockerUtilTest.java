@@ -86,11 +86,11 @@ public class LockerUtilTest {
 
     @Test
     @DisplayName("Deve validar execute com sucesso")
-    public void deveValidarExecuteComSucesso() {
+    public void deveValidarExecutorComSucesso() {
         var lockerUtil=new LockerUtil();
 
         Assertions.assertFalse(
-                lockerUtil.execute()
+                lockerUtil.executor()
                         .onExecute(new LockerUtil.ExecutorOnExecute() {
                             @Override
                             public void exec() {
@@ -102,7 +102,7 @@ public class LockerUtilTest {
         );
 
         Assertions.assertFalse(
-                lockerUtil.execute()
+                lockerUtil.executor()
                         .onExecute(new LockerUtil.ExecutorOnExecute() {
                             @Override
                             public void exec() {
@@ -119,7 +119,7 @@ public class LockerUtilTest {
         );
 
         Assertions.assertTrue(
-                lockerUtil.execute()
+                lockerUtil.executor()
                         .onExecute(new LockerUtil.ExecutorOnExecute() {
                             @Override
                             public void exec() {
@@ -132,7 +132,7 @@ public class LockerUtilTest {
         {
             lockerUtil.target().setLocked(true);
             Assertions.assertFalse(
-                    lockerUtil.execute()
+                    lockerUtil.executor()
                             .onExecute(new LockerUtil.ExecutorOnExecute() {
                                 @Override
                                 public void exec() {
