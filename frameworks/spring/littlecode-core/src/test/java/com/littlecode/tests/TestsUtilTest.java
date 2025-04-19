@@ -26,18 +26,23 @@ public class TestsUtilTest {
     @Test
     @DisplayName("Deve validar getter|setter")
     void deveValidarClasses() {
-        Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(new Person()));
-        Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(new DTO_Class_AllTypes()));
+        for(var vBool: List.of(true,false)) {
+            TestsUtil.setPrintLog(vBool);
+            Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(new Person()));
+            Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(new DTO_Class_AllTypes()));
+        }
     }
 
     @Test
     @DisplayName("Deve validar enums")
     void deveValidarEnums() {
-        Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(UUID.class, UUID.randomUUID()));
-        Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(Enum_A.values()));
-        Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(List.of(Enum_B.values(),Enum_C.values())));
-        Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(Enum_E.values(),Enum_D.values()));
-
+        for(var vBool: List.of(true,false)){
+            TestsUtil.setPrintLog(vBool);
+            Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(UUID.class, UUID.randomUUID()));
+            Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(Enum_A.values()));
+            Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(List.of(Enum_B.values(),Enum_C.values())));
+            Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(Enum_E.values(),Enum_D.values()));
+        }
     }
 
     public enum Enum_A {

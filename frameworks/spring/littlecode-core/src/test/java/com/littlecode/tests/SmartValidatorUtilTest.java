@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,8 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.SmartValidator;
 
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -22,12 +25,43 @@ import static org.mockito.Mockito.doAnswer;
 
 @ExtendWith(MockitoExtension.class)
 public class SmartValidatorUtilTest {
+
+    @Test
+    @DisplayName("deve validar exceptions")
+    void deveValidarExceptions() {
+        {
+            var util=new SmartValidatorUtil(Mockito.mock(SmartValidator.class));
+            Assertions.assertThrows(NullPointerException.class, () -> util.check(null));
+        }
+    }
+
+    @Test
+    @DisplayName("deve validar fieldValueNoPrimitive")
+    void deveValidar_fieldValueNoPrimitive() {
+        var util = new SmartValidatorUtil(Mockito.mock(SmartValidator.class));
+        var obj = PrivateDTO
+                .builder()
+                .localCustomClass(null)
+                .build();
+        Assertions.assertDoesNotThrow(() -> util.check(obj));
+    }
+    @Test
+    @DisplayName("deve validar recursividade em objetos")
+    void deveValidarRecursividadeEmObjetos() {
+        var util = new SmartValidatorUtil(Mockito.mock(SmartValidator.class));
+        var obj=PrivateDTO
+                .builder()
+                .localCustomClass(new CustomClass())
+                .build();
+        obj.setAutoObjectSet(obj);//tratamento para recursividade
+        Assertions.assertDoesNotThrow(() -> util.check(obj));
+    }
+
     @Test
     @DisplayName("deve validar metodo validateDTO")
     void deveValidatCheck() {
         {
             var smartValidator = Mockito.mock(SmartValidator.class);
-
             Assertions.assertDoesNotThrow(() -> new SmartValidatorUtil(smartValidator));
         }
         {//sem erros
@@ -82,10 +116,19 @@ public class SmartValidatorUtilTest {
         @NotNull
         private LocalDate localDate;
 
+        private PrivateDTO autoObjectSet;
+        private CustomClass localCustomClass;
+
         public PrivateDTO() {
             this.uuid = UUID.randomUUID();
             this.localDate = null;
+            this.localCustomClass =null;
         }
+    }
 
+    @Data
+    @NoArgsConstructor
+    public static class CustomClass {
+        private Map<String, String> stringStringMap=new HashMap<>();
     }
 }
