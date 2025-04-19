@@ -41,6 +41,7 @@ public class MQAMQPRabbitMQImpl extends MQAdapter {
         var queueVHostName = PrimitiveUtil.isEmpty(setting.getVHostName()) ? "/" : setting.getVHostName();
         var queueHostName = PrimitiveUtil.isEmpty(setting.getHostName()) ? DEFAULT_LOCALHOST : setting.getHostName();
         var queuePort = setting.getPort() <= 0 ? DEFAULT_PORT : setting.getPort();
+        log.info("host: {}, port: {}, vHost: {}, vUsername: {}, connecting", queueHostName, queuePort, queueVHostName, queueUsername);
         try {
             var factory = new ConnectionFactory();
             factory.setUsername(queueUsername);
