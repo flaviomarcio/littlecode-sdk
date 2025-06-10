@@ -3,6 +3,8 @@ package com.littlecode.containers;
 import com.littlecode.parsers.HashUtil;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 
 import java.util.*;
@@ -72,6 +74,38 @@ public class ObjectReturn {
 
     public static ObjectReturn Success(String format, Object... args) {
         return type(Type.Success, format, args);
+    }
+
+    public static ObjectReturn OK() {
+        return Success((String) null);
+    }
+
+    public static ObjectReturn OK(Class<?> aClass) {
+        return Success(INVALID_OBJECT_OF_TYPE, aClass);
+    }
+
+    public static ObjectReturn OK(String message) {
+        return Success(message, (Object) null);
+    }
+
+    public static ObjectReturn OK(String format, Object... args) {
+        return type(Type.Success, format, args);
+    }
+
+    public static ObjectReturn Created() {
+        return Created((String) null);
+    }
+
+    public static ObjectReturn Created(Class<?> aClass) {
+        return Created(INVALID_OBJECT_OF_TYPE, aClass);
+    }
+
+    public static ObjectReturn Created(String message) {
+        return Created(message, (Object) null);
+    }
+
+    public static ObjectReturn Created(String format, Object... args) {
+        return type(Type.Created, format, args);
     }
 
     public static ObjectReturn Accepted() {
@@ -317,6 +351,14 @@ public class ObjectReturn {
         return Type.Success;
     }
 
+    public int getStatus() {
+        return this.getType().getValue();
+    }
+
+    public HttpStatusCode getStatusCode() {
+        return HttpStatusCode.valueOf(this.getType().getValue());
+    }
+
     public List<Message> getErrors() {
         List<Message> errors = new ArrayList<>();
         for (var m : this.internalMessages) {
@@ -334,11 +376,56 @@ public class ObjectReturn {
     }
 
     public boolean isOK() {
-        for (var m : this.internalMessages) {
-            if (!m.isSuccess())
-                return false;
-        }
-        return true;
+        return this.getStatusCode().is2xxSuccessful();
+    }
+
+    public boolean isError() {
+        return this.getStatusCode().isError();
+    }
+
+    public boolean is1xxInformational() {
+        return this.getStatusCode().is1xxInformational();
+    }
+
+    public boolean is2xxSuccessful() {
+        return this.getStatusCode().is2xxSuccessful();
+    }
+
+    public boolean is3xxRedirection() {
+        return this.getStatusCode().is3xxRedirection();
+    }
+
+    public boolean is4xxClientError() {
+        return this.getStatusCode().is4xxClientError();
+    }
+
+    public boolean is5xxServerError() {
+        return this.getStatusCode().is5xxServerError();
+    }
+
+    public boolean isCreated() {
+        var status = this.getStatus();
+        return status == HttpStatus.CREATED.value();
+    }
+
+    public boolean isAccepted() {
+        var status = this.getStatus();
+        return status == HttpStatus.ACCEPTED.value();
+    }
+
+    public boolean isBadRequest() {
+        var status = this.getStatus();
+        return status == HttpStatus.BAD_REQUEST.value();
+    }
+
+    public boolean isNotFound() {
+        var status = this.getStatus();
+        return status == HttpStatus.NOT_FOUND.value();
+    }
+
+    public boolean isConflict() {
+        var status = this.getStatus();
+        return status == HttpStatus.CONFLICT.value();
     }
 
     public MessageMaker message() {
@@ -407,6 +494,7 @@ public class ObjectReturn {
     @Getter
     public enum Type {
         Success(200),
+        Created(201),
         Accepted(202),
         NoContent(204),
         BadRequest(400),
@@ -425,7 +513,8 @@ public class ObjectReturn {
         }
     }
 
-    @Data
+    @Getter
+    @Setter
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
@@ -441,7 +530,8 @@ public class ObjectReturn {
         private List<String> messages;
     }
 
-    @Data
+    @Getter
+    @Setter
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
@@ -553,6 +643,31 @@ public class ObjectReturn {
         public MessageMaker Success(String format, Object... args) {
             return this.type(Type.Success, format, args);
         }
+
+        public MessageMaker OK() {
+            return this.Success();
+        }
+
+        public MessageMaker OK(String message) {
+            return this.Success(message);
+        }
+
+        public MessageMaker OK(String format, Object... args) {
+            return this.Success(format, args);
+        }
+
+        public MessageMaker Created() {
+            return this.Created(null);
+        }
+
+        public MessageMaker Created(String message) {
+            return this.Created(message, (Object) null);
+        }
+
+        public MessageMaker Created(String format, Object... args) {
+            return this.type(Type.Created, format, args);
+        }
+
 
         public MessageMaker Accepted() {
             return this.Accepted(null);

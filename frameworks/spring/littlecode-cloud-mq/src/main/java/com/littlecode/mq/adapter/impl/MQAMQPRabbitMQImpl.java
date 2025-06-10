@@ -297,6 +297,7 @@ public class MQAMQPRabbitMQImpl extends MQAdapter {
                 ack = true;
             } catch (Exception e) {
                 log.error("Queue: [{}], messageId: [{}], error on ack: {}", queueName, deliveryTag, e.getMessage());
+                log.error("",e);
             }
 
             try {

@@ -41,6 +41,8 @@ public class ObjectReturnTest {
         Assertions.assertDoesNotThrow(() -> ObjectReturn.type(ObjectReturn.Type.Success, "teste"));
 
         Assertions.assertDoesNotThrow(() -> ObjectReturn.Empty().getType());
+        Assertions.assertDoesNotThrow(() -> ObjectReturn.Empty().getStatusCode());
+        Assertions.assertDoesNotThrow(() -> ObjectReturn.Empty().getStatus());
         Assertions.assertEquals(ObjectReturn.Empty().getType(), ObjectReturn.Type.Success);
 
         Assertions.assertDoesNotThrow(() -> ObjectReturn.type(null));
@@ -56,9 +58,29 @@ public class ObjectReturnTest {
         Assertions.assertNotNull(ObjectReturn.type(ObjectReturn.Type.Success, "teste"));
 
         Assertions.assertEquals(ObjectReturn.Empty().getType(), ObjectReturn.Type.Success);
-        Assertions.assertTrue(ObjectReturn.Empty().isOK());
+        Assertions.assertTrue(ObjectReturn.Success().isOK());
+        Assertions.assertTrue(ObjectReturn.Fail().isError());
+        Assertions.assertFalse(ObjectReturn.Empty().is1xxInformational());
+        Assertions.assertTrue(ObjectReturn.OK().is2xxSuccessful());
+        Assertions.assertTrue(ObjectReturn.Accepted().is2xxSuccessful());
+        Assertions.assertFalse(ObjectReturn.Accepted().is3xxRedirection());
+        Assertions.assertTrue(ObjectReturn.BadRequest().is4xxClientError());
+        Assertions.assertTrue(ObjectReturn.Fail().is5xxServerError());
+
+        Assertions.assertEquals(ObjectReturn.Empty().getType(), ObjectReturn.Type.Success);
+        Assertions.assertTrue(ObjectReturn.Success().isOK());
+        Assertions.assertTrue(ObjectReturn.Fail().isError());
+        Assertions.assertFalse(ObjectReturn.Empty().is1xxInformational());
+        Assertions.assertTrue(ObjectReturn.OK().is2xxSuccessful());
+        Assertions.assertTrue(ObjectReturn.Created().isCreated());
+        Assertions.assertTrue(ObjectReturn.Accepted().isAccepted());
+        Assertions.assertTrue(ObjectReturn.BadRequest().isBadRequest());
+        Assertions.assertTrue(ObjectReturn.NotFound().isNotFound());
+        Assertions.assertTrue(ObjectReturn.Conflict().isConflict());
 
         Assertions.assertEquals(ObjectReturn.create().Success().end().getType(), ObjectReturn.Type.Success);
+        Assertions.assertEquals(ObjectReturn.create().OK().end().getType(), ObjectReturn.Type.Success);
+        Assertions.assertEquals(ObjectReturn.create().Created().end().getType(), ObjectReturn.Type.Created);
         Assertions.assertEquals(ObjectReturn.create().Accepted().end().getType(), ObjectReturn.Type.Accepted);
         Assertions.assertEquals(ObjectReturn.create().NoContent().end().getType(), ObjectReturn.Type.NoContent);
         Assertions.assertEquals(ObjectReturn.create().BadRequest().end().getType(), ObjectReturn.Type.BadRequest);
@@ -72,6 +94,8 @@ public class ObjectReturnTest {
         Assertions.assertEquals(ObjectReturn.create().NotImplemented().end().getType(), ObjectReturn.Type.NotImplemented);
 
         Assertions.assertEquals(ObjectReturn.Success(this.getClass()).getType(), ObjectReturn.Type.Success);
+        Assertions.assertEquals(ObjectReturn.OK(this.getClass()).getType(), ObjectReturn.Type.Success);
+        Assertions.assertEquals(ObjectReturn.Created(this.getClass()).getType(), ObjectReturn.Type.Created);
         Assertions.assertEquals(ObjectReturn.Accepted(this.getClass()).getType(), ObjectReturn.Type.Accepted);
         Assertions.assertEquals(ObjectReturn.NoContent(this.getClass()).getType(), ObjectReturn.Type.NoContent);
         Assertions.assertEquals(ObjectReturn.BadRequest(this.getClass()).getType(), ObjectReturn.Type.BadRequest);
@@ -85,6 +109,8 @@ public class ObjectReturnTest {
         Assertions.assertEquals(ObjectReturn.NotImplemented(this.getClass()).getType(), ObjectReturn.Type.NotImplemented);
 
         Assertions.assertEquals(ObjectReturn.Success().getType(), ObjectReturn.Type.Success);
+        Assertions.assertEquals(ObjectReturn.OK().getType(), ObjectReturn.Type.Success);
+        Assertions.assertEquals(ObjectReturn.Created().getType(), ObjectReturn.Type.Created);
         Assertions.assertEquals(ObjectReturn.Accepted().getType(), ObjectReturn.Type.Accepted);
         Assertions.assertEquals(ObjectReturn.NoContent().getType(), ObjectReturn.Type.NoContent);
         Assertions.assertEquals(ObjectReturn.BadRequest().getType(), ObjectReturn.Type.BadRequest);
@@ -98,6 +124,8 @@ public class ObjectReturnTest {
         Assertions.assertEquals(ObjectReturn.NotImplemented().getType(), ObjectReturn.Type.NotImplemented);
 
         Assertions.assertEquals(ObjectReturn.Success("Message").getType(), ObjectReturn.Type.Success);
+        Assertions.assertEquals(ObjectReturn.OK("Message").getType(), ObjectReturn.Type.Success);
+        Assertions.assertEquals(ObjectReturn.Created("Message").getType(), ObjectReturn.Type.Created);
         Assertions.assertEquals(ObjectReturn.Accepted("Message").getType(), ObjectReturn.Type.Accepted);
         Assertions.assertEquals(ObjectReturn.NoContent("Message").getType(), ObjectReturn.Type.NoContent);
         Assertions.assertEquals(ObjectReturn.BadRequest("Message").getType(), ObjectReturn.Type.BadRequest);
@@ -111,6 +139,8 @@ public class ObjectReturnTest {
         Assertions.assertEquals(ObjectReturn.NotImplemented("Message").getType(), ObjectReturn.Type.NotImplemented);
 
         Assertions.assertEquals(ObjectReturn.Success("Message: %s", UUID.randomUUID()).getType(), ObjectReturn.Type.Success);
+        Assertions.assertEquals(ObjectReturn.OK("Message: %s", UUID.randomUUID()).getType(), ObjectReturn.Type.Success);
+        Assertions.assertEquals(ObjectReturn.Created("Message: %s", UUID.randomUUID()).getType(), ObjectReturn.Type.Created);
         Assertions.assertEquals(ObjectReturn.Accepted("Message: %s", UUID.randomUUID()).getType(), ObjectReturn.Type.Accepted);
         Assertions.assertEquals(ObjectReturn.NoContent("Message: %s", UUID.randomUUID()).getType(), ObjectReturn.Type.NoContent);
         Assertions.assertEquals(ObjectReturn.BadRequest("Message: %s", UUID.randomUUID()).getType(), ObjectReturn.Type.BadRequest);
@@ -124,6 +154,8 @@ public class ObjectReturnTest {
         Assertions.assertEquals(ObjectReturn.NotImplemented("Message: %s", UUID.randomUUID()).getType(), ObjectReturn.Type.NotImplemented);
 
         Assertions.assertEquals(ObjectReturn.Success().getType(), ObjectReturn.Type.Success);
+        Assertions.assertEquals(ObjectReturn.OK().getType(), ObjectReturn.Type.Success);
+        Assertions.assertEquals(ObjectReturn.Created().getType(), ObjectReturn.Type.Created);
         Assertions.assertEquals(ObjectReturn.Accepted().getType(), ObjectReturn.Type.Accepted);
         Assertions.assertEquals(ObjectReturn.NoContent().getType(), ObjectReturn.Type.NoContent);
         Assertions.assertEquals(ObjectReturn.BadRequest().getType(), ObjectReturn.Type.BadRequest);
@@ -328,8 +360,8 @@ public class ObjectReturnTest {
         Assertions.assertDoesNotThrow(() -> new ObjectReturn.MessageMaker(ObjectReturn.Empty()));
 
         var messageMaker = new ObjectReturn.MessageMaker(ObjectReturn.Empty());
-        Assertions.assertDoesNotThrow(() -> messageMaker.clear());
-        Assertions.assertDoesNotThrow(() -> messageMaker.end());
+        Assertions.assertDoesNotThrow(messageMaker::clear);
+        Assertions.assertDoesNotThrow(messageMaker::end);
         Assertions.assertDoesNotThrow(() -> messageMaker.type(null));
         Assertions.assertDoesNotThrow(() -> messageMaker.type(ObjectReturn.Type.NoContent));
         Assertions.assertDoesNotThrow(() -> messageMaker.type(ObjectReturn.Type.NoContent, "test"));
@@ -357,11 +389,26 @@ public class ObjectReturnTest {
         Assertions.assertDoesNotThrow(() -> messageMaker.Success("%s", null));
         Assertions.assertDoesNotThrow(() -> messageMaker.Success(null, null));
 
+        Assertions.assertDoesNotThrow(() -> messageMaker.OK());
+        Assertions.assertDoesNotThrow(() -> messageMaker.OK(null));
+        Assertions.assertDoesNotThrow(() -> messageMaker.OK("%s", "test"));
+        Assertions.assertDoesNotThrow(() -> messageMaker.OK("%s", null));
+        Assertions.assertDoesNotThrow(() -> messageMaker.OK(null, null));
+
+        Assertions.assertDoesNotThrow(() -> messageMaker.Created());
+        Assertions.assertDoesNotThrow(() -> messageMaker.Created(null));
+        Assertions.assertDoesNotThrow(() -> messageMaker.Created("%s", "test"));
+        Assertions.assertDoesNotThrow(() -> messageMaker.Created("%s", null));
+        Assertions.assertDoesNotThrow(() -> messageMaker.Created(null, null));
+
+
         Assertions.assertDoesNotThrow(() -> messageMaker.Accepted());
         Assertions.assertDoesNotThrow(() -> messageMaker.Accepted(null));
         Assertions.assertDoesNotThrow(() -> messageMaker.Accepted("%s", "test"));
         Assertions.assertDoesNotThrow(() -> messageMaker.Accepted("%s", null));
         Assertions.assertDoesNotThrow(() -> messageMaker.Accepted(null, null));
+
+
 
         Assertions.assertDoesNotThrow(() -> messageMaker.NoContent());
         Assertions.assertDoesNotThrow(() -> messageMaker.NoContent(null));
@@ -380,6 +427,14 @@ public class ObjectReturnTest {
         Assertions.assertDoesNotThrow(() -> messageMaker.Forbidden("%s", "test"));
         Assertions.assertDoesNotThrow(() -> messageMaker.Forbidden("%s", null));
         Assertions.assertDoesNotThrow(() -> messageMaker.Forbidden(null, null));
+
+
+        Assertions.assertDoesNotThrow(() -> messageMaker.NotFound());
+        Assertions.assertDoesNotThrow(() -> messageMaker.NotFound(null));
+        Assertions.assertDoesNotThrow(() -> messageMaker.NotFound("%s", "test"));
+        Assertions.assertDoesNotThrow(() -> messageMaker.NotFound("%s", null));
+        Assertions.assertDoesNotThrow(() -> messageMaker.NotFound(null, null));
+
 
         Assertions.assertDoesNotThrow(() -> messageMaker.Conflict());
         Assertions.assertDoesNotThrow(() -> messageMaker.Conflict(null));
