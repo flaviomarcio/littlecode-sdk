@@ -43,21 +43,19 @@ public class ExceptionBuilder {
         return (target == null) ? "" : target.toString().trim();
     }
 
-    public static String makeMessage(Type typeIn, Object targetIn, Object... argsIn) {
+    public static String makeMessage(Object targetIn, Object... argsIn) {
         var args = argsClean(argsIn);
         var target = targetClean(targetIn);
-        var type = typeIn.name();
-
         if (target.isEmpty() && args.length == 0)
-            return String.format("[%s]: fail", type);
+            return "";
 
         if (target.contains("%s") && args.length > 0)
-            return String.format("[%s]: %s", type, String.format(target, args));
+            return String.format("%s", String.format(target, args));
 
         if (!target.isEmpty() && args.length > 0)
-            return String.format("[%s]: %s, %s", type, target, Arrays.toString(args));
+            return String.format("%s, %s", target, Arrays.toString(args));
 
-        return String.format("[%s]: %s", type, target);
+        return target;
     }
 
     public static RuntimeException of(Exception e) {
@@ -354,8 +352,13 @@ public class ExceptionBuilder {
         return of(Type.Network, format, args);
     }
 
+    //List
+    public static <T> RuntimeException  ofBadRequest(List<T> args) {
+        return of(Type.BadRequest, ObjectUtil.toString(args));
+    }
+
     private String makeMessage() {
-        return makeMessage(this.type, this.target, this.args);
+        return makeMessage(this.target, this.args);
     }
 
     public RuntimeException create() {

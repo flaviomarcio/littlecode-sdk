@@ -364,12 +364,12 @@ public class ExceptionBuilderTest {
     @DisplayName("Deve validar exceptions of make messages")
     public void UT_CHECK_MAKE_MESSAGE() {
 
-        Assertions.assertEquals(ExceptionBuilder.makeMessage(ExceptionBuilder.Type.Default, Object.class, ""), "[Default]: class " + Object.class.getName());
-        Assertions.assertEquals(ExceptionBuilder.makeMessage(ExceptionBuilder.Type.Default, "test", ""), "[Default]: test");
-        Assertions.assertEquals(ExceptionBuilder.makeMessage(ExceptionBuilder.Type.Default, "test: %s", LocalDate.now()), String.format("[Default]: test: %s", LocalDate.now()));
-        Assertions.assertEquals(ExceptionBuilder.makeMessage(ExceptionBuilder.Type.Default, "test: %s", Object.class), String.format("[Default]: test: %s", Object.class));
-        Assertions.assertEquals(ExceptionBuilder.makeMessage(ExceptionBuilder.Type.Default, "test: %s", 1), String.format("[Default]: test: %s", 1));
-        Assertions.assertEquals(ExceptionBuilder.makeMessage(ExceptionBuilder.Type.Default, "test: %s", 0.01), String.format("[Default]: test: %s", 0.01));
+        Assertions.assertEquals(ExceptionBuilder.makeMessage(Object.class, ""), "class " + Object.class.getName());
+        Assertions.assertEquals(ExceptionBuilder.makeMessage("test", ""), "test");
+        Assertions.assertEquals(ExceptionBuilder.makeMessage("test: %s", LocalDate.now()), String.format("test: %s", LocalDate.now()));
+        Assertions.assertEquals(ExceptionBuilder.makeMessage("test: %s", Object.class), String.format("test: %s", Object.class));
+        Assertions.assertEquals(ExceptionBuilder.makeMessage("test: %s", 1), String.format("test: %s", 1));
+        Assertions.assertEquals(ExceptionBuilder.makeMessage("test: %s", 0.01), String.format("test: %s", 0.01));
     }
 
 
