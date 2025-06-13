@@ -7,10 +7,10 @@
     ... 
     <properties>
         ...
-        <java.version>17</java.version>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-        <littlecode-version>3.2.5</littlecode-version>
+        <java.version>21</java.version>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <littlecode-version>3.5.0</littlecode-version>
         ...
     </properties>
     ...

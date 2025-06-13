@@ -5,20 +5,20 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.4</version>
+        <version>3.5.0</version>
     </parent>
     <groupId>com.littlecode</groupId>
     <artifactId>web-flux-spring</artifactId>
-    <version>3.2.5</version>
+    <version>3.5.0</version>
     <name>app</name>
     <description>Little code for web flux</description>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.version>17</java.version>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-        <littlecode-version>3.2.5</littlecode-version>
+        <java.version>21</java.version>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <littlecode-version>3.5.0</littlecode-version>
         <commons-io-version>2.16.1</commons-io-version>
         <commons-lang3-version>3.14.0</commons-lang3-version>
         <springdoc-webflux-ui-version>2.5.0</springdoc-webflux-ui-version>
@@ -27,7 +27,7 @@
         <jwks-rsa-version>0.22.1</jwks-rsa-version>
         <modelmapper-version>3.2.0</modelmapper-version>
         <spring-boot-version>3.2.4</spring-boot-version>
-        <spring-cloud-version>2023.0.0</spring-cloud-version>
+        <spring-cloud-version>2025.0.0</spring-cloud-version>
         <postgresql-version>42.7.3</postgresql-version>
         <h2-version>2.2.224</h2-version>
     </properties>

@@ -5,19 +5,19 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.5</version>
+        <version>3.5.0</version>
     </parent>
     <groupId>com.littlecode</groupId>
     <artifactId>web-core-spring</artifactId>
-    <version>3.2.5</version>
+    <version>3.5.0</version>
     <name>app</name>
     <description>Little code for web core</description>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.version>17</java.version>
-        <spring-boot-version>3.2.5</spring-boot-version>
-        <littlecode-version>3.2.5</littlecode-version>
+        <java.version>21</java.version>
+        <spring-boot-version>3.5.0</spring-boot-version>
+        <littlecode-version>3.5.0</littlecode-version>
         <java-jwt-version>4.4.0</java-jwt-version>
         <jwks-rsa-version>0.22.1</jwks-rsa-version>
     </properties>
