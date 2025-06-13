@@ -34,7 +34,6 @@
         <reflections-version>0.10.2</reflections-version>
         <snakeyaml-version>2.4</snakeyaml-version>
         <spring-boot-version>3.5.0</spring-boot-version>
-        <lombok.version>1.18.32</lombok.version>
         <client5-httpclient.version>5.5</client5-httpclient.version>
         <client5-httpcore.version>5.3.4</client5-httpcore.version>
     </properties>
