@@ -29,17 +29,12 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <littlecode-version>3.5.0</littlecode-version>
-        <commons-io-version>2.15.1</commons-io-version>
-        <commons-lang3-version>3.14.0</commons-lang3-version>
-        <h2.version>2.2.220</h2.version>
-        <HikariCP.version>5.0.0</HikariCP.version>
         <jackson-version>2.19.0</jackson-version>
-        <modelmapper-version>3.2.0</modelmapper-version>
+        <modelmapper-version>3.2.3</modelmapper-version>
         <reflections-version>0.10.2</reflections-version>
         <snakeyaml-version>2.4</snakeyaml-version>
         <spring-boot-version>3.5.0</spring-boot-version>
         <lombok.version>1.18.32</lombok.version>
-        <jakarta.servlet-api.version>6.1.0-M2</jakarta.servlet-api.version>
         <client5-httpclient.version>5.5</client5-httpclient.version>
         <client5-httpcore.version>5.3.4</client5-httpcore.version>
     </properties>
@@ -61,14 +56,6 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-<!--            &lt;!&ndash; https://mvnrepository.com/artifact/org.apache.httpcomponents.client5/httpclient5 &ndash;&gt;-->
-<!--            <dependency>-->
-<!--                <groupId>org.apache.httpcomponents.client5</groupId>-->
-<!--                <artifactId>httpclient5</artifactId>-->
-<!--                <version>${client5-httpcore.version}</version>-->
-<!--                <type>pom</type>-->
-<!--                <scope>import</scope>-->
-<!--            </dependency>-->
         </dependencies>
     </dependencyManagement>
     <dependencies>
@@ -165,13 +152,13 @@
             <artifactId>reflections</artifactId>
             <version>${reflections-version}</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/jakarta.servlet/jakarta.servlet-api -->
-        <dependency>
-            <groupId>jakarta.servlet</groupId>
-            <artifactId>jakarta.servlet-api</artifactId>
-            <version>${jakarta.servlet-api.version}</version>
-            <scope>provided</scope>
-        </dependency>
+<!--        &lt;!&ndash; https://mvnrepository.com/artifact/jakarta.servlet/jakarta.servlet-api &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>jakarta.servlet</groupId>-->
+<!--            <artifactId>jakarta.servlet-api</artifactId>-->
+<!--            <version>${jakarta.servlet-api.version}</version>-->
+<!--            <scope>provided</scope>-->
+<!--        </dependency>-->
         <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents.client5/httpclient5 -->
         <dependency>
             <groupId>org.apache.httpcomponents.client5</groupId>
