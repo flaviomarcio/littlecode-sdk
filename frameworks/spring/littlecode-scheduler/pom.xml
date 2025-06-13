@@ -29,16 +29,11 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <littlecode-version>3.5.0</littlecode-version>
-        <commons-io-version>2.15.1</commons-io-version>
-        <commons-lang3-version>3.14.0</commons-lang3-version>
-        <h2.version>2.2.220</h2.version>
-        <HikariCP.version>5.0.0</HikariCP.version>
-        <jackson-version>2.15.2</jackson-version>
-        <modelmapper-version>3.2.0</modelmapper-version>
+        <jackson-version>2.19.0</jackson-version>
+        <modelmapper-version>3.2.3</modelmapper-version>
         <reflections-version>0.10.2</reflections-version>
-        <snakeyaml-version>2.2</snakeyaml-version>
+        <snakeyaml-version>2.4</snakeyaml-version>
         <spring-boot-version>3.5.0</spring-boot-version>
-        <lombok.version>1.18.32</lombok.version>
     </properties>
     <dependencyManagement>
         <dependencies>

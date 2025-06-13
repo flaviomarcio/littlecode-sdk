@@ -19,9 +19,9 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <littlecode-version>3.5.0</littlecode-version>
-        <modelmapper-version>3.2.0</modelmapper-version>
+        <modelmapper-version>3.2.3</modelmapper-version>
         <spring-boot-version>3.5.0</spring-boot-version>
-        <spring-cloud-aws.version>3.2.0-M1</spring-cloud-aws.version>
+        <spring-cloud-aws.version>3.4.0</spring-cloud-aws.version>
         <minio.version>8.5.17</minio.version>
     </properties>
     <dependencyManagement>
@@ -34,6 +34,7 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <!-- https://mvnrepository.com/artifact/io.awspring.cloud/spring-cloud-aws -->
             <dependency>
                 <groupId>io.awspring.cloud</groupId>
                 <artifactId>spring-cloud-aws</artifactId>
@@ -54,6 +55,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>

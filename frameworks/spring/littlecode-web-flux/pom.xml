@@ -19,17 +19,9 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <littlecode-version>3.5.0</littlecode-version>
-        <commons-io-version>2.16.1</commons-io-version>
-        <commons-lang3-version>3.14.0</commons-lang3-version>
-        <springdoc-webflux-ui-version>2.5.0</springdoc-webflux-ui-version>
-        <jackson-version>2.15.2</jackson-version>
-        <java-jwt-version>4.2.1</java-jwt-version>
-        <jwks-rsa-version>0.22.1</jwks-rsa-version>
-        <modelmapper-version>3.2.0</modelmapper-version>
-        <spring-boot-version>3.2.4</spring-boot-version>
-        <spring-cloud-version>2025.0.0</spring-cloud-version>
-        <postgresql-version>42.7.3</postgresql-version>
-        <h2-version>2.2.224</h2-version>
+        <modelmapper-version>3.2.3</modelmapper-version>
+        <spring-boot-version>3.5.0</spring-boot-version>
+
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -38,14 +30,6 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
                 <version>${spring-boot-version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-dependencies -->
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-dependencies</artifactId>
-                <version>${spring-cloud-version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -109,11 +93,6 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-vault-config -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-vault-config</artifactId>
-        </dependency>
         <!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-config -->
         <dependency>
             <groupId>org.springframework.security</groupId>
@@ -131,30 +110,7 @@
             <artifactId>modelmapper</artifactId>
             <version>${modelmapper-version}</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>${commons-io-version}</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>${commons-lang3-version}</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/com.auth0/java-jwt -->
-        <dependency>
-            <groupId>com.auth0</groupId>
-            <artifactId>java-jwt</artifactId>
-            <version>${java-jwt-version}</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/com.auth0/jwks-rsa -->
-        <dependency>
-            <groupId>com.auth0</groupId>
-            <artifactId>jwks-rsa</artifactId>
-            <version>${jwks-rsa-version}</version>
-        </dependency>
+        <!-- https://mvnrepository.com/artifact/io.netty/netty-all -->
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>

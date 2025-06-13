@@ -3,26 +3,33 @@
 Litlecode aims to reduce the verbosity of frameworks, thus providing classes and functions for more simplified use in applications, thus avoiding numerous and obvious classes of configurations and parameters
 
 ## Modules
-- littlecode-core
 - littlecode-business
+- littlecode-cache
 - littlecode-cloud-mq
+- littlecode-cloud-mq-extensions
 - littlecode-cloud-s3
-- littlecode-dependencies-java
-- littlecode-setup
+- littlecode-core
+- littlecode-jpa
+- littlecode-scheduler
+- littlecode-web
+- littlecode-web-flux
 
 ### Spring
-- README [littlecode-core](frameworks/spring/littlecode-core/README.md)
+
 - README [littlecode-business](frameworks/spring/littlecode-business/README.md)
+- README [littlecode-cache](frameworks/spring/littlecode-cache/README.md)
 - README [littlecode-cloud-mq](frameworks/spring/littlecode-cloud-mq/README.md)
+- README [littlecode-cloud-mq-extensions](frameworks/spring/littlecode-cloud-mq-extensions/README.md)
 - README [littlecode-cloud-s3](frameworks/spring/littlecode-cloud-s3/README.md)
-- README [littlecode-setup](frameworks/spring/littlecode-setup/README.md)
+- README [littlecode-core](frameworks/spring/littlecode-core/README.md)
+- README [littlecode-jpa](frameworks/spring/littlecode-jpa/README.md)
+- README [littlecode-scheduler](frameworks/spring/littlecode-scheduler/README.md)
+- README [littlecode-web](frameworks/spring/littlecode-web/README.md)
+- README [littlecode-web-flux](frameworks/spring/littlecode-web-flux/README.md)
+
 
 ### Quarkus - scheduled for version littlecode release/2.0.0
-- README [littlecode-core](frameworks/quarkus/littlecode-core/README.md)
-- README [littlecode-business](frameworks/quarkus/littlecode-business/README.md)
-- README [littlecode-cloud-mq](frameworks/quarkus/littlecode-cloud-mq/README.md)
-- README [littlecode-cloud-s3](frameworks/quarkus/littlecode-cloud-s3/README.md)
-- README [littlecode-setup](frameworks/quarkus/littlecode-setup/README.md)
+
 
 ### Prerequisites
 - Spring

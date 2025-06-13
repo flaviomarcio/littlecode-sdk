@@ -19,12 +19,12 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <littlecode-version>3.5.0</littlecode-version>
-        <jackson-version>2.17.0</jackson-version>
-        <modelmapper-version>3.2.0</modelmapper-version>
+        <jackson-version>2.19.0</jackson-version>
+        <modelmapper-version>3.2.3</modelmapper-version>
         <reflections-version>0.10.2</reflections-version>
         <spring-boot-version>3.5.0</spring-boot-version>
-        <rabbitmq-client-amqp-version>5.21.0</rabbitmq-client-amqp-version>
-        <amazon.awssdk-version>2.25.32</amazon.awssdk-version>
+        <rabbitmq-client-amqp-version>5.25.0</rabbitmq-client-amqp-version>
+        <amazon.awssdk-version>2.31.62</amazon.awssdk-version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -62,18 +62,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-amqp</artifactId>
         </dependency>
-<!--        &lt;!&ndash; https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.boot</groupId>-->
-<!--            <artifactId>spring-boot-autoconfigure</artifactId>-->
-<!--            <scope>test</scope>-->
-<!--        </dependency>-->
-<!--        &lt;!&ndash; https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.boot</groupId>-->
-<!--            <artifactId>spring-boot-autoconfigure-processor</artifactId>-->
-<!--            <scope>test</scope>-->
-<!--        </dependency>-->
         <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
