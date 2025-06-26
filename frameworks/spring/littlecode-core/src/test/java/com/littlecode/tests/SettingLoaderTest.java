@@ -23,6 +23,8 @@ import java.util.UUID;
 @ExtendWith(MockitoExtension.class)
 public class SettingLoaderTest {
 
+    private static final String tmp_file_json="/tmp/file.json";
+
     private SettingTest makeSetting(FileFormat fileFormat) {
         return SettingTest
                 .builder()
@@ -107,7 +109,7 @@ public class SettingLoaderTest {
     @DisplayName("Deve validar parser extensions")
     public void UT_CHECKER_parseExtension() {
         var file = new File("/tmp/file");
-        var fileJson = new File("/tmp/file.json");
+        var fileJson = new File(tmp_file_json);
 
         Assertions.assertDoesNotThrow(() -> SettingTest.parseExtension(file, FileFormat.JSON).getAbsolutePath());
         Assertions.assertDoesNotThrow(() -> SettingTest.parseExtension(fileJson, FileFormat.JSON).getAbsolutePath());
@@ -130,10 +132,10 @@ public class SettingLoaderTest {
 
         var objSrc = Map.of("a", "test");
 
-        Assertions.assertDoesNotThrow(() -> SettingLoader.staticObjectSave(new File("/tmp/file.json"), objSrc, FileFormat.JSON));
-        Assertions.assertThrows(FrameworkException.class, () -> SettingLoader.staticObjectSave(new File("/tmp/file.json"), new Object(), FileFormat.JSON));
-        Assertions.assertThrows(NullPointerException.class, () -> SettingLoader.staticObjectSave(new File("/tmp/file.json"), new Object(), null));
-        Assertions.assertThrows(NullPointerException.class, () -> SettingLoader.staticObjectSave(new File("/tmp/file.json"), null, null));
+        Assertions.assertDoesNotThrow(() -> SettingLoader.staticObjectSave(new File(tmp_file_json), objSrc, FileFormat.JSON));
+        Assertions.assertThrows(FrameworkException.class, () -> SettingLoader.staticObjectSave(new File(tmp_file_json), new Object(), FileFormat.JSON));
+        Assertions.assertThrows(NullPointerException.class, () -> SettingLoader.staticObjectSave(new File(tmp_file_json), new Object(), null));
+        Assertions.assertThrows(NullPointerException.class, () -> SettingLoader.staticObjectSave(new File(tmp_file_json), null, null));
         Assertions.assertThrows(NullPointerException.class, () -> SettingLoader.staticObjectSave(null, null, null));
 
         for (FileFormat fileFormat : SettingLoader.FILE_FORMAT_ACCEPTED) {
