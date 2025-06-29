@@ -21,7 +21,7 @@ import java.util.UUID;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
-public class SettingLoaderTest {
+class SettingLoaderTest {
 
     private static final String tmp_file_json="/tmp/file.json";
 
@@ -69,7 +69,7 @@ public class SettingLoaderTest {
     }
 
     @Test
-    public void UT_VALID_Getter() {
+    void UT_VALID_Getter() {
         SettingTest setting = makeSetting(FileFormat.JSON);
         Assertions.assertDoesNotThrow(() -> setting.getSettingFile());
         setting.setSettingFile(null);
@@ -78,7 +78,7 @@ public class SettingLoaderTest {
 
     @Test
     @DisplayName("Deve validar fileFormat")
-    public void UT_CHECKER_fileFormat() {
+    void UT_CHECKER_fileFormat() {
         var settingTest = new SettingTest();
         Assertions.assertDoesNotThrow(() -> settingTest.setFileFormat(null));
         Assertions.assertDoesNotThrow(settingTest::getFileFormat);
@@ -94,7 +94,7 @@ public class SettingLoaderTest {
 
     @Test
     @DisplayName("Deve validar get extensions")
-    public void UT_CHECKER_getExtension() {
+    void UT_CHECKER_getExtension() {
         for (FileFormat e : List.of(FileFormat.values())) {
             Assertions.assertDoesNotThrow(() -> SettingTest.getExtension(e));
             Assertions.assertEquals(SettingTest.getExtension(e), "." + e.name().toLowerCase());
@@ -107,7 +107,7 @@ public class SettingLoaderTest {
 
     @Test
     @DisplayName("Deve validar parser extensions")
-    public void UT_CHECKER_parseExtension() {
+    void UT_CHECKER_parseExtension() {
         var file = new File("/tmp/file");
         var fileJson = new File(tmp_file_json);
 
@@ -128,7 +128,7 @@ public class SettingLoaderTest {
 
     @Test
     @DisplayName("Deve validar load")
-    public void UT_CHECKER_LOAD() {
+    void UT_CHECKER_LOAD() {
 
         var objSrc = Map.of("a", "test");
 
@@ -157,7 +157,7 @@ public class SettingLoaderTest {
 
     @Test
     @DisplayName("Deve validar save")
-    public void UT_CHECKER_SAVE() {
+    void UT_CHECKER_SAVE() {
 
         Map<FileFormat, File> settingFiles = new HashMap<>();
 
@@ -195,7 +195,7 @@ public class SettingLoaderTest {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class SettingTest extends SettingLoader<SettingTest> {
+    static class SettingTest extends SettingLoader<SettingTest> {
         private SettingSubTest subA;
         private SettingSubTest subB;
         private SettingSubTest subC;
@@ -207,7 +207,7 @@ public class SettingLoaderTest {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class SettingSubTest {
+    static class SettingSubTest {
         @JsonProperty("propA")
         private SettingPropertyTest propertyA;
         @JsonProperty("propB")
@@ -223,7 +223,7 @@ public class SettingLoaderTest {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class SettingPropertyTest {
+    static class SettingPropertyTest {
         @JsonProperty("u_u_i_d")
         private UUID uuid;
     }

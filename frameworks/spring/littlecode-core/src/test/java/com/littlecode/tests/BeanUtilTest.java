@@ -25,7 +25,7 @@ import java.util.List;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
-public class BeanUtilTest {
+class BeanUtilTest {
     private static final List<String> listString = List.of("0", "1", "2", "3");
     private static final List<Integer> listInt = List.of(0, 1, 2, 3);
     private static final List<Long> listLong = List.of(0L, 1L, 2L, 3L);
@@ -34,13 +34,13 @@ public class BeanUtilTest {
     private static final String BEAN_STRING_VALUE = "A";
 
     @BeforeAll
-    public static void before() {
+    static void before() {
 
     }
 
     @Test
     @DisplayName("Deve validar constructor")
-    public void UT_CHECK_CONSTRUCTOR() {
+    void UT_CHECK_CONSTRUCTOR() {
 
         UtilCoreConfig.setApplicationContext(null);
         UtilCoreConfig.setEnvironment(null);
@@ -74,7 +74,7 @@ public class BeanUtilTest {
 
     @Test
     @DisplayName("Deve validar get by name")
-    public void UT_CHECK_GET_BEAN() {
+    void UT_CHECK_GET_BEAN() {
         var context = Mockito.mock(ApplicationContext.class);
         Mockito.when(context.getBeanNamesForAnnotation(AnnotationTestA.class)).thenReturn(new String[]{"1", "2"});
         Mockito.when(context.getBeanNamesForAnnotation(AnnotationTestB.class)).thenReturn(new String[]{});
@@ -138,7 +138,7 @@ public class BeanUtilTest {
 
     @Test
     @DisplayName("Deve validar get by annotation")
-    public void UT_CHECK_GET_AS_ANNOTATION() {
+    void UT_CHECK_GET_AS_ANNOTATION() {
         var context = Mockito.mock(ApplicationContext.class);
         Mockito.when(context.getBeanNamesForAnnotation(AnnotationTestA.class)).thenReturn(new String[]{"1", "2"});
         Mockito.when(context.getBeanNamesForAnnotation(AnnotationTestB.class)).thenReturn(new String[]{});
@@ -153,11 +153,11 @@ public class BeanUtilTest {
 
     @Target({ElementType.TYPE, ElementType.METHOD, ElementType.CONSTRUCTOR})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface AnnotationTestA {
+    @interface AnnotationTestA {
     }
 
     @Target({ElementType.TYPE, ElementType.METHOD, ElementType.CONSTRUCTOR})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface AnnotationTestB {
+    @interface AnnotationTestB {
     }
 }

@@ -12,11 +12,11 @@ import java.time.LocalDateTime;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
-public class CronUtilTest {
+class CronUtilTest {
 
     @Test
     @DisplayName("Deve validar class CronUtil")
-    public void UT_CHECK_CRON() {
+    void UT_CHECK_CRON() {
         Assertions.assertDoesNotThrow(() -> new CronUtil());
         Assertions.assertDoesNotThrow(() -> CronUtil.builder().build());
         Assertions.assertDoesNotThrow(() -> CronUtil.ofCron(0));

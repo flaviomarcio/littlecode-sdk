@@ -5,13 +5,16 @@ import com.littlecode.parsers.ExceptionBuilder;
 import com.littlecode.parsers.PrimitiveUtil;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Getter
@@ -31,9 +34,8 @@ public class EnvironmentUtil {
     }
 
     public String envValue(String env, String defaultValue) {
-        return
-                (environment.containsProperty(env))
-                        ? environment.getProperty(env).trim()
+        return (environment.containsProperty(env))
+                        ? PrimitiveUtil.toString(environment.getProperty(env)).trim()
                         : defaultValue;
     }
 
@@ -47,9 +49,9 @@ public class EnvironmentUtil {
 
     public String asString(String env, String defaultValue) {
         var eValue = envValue(env);
-        return (eValue != null)
-                ? eValue
-                : defaultValue == null ? "" : defaultValue;
+         if(eValue != null)
+            return eValue;
+        return defaultValue == null? "" : defaultValue;
     }
 
     public boolean asBool(String env) {
@@ -136,15 +138,15 @@ public class EnvironmentUtil {
             var enumList = enumClass.getEnumConstants();
             var eValue = envValue(env);
             if (eValue != null) {
-                List<T> __return = new ArrayList<>();
+                List<T> result = new ArrayList<>();
                 var values = eValue.split(",");
                 for (var s : values) {
                     for (var e : enumList) {
                         if (e.toString().equalsIgnoreCase(s))
-                            __return.add((T) e);
+                            result.add((T) e);
                     }
                 }
-                return __return;
+                return result;
             }
         }
         return defaultValue == null ? new ArrayList<>() : defaultValue;
@@ -157,10 +159,9 @@ public class EnvironmentUtil {
     public List<String> asListOfString(String env, List<String> defaultValue) {
         var eValue = envValue(env);
         if (eValue != null) {
-            var values = List.of(eValue.split(","));
             List<String> out = new ArrayList<>();
-            for (String s : values) {
-                if (s != null && !s.trim().isEmpty())
+            for (var s : eValue.split(",")) {
+                if (!PrimitiveUtil.isEmpty(s))
                     out.add(s);
             }
             return out;
@@ -176,9 +177,8 @@ public class EnvironmentUtil {
         var eValue = envValue(env);
         List<Long> out = new ArrayList<>();
         if (eValue != null) {
-            var values = List.of(eValue.split(","));
-            for (String s : values) {
-                if (s != null && !s.trim().isEmpty()) {
+            for (String s : List.of(eValue.split(","))) {
+                if (!PrimitiveUtil.isEmpty(s)) {
                     var value = PrimitiveUtil.toLong(s);
                     if (String.valueOf(value).equals(s))
                         out.add(value);
@@ -197,9 +197,8 @@ public class EnvironmentUtil {
         var eValue = envValue(env);
         if (eValue != null) {
             List<Integer> out = new ArrayList<>();
-            var values = List.of(eValue.split(","));
-            for (String s : values) {
-                if (s != null && !s.trim().isEmpty()) {
+            for (var s : eValue.split(",")) {
+                if (!PrimitiveUtil.isEmpty(s)) {
                     var value = PrimitiveUtil.toInt(s);
                     if (String.valueOf(value).equals(s))
                         out.add(value);
@@ -208,6 +207,29 @@ public class EnvironmentUtil {
             return out;
         }
         return defaultValue == null ? new ArrayList<>() : defaultValue;
+    }
+
+    public Map<String,String> asMap(){
+        Map<String,String> result=new HashMap<>();
+        if (environment instanceof ConfigurableEnvironment envs) {
+            envs
+                    .getPropertySources()
+                    .forEach(propertySource -> {
+                        if (propertySource.getSource() instanceof Map<?, ?> source) {
+                            source.forEach((key, value) -> result.put(key.toString(), environment.getProperty(key.toString())));
+                        }
+                    });
+        }
+        return result;
+    }
+
+    public List<String> asList(){
+        return this
+                .asMap()
+                .entrySet()
+                .stream()
+                .map(entry -> "%s=%s".formatted(entry.getKey(),entry.getValue()))
+                .toList();
     }
 
 }

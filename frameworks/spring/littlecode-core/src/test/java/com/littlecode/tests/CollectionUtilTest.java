@@ -22,11 +22,11 @@ import java.util.UUID;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
-public class CollectionUtilTest {
+class CollectionUtilTest {
 
     @Test
     @DisplayName("Deve validar class CollectionUtil")
-    public void UT_CHECK_CONSTRUCTOR() {
+    void UT_CHECK_CONSTRUCTOR() {
         final var item = Item.builder().id(UUID.randomUUID()).dt(LocalDateTime.now()).build();
         Assertions.assertDoesNotThrow(() -> new CollectionUtil(List.of(item)));
         Assertions.assertThrows(NullPointerException.class, () -> new CollectionUtil((List) null));
@@ -35,7 +35,7 @@ public class CollectionUtilTest {
 
     @Test
     @DisplayName("Deve validar to List")
-    public void UT_CHECK_TO_OBJECT_LIST() {
+    void UT_CHECK_TO_OBJECT_LIST() {
 
         final var item = Item.builder().id(UUID.randomUUID()).dt(LocalDateTime.now()).build();
         Assertions.assertDoesNotThrow(() -> new CollectionUtil(List.of(item)).toObjectList());
@@ -44,7 +44,7 @@ public class CollectionUtilTest {
 
     @Test
     @DisplayName("Deve validar as Map")
-    public void UT_CHECK_AS_MAP() {
+    void UT_CHECK_AS_MAP() {
 
         final var item = Item.builder().id(UUID.randomUUID()).dt(LocalDateTime.now()).build();
         List<Item> list = new ArrayList<>();
@@ -66,7 +66,7 @@ public class CollectionUtilTest {
 
     @Test
     @DisplayName("Deve validar as List")
-    public void UT_CHECK_AS_LIST() {
+    void UT_CHECK_AS_LIST() {
         final var item = Item.builder().id(UUID.randomUUID()).dt(LocalDateTime.now()).build();
         List<Item> list = new ArrayList<>();
         Assertions.assertDoesNotThrow(() -> new CollectionUtil(List.of(item)).asList());
@@ -78,7 +78,7 @@ public class CollectionUtilTest {
 
     @Test
     @DisplayName("Deve validar as Item")
-    public void UT_CHECK_AS_ITEM() {
+    void UT_CHECK_AS_ITEM() {
         final var item = Item.builder().id(UUID.randomUUID()).dt(LocalDateTime.now()).build();
         List<Item> list = new ArrayList<>();
         Assertions.assertDoesNotThrow(() -> new CollectionUtil(Map.of("x", item)).asItem());
@@ -88,7 +88,7 @@ public class CollectionUtilTest {
 
     @Test
     @DisplayName("Deve validar method filter")
-    public void UT_CHECK_FILTER() {
+    void UT_CHECK_FILTER() {
 
 
         final var itemA = Item.builder().id(UUID.randomUUID()).dt(LocalDateTime.now()).build();
@@ -130,7 +130,7 @@ public class CollectionUtilTest {
 
     @Test
     @DisplayName("Deve validar Clone List")
-    public void UT_CHECK_CLONE_LIST() {
+    void UT_CHECK_CLONE_LIST() {
         {//com sucesso
             final var listA = List.of(
                     Item.builder().id(UUID.randomUUID()).dt(LocalDateTime.now()).build(),

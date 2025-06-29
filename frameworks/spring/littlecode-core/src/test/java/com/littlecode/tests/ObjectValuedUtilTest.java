@@ -21,11 +21,11 @@ import java.util.UUID;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
-public class ObjectValuedUtilTest {
+class ObjectValuedUtilTest {
 
     @Test
     @DisplayName("Deve validar constructors")
-    public void UT_000_CHECK_CONSTRUCTOR_GETTTER() {
+    void UT_000_CHECK_CONSTRUCTOR_GETTTER() {
         Assertions.assertThrows(NullPointerException.class, () -> new ObjectValueUtil(null));
         Assertions.assertThrows(NullPointerException.class, () -> ObjectValueUtil.of(null));
         Assertions.assertThrows(NullPointerException.class, () -> ObjectValueUtil.of(null));
@@ -40,7 +40,7 @@ public class ObjectValuedUtilTest {
 
     @Test
     @DisplayName("Deve validar toString")
-    public void UT_000_CHECK_TO_STRING() {
+    void UT_000_CHECK_TO_STRING() {
         Assertions.assertDoesNotThrow(() -> ObjectValueUtil.toString(null));
         Assertions.assertDoesNotThrow(() -> ObjectValueUtil.toString(""));
         Assertions.assertDoesNotThrow(() -> ObjectValueUtil.toString(new PrivateObjectA()));
@@ -60,7 +60,7 @@ public class ObjectValuedUtilTest {
 
     @Test
     @DisplayName("Deve validar class getters")
-    public void UT_000_CHECK_GETTER() {
+    void UT_000_CHECK_GETTER() {
         var objValueUtil = ObjectValueUtil.of(new PrivateObjectA());
 
         Assertions.assertThrows(NullPointerException.class, () -> objValueUtil.setTarget(null));
@@ -92,7 +92,7 @@ public class ObjectValuedUtilTest {
 
     @Test
     @DisplayName("Deve validar class fieldList")
-    public void UT_000_CHECK_GET_FIELD_LIST() {
+    void UT_000_CHECK_GET_FIELD_LIST() {
         Assertions.assertDoesNotThrow(() -> ObjectValueUtil.getFieldList(null));
         Assertions.assertDoesNotThrow(() -> ObjectValueUtil.getFieldList(PrivateObjectA.class));
         Assertions.assertNotNull(ObjectValueUtil.getFieldList(null));
@@ -102,7 +102,7 @@ public class ObjectValuedUtilTest {
 
     @Test
     @DisplayName("Deve validar get values")
-    public void UT_000_CHECK_GET_VALUES() {
+    void UT_000_CHECK_GET_VALUES() {
         var privateObject = new PrivateObjectA();
         var objValueUtil = ObjectValueUtil.of(privateObject);
 

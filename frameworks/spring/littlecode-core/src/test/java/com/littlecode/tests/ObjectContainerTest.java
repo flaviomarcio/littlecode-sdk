@@ -15,11 +15,11 @@ import java.util.UUID;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
-public class ObjectContainerTest {
+class ObjectContainerTest {
 
     @Test
     @DisplayName("Deve validar class Constructor")
-    public void UT_CHECK_CONSTRUCTOR() {
+    void UT_CHECK_CONSTRUCTOR() {
         Assertions.assertDoesNotThrow(() -> ObjectContainer.builder().build());
         Assertions.assertDoesNotThrow(() -> new ObjectContainer());
 
@@ -40,7 +40,7 @@ public class ObjectContainerTest {
 
     @Test
     @DisplayName("Deve validar metodos As")
-    public void UT_CHECK_AS() {
+    void UT_CHECK_AS() {
         var objectCheck = new ObjectCheck();
         var objectContainer = ObjectContainer.of(objectCheck);
         Assertions.assertDoesNotThrow(objectContainer::asString);
@@ -71,7 +71,7 @@ public class ObjectContainerTest {
 
     @Test
     @DisplayName("Deve validar metodo class Dictionary By Name")
-    public void UT_CHECK_metodo_class_Dictionary_By_Name() {
+    void UT_CHECK_metodo_class_Dictionary_By_Name() {
         enum EnumCheck {
             EnumA, EnumB
         }
@@ -84,7 +84,7 @@ public class ObjectContainerTest {
 
     @Test
     @DisplayName("Deve validar metodo class to list names")
-    public void UT_CHECK_CLASS_TO_LIST_NAMES() {
+    void UT_CHECK_CLASS_TO_LIST_NAMES() {
         enum EnumCheck {
             EnumA, EnumB
         }
@@ -103,7 +103,7 @@ public class ObjectContainerTest {
 
     @Test
     @DisplayName("Deve validar metodo class by name")
-    public void UT_CHECK_CLASS_BY_NAME() {
+    void UT_CHECK_CLASS_BY_NAME() {
         enum EnumCheck {
             EnumA, EnumB
         }
@@ -114,7 +114,7 @@ public class ObjectContainerTest {
 
     @Test
     @DisplayName("Deve validar metodo class to name")
-    public void UT_CHECK_CLASS_TO_NAME() {
+    void UT_CHECK_CLASS_TO_NAME() {
         enum EnumCheck {
             EnumA, EnumB
         }
@@ -126,7 +126,7 @@ public class ObjectContainerTest {
 
     @Test
     @DisplayName("Deve validar metodo class to name")
-    public void UT_CHECK_CLASS_BY() {
+    void UT_CHECK_CLASS_BY() {
         enum EnumCheck {
             EnumA, EnumB
         }
@@ -145,7 +145,7 @@ public class ObjectContainerTest {
 
     @Test
     @DisplayName("Deve validar metodo class to String")
-    public void UT_CHECK_CLASS_TO_STRING() {
+    void UT_CHECK_CLASS_TO_STRING() {
         enum EnumCheck {
             EnumA, EnumB
         }
@@ -162,7 +162,7 @@ public class ObjectContainerTest {
 
     @Test
     @DisplayName("Deve validar class ObjectContainer")
-    public void UT_CHECK_OF() {
+    void UT_CHECK_OF() {
         enum EnumCheck {
             EnumA, EnumB
         }
@@ -179,7 +179,7 @@ public class ObjectContainerTest {
 
     @Test
     @DisplayName("Deve validar class can type")
-    public void UT_CHECK_CAN_TYPE() {
+    void UT_CHECK_CAN_TYPE() {
         enum EnumCheck {
             EnumA, EnumB
         }
@@ -196,10 +196,10 @@ public class ObjectContainerTest {
 
     @Getter
     @Setter
-    public static class ObjectCheck {
+    static class ObjectCheck {
         private final UUID id;
 
-        public ObjectCheck() {
+        ObjectCheck() {
             this.id = UUID.randomUUID();
         }
     }

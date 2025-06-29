@@ -14,11 +14,11 @@ import java.time.LocalDate;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
-public class ExceptionBuilderTest {
+class ExceptionBuilderTest {
 
     @Test
     @DisplayName("Deve validar constructor")
-    public void UT_CHECK_OF_EXPTIONS() {
+    void UT_CHECK_OF_EXPTIONS() {
         Assertions.assertDoesNotThrow(() -> new ArithmeticException("test"));
         Assertions.assertDoesNotThrow(() -> new BadRequestException("test"));
         Assertions.assertDoesNotThrow(() -> new ConflictException("test"));
@@ -85,7 +85,7 @@ public class ExceptionBuilderTest {
 
     @Test
     @DisplayName("Deve validar getters e setters")
-    public void UT_CHECK_SET() {
+    void UT_CHECK_SET() {
         Assertions.assertDoesNotThrow(() -> new ExceptionBuilder());
         Assertions.assertDoesNotThrow(() -> new ExceptionBuilder().getTarget());
         Assertions.assertDoesNotThrow(() -> new ExceptionBuilder().getType());
@@ -107,7 +107,7 @@ public class ExceptionBuilderTest {
 
     @Test
     @DisplayName("Deve validar classes")
-    public void UT_CHECK_OF_CLASS() {
+    void UT_CHECK_OF_CLASS() {
         Assertions.assertThrows(RuntimeException.class, () -> {
             throw ExceptionBuilder.of(new Object());
         });
@@ -127,7 +127,7 @@ public class ExceptionBuilderTest {
 
     @Test
     @DisplayName("Deve validar exceptions of types")
-    public void UT_CHECK_OF_TYPE() {
+    void UT_CHECK_OF_TYPE() {
         Assertions.assertThrows(RuntimeException.class, () -> {
             try {
                 Integer.parseInt("A");
@@ -191,7 +191,7 @@ public class ExceptionBuilderTest {
 
     @Test
     @DisplayName("Deve validar exceptions of messages")
-    public void UT_CHECK_OF_MESSAGE() {
+    void UT_CHECK_OF_MESSAGE() {
 
         Assertions.assertThrows(RuntimeException.class, () -> {
             throw ExceptionBuilder.ofDefault("test");
@@ -248,7 +248,7 @@ public class ExceptionBuilderTest {
 
     @Test
     @DisplayName("Deve validar exceptions of string format")
-    public void UT_CHECK_OF_FORMAT() {
+    void UT_CHECK_OF_FORMAT() {
 
 
         Assertions.assertThrows(RuntimeException.class, () -> {
@@ -306,7 +306,7 @@ public class ExceptionBuilderTest {
 
     @Test
     @DisplayName("Deve validar exceptions of class messages")
-    public void UT_CHECK_OF_CLASS_MESSAGE() {
+    void UT_CHECK_OF_CLASS_MESSAGE() {
         Assertions.assertThrows(RuntimeException.class, () -> {
             throw ExceptionBuilder.ofDefault(Object.class, "test");
         });
@@ -362,7 +362,7 @@ public class ExceptionBuilderTest {
 
     @Test
     @DisplayName("Deve validar exceptions of make messages")
-    public void UT_CHECK_MAKE_MESSAGE() {
+    void UT_CHECK_MAKE_MESSAGE() {
 
         Assertions.assertEquals(ExceptionBuilder.makeMessage(Object.class, ""), "class " + Object.class.getName());
         Assertions.assertEquals(ExceptionBuilder.makeMessage("test", ""), "test");

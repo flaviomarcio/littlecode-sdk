@@ -19,19 +19,19 @@ import java.util.List;
 // https://textedit.tools/camelcase
 @Slf4j
 @ExtendWith(MockitoExtension.class)
-public class StringUtilTest {
+class StringUtilTest {
 
 
     @Test
     @DisplayName("Deve validar constructores")
-    public void deveValidarConstructores() {
+    void deveValidarConstructores() {
         Assertions.assertDoesNotThrow(() -> new StringUtil("0"));
         Assertions.assertDoesNotThrow(() -> new StringUtil("#",""));
     }
 
     @Test
     @DisplayName("Deve validar getter setter")
-    public void deveValidarGetterSetter() {
+    void deveValidarGetterSetter() {
         Assertions.assertEquals(new StringUtil("0").getValue(),"0");
         Assertions.assertEquals(new StringUtil("0").getPadChar()," ");
 
@@ -41,7 +41,7 @@ public class StringUtilTest {
 
     @Test
     @DisplayName("Deve validar toString")
-    public void deveValidarToString() {
+    void deveValidarToString() {
         Assertions.assertEquals(StringUtil.toString("0"),"0");
         Assertions.assertEquals(StringUtil.of("0").asString(),"0");
         Assertions.assertEquals(StringUtil.of("0").toString(),"0");
@@ -49,7 +49,7 @@ public class StringUtilTest {
 
     @Test
     @DisplayName("Deve validar toNumber")
-    public void deveValidarToNumber() {
+    void deveValidarToNumber() {
         Assertions.assertEquals(StringUtil.toNumber("A0B1C2"),"012");
         Assertions.assertEquals(StringUtil.toNumber("abc"),"");
         Assertions.assertEquals(StringUtil.of("0").asString(),"0");
@@ -58,7 +58,7 @@ public class StringUtilTest {
 
     @Test
     @DisplayName("Deve validar toAlpha")
-    public void deveValidarToAlpha() {
+    void deveValidarToAlpha() {
         Assertions.assertEquals(StringUtil.toAlpha("A0B1C2"),"ABC");
         Assertions.assertEquals(StringUtil.toAlpha("012"),"");
         Assertions.assertEquals(StringUtil.of("A0B1C2").asAlpha(),"ABC");
@@ -66,7 +66,7 @@ public class StringUtilTest {
 
     @Test
     @DisplayName("Deve validar toAlphaNumber")
-    public void deveValidarToAlphaNumber() {
+    void deveValidarToAlphaNumber() {
         Assertions.assertEquals(StringUtil.toAlphaNumber("A0B1C2"),"A0B1C2");
         Assertions.assertEquals(StringUtil.toAlphaNumber("012"),"012");
         Assertions.assertEquals(StringUtil.of("A0B1C2").asAlphaNumber(),"A0B1C2");
@@ -75,7 +75,7 @@ public class StringUtilTest {
 
     @Test
     @DisplayName("Deve validar metodo pad left")
-    public void deveValidarPadLeft() {
+    void deveValidarPadLeft() {
         String value = "#";
         Assertions.assertDoesNotThrow(() -> StringUtil.toLeftPad(10, "0", null));
         Assertions.assertDoesNotThrow(() -> StringUtil.toLeftPad(10, "0", value));
@@ -108,7 +108,7 @@ public class StringUtilTest {
 
     @Test
     @DisplayName("Deve validar metodo pad right")
-    public void deveValidarPadRight() {
+    void deveValidarPadRight() {
         String value = "#";
         Assertions.assertDoesNotThrow(() -> StringUtil.toRightPad(10, "0", null));
         Assertions.assertDoesNotThrow(() -> StringUtil.toRightPad(10, "0", value));
@@ -139,7 +139,7 @@ public class StringUtilTest {
 
     @Test
     @DisplayName("Deve validar metodo pad center")
-    public void deveValidarPadCenter() {
+    void deveValidarPadCenter() {
         String value = "#";
         Assertions.assertDoesNotThrow(() -> StringUtil.toCenterPad(10, "0", null));
         Assertions.assertDoesNotThrow(() -> StringUtil.toCenterPad(10, "0", value));

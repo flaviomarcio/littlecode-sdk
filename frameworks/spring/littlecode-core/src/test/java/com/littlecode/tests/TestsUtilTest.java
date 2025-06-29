@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)
-public class TestsUtilTest {
+class TestsUtilTest {
     @Test
     @DisplayName("Deve validar getter|setter")
     void deveValidarClasses() {
@@ -45,12 +45,12 @@ public class TestsUtilTest {
         }
     }
 
-    public enum Enum_A {
+    enum Enum_A {
         None, Low, High
     }
 
     @Getter
-    public enum Enum_B {
+    enum Enum_B {
         None(1), Low(2), High(3);
 
         @JsonValue
@@ -61,7 +61,7 @@ public class TestsUtilTest {
         }
 
         @JsonCreator
-        public static Enum_B of(Object id) {
+        static Enum_B of(Object id) {
             if (id instanceof String) {
                 return Arrays.stream(values())
                         .filter(t -> t.name().equalsIgnoreCase((String) id))
@@ -82,7 +82,7 @@ public class TestsUtilTest {
     }
 
     @Getter
-    public enum Enum_C {
+    enum Enum_C {
         None(1), Low(2), High(3);
 
         @JsonValue
@@ -94,7 +94,7 @@ public class TestsUtilTest {
     }
 
     @Getter
-    public enum Enum_D {
+    enum Enum_D {
         CREDIT(0), DEBIT(1);
         private final Integer value;
 
@@ -103,7 +103,7 @@ public class TestsUtilTest {
         }
 
         @JsonCreator
-        public static Enum_D of(Object id) {
+        static Enum_D of(Object id) {
             if (id instanceof Integer v) {
                 return Arrays.stream(values())
                         .filter(t -> t.getValue().equals(v))
@@ -119,7 +119,7 @@ public class TestsUtilTest {
     }
 
     @Getter
-    public enum Enum_E {
+    enum Enum_E {
         PROVIDER(0), PROFESSIONAL(1), CUSTOMER(2), SEGMENT(3), PRODUCT(4), PRODUCT_AVA(5), PROFESSION(6), ALL_CUSTOMER(7), ALL_PROFESSIONAL(8);
         @JsonValue
         private final Integer value;
@@ -127,7 +127,7 @@ public class TestsUtilTest {
             this.value=value;
         }
         @JsonCreator
-        public static Enum_E of(Object id) {
+        static Enum_E of(Object id) {
             if (id instanceof Integer v) {
                 return Arrays.stream(values())
                         .filter(t -> t.getValue().equals(v))
@@ -144,7 +144,7 @@ public class TestsUtilTest {
 
     @Service
     @Data
-    public static class DTO_Class_AllTypes {
+    static class DTO_Class_AllTypes {
         private Object id;
         private Boolean argBoolean;
         private static Object argObject;
@@ -166,43 +166,43 @@ public class TestsUtilTest {
         private short aShort2;
         private BigDecimal bigDecimal;
 
-        public static Object getArgsStatic(Object arg1) {
+        static Object getArgsStatic(Object arg1) {
             return argObject;
         }
 
-        public static void setArgsStatic1(Object arg1) {
+        static void setArgsStatic1(Object arg1) {
             argObject = arg1;
         }
 
-        public static void setArgsStatic2(Object arg1, Object arg2) {
+        static void setArgsStatic2(Object arg1, Object arg2) {
             argObject = arg1;
             argObject2 = arg2;
         }
 
-        public Object getArgs() {
+        Object getArgs() {
             return argObject;
         }
 
-        public void setArgs1(Object arg1) {
+        void setArgs1(Object arg1) {
             argObject = arg1;
         }
 
-        public void setArgs2(Object arg1, Object arg2) {
+        void setArgs2(Object arg1, Object arg2) {
             argObject = arg1;
             argObject2 = arg2;
         }
     }
 
     @Data
-    public static class Person{
+    static class Person{
         private UUID id;
         private LocalDateTime dt;
         private UUID rev;
 
-        public Person() {
+        Person() {
         }
 
-        public static Person of(UUID personId) {
+        static Person of(UUID personId) {
             return new Person();
         }
 

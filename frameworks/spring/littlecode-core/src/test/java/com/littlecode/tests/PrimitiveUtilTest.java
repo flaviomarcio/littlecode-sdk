@@ -21,16 +21,16 @@ import java.time.ZoneOffset;
 import java.util.*;
 
 @ExtendWith(MockitoExtension.class)
-public class PrimitiveUtilTest {
-    public static final LocalDate TEST_MIN_LOCALDATE = LocalDate.of(1901, 1, 1);
-    //    public static final LocalTime TEST_MAX_LOCALTIME = LocalTime.of(23, 59, 59, 999);
-    public static final LocalTime TEST_MIN_LOCALTIME = LocalTime.of(0, 0, 0, 0);
-    public static final LocalDateTime TEST_MIN_LOCALDATETIME = LocalDateTime.of(TEST_MIN_LOCALDATE, TEST_MIN_LOCALTIME);
-//    public static final LocalDateTime TEST_MAX_LOCALDATETIME = LocalDateTime.of(LocalDate.now(), TEST_MAX_LOCALTIME);
+class PrimitiveUtilTest {
+    static final LocalDate TEST_MIN_LOCALDATE = LocalDate.of(1901, 1, 1);
+    //    static final LocalTime TEST_MAX_LOCALTIME = LocalTime.of(23, 59, 59, 999);
+    static final LocalTime TEST_MIN_LOCALTIME = LocalTime.of(0, 0, 0, 0);
+    static final LocalDateTime TEST_MIN_LOCALDATETIME = LocalDateTime.of(TEST_MIN_LOCALDATE, TEST_MIN_LOCALTIME);
+//    static final LocalDateTime TEST_MAX_LOCALDATETIME = LocalDateTime.of(LocalDate.now(), TEST_MAX_LOCALTIME);
 
     @Test
     @DisplayName("Deve validar format")
-    public void UI_CHECK_CHECK_FORMAT() {
+    void UI_CHECK_CHECK_FORMAT() {
 
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.formatMask(0));
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.formatMask(1));
@@ -50,7 +50,7 @@ public class PrimitiveUtilTest {
 
     @Test
     @DisplayName("Deve validar isPrimitive")
-    public void UI_CHECK_CHECK_isPrimitive() {
+    void UI_CHECK_CHECK_isPrimitive() {
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.isPrimitiveValue((Class<?>) null));
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.isPrimitiveValue(int.class));
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.isPrimitiveValue(LocalDate.class));
@@ -84,7 +84,7 @@ public class PrimitiveUtilTest {
 
     @Test
     @DisplayName("Deve validar getString")
-    public void UI_CHECK_getString() {
+    void UI_CHECK_getString() {
         Assertions.assertEquals(PrimitiveUtil.getString(null).orElse(null), null);
         Assertions.assertEquals(PrimitiveUtil.getString("").orElse(null), null);
         Assertions.assertEquals(PrimitiveUtil.getString(" ").orElse(null), null);
@@ -112,7 +112,7 @@ public class PrimitiveUtilTest {
 
     @Test
     @DisplayName("Deve validar toString")
-    public void UI_CHECK_toString() {
+    void UI_CHECK_toString() {
         List.of("0", 12D, 1L, 1, LocalDate.now(), LocalTime.now(), LocalDateTime.now(), UUID.randomUUID())
                 .forEach(value -> {
                     Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString(value));
@@ -192,7 +192,7 @@ public class PrimitiveUtilTest {
 
     @Test
     @DisplayName("Deve validar toLong")
-    public void UI_CHECK_toLong() {
+    void UI_CHECK_toLong() {
 
         List.of("0", 12D, 1L, 1, LocalDate.now(), LocalTime.now(), LocalDateTime.now(), UUID.randomUUID())
                 .forEach(value -> {
@@ -232,7 +232,7 @@ public class PrimitiveUtilTest {
 
     @Test
     @DisplayName("Deve validar toInt")
-    public void UI_CHECK_toInt() {
+    void UI_CHECK_toInt() {
 
         List.of("0", 12D, 1L, 1, LocalDate.now(), LocalTime.now(), LocalDateTime.now(), UUID.randomUUID())
                 .forEach(value -> {
@@ -274,7 +274,7 @@ public class PrimitiveUtilTest {
 
     @Test
     @DisplayName("Deve validar toDouble")
-    public void UI_CHECK_toDouble() {
+    void UI_CHECK_toDouble() {
 
         List.of("0", 12D, 1L, 1, LocalDate.now(), LocalTime.now(), LocalDateTime.now(), UUID.randomUUID())
                 .forEach(value -> {
@@ -339,7 +339,7 @@ public class PrimitiveUtilTest {
 
     @Test
     @DisplayName("Deve validar toDate")
-    public void UI_CHECK_toDate() {
+    void UI_CHECK_toDate() {
         var dt19010101 = LocalDate.of(1901, 1, 1);
 
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toDate((Object) null));
@@ -372,7 +372,7 @@ public class PrimitiveUtilTest {
 
     @Test
     @DisplayName("Deve validar toTime")
-    public void UI_CHECK_toTime() {
+    void UI_CHECK_toTime() {
         var tm010203 = LocalTime.of(1, 2, 3);
 
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toTime((Object) ""));
@@ -422,7 +422,7 @@ public class PrimitiveUtilTest {
 
     @Test
     @DisplayName("Deve validar toDateTime")
-    public void UI_CHECK_toDateTime() {
+    void UI_CHECK_toDateTime() {
         var dt19010101 = LocalDateTime.of(LocalDate.of(1901, 1, 1), LocalTime.of(1, 2, 3));
 
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toDateTime(UUID.randomUUID()));
@@ -467,7 +467,7 @@ public class PrimitiveUtilTest {
 
     @Test
     @DisplayName("Deve validar toBool")
-    public void UI_CHECK_toBool() {
+    void UI_CHECK_toBool() {
         Assertions.assertTrue(PrimitiveUtil.toBool("true"));
         Assertions.assertFalse(PrimitiveUtil.toBool("false"));
         Assertions.assertTrue(PrimitiveUtil.toBool("1"));
@@ -484,7 +484,7 @@ public class PrimitiveUtilTest {
 
     @Test
     @DisplayName("Deve validar isEmpty")
-    public void UI_CHECK_isEmpty() {
+    void UI_CHECK_isEmpty() {
         Object object = new Object();
 
         var d_tNull = LocalDateTime.now();
@@ -526,7 +526,7 @@ public class PrimitiveUtilTest {
 
     @Test
     @DisplayName("Deve validar inRange")
-    public void UI_CHECK_InRange() {
+    void UI_CHECK_InRange() {
 
         class Check<T> {
             final T v;
@@ -534,7 +534,7 @@ public class PrimitiveUtilTest {
             final T end;
             final boolean r;
 
-            public Check(T v, T begin, T end, boolean r) {
+            Check(T v, T begin, T end, boolean r) {
                 this.v = v;
                 this.begin = begin;
                 this.end = end;
@@ -616,7 +616,7 @@ public class PrimitiveUtilTest {
 
     @Test
     @DisplayName("Deve validar toUUID")
-    public void UI_CHECK_toUUID() {
+    void UI_CHECK_toUUID() {
         var uuid = UUID.fromString("c4ca4238-a0b9-2382-0dcc-509a6f75849b");
         var uuid_str = "c4ca4238a0b923820dcc509a6f75849b";
 
@@ -630,14 +630,14 @@ public class PrimitiveUtilTest {
 
     @Test
     @DisplayName("Deve validar toURI")
-    public void UI_CHECK_toURI() {
+    void UI_CHECK_toURI() {
         Assertions.assertEquals(PrimitiveUtil.toURI(null), null);
         Assertions.assertEquals(PrimitiveUtil.toURI("/tmp/tmp"), URI.create("/tmp/tmp"));
     }
 
     @Test
     @DisplayName("Deve validar toFile")
-    public void UI_CHECK_toFile() {
+    void UI_CHECK_toFile() {
         Assertions.assertEquals(PrimitiveUtil.toFile(null), null);
         Assertions.assertEquals(PrimitiveUtil.toFile("/tmp/tmp").getAbsolutePath(), new File("/tmp/tmp").getAbsolutePath());
         Assertions.assertEquals(PrimitiveUtil.toPath("/tmp/tmp"), Path.of("/tmp/tmp"));
@@ -646,7 +646,7 @@ public class PrimitiveUtilTest {
 
     @Test
     @DisplayName("Deve validar toMap")
-    public void UI_CHECK_toMap() {
+    void UI_CHECK_toMap() {
         Assertions.assertTrue(PrimitiveUtil.toMap(null).isEmpty());
         Assertions.assertTrue(PrimitiveUtil.toMap("").isEmpty());
         Assertions.assertTrue(PrimitiveUtil.toMap("...").isEmpty());
@@ -665,7 +665,7 @@ public class PrimitiveUtilTest {
 
     @Test
     @DisplayName("Deve validar toList")
-    public void UI_CHECK_toList() {
+    void UI_CHECK_toList() {
         Assertions.assertTrue(PrimitiveUtil.toList(null).isEmpty());
         Assertions.assertTrue(PrimitiveUtil.toList("...").isEmpty());
         Assertions.assertTrue(PrimitiveUtil.toList("").isEmpty());
@@ -687,7 +687,7 @@ public class PrimitiveUtilTest {
 
     @Test
     @DisplayName("Deve validar toStringList")
-    public void UI_CHECK_toStringList() {
+    void UI_CHECK_toStringList() {
         Assertions.assertTrue(PrimitiveUtil.toStringList(null).isEmpty());
         Assertions.assertEquals(PrimitiveUtil.toStringList("...").size(), 1);
         Assertions.assertTrue(PrimitiveUtil.toStringList("").isEmpty());
@@ -714,7 +714,7 @@ public class PrimitiveUtilTest {
 
     @Test
     @DisplayName("Deve validar toPath")
-    public void UI_CHECK_toPath() {
+    void UI_CHECK_toPath() {
         Assertions.assertEquals(PrimitiveUtil.toPath(null), null);
         Assertions.assertEquals(PrimitiveUtil.toPath("/tmp/tmp"), Path.of("/tmp/tmp"));
     }

@@ -13,10 +13,10 @@ import org.springframework.core.env.Environment;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
-public class CoreUtilAutoConfigurationTest {
+class CoreUtilAutoConfigurationTest {
     @Test
     @DisplayName("Deve validar class CoreUtilAutoConfiguration")
-    public void UT_CHECK() {
+    void UT_CHECK() {
         var context = Mockito.mock(ApplicationContext.class);
         var environment = Mockito.mock(Environment.class);
         Assertions.assertDoesNotThrow(() -> new CoreUtilAutoConfiguration(context, environment));

@@ -15,13 +15,13 @@ import org.springframework.core.env.Environment;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
-public class SystemUtilTest {
+class SystemUtilTest {
 
     private static final String PROPERTY_A = "a-test-1.a-test-2.a-test-3";
     private static final String PROPERTY_A_VALUE = "a-test-0";
 
     @BeforeAll
-    public static void beforeAll() {
+    static void beforeAll() {
 
         var applicationContext = Mockito.mock(ApplicationContext.class);
         var environment = Mockito.mock(Environment.class);
@@ -35,7 +35,7 @@ public class SystemUtilTest {
 
     @Test
     @DisplayName("Deve validar variaveis publicas")
-    public void UT_CHECK_ENV_PUBLIC() {
+    void UT_CHECK_ENV_PUBLIC() {
         Assertions.assertDoesNotThrow(SystemUtil::new);
         Assertions.assertDoesNotThrow(() -> SystemUtil.sleep(1));
         Assertions.assertDoesNotThrow(() -> SystemUtil.sleep(0));
@@ -55,7 +55,7 @@ public class SystemUtilTest {
 
     @Test
     @DisplayName("Deve validar metodos GET")
-    public void UT_CHECK_ENV_GET() {
+    void UT_CHECK_ENV_GET() {
 
         {
             var originalEnvironment = UtilCoreConfig.getEnvironment();

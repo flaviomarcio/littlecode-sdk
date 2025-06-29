@@ -17,12 +17,12 @@ import java.util.UUID;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
-public class IOUtilTest {
+class IOUtilTest {
     private static final File PATH_TEMP_DIR = Path.of(System.getProperty("java.io.tmpdir")).toFile();
 
     @Test
     @DisplayName("Deve validar getters")
-    public void UT_CHECK_GETTER() {
+    void UT_CHECK_GETTER() {
         Assertions.assertDoesNotThrow(() -> IOUtil.target(null));
         Assertions.assertDoesNotThrow(() -> IOUtil.target("/tmp"));
         Assertions.assertDoesNotThrow(() -> IOUtil.target("/tmp").getTarget());
@@ -31,7 +31,7 @@ public class IOUtilTest {
 
     @Test
     @DisplayName("Deve validar isEmpty")
-    public void UT_CHECK_IsEmpty() {
+    void UT_CHECK_IsEmpty() {
         Assertions.assertDoesNotThrow(() -> IOUtil.isEmpty(null));
         Assertions.assertDoesNotThrow(() -> IOUtil.isEmpty(""));
         Assertions.assertDoesNotThrow(() -> IOUtil.target(null).isEmpty());
@@ -43,7 +43,7 @@ public class IOUtilTest {
 
     @Test
     @DisplayName("Deve validar toString")
-    public void UT_CHECK_ToString() {
+    void UT_CHECK_ToString() {
         Assertions.assertDoesNotThrow(() -> IOUtil.toString("/tmp"));
         Assertions.assertDoesNotThrow(() -> IOUtil.toString(null));
         Assertions.assertDoesNotThrow(() -> IOUtil.target("/tmp").toString());
@@ -59,7 +59,7 @@ public class IOUtilTest {
 
     @Test
     @DisplayName("Deve validar basePath e baseName")
-    public void UT_CHECK_basePath_baseName() {
+    void UT_CHECK_basePath_baseName() {
         Assertions.assertDoesNotThrow(() -> IOUtil.basePath(null));
         Assertions.assertDoesNotThrow(() -> IOUtil.basePath(" "));
         Assertions.assertDoesNotThrow(() -> IOUtil.basePath("file"));
@@ -79,7 +79,7 @@ public class IOUtilTest {
 
     @Test
     @DisplayName("Deve validar write files")
-    public void UT_CHECK_READ_WRITE() {
+    void UT_CHECK_READ_WRITE() {
         var fileTemp = IOUtil.createFileTemp();
         var ioUtil = IOUtil.target(fileTemp);
         var lines = List.of(UUID.randomUUID().toString(), UUID.randomUUID().toString(), UUID.randomUUID().toString());
@@ -128,7 +128,7 @@ public class IOUtilTest {
 
     @Test
     @DisplayName("Deve validar file functions")
-    public void UT_CHECK_FILE_FUNCTION() {
+    void UT_CHECK_FILE_FUNCTION() {
 
         Assertions.assertEquals(IOUtil.tempDir().toString(), PATH_TEMP_DIR.toString());
         Assertions.assertNotNull(IOUtil.createFileTemp());
@@ -219,7 +219,7 @@ public class IOUtilTest {
 
     @Test
     @DisplayName("Deve validar metodo new file")
-    public void UT_CHECK_METHOD_NEW_FILE() {
+    void UT_CHECK_METHOD_NEW_FILE() {
 
         Assertions.assertThrows(FrameworkException.class, IOUtil::newFile);
         Assertions.assertThrows(FrameworkException.class, () -> IOUtil.newFile(null));
@@ -229,7 +229,7 @@ public class IOUtilTest {
 
     @Test
     @DisplayName("Deve validar metodo create file")
-    public void UT_CHECK_METHOD_CREATE_FILE() {
+    void UT_CHECK_METHOD_CREATE_FILE() {
 
         Assertions.assertDoesNotThrow(() -> IOUtil.target("/tmp/" + UUID.randomUUID()));
         var io = IOUtil.target("/tmp/" + UUID.randomUUID());
@@ -240,7 +240,7 @@ public class IOUtilTest {
 
     @Test
     @DisplayName("Deve validar metodo read all lines")
-    public void UT_CHECK_METHOD_READ_ALL_LINES() {
+    void UT_CHECK_METHOD_READ_ALL_LINES() {
 
         Assertions.assertDoesNotThrow(() -> IOUtil.target("/tmp/" + UUID.randomUUID()));
         {
@@ -259,7 +259,7 @@ public class IOUtilTest {
 
     @Test
     @DisplayName("Deve validar metodo delete")
-    public void UT_CHECK_METHOD_DELETE() {
+    void UT_CHECK_METHOD_DELETE() {
 
         {
             var io = IOUtil.target("/tmp/" + UUID.randomUUID());

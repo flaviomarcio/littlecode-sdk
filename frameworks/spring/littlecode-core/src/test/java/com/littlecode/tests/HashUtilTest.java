@@ -21,11 +21,11 @@ import java.util.UUID;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
-public class HashUtilTest {
+class HashUtilTest {
 
     @Test
     @DisplayName("Deve validar readBytes")
-    public void UT_readBytes() throws IOException {
+    void UT_readBytes() throws IOException {
         var file = File.createTempFile("tmp", UUID.randomUUID().toString());
         try (FileWriter writer = new FileWriter(file)) {
             writer.write("test");
@@ -49,7 +49,7 @@ public class HashUtilTest {
 
     @Test
     @DisplayName("Deve validar toUUID")
-    public void UT_toUuid() {
+    void UT_toUuid() {
         var list= Map.of(
                 "38b3eff8baf56627478ec76a704e9b52","38b3eff8-baf5-6627-478e-c76a704e9b52",
                 "008a6f9464ef81308da1dcc6ed9106d9","008a6f94-64ef-8130-8da1-dcc6ed9106d9",
@@ -69,7 +69,7 @@ public class HashUtilTest {
 
     @Test
     @DisplayName("Deve validar toMD5")
-    public void UT_toMd5() throws IOException {
+    void UT_toMd5() throws IOException {
         String bytesIn = "1";
         String bytesOut = "c4ca4238a0b923820dcc509a6f75849b";
         UUID uuidOut = UUID.fromString("c4ca4238-a0b9-2382-0dcc-509a6f75849b");
@@ -137,7 +137,7 @@ public class HashUtilTest {
 
     @Test
     @DisplayName("Deve validar toHEX")
-    public void UT_toHex() {
+    void UT_toHex() {
         String bytesIn = "stringToHex";
         String bytesOut = "737472696e67546f486578";
 
@@ -152,7 +152,7 @@ public class HashUtilTest {
 
     @Test
     @DisplayName("Deve validar toBase64")
-    public void UT_toBase64() {
+    void UT_toBase64() {
         String bytesIn = "stringToBase64";
         String bytesOut = "c3RyaW5nVG9CYXNlNjQ=";
         Assertions.assertEquals(HashUtil.toBase64(null), "");

@@ -15,13 +15,13 @@ import java.util.UUID;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
-public class PathUtilTest {
+class PathUtilTest {
     private static final File PATH_TEMP_DIR = Path.of(System.getProperty("java.io.tmpdir")).toFile();
     private static final File PATH_HOME_DIR = Path.of(System.getProperty("user.home")).toFile();
 
     @Test
     @DisplayName("Deve validar class PathUtil")
-    public void UT_CHECK() {
+    void UT_CHECK() {
         Assertions.assertDoesNotThrow(() -> PathUtil.target(PATH_TEMP_DIR.toURI()).getTarget());
         Assertions.assertDoesNotThrow(() -> PathUtil.target(PATH_TEMP_DIR.toURI()).setTarget(Path.of("/tmp/file")));
         Assertions.assertDoesNotThrow(() -> PathUtil.listFiles((File) null));

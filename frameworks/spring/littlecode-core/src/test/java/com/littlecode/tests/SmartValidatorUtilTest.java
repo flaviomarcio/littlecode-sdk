@@ -24,7 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 
 @ExtendWith(MockitoExtension.class)
-public class SmartValidatorUtilTest {
+class SmartValidatorUtilTest {
 
     @Test
     @DisplayName("deve validar exceptions")
@@ -111,7 +111,7 @@ public class SmartValidatorUtilTest {
     @Data
     @AllArgsConstructor
     @Builder
-    public static class PrivateDTO {
+    static class PrivateDTO {
         private UUID uuid;
         @NotNull
         private LocalDate localDate;
@@ -119,7 +119,7 @@ public class SmartValidatorUtilTest {
         private PrivateDTO autoObjectSet;
         private CustomClass localCustomClass;
 
-        public PrivateDTO() {
+        PrivateDTO() {
             this.uuid = UUID.randomUUID();
             this.localDate = null;
             this.localCustomClass =null;
@@ -128,7 +128,7 @@ public class SmartValidatorUtilTest {
 
     @Data
     @NoArgsConstructor
-    public static class CustomClass {
+    static class CustomClass {
         private Map<String, String> stringStringMap=new HashMap<>();
     }
 }

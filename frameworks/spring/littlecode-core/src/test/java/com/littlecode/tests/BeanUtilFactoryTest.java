@@ -19,29 +19,29 @@ import java.util.List;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
-public class BeanUtilFactoryTest {
+class BeanUtilFactoryTest {
 
     @BeforeEach
-    public void init() {
+    void init() {
         UtilCoreConfig.setEnvironment(Mockito.mock(Environment.class));
         UtilCoreConfig.setApplicationContext(Mockito.mock(ApplicationContext.class));
     }
 
     @Test
     @DisplayName("deve validar metodo createModelMapper")
-    public void deveValidarMetodoCreateModelMapper() {
+    void deveValidarMetodoCreateModelMapper() {
         Assertions.assertNotNull(BeanUtilFactory.createModelMapper());
     }
 
     @Test
     @DisplayName("deve validar metodo createObjectMapper")
-    public void deveValidarMetodoCreateObjectMapper() {
+    void deveValidarMetodoCreateObjectMapper() {
         Assertions.assertNotNull(BeanUtilFactory.createObjectMapper());
     }
 
     @Test
     @DisplayName("deve validar metodo createRestTemplate")
-    public void deveValidarMetodoCreateRestTemplate() {
+    void deveValidarMetodoCreateRestTemplate() {
         Assertions.assertNull(BeanUtilFactory.createRestTemplate("????"));
         Assertions.assertNotNull(BeanUtilFactory.createRestTemplate());
         Assertions.assertDoesNotThrow(() -> {
@@ -58,7 +58,7 @@ public class BeanUtilFactoryTest {
 
     @Test
     @DisplayName("deve validar classe InternalResponseErrorHandler")
-    public void deveValidarInternalResponseErrorHandler() throws IOException {
+    void deveValidarInternalResponseErrorHandler() throws IOException {
         var handler = new BeanUtilFactory.InternalResponseErrorHandler();
         handler.hasError(null);
         handler.handleError(null);

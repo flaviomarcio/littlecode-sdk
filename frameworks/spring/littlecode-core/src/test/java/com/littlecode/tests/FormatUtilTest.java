@@ -15,11 +15,11 @@ import java.util.Locale;
 import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)
-public class FormatUtilTest {
+class FormatUtilTest {
 
     @Test
     @DisplayName("Deve configurar Locale")
-    public void testLocale() {
+    void testLocale() {
         Assertions.assertDoesNotThrow(() -> FormatUtil.setLOCALE(null));
         Assertions.assertDoesNotThrow(() -> FormatUtil.setLOCALE(Locale.US));
         Assertions.assertDoesNotThrow(() -> FormatUtil.setLOCALE(new Locale("pt", "BR")));
@@ -29,7 +29,7 @@ public class FormatUtilTest {
 
     @Test
     @DisplayName("Deve deve validar formatBool")
-    public void deveValidarformatValue() {
+    void deveValidarformatValue() {
         Assertions.assertEquals(FormatUtil.formatValue("test"), "test");
         var uuid = UUID.randomUUID();
         Assertions.assertEquals(FormatUtil.formatValue(uuid), uuid.toString());
@@ -37,7 +37,7 @@ public class FormatUtilTest {
 
     @Test
     @DisplayName("Deve deve validar formatBool")
-    public void deveValidarformatBool() {
+    void deveValidarformatBool() {
         Assertions.assertEquals(FormatUtil.formatBool(true), "Sim");
         Assertions.assertEquals(FormatUtil.formatBool(false), "Não");
         Assertions.assertEquals(FormatUtil.formatValue(Boolean.TRUE), "Sim");
@@ -46,7 +46,7 @@ public class FormatUtilTest {
 
     @Test
     @DisplayName("Deve deve validar formatInt")
-    public void deveValidarformatInt() {
+    void deveValidarformatInt() {
 
         Assertions.assertEquals(FormatUtil.formatInt(0), "0");
         Assertions.assertEquals(FormatUtil.formatInt(10000), "10.000");
@@ -62,7 +62,7 @@ public class FormatUtilTest {
 
     @Test
     @DisplayName("Deve deve validar formatInt")
-    public void deveValidarformatLong() {
+    void deveValidarformatLong() {
 
         Assertions.assertEquals(FormatUtil.formatLong(0L), "0");
         Assertions.assertEquals(FormatUtil.formatLong(10000L), "10.000");
@@ -78,7 +78,7 @@ public class FormatUtilTest {
 
     @Test
     @DisplayName("Deve deve validar formatDouble")
-    public void deveValidarformatDouble() {
+    void deveValidarformatDouble() {
 
         Assertions.assertEquals(FormatUtil.formatDouble(0), "0,000");
         Assertions.assertEquals(FormatUtil.formatDouble(0D), "0,000");
@@ -97,7 +97,7 @@ public class FormatUtilTest {
 
     @Test
     @DisplayName("Deve deve validar formatCurrency")
-    public void deveValidarformatCurrency() {
+    void deveValidarformatCurrency() {
 
         Assertions.assertEquals(FormatUtil.formatCurrency(0), "R$ 0,00");
         Assertions.assertEquals(FormatUtil.formatCurrency(0D), "R$ 0,00");
@@ -110,7 +110,7 @@ public class FormatUtilTest {
 
     @Test
     @DisplayName("Deve deve validar formatCurrency")
-    public void deveValidarformatTimes() {
+    void deveValidarformatTimes() {
 
         var date = LocalDate.of(1901, 1, 1);
         var time = LocalTime.of(23, 59, 59);

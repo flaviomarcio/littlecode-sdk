@@ -12,7 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDateTime;
 
 @ExtendWith(MockitoExtension.class)
-public class HealthCheckTest {
+class HealthCheckTest {
 
     @BeforeEach
     void setUp() {

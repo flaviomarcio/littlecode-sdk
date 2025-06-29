@@ -18,11 +18,11 @@ import java.util.List;
 import java.util.Map;
 
 @ExtendWith(MockitoExtension.class)
-public class RestTemplateUtilTest {
+class RestTemplateUtilTest {
 
     @Test
     @DisplayName("Deve validar Method Url Uri")
-    public void deveValidarMethod_Url() {
+    void deveValidarMethod_Url() {
         {//uri url
             var util = RestTemplateUtil.builder().build();
             Assertions.assertDoesNotThrow(() -> {
@@ -37,7 +37,7 @@ public class RestTemplateUtilTest {
 
     @Test
     @DisplayName("Deve validar Method Headers")
-    public void deveValidarMethod_Headers() {
+    void deveValidarMethod_Headers() {
         {
             var util = RestTemplateUtil.builder().build();
             util.setHeaders(null);
@@ -82,7 +82,7 @@ public class RestTemplateUtilTest {
 
     @Test
     @DisplayName("Deve validar Method host")
-    public void deveValidarMethod_host() {
+    void deveValidarMethod_host() {
         {
             var util=RestTemplateUtil
                     .builder()
@@ -108,7 +108,7 @@ public class RestTemplateUtilTest {
 
     @Test
     @DisplayName("Deve validar Method port")
-    public void deveValidarMethod_port() {
+    void deveValidarMethod_port() {
         {
             var util = RestTemplateUtil
                     .builder()
@@ -120,7 +120,7 @@ public class RestTemplateUtilTest {
 
     @Test
     @DisplayName("Deve validar Method queryParams")
-    public void deveValidarMethod_queryParams() {
+    void deveValidarMethod_queryParams() {
         {
             var util = RestTemplateUtil
                     .builder()
@@ -176,7 +176,7 @@ public class RestTemplateUtilTest {
 
     @Test
     @DisplayName("Deve validar Method Schema")
-    public void deveValidarMethod_Schema() {
+    void deveValidarMethod_Schema() {
 
         {
             var util = RestTemplateUtil
@@ -213,7 +213,7 @@ public class RestTemplateUtilTest {
 
     @Test
     @DisplayName("Deve validar Method Path")
-    public void deveValidarMethod_Path() {
+    void deveValidarMethod_Path() {
         {
             var util = RestTemplateUtil
                     .builder()
@@ -249,7 +249,7 @@ public class RestTemplateUtilTest {
 
     @Test
     @DisplayName("Deve validar Method Methods")
-    public void deveValidarMethod_Methods() {
+    void deveValidarMethod_Methods() {
         {//methods
             Assertions.assertDoesNotThrow(() -> {
                 var util = RestTemplateUtil
@@ -319,7 +319,7 @@ public class RestTemplateUtilTest {
 
     @Test
     @DisplayName("Deve validar Method Body")
-    public void deveValidarMethod_Body() {
+    void deveValidarMethod_Body() {
         {
             var util = RestTemplateUtil
                     .builder()
@@ -342,7 +342,7 @@ public class RestTemplateUtilTest {
 
     @Test
     @DisplayName("Deve validar Method exchange")
-    public void deveValidarMethods_exchange() {
+    void deveValidarMethods_exchange() {
         var restTemplate=Mockito.mock(RestTemplate.class);
         for(var method: HttpMethod.values()){
             var util=RestTemplateUtil
@@ -378,7 +378,7 @@ public class RestTemplateUtilTest {
 
     @Test
     @DisplayName("Deve validar metodo print")
-    public void deveValidarMetodoPrint() {
+    void deveValidarMetodoPrint() {
         var restTemplate=Mockito.mock(RestTemplate.class);
         for(var method: HttpMethod.values()){
             var util=RestTemplateUtil

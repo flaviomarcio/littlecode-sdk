@@ -14,11 +14,11 @@ import java.util.UUID;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
-public class ObjectReturnTest {
+class ObjectReturnTest {
 
     @Test
     @DisplayName("Deve validar equals and hashCode")
-    public void UT_DEVE_VALIDAR_EQUALS_AND_HASHCODE() {
+    void UT_DEVE_VALIDAR_EQUALS_AND_HASHCODE() {
         var objA = ObjectReturn.of(Map.of("id", 12345));
         var objB = ObjectReturn.of(Map.of("id", 12345));
         var objC = ObjectReturn.of(Map.of("id", UUID.randomUUID()));
@@ -32,7 +32,7 @@ public class ObjectReturnTest {
 
     @Test
     @DisplayName("Deve validar ObjectReturn.type")
-    public void UT_DIRECT_RETURN_TYPE() {
+    void UT_DIRECT_RETURN_TYPE() {
 
         Assertions.assertDoesNotThrow(() -> ObjectReturn.type(ObjectReturn.Type.Success));
         Assertions.assertDoesNotThrow(() -> ObjectReturn.type(ObjectReturn.Type.Success, Object.class));
@@ -184,7 +184,7 @@ public class ObjectReturnTest {
 
     @Test
     @DisplayName("Deve validar ObjectReturn.of")
-    public void UT_CHECK_RETURN_OF_OBJECTS() {
+    void UT_CHECK_RETURN_OF_OBJECTS() {
         ObjectReturn objectReturn = new ObjectReturn();
         Assertions.assertTrue(objectReturn.isOK());
 
@@ -210,7 +210,7 @@ public class ObjectReturnTest {
 
     @Test
     @DisplayName("Deve validar ObjectReturn.create")
-    public void UT_CHECK_RETURN_BY_OBJECT_CREATE() {
+    void UT_CHECK_RETURN_BY_OBJECT_CREATE() {
         Assertions.assertEquals(
                 ObjectReturn.create()
                         .type(ObjectReturn.Type.NoContent)
@@ -231,7 +231,7 @@ public class ObjectReturnTest {
 
     @Test
     @DisplayName("Deve validar falhas com mensagens falhas")
-    public void UT_CHECK_RETURN_BY_MESSAGES_FAIL() {
+    void UT_CHECK_RETURN_BY_MESSAGES_FAIL() {
         ObjectReturn objectReturn = ObjectReturn
                 .create()
                 .Fail()
@@ -262,7 +262,7 @@ public class ObjectReturnTest {
 
     @Test
     @DisplayName("Deve validar falhas com mensagens falhas")
-    public void UT_CHECK_RETURN_BY_MESSAGES_SUCESS() {
+    void UT_CHECK_RETURN_BY_MESSAGES_SUCESS() {
         var listReturn = List.of(
                 ObjectReturn.Empty(),
                 ObjectReturn.of(Map.of("a", "b"))
@@ -280,7 +280,7 @@ public class ObjectReturnTest {
 
     @Test
     @DisplayName("Deve validar conversao para adapters")
-    public void UT_CHECK_RETURN_BY_ADAPTER() {
+    void UT_CHECK_RETURN_BY_ADAPTER() {
 
 
         List.of(ObjectReturn.Type.values())
@@ -300,7 +300,7 @@ public class ObjectReturnTest {
 
     @Test
     @DisplayName("Deve validar subclass Result Info")
-    public void UT_CHECK_RETURN_BY_RESULT_INFO() {
+    void UT_CHECK_RETURN_BY_RESULT_INFO() {
         Assertions.assertDoesNotThrow(() -> new ObjectReturn.ResultInfo());
 
         var resultInfo = new ObjectReturn.ResultInfo();
@@ -328,7 +328,7 @@ public class ObjectReturnTest {
 
     @Test
     @DisplayName("Deve validar subclass-message")
-    public void UT_CHECK_RETURN_BY_MESSAGE() {
+    void UT_CHECK_RETURN_BY_MESSAGE() {
         Assertions.assertDoesNotThrow(() -> new ObjectReturn.Message());
         Assertions.assertDoesNotThrow(() -> ObjectReturn.Message.builder().build());
 
@@ -356,7 +356,7 @@ public class ObjectReturnTest {
 
     @Test
     @DisplayName("Deve validar subclass-message-maker")
-    public void UT_CHECK_RETURN_BY_MESSAGE_MAKER() {
+    void UT_CHECK_RETURN_BY_MESSAGE_MAKER() {
         Assertions.assertDoesNotThrow(() -> new ObjectReturn.MessageMaker(ObjectReturn.Empty()));
 
         var messageMaker = new ObjectReturn.MessageMaker(ObjectReturn.Empty());

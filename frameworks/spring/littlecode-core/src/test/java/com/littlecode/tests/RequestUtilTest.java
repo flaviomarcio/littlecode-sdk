@@ -24,12 +24,12 @@ import java.util.Map;
 import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)
-public class RequestUtilTest {
+class RequestUtilTest {
 
-    public static HttpClient mock_httpClient;
+    static HttpClient mock_httpClient;
 
     @BeforeAll()
-    public static void setup() {
+    static void setup() {
         mock_httpClient = Mockito.mock(HttpClient.class);
 
 
@@ -37,7 +37,7 @@ public class RequestUtilTest {
 
     @Test
     @DisplayName("Deve validar methods")
-    public void UT_000_CHECK_CONSTRUCTOR_GETTER() {
+    void UT_000_CHECK_CONSTRUCTOR_GETTER() {
         Assertions.assertDoesNotThrow(() -> RequestUtil.builder().build());
         var request = RequestUtil.builder().build();
         Assertions.assertDoesNotThrow(request::getClient);
@@ -61,7 +61,7 @@ public class RequestUtilTest {
 
     @Test
     @DisplayName("Deve validar methods")
-    public void UT_000_CHECK_METHODS() {
+    void UT_000_CHECK_METHODS() {
         var request = RequestUtil.builder().build();
         Assertions.assertEquals(request.GET().method(), RequestUtil.Method.GET);
         Assertions.assertEquals(request.POST().method(), RequestUtil.Method.POST);
@@ -72,7 +72,7 @@ public class RequestUtilTest {
 
     @Test
     @DisplayName("Deve validar Response")
-    public void UT_000_CHECK_RESPONSE() {
+    void UT_000_CHECK_RESPONSE() {
         Assertions.assertDoesNotThrow(() -> new RequestUtil.Response(null));
         var response = (new RequestUtil()).response();
         response.setStatus(-1);
@@ -129,7 +129,7 @@ public class RequestUtilTest {
 
     @Test
     @DisplayName("Deve validar methods")
-    public void UT_000_CHECK_REQUEST_UTIL() {
+    void UT_000_CHECK_REQUEST_UTIL() {
 
         Assertions.assertDoesNotThrow(RequestUtil::new);
         Assertions.assertDoesNotThrow(() -> RequestUtil.builder().build());
@@ -225,7 +225,7 @@ public class RequestUtilTest {
 
     @Test
     @DisplayName("Deve validar metodo prints")
-    public void UT_CHECK_METHOD_PRINT() {
+    void UT_CHECK_METHOD_PRINT() {
         var request = RequestUtil.builder().build();
         Assertions.assertDoesNotThrow(() -> request.printOnFail());
         Assertions.assertDoesNotThrow(() -> request.headers("a", "b"));
@@ -238,7 +238,7 @@ public class RequestUtilTest {
 
     @Test
     @DisplayName("Deve validar metodo call com sucesso")
-    public void UT_CHECK_METHOD_CALL_COM_SUCESSO() {
+    void UT_CHECK_METHOD_CALL_COM_SUCESSO() {
         var request = RequestUtil.builder().build();
         request
                 .client(new PrivateRequestClient())
@@ -268,7 +268,7 @@ public class RequestUtilTest {
 
     @Test
     @DisplayName("Deve validar metodo call com falha")
-    public void UT_CHECK_METHOD_CALL_COM_FALHA() {
+    void UT_CHECK_METHOD_CALL_COM_FALHA() {
         var request = RequestUtil.builder().build();
         request
                 .uri("http://localhost:8080")
@@ -313,7 +313,7 @@ public class RequestUtilTest {
 
     @Test
     @DisplayName("Deve validar class Http com sucesso")
-    public void UT_CHECK_CLASS_HTTP_COM_SUCESSO() {
+    void UT_CHECK_CLASS_HTTP_COM_SUCESSO() {
         Assertions.assertDoesNotThrow(Http::new);
         {
             var request = RequestUtil.builder().build();
@@ -345,7 +345,7 @@ public class RequestUtilTest {
 
     @Test
     @DisplayName("Deve validar class Execute")
-    public void UT_CHECK_CLASS_EXECUTE() {
+    void UT_CHECK_CLASS_EXECUTE() {
         Assertions.assertDoesNotThrow(() -> {
             RequestUtil.Executable e = new RequestUtil.Executable() {
                 @Override
@@ -357,7 +357,7 @@ public class RequestUtilTest {
         });
     }
 
-    public static class PrivateRequestClient implements RequestClient {
+    static class PrivateRequestClient implements RequestClient {
         @Override
         public void call(RequestUtil rqUtil) {
             rqUtil.response().setStatus(200);
@@ -373,7 +373,7 @@ public class RequestUtilTest {
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class PrivateObject {
+    static class PrivateObject {
         private UUID id;
     }
 

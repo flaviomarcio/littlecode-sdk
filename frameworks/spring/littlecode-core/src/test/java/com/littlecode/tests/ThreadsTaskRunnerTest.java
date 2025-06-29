@@ -8,7 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
-public class ThreadsTaskRunnerTest {
+class ThreadsTaskRunnerTest {
 
 //    private TaskRunner<Integer, Integer> runner;
 //
@@ -74,7 +74,7 @@ public class ThreadsTaskRunnerTest {
 
     @Test
     @DisplayName("Deve validar Runner")
-    public void UT_CHECK_RUNNER() {
+    void UT_CHECK_RUNNER() {
 //        runner = this.makeRunnerError();
 //        Assertions.assertDoesNotThrow(() -> runner.start().waitToFinished());
 //        Assertions.assertTrue(runner.isFail());

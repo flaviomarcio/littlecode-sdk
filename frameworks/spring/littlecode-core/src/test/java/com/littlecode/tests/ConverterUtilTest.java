@@ -19,11 +19,11 @@ import java.util.UUID;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
-public class ConverterUtilTest {
+class ConverterUtilTest {
 
     @Test
     @DisplayName("Deve validar constructor")
-    public void UT_000_CHECK_CONSTRUCTOR() {
+    void UT_000_CHECK_CONSTRUCTOR() {
         Assertions.assertDoesNotThrow(() -> new ConverterUtil(""));
         Assertions.assertDoesNotThrow(() -> new ConverterUtil(0));
         Assertions.assertDoesNotThrow(() -> new ConverterUtil(0D));
@@ -80,7 +80,7 @@ public class ConverterUtilTest {
 
     @Test
     @DisplayName("Deve validar toString")
-    public void UT_000_CHECK_CONVERT_toString() {
+    void UT_000_CHECK_CONVERT_toString() {
         Assertions.assertDoesNotThrow(() -> new ConverterUtil(UUID.randomUUID().toString()).toString());
         Assertions.assertDoesNotThrow(() -> new ConverterUtil(String.valueOf(0)).toString());
         Assertions.assertDoesNotThrow(() -> new ConverterUtil(0).toString());
@@ -109,7 +109,7 @@ public class ConverterUtilTest {
 
     @Test
     @DisplayName("Deve validar toBool")
-    public void UT_000_CHECK_CONVERT_toBool() {
+    void UT_000_CHECK_CONVERT_toBool() {
 
         Assertions.assertDoesNotThrow(() -> new ConverterUtil("0").toBool());
         Assertions.assertDoesNotThrow(() -> new ConverterUtil(0).toBool());
@@ -140,7 +140,7 @@ public class ConverterUtilTest {
 
     @Test
     @DisplayName("Deve validar toInt")
-    public void UT_000_CHECK_CONVERT_toInt() {
+    void UT_000_CHECK_CONVERT_toInt() {
 
         Assertions.assertDoesNotThrow(() -> new ConverterUtil("0").toInt());
         Assertions.assertDoesNotThrow(() -> new ConverterUtil(0).toInt());
@@ -159,7 +159,7 @@ public class ConverterUtilTest {
 
     @Test
     @DisplayName("Deve validar toLong")
-    public void UT_000_CHECK_CONVERT_toLong() {
+    void UT_000_CHECK_CONVERT_toLong() {
 
         Assertions.assertDoesNotThrow(() -> new ConverterUtil("0").toLong());
         Assertions.assertDoesNotThrow(() -> new ConverterUtil(0).toLong());
@@ -178,7 +178,7 @@ public class ConverterUtilTest {
 
     @Test
     @DisplayName("Deve validar toDouble")
-    public void UT_000_CHECK_CONVERT_toDouble() {
+    void UT_000_CHECK_CONVERT_toDouble() {
 
         Assertions.assertDoesNotThrow(() -> new ConverterUtil("0").toDouble());
         Assertions.assertDoesNotThrow(() -> new ConverterUtil(0).toDouble());
@@ -197,7 +197,7 @@ public class ConverterUtilTest {
 
     @Test
     @DisplayName("Deve validar toLocalDate")
-    public void UT_000_CHECK_CONVERT_toLocalDate() {
+    void UT_000_CHECK_CONVERT_toLocalDate() {
 
         Assertions.assertDoesNotThrow(() -> new ConverterUtil("0").toLocalDate());
         Assertions.assertDoesNotThrow(() -> new ConverterUtil(0).toLocalDate());
@@ -216,7 +216,7 @@ public class ConverterUtilTest {
 
     @Test
     @DisplayName("Deve validar toLocalTime")
-    public void UT_000_CHECK_CONVERT_toLocalTime() {
+    void UT_000_CHECK_CONVERT_toLocalTime() {
 
         Assertions.assertDoesNotThrow(() -> new ConverterUtil("0").toLocalTime());
         Assertions.assertDoesNotThrow(() -> new ConverterUtil(0).toLocalTime());
@@ -237,7 +237,7 @@ public class ConverterUtilTest {
 
     @Test
     @DisplayName("Deve validar toLocalDateTime")
-    public void UT_000_CHECK_CONVERT_toLocalDateTime() {
+    void UT_000_CHECK_CONVERT_toLocalDateTime() {
 
         Assertions.assertDoesNotThrow(() -> new ConverterUtil("0").toLocalDateTime());
         Assertions.assertDoesNotThrow(() -> new ConverterUtil(0).toLocalDateTime());
@@ -260,7 +260,7 @@ public class ConverterUtilTest {
 
     @Test
     @DisplayName("Deve validar toUUID")
-    public void UT_000_CHECK_CONVERT_toUUID() {
+    void UT_000_CHECK_CONVERT_toUUID() {
 
         Assertions.assertDoesNotThrow(() -> new ConverterUtil("0").toUUID());
         Assertions.assertDoesNotThrow(() -> new ConverterUtil(0).toUUID());
@@ -280,7 +280,7 @@ public class ConverterUtilTest {
 
     @Test
     @DisplayName("Deve validar toURI")
-    public void UT_000_CHECK_CONVERT_toURI() {
+    void UT_000_CHECK_CONVERT_toURI() {
 
         Assertions.assertDoesNotThrow(() -> new ConverterUtil("/tmp/tmp").toURI());
         Assertions.assertDoesNotThrow(() -> new ConverterUtil(Path.of("/tmp/tmp")).toURI());
@@ -296,7 +296,7 @@ public class ConverterUtilTest {
 
     @Test
     @DisplayName("Deve validar toPath")
-    public void UT_000_CHECK_CONVERT_toPath() {
+    void UT_000_CHECK_CONVERT_toPath() {
 
         Assertions.assertDoesNotThrow(() -> new ConverterUtil("/tmp/tmp").toPath());
         Assertions.assertDoesNotThrow(() -> new ConverterUtil(Path.of("/tmp/tmp")).toPath());

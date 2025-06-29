@@ -11,10 +11,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
-public class CorePublicConstsTest {
+class CorePublicConstsTest {
     @Test
     @DisplayName("Deve validar class CorePublicConsts")
-    public void UT_000_CHECK_CONSTRUCTOR() {
+    void UT_000_CHECK_CONSTRUCTOR() {
         Assertions.assertDoesNotThrow(CorePublicConsts::new);
         Assertions.assertNotNull(CorePublicConsts.MIN_LOCALDATE);
         Assertions.assertNotNull(CorePublicConsts.MAX_LOCALTIME);

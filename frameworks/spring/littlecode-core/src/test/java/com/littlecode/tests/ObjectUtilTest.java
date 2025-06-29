@@ -34,7 +34,7 @@ import java.util.UUID;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
-public class ObjectUtilTest {
+class ObjectUtilTest {
     private static final LocalDate MAX_DATE = LocalDate.of(1901, 1, 1);
     private static final LocalTime MAX_TIME = LocalTime.of(23, 59, 59);
     private static final LocalDateTime MAX_DATETIME = LocalDateTime.of(MAX_DATE, MAX_TIME);
@@ -86,12 +86,12 @@ public class ObjectUtilTest {
     }
 
     @BeforeAll
-    public static void beforeAll() {
+    static void beforeAll() {
     }
 
     @Test
     @DisplayName("Deve validar toFields")
-    public void UT_000_CHECK_FIELDS() {
+    void UT_000_CHECK_FIELDS() {
         Assertions.assertNotNull(ObjectUtil.toFieldsList((Object) null));
         Assertions.assertNotNull(ObjectUtil.toFieldsList((Object) 0));
         Assertions.assertNotNull(ObjectUtil.toFieldsList(objectSrc));
@@ -115,7 +115,7 @@ public class ObjectUtilTest {
 
     @Test
     @DisplayName("Deve validar equals")
-    public void UT_000_CHECK_EQUAL() {
+    void UT_000_CHECK_EQUAL() {
         Assertions.assertDoesNotThrow(() -> ObjectUtil.equal(objectSrc, objectSrc));
         Assertions.assertDoesNotThrow(() -> ObjectUtil.equal(objectSrc, null));
         Assertions.assertDoesNotThrow(() -> ObjectUtil.equal(null, objectSrc));
@@ -135,7 +135,7 @@ public class ObjectUtilTest {
 
     @Test
     @DisplayName("Deve validar toString by Formats")
-    public void UT_000_CHECK_TO_STRING_BY_FORMATS() {
+    void UT_000_CHECK_TO_STRING_BY_FORMATS() {
         Assertions.assertDoesNotThrow(() -> ObjectUtil.toString(objectSrc, FileFormat.JSON));
         Assertions.assertDoesNotThrow(() -> ObjectUtil.toString(objectSrc, FileFormat.XML));
         Assertions.assertDoesNotThrow(() -> ObjectUtil.toString(objectSrc, FileFormat.XML));
@@ -145,7 +145,7 @@ public class ObjectUtilTest {
 
     @Test
     @DisplayName("Deve validar toMd5")
-    public void UT_000_CHECK_MD5() {
+    void UT_000_CHECK_MD5() {
         {
             ObjectUtil.setPrintLog(true);
             Assertions.assertDoesNotThrow(() -> ObjectUtil.createFromString(ObjectCheck.class, ";;;;"));
@@ -164,7 +164,7 @@ public class ObjectUtilTest {
 
     @Test
     @DisplayName("Deve validar from values")
-    public void UT_000_CREATE_FROM() {
+    void UT_000_CREATE_FROM() {
         Assertions.assertDoesNotThrow(() -> ObjectUtil.createFromYML(ObjectCheck.class, objectSrcString));
         Assertions.assertDoesNotThrow(() -> ObjectUtil.createFromPROPS(ObjectCheck.class, objectSrcString));
         Assertions.assertDoesNotThrow(() -> ObjectUtil.createFromObject(ObjectCheck.class, objectSrcString));
@@ -193,7 +193,7 @@ public class ObjectUtilTest {
 
     @Test
     @DisplayName("Deve validar toMap")
-    public void UT_000_CHECK_MAPS() {
+    void UT_000_CHECK_MAPS() {
         Assertions.assertDoesNotThrow(() -> ObjectUtil.toMapObject(objectSrcString));
         Assertions.assertDoesNotThrow(() -> ObjectUtil.toMapObject(Map.of("", "")));
         Assertions.assertDoesNotThrow(() -> ObjectUtil.toMapObject(null));
@@ -232,7 +232,7 @@ public class ObjectUtilTest {
 
     @Test
     @DisplayName("Deve validar toFields")
-    public void UT_000_CHECK_FIELD() {
+    void UT_000_CHECK_FIELD() {
 
         Assertions.assertDoesNotThrow(() -> ObjectUtil.toFieldByAnnotation(ObjectCheck.class, NotNull.class));
         Assertions.assertDoesNotThrow(() -> ObjectUtil.toFieldByAnnotation(SubObjectCheck.class, NotNull.class));
@@ -279,7 +279,7 @@ public class ObjectUtilTest {
 
     @Test
     @DisplayName("Deve validar create Objects")
-    public void UT_000_CHECK_CREATE() {
+    void UT_000_CHECK_CREATE() {
         final var md5Src = ObjectUtil.toMapObject(objectSrc);
 
         //check 1
@@ -377,7 +377,7 @@ public class ObjectUtilTest {
 
     @Test
     @DisplayName("Deve validar Class<?>")
-    public void UT_000_CHECK_CLASSES() {
+    void UT_000_CHECK_CLASSES() {
 
         Assertions.assertNotNull(ObjectUtil.classToName(""));
         Assertions.assertNotNull(ObjectUtil.classToName(null));
@@ -411,7 +411,7 @@ public class ObjectUtilTest {
 
     @Test
     @DisplayName("Deve validar mehod inputReadAll")
-    public void UT_000_CHECK_METHOD_INPUT_READ_ALL() {
+    void UT_000_CHECK_METHOD_INPUT_READ_ALL() {
         Assertions.assertDoesNotThrow(() -> ObjectUtil.inputReadAll(null));
         Assertions.assertDoesNotThrow(() -> ObjectUtil.inputReadAll(Mockito.mock(InputStream.class)));
     }
@@ -422,11 +422,11 @@ public class ObjectUtilTest {
 
     @Target({ElementType.TYPE})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface AnnTest {
+    @interface AnnTest {
     }
 
-    public static class ObjectBaseException {
-        public ObjectBaseException(UUID uuid) {
+    static class ObjectBaseException {
+        ObjectBaseException(UUID uuid) {
             throw new RuntimeException(uuid.toString());
         }
 
@@ -434,7 +434,7 @@ public class ObjectUtilTest {
 
     @Component
     @AnnTest
-    public static class ObjectBase {
+    static class ObjectBase {
 
     }
 
@@ -444,7 +444,7 @@ public class ObjectUtilTest {
     @Component
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class ObjectCheck extends ObjectBase {
+    static class ObjectCheck extends ObjectBase {
         private SubObjectCheck sub;
         private ObjectCheckType type;
 
