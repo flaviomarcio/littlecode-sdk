@@ -2,6 +2,7 @@ package com.littlecode.parsers;
 
 import java.util.List;
 
+@Deprecated(since = "UrlUtil is deprecated, use UrlHelperUtil")
 public class UrlUtil {
     public static final String PATH_DELIMIT = "/";
     public static final String PATH_AUTH_END = "/**";

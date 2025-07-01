@@ -337,7 +337,7 @@ class EnvironmentUtilTest {
             for (var entry : values.entrySet()) {
                 String key = entry.getKey();
                 var value = entry.getValue();
-                Mockito.when(environment.getProperty(key)).thenReturn(String.valueOf(value));
+                Mockito.when(environment.getProperty(key)).thenReturn(value);
                 Mockito.when(environment.containsProperty(key)).thenReturn(true);
             }
 
