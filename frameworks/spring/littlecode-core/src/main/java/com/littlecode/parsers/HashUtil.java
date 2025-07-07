@@ -2,7 +2,6 @@ package com.littlecode.parsers;
 
 import com.littlecode.exceptions.ParserException;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -10,8 +9,10 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 public class HashUtil {
-    public static final String MD5Strategy = "MD5";
+    public static final String MD_5_STRATEGY = "MD5";
     private static final Pattern UUID_REGEX = Pattern.compile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$");
+    private HashUtil(){
+    }
 
     public static MessageDigest createMessageDigest(String strategy) {
         try {
@@ -89,25 +90,25 @@ public class HashUtil {
     public static UUID toMd5Uuid(Object o) {
         if (o != null) {
             var value = ObjectUtil.toString(o);
-            if (!value.isEmpty()) {
+            if (value.isEmpty())
+                return null;
+            var md5Uuid = toUuid(value);
+            if (md5Uuid != null)
+                return md5Uuid;
 
-                var __response = toUuid(value);
-                if (__response != null)
-                    return __response;
+            var md = createMessageDigest(MD_5_STRATEGY);
+            if (md == null)
+                return null;
 
-                var md = createMessageDigest(MD5Strategy);
-                if (md != null) {
-                    var messageDigest = md.digest(value.getBytes());
-                    var hexString = new StringBuilder();
-                    for (byte b : messageDigest) {
-                        String hex = Integer.toHexString(0xFF & b);
-                        if (hex.length() == 1)
-                            hexString.append("0");
-                        hexString.append(hex);
-                    }
-                    return toUuid(hexString.toString());
-                }
+            var messageDigest = md.digest(value.getBytes());
+            var hexString = new StringBuilder();
+            for (byte b : messageDigest) {
+                String hex = Integer.toHexString(0xFF & b);
+                if (hex.length() == 1)
+                    hexString.append("0");
+                hexString.append(hex);
             }
+            return toUuid(hexString.toString());
         }
         return null;
     }
@@ -121,7 +122,7 @@ public class HashUtil {
         return toMd5(ObjectUtil.toString(o));
     }
 
-    public static String toMd5(InputStream value) throws IOException {
+    public static String toMd5(InputStream value){
         return toMd5(readBytes(value));
     }
 
