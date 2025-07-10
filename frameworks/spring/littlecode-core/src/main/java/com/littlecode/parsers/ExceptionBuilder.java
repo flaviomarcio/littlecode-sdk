@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -150,6 +152,14 @@ public class ExceptionBuilder {
         return of(Type.Network, message);
     }
 
+    public static RuntimeException ofResponse(HttpStatusCode statusCode) {
+        return new ResponseStatusException(statusCode, "");
+    }
+
+    public static RuntimeException ofResponse(HttpStatusCode statusCode, String message) {
+        return new ResponseStatusException(statusCode, message);
+    }
+
     public static RuntimeException ofNullPointer(Class<?> eClass) {
         return of(Type.NullPointer, eClass);
     }
@@ -212,6 +222,10 @@ public class ExceptionBuilder {
 
     public static RuntimeException ofNetwork(Class<?> eClass) {
         return of(Type.Network, eClass);
+    }
+
+    public static RuntimeException ofResponse(HttpStatusCode statusCode, Class<?> eClass) {
+        return new ResponseStatusException(statusCode, eClass.getSimpleName());
     }
 
     //Class<?>,message
@@ -283,6 +297,10 @@ public class ExceptionBuilder {
         return of(Type.Network, eClass, message);
     }
 
+    public static RuntimeException ofResponse(HttpStatusCode statusCode, Class<?> eClass, String message) {
+        return new ResponseStatusException(statusCode, "%s: %s".formatted(eClass.getSimpleName(), message));
+    }
+
     //format
     public static RuntimeException ofDefault(String format, Object... args) {
         return of(Type.Default, format, args);
@@ -350,6 +368,10 @@ public class ExceptionBuilder {
 
     public static RuntimeException ofNetwork(String format, Object... args) {
         return of(Type.Network, format, args);
+    }
+
+    public static RuntimeException ofResponse(HttpStatusCode statusCode, String format, Object... args) {
+        return new ResponseStatusException(statusCode, String.format(format,args));
     }
 
     //List

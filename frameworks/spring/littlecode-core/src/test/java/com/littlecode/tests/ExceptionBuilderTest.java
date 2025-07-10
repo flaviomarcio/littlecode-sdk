@@ -9,6 +9,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 
@@ -187,6 +190,9 @@ class ExceptionBuilderTest {
         Assertions.assertThrows(NetworkException.class, () -> {
             throw ExceptionBuilder.ofNetwork(Object.class);
         });
+        Assertions.assertThrows(ResponseStatusException.class, () -> {
+            throw ExceptionBuilder.ofResponse(HttpStatus.UNAUTHORIZED, Object.class);
+        });
     }
 
     @Test
@@ -243,6 +249,15 @@ class ExceptionBuilderTest {
         });
         Assertions.assertThrows(NetworkException.class, () -> {
             throw ExceptionBuilder.ofNetwork("test");
+        });
+        Assertions.assertThrows(ResponseStatusException.class, () -> {
+            throw ExceptionBuilder.ofResponse(HttpStatus.UNAUTHORIZED);
+        });
+        Assertions.assertThrows(ResponseStatusException.class, () -> {
+            throw ExceptionBuilder.ofResponse(HttpStatus.UNAUTHORIZED);
+        });
+        Assertions.assertThrows(ResponseStatusException.class, () -> {
+            throw ExceptionBuilder.ofResponse(HttpStatus.UNAUTHORIZED,"test");
         });
     }
 
@@ -302,6 +317,9 @@ class ExceptionBuilderTest {
         Assertions.assertThrows(NetworkException.class, () -> {
             throw ExceptionBuilder.ofNetwork("%s: %s", "test", Object.class);
         });
+        Assertions.assertThrows(ResponseStatusException.class, () -> {
+            throw ExceptionBuilder.ofResponse(HttpStatus.UNAUTHORIZED,"%s: %s", "test", Object.class);
+        });
     }
 
     @Test
@@ -357,6 +375,9 @@ class ExceptionBuilderTest {
         });
         Assertions.assertThrows(NetworkException.class, () -> {
             throw ExceptionBuilder.ofNetwork(Object.class, "test");
+        });
+        Assertions.assertThrows(ResponseStatusException.class, () -> {
+            throw ExceptionBuilder.ofResponse(HttpStatus.UNAUTHORIZED,Object.class, "test");
         });
     }
 
