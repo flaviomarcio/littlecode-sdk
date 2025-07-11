@@ -1,15 +1,23 @@
 package com.littlecode.parsers;
 
+import com.littlecode.exceptions.FrameworkException;
 import com.littlecode.exceptions.ParserException;
+import lombok.extern.slf4j.Slf4j;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.util.*;
 import java.util.regex.Pattern;
-
+@Slf4j
 public class HashUtil {
     public static final String MD_5_STRATEGY = "MD5";
+    public static final String SHA_256_STRATEGY = "SHA-256";
     private static final Pattern UUID_REGEX = Pattern.compile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$");
     private HashUtil(){
     }
@@ -17,8 +25,8 @@ public class HashUtil {
     public static MessageDigest createMessageDigest(String strategy) {
         try {
             return MessageDigest.getInstance(strategy);
-        } catch (Exception ignored) {
-            return null;
+        } catch (Exception e) {
+            throw new ParserException(e.getMessage());
         }
     }
 
@@ -97,8 +105,6 @@ public class HashUtil {
                 return md5Uuid;
 
             var md = createMessageDigest(MD_5_STRATEGY);
-            if (md == null)
-                return null;
 
             var messageDigest = md.digest(value.getBytes());
             var hexString = new StringBuilder();
@@ -115,7 +121,9 @@ public class HashUtil {
 
 
     public static String toMd5(String format, Object... args) {
-        return toMd5(String.format(format, args));
+        if (format != null && args != null && args.length > 0)
+            return toMd5(String.format(format, args));
+        return null;
     }
 
     public static String toMd5(Object o) {
@@ -134,6 +142,92 @@ public class HashUtil {
                 .replace("{", "")
                 .replace("}", "")
                 .replace("-", "");
+    }
+
+    public static String toSha256(String input) {
+        if(input!=null && !input.isEmpty()){
+            MessageDigest digest = createMessageDigest(SHA_256_STRATEGY);
+            byte[] hash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
+            // Pegamos os primeiros 16 bytes do SHA-256 (128 bits) para gerar o UUID
+            return new String(hash, StandardCharsets.UTF_8);
+        }
+        return "";
+    }
+
+    public static String toSha256(InputStream inputStream) {
+        if(inputStream!=null){
+            MessageDigest digest = createMessageDigest(SHA_256_STRATEGY);
+            byte[] buffer = new byte[8192]; // 8 KB por leitura
+            int bytesRead;
+            try{
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    digest.update(buffer, 0, bytesRead);
+                }
+                return new String(digest.digest(), StandardCharsets.UTF_8);
+            }catch (Exception ignored){
+            }
+        }
+        return "";
+    }
+
+    public static String toSha256(Object o) {
+        if(o!=null){
+            try{
+                switch (o) {
+                    case String v -> {
+                        return toSha256(v);
+                    }
+                    case InputStream v -> {
+                        return toSha256(v);
+                    }
+                    case File v -> {
+                        return toSha256(new FileInputStream(v));
+                    }
+                    case Path v -> {
+                        return toSha256(new FileInputStream(v.toFile()));
+                    }
+                    default -> {
+                        if(PrimitiveUtil.isPrimitiveValue(o))
+                            return toSha256(PrimitiveUtil.toString(o));
+                        return toSha256(ObjectUtil.toString(o));
+                    }
+                }
+            }catch (FileNotFoundException ignored){
+            }
+        }
+        return "";
+    }
+
+    public static String toSha256Hex(Object o) {
+        var hashBytes=toSha256(o);
+        if(!hashBytes.trim().isEmpty()){
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hashBytes.getBytes())
+                hexString.append(String.format("%02x", b));
+            return hexString.toString();
+        }
+        return "";
+    }
+
+    public static String toSha256(String format, Object... args) {
+        if (format != null && args != null && args.length > 0) {
+            var bytes = String.format(format, args);
+            return toSha256(bytes);
+        }
+        return "";
+    }
+
+    public static UUID toSha256Uuid(Object o) {
+        var sha256=toSha256(o);
+        if(!sha256.isEmpty()){
+            byte[] hashBytes = sha256.getBytes();
+            // Garante que temos pelo menos 16 bytes (128 bits) para o UUID
+            ByteBuffer buffer = ByteBuffer.wrap(hashBytes);
+            long high = buffer.getLong();
+            long low = buffer.getLong();
+            return new UUID(high, low);
+        }
+        return null;
     }
 
     public static String toBase64(String format, Object... args) {

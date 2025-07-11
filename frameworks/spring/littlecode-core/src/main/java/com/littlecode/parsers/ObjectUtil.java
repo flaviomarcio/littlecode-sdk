@@ -46,8 +46,8 @@ public class ObjectUtil {
 
     public static List<Class<?>> getClassesBySorted(Set<Class<?>> classes) {
         if (classes != null && !classes.isEmpty()) {
-            List<Class<?>> __return = new ArrayList<>(classes);
-            __return
+            List<Class<?>> result = new ArrayList<>(classes);
+            result
                     .sort(new Comparator<Class<?>>() {
                         @Override
                         public int compare(Class<?> aClass1, Class<?> aClass2) {
@@ -116,74 +116,78 @@ public class ObjectUtil {
 
     public static synchronized Field toFieldByName(Class<?> tClass, String fieldName) {
         if (fieldName != null && tClass != null) {
-            fieldName = fieldName.trim().toLowerCase();
-            Field[] fieldList = tClass.getDeclaredFields();
-            for (Field field : fieldList) {
-                if (field.getName().toLowerCase().equals(fieldName)) {
-                    field.setAccessible(true);
-                    return field;
-                }
-            }
+            final var eqName = fieldName.trim().toLowerCase();
+            return Arrays
+                    .stream(tClass.getDeclaredFields())
+                    .filter(field -> field.getName().toLowerCase().equals(eqName))
+                    .map(field -> {
+                        field.setAccessible(true);
+                        return field;
+                    })
+                    .findFirst()
+                    .orElse(null);
         }
         return null;
     }
 
     public static synchronized Field toFieldByAnnotation(Class<?> tClass, Class<? extends Annotation> annotationClass) {
         if (tClass != null && annotationClass != null) {
-            Field[] fieldList = tClass.getDeclaredFields();
-            for (Field field : fieldList)
-                if (field.isAnnotationPresent(annotationClass))
-                    return field;
+            return Arrays
+                    .stream(tClass.getDeclaredFields())
+                    .filter(field -> field.isAnnotationPresent(annotationClass))
+                    .findFirst()
+                    .orElse(null);
         }
         return null;
     }
 
     public static synchronized List<Field> toFieldsByAnnotation(Class<?> tClass, Class<? extends Annotation> annotationClass) {
         if (tClass != null && annotationClass != null) {
-            List<Field> __return = new ArrayList<>();
-            Field[] fieldList = tClass.getDeclaredFields();
-            for (Field field : fieldList)
-                if (field.isAnnotationPresent(annotationClass))
-                    __return.add(field);
-            return __return;
+            List<Field> result = new ArrayList<>();
+            Arrays
+                    .stream(tClass.getDeclaredFields())
+                    .forEach(field -> {
+                        if (field.isAnnotationPresent(annotationClass))
+                            result.add(field);
+                    });
+            return result;
         }
         return new ArrayList<>();
     }
 
     public static synchronized Field toFieldByType(Class<?> tClass, Class<?> typeClass) {
         if (tClass != null && typeClass != null) {
-            Field[] fieldList = tClass.getDeclaredFields();
-            for (Field field : fieldList) {
-                if (field.getType().equals(typeClass))
-                    return field;
-            }
+            return Arrays
+                    .stream(tClass.getDeclaredFields())
+                    .filter(field -> field.getType().equals(typeClass))
+                    .findFirst()
+                    .orElse(null);
         }
         return null;
     }
 
     public static synchronized List<Field> toFieldsByType(Class<?> tClass, Class<?> typeClass) {
         if (tClass != null && typeClass != null) {
-            List<Field> __return = new ArrayList<>();
-            Field[] fieldList = tClass.getDeclaredFields();
-            for (Field field : fieldList) {
-                if (field.getType().equals(typeClass))
-                    __return.add(field);
-            }
-            return __return;
+            return Arrays
+                    .stream(tClass.getDeclaredFields())
+                    .filter(field -> field.getType().equals(typeClass))
+                    .toList();
         }
         return new ArrayList<>();
     }
 
     public static synchronized <T> List<Field> toFieldsList(Class<T> tClass) {
-        List<Field> __return = new ArrayList<>();
-        Field[] fieldList = tClass.getDeclaredFields();
-        for (Field field : fieldList) {
-            if (Modifier.isStatic(field.getModifiers()))
-                continue;
-            field.setAccessible(true);
-            __return.add(field);
-        }
-        return __return;
+        List<Field> result = new ArrayList<>();
+
+        Arrays
+                .stream(tClass.getDeclaredFields())
+                .forEach(field -> {
+                    if (!Modifier.isStatic(field.getModifiers())){
+                        field.setAccessible(true);
+                        result.add(field);
+                    }
+                });
+        return result;
     }
 
     public static synchronized List<Field> toFieldsList(Object o) {
@@ -194,10 +198,10 @@ public class ObjectUtil {
     }
 
     public static synchronized Map<String, Field> toFieldsMap(Class<?> tClass) {
-        Map<String, Field> __return = new HashMap<>();
+        Map<String, Field> result = new HashMap<>();
         toFieldsList(tClass)
-                .forEach(field -> __return.put(field.getName(), field));
-        return __return;
+                .forEach(field -> result.put(field.getName(), field));
+        return result;
     }
 
     public static synchronized Map<String, Field> toFieldsMap(final Object o) {
@@ -250,11 +254,9 @@ public class ObjectUtil {
                     }
                 }
 
-            } catch (Exception e) {
-                if(ObjectUtil.isPrintLog())
-                    log.error(e.getMessage());
-                return null;
+            } catch (Exception ignored) {
             }
+            return null;
         }
         return create(aClass);
     }
@@ -324,33 +326,31 @@ public class ObjectUtil {
 
     public static synchronized Map<String, Object> toMapObject(final Object o) {
         if (o != null) {
-            if (o instanceof String string) {
-                var mapValues = toMapOfString(string);
+            if (o instanceof String v) {
+                var mapValues = toMapOfString(v);
                 return new HashMap<>(mapValues);
-            } else if (o instanceof Map map) {
-                return map;
-            } {
-                return ObjectValueUtil.of(o).asMap();
+            } else if (o instanceof Map v) {
+                return v;
             }
+            return ObjectValueUtil.of(o).asMap();
         }
         return new HashMap<>();
     }
 
     public static synchronized Map<String, String> toMapOfString(final Object o) {
         if (o != null) {
-            if (o instanceof String string) {
+            if (o instanceof String v) {
                 var mapper = UtilCoreConfig.newObjectMapper(UtilCoreConfig.FILE_FORMAT_DEFAULT);
                 try {
-                    return mapper.readValue(string, Map.class);
+                    return mapper.readValue(v, Map.class);
                 } catch (Exception ignored) {
                 }
-            } else if (o instanceof Map map) {
-                return map;
-            } else {
-                return ObjectValueUtil
-                        .of(o)
-                        .asMapString();
+            } else if (o instanceof Map v) {
+                return v;
             }
+            return ObjectValueUtil
+                    .of(o)
+                    .asMapString();
 
         }
         return new HashMap<>();

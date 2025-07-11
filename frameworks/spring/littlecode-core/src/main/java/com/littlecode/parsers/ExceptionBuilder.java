@@ -379,6 +379,10 @@ public class ExceptionBuilder {
         return of(Type.BadRequest, ObjectUtil.toString(args));
     }
 
+    public static <T>RuntimeException ofResponse(HttpStatusCode statusCode, List<T> args) {
+        return new ResponseStatusException(statusCode, ObjectUtil.toString(args));
+    }
+
     private String makeMessage() {
         return makeMessage(this.target, this.args);
     }

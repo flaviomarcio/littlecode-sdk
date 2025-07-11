@@ -439,29 +439,68 @@ class ObjectUtilTest {
     }
 
     @EqualsAndHashCode(callSuper = true)
-    @Data
     @Builder
     @Component
     @AllArgsConstructor
     @NoArgsConstructor
     static class ObjectCheck extends ObjectBase {
+        @Getter
+        @Setter
         private SubObjectCheck sub;
+        @Getter
+        @Setter
         private ObjectCheckType type;
 
         @NotNull
+        @Getter
+        @Setter
         private UUID id;
+        @Getter
+        @Setter
         private LocalDate date;
+        @Getter
+        @Setter
         private LocalTime time;
+        @Getter
+        @Setter
         private LocalDateTime dateTime;
+        @Getter
+        @Setter
         private double doubleValue;
+        @Getter
+        @Setter
         private int intValue;
+        @Getter
+        @Setter
         private boolean boolValue;
 
+        @Getter
+        @Setter
         private String stringValue;
+        @Getter
+        @Setter
         private Long longClassClass;
+        @Getter
+        @Setter
         private Double doubleValueClass;
+        @Getter
+        @Setter
         private Integer intValueClass;
+        @Getter
+        @Setter
         private Boolean boolValueClass;
+
+
+        @Getter
+        private Integer justGetter;
+
+        @Setter
+        private Integer justSetter;
+
+
+        private Integer noGetterSetter;
+
+        public static final String NO_GETTER_SETTER = "ADMIN";
     }
 
     @Data

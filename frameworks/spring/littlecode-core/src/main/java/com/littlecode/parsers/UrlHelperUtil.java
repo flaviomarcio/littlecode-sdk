@@ -2,108 +2,195 @@ package com.littlecode.parsers;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
+import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Utilitario para manipular paths
+ */
 @Getter
 @NoArgsConstructor
 public class UrlHelperUtil {
     private String basePath="/";
     private List<String> openPaths = new ArrayList<>();
     private List<String> acceptedPaths = new ArrayList<>();
+    private List<String> blockedPath = new ArrayList<>();
+    private List<String> backendPath = new ArrayList<>();
+    private List<String> backendOpenPath = new ArrayList<>();
+
+    public static boolean isValidUrl(String url) {
+        if (url != null && !url.trim().isEmpty()){
+            try {
+                var uri = new URI(url);
+                return (uri.getScheme() != null && uri.getHost() != null);
+            } catch (Exception ignored) {
+            }
+        }
+        return false;
+    }
 
     public void setBasePath(String basePath) {
         basePath = basePath==null?"/":basePath.trim();
         this.basePath = basePath.isEmpty()?"/":basePath;
     }
 
-    public void setOpenPaths(List<String> openPaths) {
-        if(openPaths==null){
-            this.openPaths = new ArrayList<>();
-            return;
+    public static boolean isValidUrl(URI uri) {
+        return uri != null && isValidUrl(uri.toString());
+    }
+
+    /**
+     * rotina para adicionar paths usando Lista
+     * @param newPaths
+     * @return
+     */
+    public static List<String> parserPaths(List<String> newPaths) {
+        if(newPaths==null || newPaths.isEmpty())
+            return new ArrayList<>();
+        List<String> result=new ArrayList<>();
+        for(var row: newPaths){
+            var rowValue=row.trim().toLowerCase().trim();
+            if(!rowValue.isEmpty() && !result.contains(rowValue))
+                result.add(rowValue);
         }
-
-        this.openPaths.clear();
-        this.openPaths.addAll(
-                openPaths
-                        .stream()
-                        .distinct()
-                        .toList()
-        );
+        return result;
     }
 
-    public void setAcceptedPaths(List<String> acceptedPaths) {
-        if(acceptedPaths==null){
-            this.acceptedPaths = new ArrayList<>();
-            return;
-        }
+    /**
+     * rotina para adicionar paths usando array
+     * @param newPaths
+     * @return
+     */
+    public static List<String> parserPaths(String ... newPaths) {
+        return parserPaths(List.of(newPaths));
+    }
 
-        this.acceptedPaths.clear();
-        this.acceptedPaths.addAll(
-                acceptedPaths
-                        .stream()
-                        .distinct()
-                        .toList()
-        );
+    /**
+     * rotina para inserir open paths
+     * @param newPaths
+     */
+    public void setOpenPaths(List<String> newPaths) {
+        this.openPaths = parserPaths(newPaths);
+    }
+
+    /**
+     * rotina para inserir accepted paths
+     * @param newPaths
+     */
+    public void setAcceptedPaths(List<String> newPaths) {
+        this.acceptedPaths = parserPaths(newPaths);
     }
 
 
-    public static String extractContextPath(String path){
-        if (path == null)
-            return "/";
-        path=path.trim();
-        if (path.isBlank() || path.equals("/") || !path.contains("/"))
-            return "/";
-
-        // Remove trailing slash (ex: /abc/ → /abc)
-        String cleanPath = path.endsWith("/")
-                ? path.substring(0, path.length() - 1).trim()
-                : path.trim();
-
-        int lastSlash = cleanPath.lastIndexOf('/');
-        if (lastSlash <= 0)
-            return "/";
-
-        return cleanPath.substring(0, lastSlash).trim();
+    /**
+     * rotina para inserir accepted paths
+     * @param newPaths
+     */
+    public void setBlockedPaths(List<String> newPaths) {
+        this.blockedPath = parserPaths(newPaths);
     }
 
+    /**
+     * rotina para inserir backend paths
+     * @param newPaths
+     */
+    public void setBackendPaths(List<String> newPaths) {
+        this.backendPath = parserPaths(newPaths);
+    }
+
+    /**
+     * rotina para inserir backend open paths
+     * @param newPaths
+     */
+    public void setBackendOpenPaths(List<String> newPaths) {
+        this.backendOpenPath = parserPaths(newPaths);
+    }
+
+    /**
+     * verifica open paths
+     * @param requestPath
+     * @return
+     */
     public boolean isOpenPath(String requestPath) {
-        if(requestPath==null || requestPath.trim().isEmpty())
+        return matchPath(this.openPaths, requestPath);
+    }
+
+    /**
+     * verifica accepted paths
+     * @param requestPath
+     * @return
+     */
+    public boolean isAcceptedPath(String requestPath) {
+        return matchPath(this.acceptedPaths, requestPath);
+    }
+
+    /**
+     * verifica blocked paths
+     * @param requestPath
+     * @return
+     */
+    public boolean isBlockedPath(String requestPath) {
+        return matchPath(this.blockedPath, requestPath);
+    }
+
+    /**
+     * verifica backend paths
+     * @param requestPath
+     * @return
+     */
+    public boolean isBackendPath(String requestPath) {
+        return matchPath(this.backendPath, requestPath);
+    }
+
+    /**
+     * verifica backend open paths
+     * @param requestPath
+     * @return
+     */
+    public boolean isBackendOpenPath(String requestPath) {
+        return matchPath(this.backendOpenPath, requestPath);
+    }
+
+    /**
+     * verifica matcher do requestPath em pathFilters
+     * @param pathFilters
+     * @param requestPath
+     * @return
+     */
+    public boolean matchPath(List<String> pathFilters, String requestPath) {
+        if(requestPath==null || requestPath.trim().isEmpty() || pathFilters.isEmpty())
             return false;
+        requestPath=requestPath.trim().toLowerCase().trim();
         requestPath = requestPath.trim().endsWith("/") && requestPath.length()>1
                 ?requestPath.substring(0,requestPath.length()-1)
                 :requestPath.trim();
-        for (var v : this.getOpenPaths()) {
-            var url = (this.getBasePath() + v).replace("//", "/");
+        for (var v : pathFilters) {
+            var url = (this.getBasePath() + v).replace("//", "/").toLowerCase().trim();
+            if(requestPath.equals(url))
+                return true;
+
             if (url.endsWith("**")){
-                var copyPath=extractContextPath(requestPath);
-                url=extractContextPath(url);
+                var copyPath=requestPath;
+                url=url.substring(0,url.length()-2).trim();
+                if(url.endsWith("/"))
+                    url=url.substring(0,url.length()-1).trim();
+                if(copyPath.endsWith("/"))
+                    copyPath=copyPath.substring(0,copyPath.length()-1).trim();
+
+                if(url.isEmpty())
+                    url="";
+
+                if(copyPath.isEmpty())
+                    copyPath="/";
+
                 if(copyPath.startsWith(url))
                     return true;
             }
-            else if(requestPath.equals(url)){
-                return true;
-            }
         }
         return false;
     }
 
-    public boolean isAcceptedPath(String requestPath) {
-        if (PrimitiveUtil.isEmpty(requestPath))
-            return false;
-        requestPath = requestPath.trim();
-        for (var path : this.acceptedPaths) {
-            var v = path.trim().toLowerCase();
-            if (!v.endsWith("**") && requestPath.equals(v))
-                return true;
-
-            v = v.substring(0, v.length() - 2);
-            if (requestPath.startsWith(v))
-                return true;
-        }
-        return false;
-    }
 
 }

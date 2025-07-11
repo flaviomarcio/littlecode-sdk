@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
@@ -321,6 +322,20 @@ class ExceptionBuilderTest {
             throw ExceptionBuilder.ofResponse(HttpStatus.UNAUTHORIZED,"%s: %s", "test", Object.class);
         });
     }
+
+    @Test
+    @DisplayName("Deve validar exceptions of List")
+    void UT_CHECK_OF_LIST() {
+
+        Assertions.assertThrows(BadRequestException.class, () -> {
+            throw ExceptionBuilder.ofBadRequest(List.of("test"));
+        });
+
+        Assertions.assertThrows(ResponseStatusException.class, () -> {
+            throw ExceptionBuilder.ofResponse(HttpStatus.UNAUTHORIZED, List.of("test"));
+        });
+    }
+
 
     @Test
     @DisplayName("Deve validar exceptions of class messages")
