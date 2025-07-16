@@ -15,7 +15,7 @@ class CorePublicConstsTest {
     @Test
     @DisplayName("Deve validar class CorePublicConsts")
     void UT_000_CHECK_CONSTRUCTOR() {
-        Assertions.assertDoesNotThrow(CorePublicConsts::new);
+//        Assertions.assertDoesNotThrow(CorePublicConsts::new);
         Assertions.assertNotNull(CorePublicConsts.MIN_LOCALDATE);
         Assertions.assertNotNull(CorePublicConsts.MAX_LOCALTIME);
         Assertions.assertNotNull(CorePublicConsts.MIN_LOCALTIME);

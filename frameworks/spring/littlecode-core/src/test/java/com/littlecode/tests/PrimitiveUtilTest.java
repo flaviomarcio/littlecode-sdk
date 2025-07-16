@@ -120,7 +120,7 @@ class PrimitiveUtilTest {
 
         var dt = LocalDate.of(2000, 1, 3);
         var tm = LocalTime.of(22, 37, 12);
-        Assertions.assertDoesNotThrow(PrimitiveUtil::new);
+
 
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString((Object) LocalDateTime.now()));
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toString((Object) LocalDate.now()));

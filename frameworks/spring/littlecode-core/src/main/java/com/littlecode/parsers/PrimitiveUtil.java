@@ -6,6 +6,7 @@ import com.littlecode.files.FileFormat;
 
 import java.io.File;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.net.URI;
 import java.net.URL;
@@ -15,8 +16,37 @@ import java.text.DecimalFormatSymbols;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class PrimitiveUtil {
+
+    private static final ConcurrentHashMap<String, Class<?>> PRIMITIVE_CLASSES;
+
+    static {
+        PRIMITIVE_CLASSES = new ConcurrentHashMap<>();
+        var list = List.of(
+                String.class,
+                Byte.class,
+                UUID.class,
+                Boolean.class,
+                Integer.class,
+                Long.class,
+                Double.class,
+                BigDecimal.class,
+                BigInteger.class,
+                LocalDate.class,
+                LocalTime.class,
+                LocalDateTime.class,
+                int.class,
+                double.class,
+                long.class
+        );
+        list.forEach(aClass -> PRIMITIVE_CLASSES.put(aClass.getName(), aClass));
+        PRIMITIVE_CLASSES.put("java.lang.Class<?>", java.lang.Class.class);
+    }
+
+    private PrimitiveUtil() {
+    }
 
     public static String formatMask(int precision) {
         return precision <= 0
@@ -37,13 +67,13 @@ public class PrimitiveUtil {
     public static boolean isPrimitiveValue(Class<?> aClass) {
         if(aClass!=null){
             if(aClass.isPrimitive()) return true;
-            return CorePublicConsts.PRIMITIVE_CLASSES.containsValue(aClass);
+            return PRIMITIVE_CLASSES.containsValue(aClass);
         }
         return false;
     }
 
     public static boolean isPrimitiveValue(Object value) {
-        return value != null && CorePublicConsts.PRIMITIVE_CLASSES.containsValue(value.getClass());
+        return value != null && PRIMITIVE_CLASSES.containsValue(value.getClass());
     }
 
     public static int toInt(String v) {
@@ -57,22 +87,16 @@ public class PrimitiveUtil {
     }
 
     public static int toInt(Object v) {
-        if (v instanceof Integer value)
-            return value;
-        else if (v instanceof Long value)
-            return value.intValue();
-        else if (v instanceof Double value)
-            return value.intValue();
-        else if (v instanceof String value)
-            return Integer.parseInt(value);
-        else if (v instanceof LocalDate value)
-            return Double.valueOf(value.toEpochDay()).intValue();
-        else if (v instanceof LocalTime value)
-            return Double.valueOf(value.toSecondOfDay()).intValue();
-        else if (v instanceof LocalDateTime value)
-            return Double.valueOf(value.toEpochSecond(ZoneOffset.UTC)).intValue();
-        else
-            return 0;
+        return switch (v) {
+            case Integer value -> value;
+            case Long value -> value.intValue();
+            case Double value -> value.intValue();
+            case String value -> Integer.parseInt(value);
+            case LocalDate value -> Double.valueOf(value.toEpochDay()).intValue();
+            case LocalTime value -> Double.valueOf(value.toSecondOfDay()).intValue();
+            case LocalDateTime value -> Double.valueOf(value.toEpochSecond(ZoneOffset.UTC)).intValue();
+            case null, default -> 0;
+        };
     }
 
     public static int toInt(double v) {
@@ -100,22 +124,16 @@ public class PrimitiveUtil {
     }
 
     public static long toLong(Object v) {
-        if (v instanceof Long value)
-            return value;
-        else if (v instanceof Integer value)
-            return value.longValue();
-        else if (v instanceof Double value)
-            return value.longValue();
-        else if (v instanceof String value)
-            return Long.parseLong(value);
-        else if (v instanceof LocalDate value)
-            return Double.valueOf(value.toEpochDay()).longValue();
-        else if (v instanceof LocalTime value)
-            return Double.valueOf(value.toSecondOfDay()).longValue();
-        else if (v instanceof LocalDateTime value)
-            return Double.valueOf(value.toEpochSecond(ZoneOffset.UTC)).longValue();
-        else
-            return 0;
+        return switch (v) {
+            case Long value -> value;
+            case Integer value -> value.longValue();
+            case Double value -> value.longValue();
+            case String value -> Long.parseLong(value);
+            case LocalDate value -> Double.valueOf(value.toEpochDay()).longValue();
+            case LocalTime value -> Double.valueOf(value.toSecondOfDay()).longValue();
+            case LocalDateTime value -> Double.valueOf(value.toEpochSecond(ZoneOffset.UTC)).longValue();
+            default -> 0;
+        };
     }
 
     public static long toLong(String v) {
@@ -149,22 +167,16 @@ public class PrimitiveUtil {
     }
 
     public static double toDouble(Object v) {
-        if (v instanceof Double value)
-            return value;
-        else if (v instanceof Integer value)
-            return value.doubleValue();
-        else if (v instanceof Long value)
-            return value.doubleValue();
-        else if (v instanceof String value)
-            return Double.parseDouble(value);
-        else if (v instanceof LocalDate value)
-            return Double.valueOf(value.toEpochDay());
-        else if (v instanceof LocalTime value)
-            return Double.valueOf(value.toSecondOfDay());
-        else if (v instanceof LocalDateTime value)
-            return Double.valueOf(value.toEpochSecond(ZoneOffset.UTC));
-        else
-            return 0;
+        return switch (v) {
+            case Double value -> value;
+            case Integer value -> value.doubleValue();
+            case Long value -> value.doubleValue();
+            case String value -> Double.parseDouble(value);
+            case LocalDate value -> Double.valueOf(value.toEpochDay());
+            case LocalTime value -> Double.valueOf(value.toSecondOfDay());
+            case LocalDateTime value -> Double.valueOf(value.toEpochSecond(ZoneOffset.UTC));
+            default -> 0;
+        };
     }
 
     public static double toDouble(String v) {
@@ -207,18 +219,15 @@ public class PrimitiveUtil {
 
     public static LocalDate toDate(Object v) {
         if (v != null) {
-            if (v instanceof String value)
-                return toDate(value);
-            else if (v instanceof Integer value)
-                return toDate(value.intValue());
-            else if (v instanceof Long value)
-                return toDate(value.longValue());
-            else if (v instanceof Double value)
-                return toDate(value.doubleValue());
-            else if (v instanceof LocalDate value)
-                return value;
-            else if (v instanceof LocalDateTime value)
-                return value.toLocalDate();
+            return switch (v) {
+                case String value -> toDate(value);
+                case Integer value -> toDate(value.intValue());
+                case Long value -> toDate(value.longValue());
+                case Double value -> toDate(value.doubleValue());
+                case LocalDate value -> value;
+                case LocalDateTime value -> value.toLocalDate();
+                default -> null;
+            };
         }
         return null;
     }
@@ -245,18 +254,15 @@ public class PrimitiveUtil {
 
     public static LocalTime toTime(Object v) {
         if (v != null) {
-            if (v instanceof String value)
-                return toTime(value);
-            else if (v instanceof Integer value)
-                return toTime(value.intValue());
-            else if (v instanceof Long value)
-                return toTime(value.intValue());
-            else if (v instanceof Double value)
-                return toTime(value.doubleValue());
-            else if (v instanceof LocalTime value)
-                return value;
-            else if (v instanceof LocalDateTime value)
-                return value.toLocalTime();
+            return switch (v) {
+                case String value -> toTime(value);
+                case Integer value -> toTime(value.intValue());
+                case Long value -> toTime(value.intValue());
+                case Double value -> toTime(value.doubleValue());
+                case LocalTime value -> value;
+                case LocalDateTime value -> value.toLocalTime();
+                default -> null;
+            };
         }
         return null;
     }
@@ -296,20 +302,16 @@ public class PrimitiveUtil {
 
     public static LocalDateTime toDateTime(Object v) {
         if (v != null) {
-            if (v instanceof String value)
-                return toDateTime(value);
-            else if (v instanceof Integer value)
-                return toDateTime(value.intValue());
-            else if (v instanceof Long value)
-                return toDateTime(value.longValue());
-            else if (v instanceof Double value)
-                return toDateTime(value.doubleValue());
-            else if (v instanceof LocalDate value)
-                return LocalDateTime.of(value, CorePublicConsts.MIN_LOCALTIME);
-            else if (v instanceof LocalTime value)
-                return LocalDateTime.of(CorePublicConsts.MIN_LOCALDATE, value);
-            else if (v instanceof LocalDateTime value)
-                return value;
+            return switch (v) {
+                case String value -> toDateTime(value);
+                case Integer value -> toDateTime(value.intValue());
+                case Long value -> toDateTime(value.longValue());
+                case Double value -> toDateTime(value.doubleValue());
+                case LocalDate value -> LocalDateTime.of(value, CorePublicConsts.MIN_LOCALTIME);
+                case LocalTime value -> LocalDateTime.of(CorePublicConsts.MIN_LOCALDATE, value);
+                case LocalDateTime value -> value;
+                default -> null;
+            };
         }
         return null;
     }
@@ -433,32 +435,21 @@ public class PrimitiveUtil {
 
     public static String toString(Object v) {
         if (v != null) {
-            if (v instanceof String value)
-                return value;
-            else if (v instanceof Character value)
-                return value.toString();
-            else if (v instanceof Integer value)
-                return value.toString();
-            else if (v instanceof Long value)
-                return value.toString();
-            else if (v instanceof Double value)
-                return value.toString();
-            else if (v instanceof LocalDate value)
-                return value.toString();
-            else if (v instanceof LocalTime value)
-                return value.toString();
-            else if (v instanceof LocalDateTime value)
-                return value.toString();
-            else if (v instanceof UUID value)
-                return value.toString();
-            else if (v instanceof URI value)
-                return value.toString();
-            else if (v instanceof Boolean value)
-                return value.toString();
-            else if (v instanceof File value)
-                return value.getAbsolutePath();
-            else
-                return ObjectUtil.toString(v);
+            return switch (v) {
+                case String value -> value;
+                case Character value -> value.toString();
+                case Integer value -> value.toString();
+                case Long value -> value.toString();
+                case Double value -> value.toString();
+                case LocalDate value -> value.toString();
+                case LocalTime value -> value.toString();
+                case LocalDateTime value -> value.toString();
+                case UUID value -> value.toString();
+                case URI value -> value.toString();
+                case Boolean value -> value.toString();
+                case File value -> value.getAbsolutePath();
+                default -> ObjectUtil.toString(v);
+            };
         }
         return "";
     }
