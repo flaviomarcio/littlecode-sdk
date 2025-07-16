@@ -30,7 +30,6 @@
         <maven.compiler.target>21</maven.compiler.target>
         <littlecode-version>3.5.0</littlecode-version>
         <commons-io-version>2.15.1</commons-io-version>
-        <commons-lang3-version>3.14.0</commons-lang3-version>
         <h2.version>2.2.220</h2.version>
         <HikariCP.version>5.0.0</HikariCP.version>
         <jackson-version>2.15.2</jackson-version>
