@@ -35,8 +35,8 @@ public class EnvironmentUtil {
 
     public String envValue(String env, String defaultValue) {
         return (environment.containsProperty(env))
-                        ? PrimitiveUtil.toString(environment.getProperty(env)).trim()
-                        : defaultValue;
+                ? PrimitiveUtil.toString(environment.getProperty(env)).trim()
+                : defaultValue;
     }
 
     public String envValue(String env) {
@@ -49,9 +49,9 @@ public class EnvironmentUtil {
 
     public String asString(String env, String defaultValue) {
         var eValue = envValue(env);
-         if(eValue != null)
+        if (eValue != null)
             return eValue;
-        return defaultValue == null? "" : defaultValue;
+        return defaultValue == null ? "" : defaultValue;
     }
 
     public boolean asBool(String env) {
@@ -209,8 +209,8 @@ public class EnvironmentUtil {
         return defaultValue == null ? new ArrayList<>() : defaultValue;
     }
 
-    public Map<String,String> asMap(){
-        Map<String,String> result=new HashMap<>();
+    public Map<String, String> asMap() {
+        Map<String, String> result = new HashMap<>();
         if (environment instanceof ConfigurableEnvironment envs) {
             envs
                     .getPropertySources()
@@ -223,12 +223,12 @@ public class EnvironmentUtil {
         return result;
     }
 
-    public List<String> asList(){
+    public List<String> asList() {
         return this
                 .asMap()
                 .entrySet()
                 .stream()
-                .map(entry -> "%s=%s".formatted(entry.getKey(),entry.getValue()))
+                .map(entry -> "%s=%s".formatted(entry.getKey(), entry.getValue()))
                 .toList();
     }
 

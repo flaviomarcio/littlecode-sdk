@@ -22,6 +22,7 @@ public class ObjectUtil {
     @Getter
     @Setter
     private static boolean printLog = false;
+
     public static String inputReadAll(InputStream source) {
         if (source != null) {
             try {
@@ -87,7 +88,7 @@ public class ObjectUtil {
                 var objectMapper = UtilCoreConfig.newObjectMapper(UtilCoreConfig.FILE_FORMAT_DEFAULT);
                 objectMapper.updateValue(object, newValues);
             } catch (Exception e) {
-                if(ObjectUtil.isPrintLog())
+                if (ObjectUtil.isPrintLog())
                     log.error(e.getMessage());
             }
         }
@@ -103,7 +104,7 @@ public class ObjectUtil {
                 var objectMapper = UtilCoreConfig.newObjectMapper(UtilCoreConfig.FILE_FORMAT_DEFAULT);
                 objectMapper.updateValue(object, updateBytes);
             } catch (Exception e) {
-                if(ObjectUtil.isPrintLog())
+                if (ObjectUtil.isPrintLog())
                     log.error(e.getMessage());
             }
         }
@@ -182,7 +183,7 @@ public class ObjectUtil {
         Arrays
                 .stream(tClass.getDeclaredFields())
                 .forEach(field -> {
-                    if (!Modifier.isStatic(field.getModifiers())){
+                    if (!Modifier.isStatic(field.getModifiers())) {
                         field.setAccessible(true);
                         result.add(field);
                     }
@@ -226,7 +227,7 @@ public class ObjectUtil {
             c.setAccessible(true);
             return (T) c.newInstance();
         } catch (Exception e) {
-            if(ObjectUtil.isPrintLog())
+            if (ObjectUtil.isPrintLog())
                 log.error(e.getMessage());
         }
         return null;
@@ -266,7 +267,7 @@ public class ObjectUtil {
         try {
             return mapper.readValue(source, aClass);
         } catch (Exception e) {
-            if(ObjectUtil.isPrintLog())
+            if (ObjectUtil.isPrintLog())
                 log.error(e.getMessage());
         }
         return null;

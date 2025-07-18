@@ -8,7 +8,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.net.URI;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,12 +15,11 @@ import java.util.List;
 class UrlHelperUtilTest {
 
 
-
     @Test
     @DisplayName("deve validar condições iniciais")
     void deveValidarCondicoesIniciais() {
         var urlHelperUtil = new UrlHelperUtil();
-        Assertions.assertEquals("/",urlHelperUtil.getBasePath());
+        Assertions.assertEquals("/", urlHelperUtil.getBasePath());
         Assertions.assertTrue(urlHelperUtil.getOpenPaths().isEmpty());
         Assertions.assertTrue(urlHelperUtil.getAcceptedPaths().isEmpty());
     }
@@ -70,19 +68,19 @@ class UrlHelperUtilTest {
         var urlHelperUtil = new UrlHelperUtil();
 
         urlHelperUtil.setBasePath("");
-        Assertions.assertEquals("/",urlHelperUtil.getBasePath());
+        Assertions.assertEquals("/", urlHelperUtil.getBasePath());
 
         urlHelperUtil.setBasePath(" ");
-        Assertions.assertEquals("/",urlHelperUtil.getBasePath());
+        Assertions.assertEquals("/", urlHelperUtil.getBasePath());
 
         urlHelperUtil.setBasePath(null);
-        Assertions.assertEquals("/",urlHelperUtil.getBasePath());
+        Assertions.assertEquals("/", urlHelperUtil.getBasePath());
 
         urlHelperUtil.setBasePath("//");
-        Assertions.assertEquals("//",urlHelperUtil.getBasePath());
+        Assertions.assertEquals("//", urlHelperUtil.getBasePath());
 
         urlHelperUtil.setBasePath(" / / ");
-        Assertions.assertEquals("/ /",urlHelperUtil.getBasePath());
+        Assertions.assertEquals("/ /", urlHelperUtil.getBasePath());
     }
 
     @Test
@@ -91,7 +89,7 @@ class UrlHelperUtilTest {
         var urlHelperUtil = new UrlHelperUtil();
 
         {
-            var list=urlHelperUtil.parserPaths("/path/method", "/path/method", "");
+            var list = urlHelperUtil.parserPaths("/path/method", "/path/method", "");
             Assertions.assertTrue(list.stream().anyMatch(s -> s.equals("/path/method")));
             Assertions.assertEquals(1L, list.size());
         }
@@ -192,76 +190,76 @@ class UrlHelperUtilTest {
             urlHelperUtil.setBasePath("/");
             var paths = List.of("/");
             Assertions.assertTrue(urlHelperUtil.matchPath(paths, "/"));
-            Assertions.assertFalse(urlHelperUtil.matchPath(paths,"/v1"));
+            Assertions.assertFalse(urlHelperUtil.matchPath(paths, "/v1"));
         }
 
         {
             var urlHelperUtil = new UrlHelperUtil();
             urlHelperUtil.setBasePath("/");
-            var paths=List.of("/**");
-            Assertions.assertTrue(urlHelperUtil.matchPath(paths,"/"));
-            Assertions.assertTrue(urlHelperUtil.matchPath(paths,"/v1"));
+            var paths = List.of("/**");
+            Assertions.assertTrue(urlHelperUtil.matchPath(paths, "/"));
+            Assertions.assertTrue(urlHelperUtil.matchPath(paths, "/v1"));
         }
 
         {
             var urlHelperUtil = new UrlHelperUtil();
             urlHelperUtil.setBasePath("/");
-            var paths=List.of("/v1/**");
-            Assertions.assertFalse(urlHelperUtil.matchPath(paths,"/"));
-            Assertions.assertTrue(urlHelperUtil.matchPath(paths,"/v1"));
+            var paths = List.of("/v1/**");
+            Assertions.assertFalse(urlHelperUtil.matchPath(paths, "/"));
+            Assertions.assertTrue(urlHelperUtil.matchPath(paths, "/v1"));
         }
 
         {
             var urlHelperUtil = new UrlHelperUtil();
             urlHelperUtil.setBasePath("/");
-            var paths=List.of("/**");
-            Assertions.assertTrue(urlHelperUtil.matchPath(paths,"/"));
-            Assertions.assertTrue(urlHelperUtil.matchPath(paths,"/v1"));
+            var paths = List.of("/**");
+            Assertions.assertTrue(urlHelperUtil.matchPath(paths, "/"));
+            Assertions.assertTrue(urlHelperUtil.matchPath(paths, "/v1"));
         }
 
         {
             var urlHelperUtil = new UrlHelperUtil();
             urlHelperUtil.setBasePath("/");
-            var paths=List.of("/v1/**");
-            Assertions.assertFalse(urlHelperUtil.matchPath(paths,null));
-            Assertions.assertFalse(urlHelperUtil.matchPath(paths,""));
-            Assertions.assertFalse(urlHelperUtil.matchPath(paths," "));
-            Assertions.assertFalse(urlHelperUtil.matchPath(paths," / "));
-            Assertions.assertFalse(urlHelperUtil.matchPath(paths,"/"));
-            Assertions.assertTrue(urlHelperUtil.matchPath(paths,"/v1/"));
-            Assertions.assertTrue(urlHelperUtil.matchPath(paths,"/v1/test"));
+            var paths = List.of("/v1/**");
+            Assertions.assertFalse(urlHelperUtil.matchPath(paths, null));
+            Assertions.assertFalse(urlHelperUtil.matchPath(paths, ""));
+            Assertions.assertFalse(urlHelperUtil.matchPath(paths, " "));
+            Assertions.assertFalse(urlHelperUtil.matchPath(paths, " / "));
+            Assertions.assertFalse(urlHelperUtil.matchPath(paths, "/"));
+            Assertions.assertTrue(urlHelperUtil.matchPath(paths, "/v1/"));
+            Assertions.assertTrue(urlHelperUtil.matchPath(paths, "/v1/test"));
         }
 
         {
             var urlHelperUtil = new UrlHelperUtil();
             urlHelperUtil.setBasePath("/");
-            var paths=List.of("/v2/**");
-            Assertions.assertFalse(urlHelperUtil.matchPath(paths,null));
-            Assertions.assertFalse(urlHelperUtil.matchPath(paths,""));
-            Assertions.assertFalse(urlHelperUtil.matchPath(paths," "));
-            Assertions.assertFalse(urlHelperUtil.matchPath(paths," / "));
-            Assertions.assertFalse(urlHelperUtil.matchPath(paths,"/"));
-            Assertions.assertFalse(urlHelperUtil.matchPath(paths,"/v1/"));
-            Assertions.assertTrue(urlHelperUtil.matchPath(paths,"/v2/test"));
+            var paths = List.of("/v2/**");
+            Assertions.assertFalse(urlHelperUtil.matchPath(paths, null));
+            Assertions.assertFalse(urlHelperUtil.matchPath(paths, ""));
+            Assertions.assertFalse(urlHelperUtil.matchPath(paths, " "));
+            Assertions.assertFalse(urlHelperUtil.matchPath(paths, " / "));
+            Assertions.assertFalse(urlHelperUtil.matchPath(paths, "/"));
+            Assertions.assertFalse(urlHelperUtil.matchPath(paths, "/v1/"));
+            Assertions.assertTrue(urlHelperUtil.matchPath(paths, "/v2/test"));
         }
 
         {
             var urlHelperUtil = new UrlHelperUtil();
             urlHelperUtil.setBasePath("");
-            var paths=List.of("/v1");
-            Assertions.assertFalse(urlHelperUtil.matchPath(paths,null));
-            Assertions.assertFalse(urlHelperUtil.matchPath(paths,""));
-            Assertions.assertFalse(urlHelperUtil.matchPath(paths," "));
-            Assertions.assertFalse(urlHelperUtil.matchPath(paths," / "));
-            Assertions.assertFalse(urlHelperUtil.matchPath(paths,"/"));
-            Assertions.assertTrue(urlHelperUtil.matchPath(paths,"/v1/"));
+            var paths = List.of("/v1");
+            Assertions.assertFalse(urlHelperUtil.matchPath(paths, null));
+            Assertions.assertFalse(urlHelperUtil.matchPath(paths, ""));
+            Assertions.assertFalse(urlHelperUtil.matchPath(paths, " "));
+            Assertions.assertFalse(urlHelperUtil.matchPath(paths, " / "));
+            Assertions.assertFalse(urlHelperUtil.matchPath(paths, "/"));
+            Assertions.assertTrue(urlHelperUtil.matchPath(paths, "/v1/"));
         }
     }
 
 
     @Test
     @DisplayName("deve validar metodo isOpenPath")
-    void deveValidarMetodo_isOpenPath(){
+    void deveValidarMetodo_isOpenPath() {
         UrlHelperUtil urlHelperUtil = new UrlHelperUtil();
         urlHelperUtil.setOpenPaths(List.of("/**"));
         Assertions.assertTrue(urlHelperUtil.isOpenPath("/"));
@@ -270,7 +268,7 @@ class UrlHelperUtilTest {
 
     @Test
     @DisplayName("deve validar metodo setAcceptedPaths")
-    void deveValidarMetodo_setAcceptedPaths(){
+    void deveValidarMetodo_setAcceptedPaths() {
         UrlHelperUtil urlHelperUtil = new UrlHelperUtil();
         urlHelperUtil.setAcceptedPaths(List.of("/**"));
         Assertions.assertTrue(urlHelperUtil.isAcceptedPath("/"));
@@ -278,7 +276,7 @@ class UrlHelperUtilTest {
 
     @Test
     @DisplayName("deve validar metodo isBlockedPath")
-    void deveValidarMetodo_isBlockedPath(){
+    void deveValidarMetodo_isBlockedPath() {
         UrlHelperUtil urlHelperUtil = new UrlHelperUtil();
         urlHelperUtil.setBlockedPaths(List.of("/**"));
         Assertions.assertTrue(urlHelperUtil.isBlockedPath("/"));
@@ -286,7 +284,7 @@ class UrlHelperUtilTest {
 
     @Test
     @DisplayName("deve validar metodo isBackendPath")
-    void deveValidarMetodo_isBackendPath(){
+    void deveValidarMetodo_isBackendPath() {
         UrlHelperUtil urlHelperUtil = new UrlHelperUtil();
         urlHelperUtil.setBackendPaths(List.of("/**"));
         Assertions.assertTrue(urlHelperUtil.isBackendPath("/"));
@@ -294,7 +292,7 @@ class UrlHelperUtilTest {
 
     @Test
     @DisplayName("deve validar metodo isBackendOpenPath")
-    void deveValidarMetodo_isBackendOpenPath(){
+    void deveValidarMetodo_isBackendOpenPath() {
         UrlHelperUtil urlHelperUtil = new UrlHelperUtil();
         urlHelperUtil.setBackendOpenPaths(List.of("/**"));
         Assertions.assertTrue(urlHelperUtil.isBackendOpenPath("/"));

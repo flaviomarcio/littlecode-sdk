@@ -24,6 +24,17 @@ public class CollectionUtil<T> {
         this.target = target.values();
     }
 
+    public static <T> List<T> cloneList(Class<?> aClass, List<T> src) {
+        var list = new ArrayList<T>();
+        for (var v : src) {
+            var item = ObjectUtil.createFromObject(v.getClass(), v);
+            if (item == null)
+                throw ExceptionBuilder.ofNullPointer("Invalid clone item[%s], check constructores", v.getClass());
+            list.add((T) item);
+        }
+        return list;
+    }
+
     public CollectionUtil filter(Filter filter) {
         this.filter = filter;
         return this;
@@ -95,17 +106,6 @@ public class CollectionUtil<T> {
     @FunctionalInterface
     public interface Filter<O> {
         boolean matched(O item);
-    }
-
-    public static <T> List<T> cloneList(Class<?> aClass, List<T> src) {
-        var list = new ArrayList<T>();
-        for (var v : src){
-            var item=ObjectUtil.createFromObject(v.getClass(), v);
-            if(item==null)
-                throw ExceptionBuilder.ofNullPointer("Invalid clone item[%s], check constructores", v.getClass());
-            list.add((T)item);
-        }
-        return list;
     }
 
 }

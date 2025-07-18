@@ -1,18 +1,12 @@
 package com.littlecode.tests;
 
 import com.littlecode.parsers.StringUtil;
-import com.littlecode.util.TestsUtil;
-import lombok.Builder;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.ArrayList;
-import java.util.List;
 
 //ref
 // https://textedit.tools/snakecase
@@ -26,50 +20,50 @@ class StringUtilTest {
     @DisplayName("Deve validar constructores")
     void deveValidarConstructores() {
         Assertions.assertDoesNotThrow(() -> new StringUtil("0"));
-        Assertions.assertDoesNotThrow(() -> new StringUtil("#",""));
+        Assertions.assertDoesNotThrow(() -> new StringUtil("#", ""));
     }
 
     @Test
     @DisplayName("Deve validar getter setter")
     void deveValidarGetterSetter() {
-        Assertions.assertEquals(new StringUtil("0").getValue(),"0");
-        Assertions.assertEquals(new StringUtil("0").getPadChar()," ");
+        Assertions.assertEquals(new StringUtil("0").getValue(), "0");
+        Assertions.assertEquals(new StringUtil("0").getPadChar(), " ");
 
-        Assertions.assertEquals(new StringUtil("0").getValue(),"0");
-        Assertions.assertEquals(new StringUtil("0","?").getPadChar(),"?");
+        Assertions.assertEquals(new StringUtil("0").getValue(), "0");
+        Assertions.assertEquals(new StringUtil("0", "?").getPadChar(), "?");
     }
 
     @Test
     @DisplayName("Deve validar toString")
     void deveValidarToString() {
-        Assertions.assertEquals(StringUtil.toString("0"),"0");
-        Assertions.assertEquals(StringUtil.of("0").asString(),"0");
-        Assertions.assertEquals(StringUtil.of("0").toString(),"0");
+        Assertions.assertEquals(StringUtil.toString("0"), "0");
+        Assertions.assertEquals(StringUtil.of("0").asString(), "0");
+        Assertions.assertEquals(StringUtil.of("0").toString(), "0");
     }
 
     @Test
     @DisplayName("Deve validar toNumber")
     void deveValidarToNumber() {
-        Assertions.assertEquals(StringUtil.toNumber("A0B1C2"),"012");
-        Assertions.assertEquals(StringUtil.toNumber("abc"),"");
-        Assertions.assertEquals(StringUtil.of("0").asString(),"0");
-        Assertions.assertEquals(StringUtil.of("A0B1C2").asNumber(),"012");
+        Assertions.assertEquals(StringUtil.toNumber("A0B1C2"), "012");
+        Assertions.assertEquals(StringUtil.toNumber("abc"), "");
+        Assertions.assertEquals(StringUtil.of("0").asString(), "0");
+        Assertions.assertEquals(StringUtil.of("A0B1C2").asNumber(), "012");
     }
 
     @Test
     @DisplayName("Deve validar toAlpha")
     void deveValidarToAlpha() {
-        Assertions.assertEquals(StringUtil.toAlpha("A0B1C2"),"ABC");
-        Assertions.assertEquals(StringUtil.toAlpha("012"),"");
-        Assertions.assertEquals(StringUtil.of("A0B1C2").asAlpha(),"ABC");
+        Assertions.assertEquals(StringUtil.toAlpha("A0B1C2"), "ABC");
+        Assertions.assertEquals(StringUtil.toAlpha("012"), "");
+        Assertions.assertEquals(StringUtil.of("A0B1C2").asAlpha(), "ABC");
     }
 
     @Test
     @DisplayName("Deve validar toAlphaNumber")
     void deveValidarToAlphaNumber() {
-        Assertions.assertEquals(StringUtil.toAlphaNumber("A0B1C2"),"A0B1C2");
-        Assertions.assertEquals(StringUtil.toAlphaNumber("012"),"012");
-        Assertions.assertEquals(StringUtil.of("A0B1C2").asAlphaNumber(),"A0B1C2");
+        Assertions.assertEquals(StringUtil.toAlphaNumber("A0B1C2"), "A0B1C2");
+        Assertions.assertEquals(StringUtil.toAlphaNumber("012"), "012");
+        Assertions.assertEquals(StringUtil.of("A0B1C2").asAlphaNumber(), "A0B1C2");
     }
 
 

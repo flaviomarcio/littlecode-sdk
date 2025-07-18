@@ -37,21 +37,6 @@ public class ObjectReturn {
                     .end();
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (super.equals(obj))
-            return true;
-        var md5A = HashUtil.toMd5Uuid(this);
-        var md5B = HashUtil.toMd5Uuid(obj);
-        return md5A.equals(md5B);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(HashUtil.toMd5Uuid(this));
-    }
-
-
     public static MessageMaker create() {
         return new ObjectReturn().m();
     }
@@ -319,6 +304,20 @@ public class ObjectReturn {
 
     public static ObjectReturn of(ObjectReturn objectReturn) {
         return new ObjectReturn(objectReturn);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (super.equals(obj))
+            return true;
+        var md5A = HashUtil.toMd5Uuid(this);
+        var md5B = HashUtil.toMd5Uuid(obj);
+        return md5A.equals(md5B);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(HashUtil.toMd5Uuid(this));
     }
 
     public ObjectReturn body(Object body) {

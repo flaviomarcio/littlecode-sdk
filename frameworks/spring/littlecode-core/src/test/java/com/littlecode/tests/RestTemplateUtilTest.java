@@ -9,7 +9,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.*;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -84,7 +83,7 @@ class RestTemplateUtilTest {
     @DisplayName("Deve validar Method host")
     void deveValidarMethod_host() {
         {
-            var util=RestTemplateUtil
+            var util = RestTemplateUtil
                     .builder()
                     .host("remotehost")
                     .build();
@@ -124,32 +123,32 @@ class RestTemplateUtilTest {
         {
             var util = RestTemplateUtil
                     .builder()
-                    .queryParams(Map.of("key","value"))
+                    .queryParams(Map.of("key", "value"))
                     .build();
-            var uri=UriComponentsBuilder.fromHttpUrl(util.getUrl()).build();
+            var uri = UriComponentsBuilder.fromHttpUrl(util.getUrl()).build();
 
             Assertions.assertTrue(uri.getQueryParams().containsKey("key"));
-            Assertions.assertEquals(uri.getQueryParams().get("key").stream().findFirst().get(),"value");
+            Assertions.assertEquals(uri.getQueryParams().get("key").stream().findFirst().get(), "value");
             Assertions.assertTrue(util.getUrl().startsWith("http://localhost?key=value"));
         }
 
         {
             var util = RestTemplateUtil
                     .builder()
-                    .queryParam("key","value")
+                    .queryParam("key", "value")
                     .build();
-            var uri=UriComponentsBuilder.fromHttpUrl(util.getUrl()).build();
+            var uri = UriComponentsBuilder.fromHttpUrl(util.getUrl()).build();
 
             Assertions.assertTrue(uri.getQueryParams().containsKey("key"));
-            Assertions.assertEquals(uri.getQueryParams().get("key").stream().findFirst().get(),"value");
+            Assertions.assertEquals(uri.getQueryParams().get("key").stream().findFirst().get(), "value");
         }
 
         {
             var util = RestTemplateUtil
                     .builder()
-                    .queryParam("key","")
+                    .queryParam("key", "")
                     .build();
-            var uri=UriComponentsBuilder.fromHttpUrl(util.getUrl()).build();
+            var uri = UriComponentsBuilder.fromHttpUrl(util.getUrl()).build();
 
             Assertions.assertTrue(uri.getQueryParams().containsKey("key"));
         }
@@ -157,9 +156,9 @@ class RestTemplateUtilTest {
         {
             var util = RestTemplateUtil
                     .builder()
-                    .queryParam("","value")
+                    .queryParam("", "value")
                     .build();
-            var uri=UriComponentsBuilder.fromHttpUrl(util.getUrl()).build();
+            var uri = UriComponentsBuilder.fromHttpUrl(util.getUrl()).build();
 
             Assertions.assertTrue(uri.getQueryParams().isEmpty());
         }
@@ -169,7 +168,7 @@ class RestTemplateUtilTest {
                     .builder()
                     .queryParams(new HttpHeaders())//new MultiValueMap
                     .build();
-            var uri=UriComponentsBuilder.fromHttpUrl(util.getUrl()).build();
+            var uri = UriComponentsBuilder.fromHttpUrl(util.getUrl()).build();
             Assertions.assertTrue(uri.getQueryParams().isEmpty());
         }
     }
@@ -219,7 +218,7 @@ class RestTemplateUtilTest {
                     .builder()
                     .path("/v1")
                     .build();
-            Assertions.assertEquals(util.getUrl(),"http://localhost/v1");
+            Assertions.assertEquals(util.getUrl(), "http://localhost/v1");
         }
 
         {
@@ -227,7 +226,7 @@ class RestTemplateUtilTest {
                     .builder()
                     .path("")
                     .build();
-            Assertions.assertEquals(util.getUrl(),"http://localhost");
+            Assertions.assertEquals(util.getUrl(), "http://localhost");
         }
 
         {
@@ -235,7 +234,7 @@ class RestTemplateUtilTest {
                     .builder()
                     .path("/")
                     .build();
-            Assertions.assertEquals(util.getUrl(),"http://localhost");
+            Assertions.assertEquals(util.getUrl(), "http://localhost");
         }
 
         {
@@ -243,7 +242,7 @@ class RestTemplateUtilTest {
                     .builder()
                     .path(null)
                     .build();
-            Assertions.assertEquals(util.getUrl(),"http://localhost");
+            Assertions.assertEquals(util.getUrl(), "http://localhost");
         }
     }
 
@@ -254,7 +253,7 @@ class RestTemplateUtilTest {
             Assertions.assertDoesNotThrow(() -> {
                 var util = RestTemplateUtil
                         .builder()
-                        .method((HttpMethod)null)
+                        .method((HttpMethod) null)
                         .method((Object) null)
                         .build();
                 util.setMethod(null);
@@ -330,7 +329,7 @@ class RestTemplateUtilTest {
         }
 
         {
-            var lst=List.of(1,2,3,4);
+            var lst = List.of(1, 2, 3, 4);
             var util = RestTemplateUtil
                     .builder()
                     .body(lst)
@@ -343,26 +342,26 @@ class RestTemplateUtilTest {
     @Test
     @DisplayName("Deve validar Method exchange")
     void deveValidarMethods_exchange() {
-        var restTemplate=Mockito.mock(RestTemplate.class);
-        for(var method: HttpMethod.values()){
-            var util=RestTemplateUtil
+        var restTemplate = Mockito.mock(RestTemplate.class);
+        for (var method : HttpMethod.values()) {
+            var util = RestTemplateUtil
                     .builder()
                     .restTemplate(restTemplate)
-                    .header(HttpHeaders.AUTHORIZATION,"Beare TOKEN")
+                    .header(HttpHeaders.AUTHORIZATION, "Beare TOKEN")
                     .headers(HttpHeaders.EMPTY)
-                    .headers(Map.of(HttpHeaders.AUTHORIZATION,"Beare TOKEN"))
+                    .headers(Map.of(HttpHeaders.AUTHORIZATION, "Beare TOKEN"))
                     .uri("http://localhost:8080")
                     .url("http://localhost:8080")
                     .build();
-            for(var statusCode: List.of(HttpStatus.OK,HttpStatus.BAD_GATEWAY)){
-                ResponseEntity<String> response=new ResponseEntity("[1,2,3,4]", statusCode);
+            for (var statusCode : List.of(HttpStatus.OK, HttpStatus.BAD_GATEWAY)) {
+                ResponseEntity<String> response = new ResponseEntity("[1,2,3,4]", statusCode);
 
                 Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.eq(method), Mockito.any(HttpEntity.class), Mockito.eq(String.class)))
                         .thenReturn(response);
 
                 Assertions.assertDoesNotThrow(() -> {
                     util.setMethod(method.name());
-                    Assertions.assertEquals(util.getMethod(),method);
+                    Assertions.assertEquals(util.getMethod(), method);
                 });
                 Assertions.assertNotNull(util.exchange());
                 Assertions.assertNotNull(util.exchange(method));
@@ -379,22 +378,22 @@ class RestTemplateUtilTest {
     @Test
     @DisplayName("Deve validar metodo print")
     void deveValidarMetodoPrint() {
-        var restTemplate=Mockito.mock(RestTemplate.class);
-        for(var method: HttpMethod.values()){
-            var util=RestTemplateUtil
+        var restTemplate = Mockito.mock(RestTemplate.class);
+        for (var method : HttpMethod.values()) {
+            var util = RestTemplateUtil
                     .builder()
                     .restTemplate(restTemplate)
                     .method(method)
-                    .header(HttpHeaders.AUTHORIZATION,"Beare TOKEN")
+                    .header(HttpHeaders.AUTHORIZATION, "Beare TOKEN")
                     .headers(HttpHeaders.EMPTY)
-                    .headers(Map.of(HttpHeaders.AUTHORIZATION,"Beare TOKEN"))
+                    .headers(Map.of(HttpHeaders.AUTHORIZATION, "Beare TOKEN"))
                     .uri("http://localhost:8080")
                     .url("http://localhost:8080")
                     .build();
 
             Assertions.assertDoesNotThrow(util::print);
 
-            for(var statusCode: List.of(HttpStatus.OK,HttpStatus.BAD_GATEWAY)){
+            for (var statusCode : List.of(HttpStatus.OK, HttpStatus.BAD_GATEWAY)) {
                 {
                     ResponseEntity<String> response = new ResponseEntity("[1,2,3,4]", statusCode);
 

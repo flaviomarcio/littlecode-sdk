@@ -9,17 +9,19 @@ import java.time.LocalDateTime;
 
 public class HealthCheckEvent {
     private final HealthCheckConfig config;
+
     public HealthCheckEvent(HealthCheckConfig config) {
-        this.config=config;
+        this.config = config;
     }
+
     public Health createHealth() {
-        if (config.isStopOnFail()){
-            if(!PrimitiveUtil.isEmpty(HealthCheckStatics.staticFailMessage))
+        if (config.isStopOnFail()) {
+            if (!PrimitiveUtil.isEmpty(HealthCheckStatics.staticFailMessage))
                 return Health.down().withDetail("Service fail", HealthCheckStatics.staticFailMessage).build();
         }
 
-        if (config.isStopOnLimitExecution() && HealthCheckStatics.staticStartExecution!=null) {
-            var duration= DateUtil.toDuration(config.getStopOnLimitDuration());
+        if (config.isStopOnLimitExecution() && HealthCheckStatics.staticStartExecution != null) {
+            var duration = DateUtil.toDuration(config.getStopOnLimitDuration());
             if (!Duration.ZERO.equals(duration)) {
                 var limiteDt = LocalDateTime
                         .now()
@@ -29,8 +31,8 @@ public class HealthCheckEvent {
             }
         }
 
-        if (config.isStopOnIdle() && HealthCheckStatics.staticLastExecution!=null) {
-            var duration= DateUtil.toDuration(config.getStopOnIdleDuration());
+        if (config.isStopOnIdle() && HealthCheckStatics.staticLastExecution != null) {
+            var duration = DateUtil.toDuration(config.getStopOnIdleDuration());
             if (!Duration.ZERO.equals(duration)) {
                 var limiteDt = LocalDateTime
                         .now()

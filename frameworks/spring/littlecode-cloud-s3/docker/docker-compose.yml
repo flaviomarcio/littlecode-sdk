@@ -1,0 +1,18 @@
+services:
+  localstack:
+    image: localstack/localstack
+    container_name: localstack
+    hostname: localstack
+    network_mode: host
+    ports:
+      - "4566:4566"
+    #   - "4571:4571"
+    environment:
+      - SERVICES=s3
+      - USE_SSL=false
+      - AWS_DEFAULT_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=localstack
+      - AWS_SECRET_ACCESS_KEY=localstack
+    volumes:
+      - ./init-s3.sh:/etc/localstack/init/ready.d/init-s3.sh
+      #- /var/run/docker.sock:/var/run/docker.sock  # Necessário para o modo docker-in-docker

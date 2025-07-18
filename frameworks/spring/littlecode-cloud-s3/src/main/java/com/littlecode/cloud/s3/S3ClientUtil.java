@@ -12,12 +12,10 @@ import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.S3Configuration;
 import software.amazon.awssdk.services.s3.model.*;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -58,17 +56,22 @@ public class S3ClientUtil {
         return this;
     }
 
-    public S3Client newClient() {
-
+    public UUID makeHashClient() {
         var endpoint = this.getEndpoint() == null ? "" : this.getEndpoint().trim();
         var region = this.getRegion() == null ? "" : this.getRegion().trim();
         var bucket = this.getBucket() == null ? "" : this.getBucket().trim();
         var accessKey = this.getAccessKey() == null ? "" : this.getAccessKey().trim();
         var secretKey = this.getSecretKey() == null ? "" : this.getSecretKey().trim();
-        var hashClient = HashUtil.toMd5Uuid(List.of(endpoint, region, bucket, accessKey, secretKey));
-        if (this.s3Client != null && hashClient.equals(this.hashClient)){
-            return this.s3Client;
-        }
+        return HashUtil.toMd5Uuid(List.of(endpoint, region, bucket, accessKey, secretKey));
+    }
+
+    public S3Client createClient() {
+
+        var endpoint = this.getEndpoint() == null ? "" : this.getEndpoint().trim();
+        var region = this.getRegion() == null ? "" : this.getRegion().trim();
+        var bucket = this.getBucket() == null ? "" : this.getBucket().trim();
+
+
 
         if (PrimitiveUtil.isEmpty(region))
             throw ExceptionBuilder.ofNullPointer("Invalid clientSecret");
@@ -76,20 +79,55 @@ public class S3ClientUtil {
         if (PrimitiveUtil.isEmpty(bucket))
             throw ExceptionBuilder.ofNullPointer("Invalid bucket");
 
-        this.hashClient = hashClient;
-
+        S3Client s3Client;
         if (endpoint.trim().isEmpty()) {
-            return this.s3Client = S3Client.builder()
+            s3Client=
+                    S3Client
+                            .builder()
+                            .credentialsProvider(this::createAwsBasicCredentials)
+                            .region(Region.of(this.getRegion()))
+                            .forcePathStyle(true)
+                            .serviceConfiguration(
+                                    S3Configuration
+                                            .builder()
+                                            .chunkedEncodingEnabled(false) // <=== DESATIVA o modo problemático
+                                            .build()
+                            )
+                            .build();
+        }
+        else{
+            s3Client= S3Client.builder()
+                    .endpointOverride(URI.create(endpoint))
                     .credentialsProvider(this::createAwsBasicCredentials)
                     .region(Region.of(this.getRegion()))
+                    .forcePathStyle(true)
+                    .serviceConfiguration(
+                            S3Configuration
+                                    .builder()
+                                    .chunkedEncodingEnabled(false) // <=== DESATIVA o modo problemático
+                                    .build()
+                    )
                     .build();
         }
 
-        return this.s3Client = S3Client.builder()
-                .endpointOverride(URI.create(endpoint))
-                .credentialsProvider(this::createAwsBasicCredentials)
-                .region(Region.of(this.getRegion()))
-                .build();
+        this.hashClient=makeHashClient();
+        return s3Client;
+    }
+
+
+    public S3Client newClient() {
+        var hashClient=makeHashClient();
+        if (this.s3Client != null && hashClient.equals(this.hashClient))
+            return this.s3Client;
+
+        if (PrimitiveUtil.isEmpty(this.region))
+            throw ExceptionBuilder.ofNullPointer("Invalid clientSecret");
+
+        if (PrimitiveUtil.isEmpty(this.bucket))
+            throw ExceptionBuilder.ofNullPointer("Invalid bucket");
+
+
+        return this.createClient();
     }
 
     public AwsBasicCredentials createAwsBasicCredentials() {
@@ -100,33 +138,22 @@ public class S3ClientUtil {
         return AwsBasicCredentials.create(accessKey, secretKey);
     }
 
-    private boolean internalPut(File source, String filename, boolean deleteOnFinished){
+    private boolean internalPut(File source, String fileName) throws Exception {
+        log.debug("Put: started, file: {}",source.getAbsolutePath());
         this.s3Client = this.newClient();
-//        var putObjectRequest = PutObjectRequest
-//                .builder()
-//                .bucket(this.getBucket())
-//                .key(filename)
-//                .contentLength(source.length())//inputStream.available()
-//                .build();
-//        s3Client.putObject(putObjectRequest, source.toPath());
-//        if (deleteOnFinished)
-//            source.delete();
-//        return true;
-
-        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                .bucket(this.getBucket())
-                .key(filename)
-                .build();
-
-        PutObjectResponse response = s3Client.putObject(putObjectRequest, RequestBody.fromFile(source));
-
-        var __return=(!PrimitiveUtil.toString(response.eTag()).trim().isEmpty());
-
-        if (deleteOnFinished)
-            source.delete();
-
-        return __return;
-
+        try (InputStream inputStream = new FileInputStream(source)) {
+            PutObjectResponse response = s3Client.putObject(
+                    PutObjectRequest.builder()
+                            .bucket(this.getBucket())
+                            .key(fileName)
+                            .build(),
+                    RequestBody.fromInputStream(inputStream, source.length())
+            );
+            log.debug("Put response: eTag: {}", response.eTag());
+            return true;
+        }finally {
+            log.debug("Put: finished, file: {}",source.getAbsolutePath());
+        }
     }
 
     public long size(String filename){
@@ -201,32 +228,29 @@ public class S3ClientUtil {
         return null;
     }
 
-    public boolean put(Object source, String fileName){
-        if (source instanceof File sourceValues) {
-            return this.internalPut(sourceValues, fileName, false);
-        }else if (source instanceof Path sourceValues) {
-            return this.internalPut(sourceValues.toFile(), fileName, false);
+    public boolean put(Object source, String fileName) throws Exception {
+        if (source instanceof File sourceValues)
+            return this.internalPut(sourceValues, fileName);
+
+        if (source instanceof Path sourceValues)
+            return this.internalPut(sourceValues.toFile(), fileName);
+
+
+        var tmpFile = IOUtil.target(IOUtil.createFileTemp()).toFile();
+        if (source instanceof InputStream sourceValues) {
+            IOUtil
+                    .target(tmpFile)
+                    .writeAll(Arrays.toString(sourceValues.readAllBytes()));
+        } else if (source instanceof String sourceValues) {
+            IOUtil
+                    .target(tmpFile)
+                    .writeAll(sourceValues);
         } else {
-            var tmpFile = IOUtil.target(IOUtil.createFileTemp()).toFile();
-            try {
-                if (source instanceof InputStream sourceValues) {
-                    IOUtil
-                            .target(tmpFile)
-                            .writeAll(Arrays.toString(sourceValues.readAllBytes()));
-                } else if (source instanceof String sourceValues) {
-                    IOUtil
-                            .target(tmpFile)
-                            .writeAll(sourceValues);
-                } else {
-                    IOUtil
-                            .target(tmpFile)
-                            .writeAll(ObjectUtil.toString(source));
-                }
-                return this.internalPut(tmpFile, fileName, true);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            IOUtil
+                    .target(tmpFile)
+                    .writeAll(ObjectUtil.toString(source));
         }
+        return this.internalPut(tmpFile, fileName);
     }
 
     public boolean delete(String fileName) {

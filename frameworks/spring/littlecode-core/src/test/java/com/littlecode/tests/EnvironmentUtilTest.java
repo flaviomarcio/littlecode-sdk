@@ -60,9 +60,9 @@ class EnvironmentUtilTest {
 
             Assertions.assertNull(eUtil.envValue("item.attr.x"));
             Assertions.assertNotNull(eUtil.envValue("item.attr.x", "x"));
-            Assertions.assertEquals("x",eUtil.envValue("item.attr.x", "x"));
+            Assertions.assertEquals("x", eUtil.envValue("item.attr.x", "x"));
             Assertions.assertNotNull(eUtil.envValue("item.attr"));
-            Assertions.assertEquals("itemA,itemB,itemC",eUtil.envValue("item.attr") );
+            Assertions.assertEquals("itemA,itemB,itemC", eUtil.envValue("item.attr"));
         }
     }
 
@@ -84,12 +84,12 @@ class EnvironmentUtilTest {
             Assertions.assertDoesNotThrow(() -> eUtil.asString("item.attr.x", null));
 
             Assertions.assertNotNull(eUtil.asString("item.attr"));
-            Assertions.assertEquals("itemA,itemB,itemC",eUtil.asString("item.attr"));
+            Assertions.assertEquals("itemA,itemB,itemC", eUtil.asString("item.attr"));
             Assertions.assertNotNull(eUtil.asString("item.attr.x"));
             Assertions.assertEquals("", eUtil.asString("item.attr.x"));
             Assertions.assertNotNull(eUtil.asString("item.attr.x", null));
-            Assertions.assertEquals("",eUtil.asString("item.attr.x", null));
-            Assertions.assertEquals("a",eUtil.asString("item.attr.x", "a"));
+            Assertions.assertEquals("", eUtil.asString("item.attr.x", null));
+            Assertions.assertEquals("a", eUtil.asString("item.attr.x", "a"));
             Assertions.assertEquals("", eUtil.asString(null));
         }
         {//step 2
@@ -498,7 +498,7 @@ class EnvironmentUtilTest {
             var eUtil = new EnvironmentUtil(environment);
             var value = eUtil.asEnums("item.attr", TypeTest.class);
             Assertions.assertNotNull(value);
-            Assertions.assertEquals(1L,value.size());
+            Assertions.assertEquals(1L, value.size());
             Assertions.assertTrue(value.contains(TypeTest.enumA));
         }
     }
@@ -632,7 +632,7 @@ class EnvironmentUtilTest {
             Assertions.assertTrue(eUtil.asListOfInt("item.attr.ZZZ", null).isEmpty());
             var list = eUtil.asListOfInt("item.list");
             Assertions.assertNotNull(list);
-            Assertions.assertEquals( 3L, list.size());
+            Assertions.assertEquals(3L, list.size());
             Assertions.assertTrue(list.contains(1));
             Assertions.assertTrue(list.contains(2));
             Assertions.assertTrue(list.contains(3));
@@ -670,7 +670,7 @@ class EnvironmentUtilTest {
             var eUtil = new EnvironmentUtil(environment);
             var list = eUtil.asListOfInt("item.list");
             Assertions.assertNotNull(list);
-            Assertions.assertEquals( 3L, list.size());
+            Assertions.assertEquals(3L, list.size());
             Assertions.assertTrue(list.contains(1));
             Assertions.assertTrue(list.contains(2));
             Assertions.assertTrue(list.contains(3));

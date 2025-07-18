@@ -1,7 +1,7 @@
 package com.littlecode.tests;
 
-import com.littlecode.exceptions.ArithmeticException;
 import com.littlecode.exceptions.*;
+import com.littlecode.exceptions.ArithmeticException;
 import com.littlecode.parsers.ExceptionBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
@@ -258,7 +257,7 @@ class ExceptionBuilderTest {
             throw ExceptionBuilder.ofResponse(HttpStatus.UNAUTHORIZED);
         });
         Assertions.assertThrows(ResponseStatusException.class, () -> {
-            throw ExceptionBuilder.ofResponse(HttpStatus.UNAUTHORIZED,"test");
+            throw ExceptionBuilder.ofResponse(HttpStatus.UNAUTHORIZED, "test");
         });
     }
 
@@ -319,7 +318,7 @@ class ExceptionBuilderTest {
             throw ExceptionBuilder.ofNetwork("%s: %s", "test", Object.class);
         });
         Assertions.assertThrows(ResponseStatusException.class, () -> {
-            throw ExceptionBuilder.ofResponse(HttpStatus.UNAUTHORIZED,"%s: %s", "test", Object.class);
+            throw ExceptionBuilder.ofResponse(HttpStatus.UNAUTHORIZED, "%s: %s", "test", Object.class);
         });
     }
 
@@ -392,7 +391,7 @@ class ExceptionBuilderTest {
             throw ExceptionBuilder.ofNetwork(Object.class, "test");
         });
         Assertions.assertThrows(ResponseStatusException.class, () -> {
-            throw ExceptionBuilder.ofResponse(HttpStatus.UNAUTHORIZED,Object.class, "test");
+            throw ExceptionBuilder.ofResponse(HttpStatus.UNAUTHORIZED, Object.class, "test");
         });
     }
 

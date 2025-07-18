@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)
-public class S3ClientUtilTest {
+class S3ClientUtilTest {
 
     private S3ClientUtil newS3Object() {
         var s3Object = new S3ClientUtil();
@@ -41,9 +41,26 @@ public class S3ClientUtilTest {
         return s3Object;
     }
 
+//    @Test
+//    @DisplayName("deve validar executar put")
+//    void UT_DEVE_EXECUTAR_PUT() throws Exception {
+//        var s3=S3ClientUtil
+//                .builder()
+//                .endpoint("http://localhost:4566")
+//                .region("us-east-1")
+//                .accessKey("localstack")
+//                .secretKey("localstack")
+//                .bucket("develop")
+//                .build();
+//
+//
+//        s3.put(Map.of("id", UUID.randomUUID()), "test.txt");
+//
+//    }
+
     @Test
     @DisplayName("deve validar construtor/@Data")
-    public void UT_CHECK_CONSTRUCTOR_DATA() {
+    void UT_CHECK_CONSTRUCTOR_DATA() {
         Assertions.assertDoesNotThrow(() -> new S3ClientUtil());
         Assertions.assertDoesNotThrow(() -> S3ClientUtil.builder().build());
         Assertions.assertDoesNotThrow(() -> S3ClientUtil.builder().build().getS3Client());
@@ -63,7 +80,7 @@ public class S3ClientUtilTest {
 
     @Test
     @DisplayName("deve construir credenciais")
-    public void UT_CHECK_CONSTRUCTOR_create_AwsBasicCredentials() {
+    void UT_CHECK_CONSTRUCTOR_create_AwsBasicCredentials() {
         var s3Object = newS3Object();
 
         s3Object.setAccessKey(null);
@@ -90,7 +107,7 @@ public class S3ClientUtilTest {
 
     @Test
     @DisplayName("deve construir do S3Client")
-    public void UT_CHECK_CONSTRUCTOR_new_client() {
+    void UT_CHECK_CONSTRUCTOR_new_client() {
 
         {//ok
             var s3Object=newS3Object();
@@ -118,7 +135,7 @@ public class S3ClientUtilTest {
 
     @Test
     @DisplayName("deve validar metodo put")
-    public void UT_CHECK_METHOD_PUT() throws IOException {
+    void UT_CHECK_METHOD_PUT() throws IOException {
         var s3Object=newS3ObjectMock();
         var temFile=File.createTempFile("s3-upload", ".txt");
         Mockito.when(
@@ -139,7 +156,7 @@ public class S3ClientUtilTest {
 
     @Test
     @DisplayName("deve validar metodo get")
-    public void UT_CHECK_METHOD_GET() throws IOException {
+    void UT_CHECK_METHOD_GET() throws IOException {
         var temFile=File.createTempFile("s3-get-mock", ".txt");
         IOUtil
                 .target(temFile)
@@ -154,7 +171,7 @@ public class S3ClientUtilTest {
 
     @Test
     @DisplayName("deve validar metodo delete")
-    public void UT_CHECK_METHOD_DELETE() throws IOException {
+    void UT_CHECK_METHOD_DELETE() throws IOException {
         {
             var s3Object=newS3ObjectMock();
             Assertions.assertDoesNotThrow(() -> s3Object.delete("test.txt"));
@@ -167,7 +184,7 @@ public class S3ClientUtilTest {
 
     @Test
     @DisplayName("deve validar metodo exists e eTag")
-    public void UT_CHECK_METHOD_EXISTS_E_TAG() throws IOException {
+    void UT_CHECK_METHOD_EXISTS_E_TAG() throws IOException {
         var temFile=File.createTempFile("s3-get-mock", ".txt");
         IOUtil
                 .target(temFile)
@@ -186,7 +203,7 @@ public class S3ClientUtilTest {
 
     @Test
     @DisplayName("deve validar metodo size")
-    public void UT_CHECK_METHOD_SIZE() throws IOException {
+    void UT_CHECK_METHOD_SIZE() throws IOException {
         var temFile=File.createTempFile("s3-get-mock", ".txt");
         IOUtil
                 .target(temFile)
@@ -202,7 +219,7 @@ public class S3ClientUtilTest {
 
     @Test
     @DisplayName("deve validar metodo checksum")
-    public void UT_CHECK_METHOD_CHECKSUM() throws IOException {
+    void UT_CHECK_METHOD_CHECKSUM() throws IOException {
         var temFile=File.createTempFile("s3-get-mock", ".txt");
         IOUtil
                 .target(temFile)
@@ -218,7 +235,7 @@ public class S3ClientUtilTest {
 
     @Test
     @DisplayName("deve validar metodo close")
-    public void UT_CHECK_METHOD_CLOSE() throws IOException {
+    void UT_CHECK_METHOD_CLOSE() throws IOException {
         var s3Object=newS3ObjectMock();
         Assertions.assertDoesNotThrow(() -> s3Object.delete("test.txt"));
 

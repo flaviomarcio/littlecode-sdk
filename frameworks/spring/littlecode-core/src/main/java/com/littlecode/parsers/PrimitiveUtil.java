@@ -65,8 +65,8 @@ public class PrimitiveUtil {
     }
 
     public static boolean isPrimitiveValue(Class<?> aClass) {
-        if(aClass!=null){
-            if(aClass.isPrimitive()) return true;
+        if (aClass != null) {
+            if (aClass.isPrimitive()) return true;
             return PRIMITIVE_CLASSES.containsValue(aClass);
         }
         return false;
@@ -576,7 +576,7 @@ public class PrimitiveUtil {
     }
 
     public static List<String> toStringList(String v) {
-        if (v != null && !v.isEmpty()){
+        if (v != null && !v.isEmpty()) {
             var mapper = UtilCoreConfig.newObjectMapper(FileFormat.JSON);
             Object o = null;
             try {

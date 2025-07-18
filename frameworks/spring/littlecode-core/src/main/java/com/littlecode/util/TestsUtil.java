@@ -13,13 +13,16 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 public class TestsUtil {
+    private static final List<Class<?>> classes = new ArrayList<>();
     @Setter
     private static boolean printLog = false;
-    private static final List<Class<?>> classes = new ArrayList<>();
 
     private static List<Method> getMethods(Class<?> aClass) {
         List<Method> list = new ArrayList<>(Arrays.asList(aClass.getDeclaredMethods()));
@@ -61,7 +64,7 @@ public class TestsUtil {
             for (var field : fields) {
                 try {
                     field.setAccessible(true);
-                    var response=field.get(o);
+                    var response = field.get(o);
                     if (response != null && !__return.contains(response))
                         __return.add(response);
                 } catch (Exception ignored) {
@@ -72,15 +75,15 @@ public class TestsUtil {
     }
 
     private static void checkGetterSetterFields(Object e) {
-        if(PrimitiveUtil.isPrimitiveValue(e))
+        if (PrimitiveUtil.isPrimitiveValue(e))
             return;
-        if(printLog)
+        if (printLog)
             log.info("Methods from: {}", e.getClass().getName());
         final var methods = getMethods(e.getClass());
         final var valuesFromObject = getObjectValues(e);
         for (var method : methods) {
             try {
-                if(printLog)
+                if (printLog)
                     log.info("  Method checking: {}():{}", method.getName(), method.getReturnType());
                 method.setAccessible(true);
 
@@ -92,16 +95,15 @@ public class TestsUtil {
                             method.invoke(e);
                     } catch (Exception ignored) {
                     }
-                }
-                else if(method.getParameterCount() == 1) {
-                    List<Object> list=new ArrayList<>();
+                } else if (method.getParameterCount() == 1) {
+                    List<Object> list = new ArrayList<>();
                     var type = method.getParameterTypes()[0];
-                    var typeObject=makeValueForClass(type);
-                    if(typeObject!=null)
+                    var typeObject = makeValueForClass(type);
+                    if (typeObject != null)
                         list.add(typeObject);
                     list.addAll(valuesFromObject);
-                    for(var value : list) {
-                        try{
+                    for (var value : list) {
+                        try {
                             if (Modifier.isStatic(method.getModifiers()))
                                 method.invoke(null, value);
                             else
@@ -109,11 +111,10 @@ public class TestsUtil {
                         } catch (Exception ignored) {
                         }
                     }
-                }
-                else {
+                } else {
                     var ar = new Object[method.getParameterCount()];
                     for (var i = 0; i < ar.length; i++) {
-                        try{
+                        try {
                             var type = method.getParameterTypes()[i];
                             ar[i] = makeValueForClass(type);
                             if (Modifier.isStatic(method.getModifiers()))
@@ -128,13 +129,13 @@ public class TestsUtil {
                 log.error("  Method checking: {}():{}, error: {}", method.getName(), method.getReturnType(), err.getMessage());
             }
         }
-        if(printLog)
+        if (printLog)
             log.info("Fields from: {}", e.getClass().getName());
         var fields = getFields(e.getClass());
         for (var field : fields) {
             try {
                 var fieldType = field.getType();
-                if(printLog)
+                if (printLog)
                     log.info("  Field checking : {}:{}", field.getName(), fieldType);
                 field.setAccessible(true);
                 var v = field.get(e);
@@ -187,25 +188,24 @@ public class TestsUtil {
             return UUID.randomUUID();
         if (URI.class.equals(argType))
             return URI.create("http://localhost:8080");
-        if(Object.class.equals(argType))
+        if (Object.class.equals(argType))
             return new Object();
         return null;
     }
 
     public static void checkObject(Object... list) {
         for (var e : list) {
-            List<Object> objectList=new ArrayList<>();
+            List<Object> objectList = new ArrayList<>();
             objectList.add(e);
-            if(e instanceof List l){
+            if (e instanceof List l) {
                 objectList.addAll(l);
-            }
-            else if(e.getClass().isArray()){
+            } else if (e.getClass().isArray()) {
                 int length = Array.getLength(e);
                 for (int i = 0; i < length; i++)
                     objectList.add(Array.get(e, i));
             }
             synchronized (classes) {
-                for(var o: objectList){
+                for (var o : objectList) {
                     if (!classes.contains(o.getClass()))
                         checkGetterSetterFields(o);
                     classes.add(o.getClass());

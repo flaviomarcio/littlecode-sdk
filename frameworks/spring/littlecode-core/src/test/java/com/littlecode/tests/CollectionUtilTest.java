@@ -2,7 +2,6 @@ package com.littlecode.tests;
 
 import com.littlecode.parsers.CollectionUtil;
 import com.littlecode.parsers.HashUtil;
-import com.littlecode.parsers.PrimitiveUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

@@ -23,7 +23,7 @@ import java.util.UUID;
 @ExtendWith(MockitoExtension.class)
 class SettingLoaderTest {
 
-    private static final String tmp_file_json="/tmp/file.json";
+    private static final String tmp_file_json = "/tmp/file.json";
 
     private SettingTest makeSetting(FileFormat fileFormat) {
         return SettingTest

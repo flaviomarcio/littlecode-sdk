@@ -4,7 +4,6 @@ import com.littlecode.exceptions.FrameworkException;
 import com.littlecode.exceptions.ParserException;
 import com.littlecode.parsers.HashUtil;
 import com.littlecode.parsers.ObjectUtil;
-import com.littlecode.parsers.PrimitiveUtil;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +15,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.*;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -51,16 +49,16 @@ class HashUtilTest {
     @Test
     @DisplayName("Deve validar toUUID")
     void UT_toUuid() {
-        var list= Map.of(
-                "38b3eff8baf56627478ec76a704e9b52","38b3eff8-baf5-6627-478e-c76a704e9b52",
-                "008a6f9464ef81308da1dcc6ed9106d9","008a6f94-64ef-8130-8da1-dcc6ed9106d9",
-                "c4ca4238a0b923820dcc509a6f75849b","c4ca4238-a0b9-2382-0dcc-509a6f75849b"
+        var list = Map.of(
+                "38b3eff8baf56627478ec76a704e9b52", "38b3eff8-baf5-6627-478e-c76a704e9b52",
+                "008a6f9464ef81308da1dcc6ed9106d9", "008a6f94-64ef-8130-8da1-dcc6ed9106d9",
+                "c4ca4238a0b923820dcc509a6f75849b", "c4ca4238-a0b9-2382-0dcc-509a6f75849b"
         );
         for (Map.Entry<String, String> entry : list.entrySet()) {
             var bytesIn = entry.getKey();
             var bytesOut = entry.getValue();
             UUID uuidOut = UUID.fromString(bytesOut);
-            Assertions.assertEquals(uuidOut.toString(),bytesOut);
+            Assertions.assertEquals(uuidOut.toString(), bytesOut);
             Assertions.assertTrue(HashUtil.isUuid(bytesIn));
             Assertions.assertTrue(HashUtil.isUuid(bytesOut));
             Assertions.assertEquals(HashUtil.toUuid(bytesIn), uuidOut);
@@ -73,7 +71,7 @@ class HashUtilTest {
     void deveValidarFormatStringToMd5() {
         String bytesIn = "1";
         String bytesOut = "c4ca4238a0b923820dcc509a6f75849b";
-        Assertions.assertTrue(HashUtil.formatStringToMd5((String)null).isEmpty());
+        Assertions.assertTrue(HashUtil.formatStringToMd5((String) null).isEmpty());
         Assertions.assertTrue(HashUtil.formatStringToMd5("").isEmpty());
         Assertions.assertTrue(HashUtil.formatStringToMd5(" ").isEmpty());
         Assertions.assertTrue(HashUtil.formatStringToMd5((StringBuilder) null).isEmpty());
@@ -86,7 +84,7 @@ class HashUtilTest {
     @Test
     @DisplayName("deve validar HashUtil.createMessageDigest")
     void UT_createMessageDigest() {
-        Assertions.assertThrows(ParserException.class, ()-> HashUtil.createMessageDigest("TEST"));
+        Assertions.assertThrows(ParserException.class, () -> HashUtil.createMessageDigest("TEST"));
         Assertions.assertNotNull(HashUtil.createMessageDigest((HashUtil.MD_5_STRATEGY)));
         Assertions.assertNotNull(HashUtil.createMessageDigest((HashUtil.SHA_256_STRATEGY)));
     }
@@ -105,15 +103,15 @@ class HashUtilTest {
     @Test
     @DisplayName("Deve validar toUuid")
     void deveValidar_toUuid() {
-        var uuid=UUID.randomUUID();
+        var uuid = UUID.randomUUID();
         String uuidBytes = uuid.toString()
-                .replace("-","")
-                .replace("{","")
-                .replace("}","");
+                .replace("-", "")
+                .replace("{", "")
+                .replace("}", "");
         Assertions.assertFalse(uuid.equals(HashUtil.toUuid(UUID.randomUUID().toString())));
         Assertions.assertTrue(uuid.equals(HashUtil.toUuid(uuid.toString())));
         Assertions.assertTrue(uuid.equals(HashUtil.toUuid(uuidBytes)));
-        Assertions.assertNull(HashUtil.toUuid((String)null));
+        Assertions.assertNull(HashUtil.toUuid((String) null));
         Assertions.assertNull(HashUtil.toUuid(""));
         Assertions.assertNull(HashUtil.toUuid(" "));
     }
@@ -121,11 +119,11 @@ class HashUtilTest {
     @Test
     @DisplayName("Deve validar toMd5")
     void UT_toMd5() {
-        var uuid=UUID.randomUUID();
+        var uuid = UUID.randomUUID();
         String uuidBytes = uuid.toString()
-                .replace("-","")
-                .replace("{","")
-                .replace("}","");
+                .replace("-", "")
+                .replace("{", "")
+                .replace("}", "");
         Assertions.assertNull(HashUtil.toMd5(null, null));
         Assertions.assertNull(HashUtil.toMd5("%s", new String[0]));
         Assertions.assertNull(HashUtil.toMd5("%s", null));
@@ -133,7 +131,7 @@ class HashUtilTest {
         Assertions.assertEquals(HashUtil.toMd5("%s", uuidBytes), uuidBytes);
         Assertions.assertEquals(HashUtil.toMd5(uuidBytes), uuidBytes);
         Assertions.assertEquals(HashUtil.toMd5(uuid.toString()), uuidBytes);
-        Assertions.assertTrue(HashUtil.toMd5((String)null).isEmpty());
+        Assertions.assertTrue(HashUtil.toMd5((String) null).isEmpty());
         Assertions.assertTrue(HashUtil.toMd5("").isEmpty());
         Assertions.assertFalse(HashUtil.toMd5(" ").isEmpty());
     }
@@ -149,14 +147,14 @@ class HashUtilTest {
         Assertions.assertNull(HashUtil.toMd5Uuid("%s", new String[0]));
         Assertions.assertNull(HashUtil.toMd5Uuid(null, null));
         Assertions.assertNull(HashUtil.toMd5Uuid(null, new String[0]));
-        Assertions.assertEquals(HashUtil.toMd5Uuid("%s", bytesIn),uuidOut);
+        Assertions.assertEquals(HashUtil.toMd5Uuid("%s", bytesIn), uuidOut);
 
         Assertions.assertNull(HashUtil.toMd5Uuid((Object) null));
         Assertions.assertNull(HashUtil.toMd5Uuid((String) null));
         Assertions.assertNull(HashUtil.toMd5Uuid((InputStream) null));
 
         Assertions.assertNull(HashUtil.toMd5Uuid(new Object()));
-        Assertions.assertEquals(HashUtil.toMd5Uuid(bytesIn),uuidOut);
+        Assertions.assertEquals(HashUtil.toMd5Uuid(bytesIn), uuidOut);
 
         Assertions.assertEquals(HashUtil.toMd5Uuid(bytesIn), uuidOut);
         Assertions.assertEquals(HashUtil.toMd5Uuid("%s", bytesIn), uuidOut);
@@ -208,7 +206,7 @@ class HashUtilTest {
         Assertions.assertTrue(HashUtil.toSha256((Object) null).isEmpty());
         Assertions.assertTrue(HashUtil.toSha256((String) null).isEmpty());
         Assertions.assertTrue(HashUtil.toSha256((InputStream) null).isEmpty());
-        Assertions.assertTrue(HashUtil.toSha256((Object)null).isEmpty());
+        Assertions.assertTrue(HashUtil.toSha256((Object) null).isEmpty());
         Assertions.assertTrue(HashUtil.toSha256(new Object()).isEmpty());
         Assertions.assertTrue(HashUtil.toSha256("").isEmpty());
         Assertions.assertFalse(HashUtil.toSha256(" ").isEmpty());
@@ -226,7 +224,7 @@ class HashUtilTest {
         UUID bytesOutUuid = UUID.fromString("6befbfbd-efbf-bd73-efbf-bd34efbfbdef");
         var hashObject = ObjectCheck.builder().id(bytesOutUuid).build();
         if (hashObject != null) {
-            var hashObjectSha256="J��\u0002�\u000E��qR����s1��uSp���m��� ��";
+            var hashObjectSha256 = "J��\u0002�\u000E��qR����s1��uSp���m��� ��";
 
 
             var hashObjectJson = ObjectUtil.toString(hashObject);
@@ -311,13 +309,13 @@ class HashUtilTest {
 
     @Test
     @DisplayName("Deve validar toSha256Hex")
-    void UT_toSha256Hex()  {
+    void UT_toSha256Hex() {
         String bytesIn = "1";
         String bytesOut = "k��s�4��k�N�Z?WG���/\u001DI�\u001ERݷ�[K";
         String bytesOutHex = "6befbfbdefbfbd73efbfbd34efbfbdefbfbd6befbfbd4eefbfbd5a3f5747efbfbdefbfbdefbfbd2f1d49efbfbd1e52ddb7efbfbd5b4b";
         UUID bytesOutUuid = UUID.fromString("6befbfbd-efbf-bd73-efbf-bd34efbfbdef");
 
-        Assertions.assertTrue(HashUtil.toSha256Hex((String)null).isEmpty());
+        Assertions.assertTrue(HashUtil.toSha256Hex((String) null).isEmpty());
         Assertions.assertTrue(HashUtil.toSha256Hex((Object) null).isEmpty());
         Assertions.assertTrue(HashUtil.toSha256Hex((String) null).isEmpty());
         Assertions.assertTrue(HashUtil.toSha256Hex((InputStream) null).isEmpty());
@@ -330,7 +328,7 @@ class HashUtilTest {
 
         var hashObject = ObjectCheck.builder().id(bytesOutUuid).build();
         if (hashObject != null) {
-            var hashObjectSha256="J��\u0002�\u000E��qR����s1��uSp���m��� ��";
+            var hashObjectSha256 = "J��\u0002�\u000E��qR����s1��uSp���m��� ��";
             var hashObjectHash = UUID.fromString("4aefbfbd-efbf-bd02-efbf-bd0eefbfbdef");
             var hashObjectSha256Hex = "4aefbfbdefbfbd02efbfbd0eefbfbdefbfbd7152efbfbdefbfbdefbfbdefbfbd7331efbfbdefbfbd755370efbfbdefbfbdefbfbd6defbfbdefbfbdefbfbd20efbfbdefbfbd";
             var hashObjectJson = ObjectUtil.toString(hashObject);

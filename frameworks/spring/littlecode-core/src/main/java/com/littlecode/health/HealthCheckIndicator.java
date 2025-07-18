@@ -1,14 +1,9 @@
 package com.littlecode.health;
 
-import com.littlecode.parsers.DateUtil;
-import com.littlecode.parsers.PrimitiveUtil;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
-
-import java.time.Duration;
-import java.time.LocalDateTime;
 
 @Slf4j
 public class HealthCheckIndicator implements HealthIndicator {

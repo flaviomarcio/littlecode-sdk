@@ -30,7 +30,7 @@ class SmartValidatorUtilTest {
     @DisplayName("deve validar exceptions")
     void deveValidarExceptions() {
         {
-            var util=new SmartValidatorUtil(Mockito.mock(SmartValidator.class));
+            var util = new SmartValidatorUtil(Mockito.mock(SmartValidator.class));
             Assertions.assertThrows(NullPointerException.class, () -> util.check(null));
         }
     }
@@ -45,11 +45,12 @@ class SmartValidatorUtilTest {
                 .build();
         Assertions.assertDoesNotThrow(() -> util.check(obj));
     }
+
     @Test
     @DisplayName("deve validar recursividade em objetos")
     void deveValidarRecursividadeEmObjetos() {
         var util = new SmartValidatorUtil(Mockito.mock(SmartValidator.class));
-        var obj=PrivateDTO
+        var obj = PrivateDTO
                 .builder()
                 .localCustomClass(new CustomClass())
                 .build();
@@ -122,13 +123,13 @@ class SmartValidatorUtilTest {
         PrivateDTO() {
             this.uuid = UUID.randomUUID();
             this.localDate = null;
-            this.localCustomClass =null;
+            this.localCustomClass = null;
         }
     }
 
     @Data
     @NoArgsConstructor
     static class CustomClass {
-        private Map<String, String> stringStringMap=new HashMap<>();
+        private Map<String, String> stringStringMap = new HashMap<>();
     }
 }

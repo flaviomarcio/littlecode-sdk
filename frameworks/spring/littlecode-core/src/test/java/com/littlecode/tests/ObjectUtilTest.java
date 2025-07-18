@@ -38,8 +38,6 @@ class ObjectUtilTest {
     private static final LocalDate MAX_DATE = LocalDate.of(1901, 1, 1);
     private static final LocalTime MAX_TIME = LocalTime.of(23, 59, 59);
     private static final LocalDateTime MAX_DATETIME = LocalDateTime.of(MAX_DATE, MAX_TIME);
-    private static final UUID uuidOut1 = UUID.randomUUID();
-    private static final UUID uuidOut2 = UUID.randomUUID();
     private static final ObjectCheck objectSrc = getObjectChecker();
     private static final String objectSrcString = getObjectString(objectSrc);
     //estatico para garantir que o md5 está sendo gerado como esperado
@@ -48,6 +46,8 @@ class ObjectUtilTest {
             .replace("-", "")
             .replace("{", "")
             .replace("}", "");
+    private static final UUID uuidOut1 = UUID.randomUUID();
+    private static final UUID uuidOut2 = UUID.randomUUID();
 
     @SuppressWarnings("SameParameterValue")
     private static String getObjectString(Object o) {
@@ -289,17 +289,17 @@ class ObjectUtilTest {
         var fileSrc = new File("/tmp/oj.json");
         IOUtil.writeAll(fileSrc, byteSrc);
 
-        for(var aBoolean : new boolean[]{true, false}) {
+        for (var aBoolean : new boolean[]{true, false}) {
             ObjectUtil.setPrintLog(aBoolean);
-            Assertions.assertDoesNotThrow(() -> ObjectUtil.update(new ObjectCheck(), (String)null));
-            Assertions.assertDoesNotThrow(() -> ObjectUtil.update((ObjectCheck)null, (String)null));
+            Assertions.assertDoesNotThrow(() -> ObjectUtil.update(new ObjectCheck(), (String) null));
+            Assertions.assertDoesNotThrow(() -> ObjectUtil.update((ObjectCheck) null, (String) null));
             Assertions.assertDoesNotThrow(() -> ObjectUtil.update(new ObjectCheck(), "...."));
             Assertions.assertDoesNotThrow(() -> ObjectUtil.update(new ObjectCheck(), ObjectCheck.builder()));
             Assertions.assertDoesNotThrow(() -> ObjectUtil.update(new ObjectCheck(), byteSrc));
             Assertions.assertDoesNotThrow(() -> ObjectUtil.update(new ObjectCheck(), fileSrc));
             Assertions.assertDoesNotThrow(() -> ObjectUtil.update(new ObjectCheck(), new File("/tmp/fake-file")));
-            Assertions.assertDoesNotThrow(() -> ObjectUtil.update(new ObjectCheck(), (File)null));
-            Assertions.assertDoesNotThrow(() -> ObjectUtil.update((ObjectCheck)null, new File("/tmp/fake-file")));
+            Assertions.assertDoesNotThrow(() -> ObjectUtil.update(new ObjectCheck(), (File) null));
+            Assertions.assertDoesNotThrow(() -> ObjectUtil.update((ObjectCheck) null, new File("/tmp/fake-file")));
             Assertions.assertDoesNotThrow(() -> ObjectUtil.update(new ObjectCheck(), fileSrc.toPath()));
         }
 
@@ -353,7 +353,7 @@ class ObjectUtilTest {
         Assertions.assertNotNull(objNew);
         Assertions.assertEquals(objNew.getClass(), ObjectCheck.class);
 
-        for(var aBool : List.of(true,false)){
+        for (var aBool : List.of(true, false)) {
             ObjectUtil.setPrintLog(aBool);
             Assertions.assertDoesNotThrow(() -> ObjectUtil.createWithArgsConstructor(null));
             Assertions.assertDoesNotThrow(() -> ObjectUtil.createWithArgsConstructor(null, (Object[]) null));
@@ -386,7 +386,6 @@ class ObjectUtilTest {
         Assertions.assertEquals(ObjectUtil.classToName(null), "");
         Assertions.assertNotNull(ObjectUtil.classToName(""), String.class.getName());
         Assertions.assertNotNull(ObjectUtil.classToName(ObjectCheckType.Type1), ObjectCheckType.class.getName());
-
 
 
         Assertions.assertDoesNotThrow(() -> ObjectUtil.getClassesBySorted(null));
@@ -444,13 +443,13 @@ class ObjectUtilTest {
     @AllArgsConstructor
     @NoArgsConstructor
     static class ObjectCheck extends ObjectBase {
+        public static final String NO_GETTER_SETTER = "ADMIN";
         @Getter
         @Setter
         private SubObjectCheck sub;
         @Getter
         @Setter
         private ObjectCheckType type;
-
         @NotNull
         @Getter
         @Setter
@@ -473,7 +472,6 @@ class ObjectUtilTest {
         @Getter
         @Setter
         private boolean boolValue;
-
         @Getter
         @Setter
         private String stringValue;
@@ -489,18 +487,11 @@ class ObjectUtilTest {
         @Getter
         @Setter
         private Boolean boolValueClass;
-
-
         @Getter
         private Integer justGetter;
-
         @Setter
         private Integer justSetter;
-
-
         private Integer noGetterSetter;
-
-        public static final String NO_GETTER_SETTER = "ADMIN";
     }
 
     @Data

@@ -409,7 +409,6 @@ class ObjectReturnTest {
         Assertions.assertDoesNotThrow(() -> messageMaker.Accepted(null, null));
 
 
-
         Assertions.assertDoesNotThrow(() -> messageMaker.NoContent());
         Assertions.assertDoesNotThrow(() -> messageMaker.NoContent(null));
         Assertions.assertDoesNotThrow(() -> messageMaker.NoContent("%s", "test"));

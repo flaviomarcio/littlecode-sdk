@@ -1,6 +1,8 @@
 package com.littlecode.tests;
 
-import com.littlecode.health.*;
+import com.littlecode.health.HealthCheck;
+import com.littlecode.health.HealthCheckConfig;
+import com.littlecode.health.HealthCheckEvent;
 import com.littlecode.util.TestsUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,7 +25,7 @@ class HealthCheckTest {
     @DisplayName("deve validar constructors")
     void deveValidarConstructors() {
         HealthCheck.reset();
-        var config=new HealthCheckConfig();
+        var config = new HealthCheckConfig();
         Assertions.assertDoesNotThrow(() -> HealthCheck.createHealthIndicator(config));
         Assertions.assertDoesNotThrow(() -> HealthCheck.createHealthIndicator(config, new HealthCheckEvent(config)));
     }
@@ -39,7 +41,7 @@ class HealthCheckTest {
     void deveExecutarIndicatorComLimiteDeExecucaoDeAplicacao() {
         HealthCheck.reset();
 
-        final var config=new HealthCheckConfig();
+        final var config = new HealthCheckConfig();
         var healthCheck = HealthCheck.createHealthIndicator(config);
         Assertions.assertNull(healthCheck.getEvent().createHealth());
 
@@ -71,7 +73,7 @@ class HealthCheckTest {
     @DisplayName("deve executar Indicator com limite de osiosidade de uma aplicacao")
     void deveExecutarIndicatorComLimiteDeOciosidadeDeAplicacao() {
         HealthCheck.reset();
-        final var config=new HealthCheckConfig();
+        final var config = new HealthCheckConfig();
         var healthCheck = HealthCheck.createHealthIndicator(config);
         Assertions.assertNull(healthCheck.getEvent().createHealth());
         config.setStopOnIdle(true);
@@ -98,7 +100,7 @@ class HealthCheckTest {
     @DisplayName("deve executar Indicator com falha existente")
     void deveExecutarIndicatorComFalhaExistente() {
         HealthCheck.reset();
-        final var config=new HealthCheckConfig();
+        final var config = new HealthCheckConfig();
         var healthCheck = HealthCheck.createHealthIndicator(config);
         {
             Assertions.assertNull(healthCheck.getEvent().createHealth());
@@ -118,7 +120,7 @@ class HealthCheckTest {
     @DisplayName("deve executar Indicator e validar healt")
     void deveExecutarIndicatorEValidarHealt() {
         HealthCheck.reset();
-        final var config=new HealthCheckConfig();
+        final var config = new HealthCheckConfig();
         var healthCheck = HealthCheck.createHealthIndicator(config);
         {
             config.setStopOnFail(true);

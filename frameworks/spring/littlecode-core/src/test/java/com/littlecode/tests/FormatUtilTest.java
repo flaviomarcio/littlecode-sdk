@@ -117,9 +117,9 @@ class FormatUtilTest {
         var dateTime = LocalDateTime.of(date, time);
         Assertions.assertEquals(FormatUtil.formatDateTime(dateTime), "01/01/1901 23:59:59");
         Assertions.assertEquals(FormatUtil.formatDate(date), "01/01/1901");
-        Assertions.assertEquals(FormatUtil.formatDate(LocalDateTime.of(date,LocalTime.now())), "01/01/1901");
+        Assertions.assertEquals(FormatUtil.formatDate(LocalDateTime.of(date, LocalTime.now())), "01/01/1901");
         Assertions.assertEquals(FormatUtil.formatTime(time), "23:59:59");
-        Assertions.assertEquals(FormatUtil.formatTime(LocalDateTime.of(date,time)), "23:59:59");
+        Assertions.assertEquals(FormatUtil.formatTime(LocalDateTime.of(date, time)), "23:59:59");
 
         Assertions.assertEquals(FormatUtil.formatValue(dateTime), "01/01/1901 23:59:59");
         Assertions.assertEquals(FormatUtil.formatValue(date), "01/01/1901");

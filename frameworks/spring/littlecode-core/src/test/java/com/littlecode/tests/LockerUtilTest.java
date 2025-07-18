@@ -16,27 +16,27 @@ class LockerUtilTest {
     @Test
     @DisplayName("Deve validar Target Getter/Setter")
     void deveValidarTargetGetterSetter() {
-        TestsUtil.checkObject(new LockerUtil.Target("",false));
+        TestsUtil.checkObject(new LockerUtil.Target("", false));
     }
 
     @Test
     @DisplayName("Deve validar target")
     void deveValidarTarget() {
-        var lockerUtil=new LockerUtil();
+        var lockerUtil = new LockerUtil();
         Assertions.assertNotNull(lockerUtil.target("locker-1"));
     }
 
     @Test
     @DisplayName("Deve validar reset")
     void deveValidarReset() {
-        var lockerUtil=new LockerUtil();
+        var lockerUtil = new LockerUtil();
         lockerUtil.reset();
     }
 
     @Test
     @DisplayName("Deve validar lock e unlock")
     void deveValidarLock() {
-        var lockerUtil=new LockerUtil();
+        var lockerUtil = new LockerUtil();
         Assertions.assertTrue(lockerUtil.lock("locker-1"));
         Assertions.assertTrue(lockerUtil.unlock("locker-1"));
 
@@ -47,7 +47,7 @@ class LockerUtilTest {
     @Test
     @DisplayName("Deve validar falha no lock")
     void deveValidarFalhaNoLock() {
-        var lockerUtil=new LockerUtil();
+        var lockerUtil = new LockerUtil();
         Assertions.assertTrue(lockerUtil.lock("locker-1"));
         Assertions.assertFalse(lockerUtil.lock("locker-1"));
 
@@ -59,7 +59,7 @@ class LockerUtilTest {
     @Test
     @DisplayName("Deve validar falha no unlock")
     void deveValidarFalhaNoUnLock() {
-        var lockerUtil=new LockerUtil();
+        var lockerUtil = new LockerUtil();
         Assertions.assertTrue(lockerUtil.lock());
         Assertions.assertTrue(lockerUtil.unlock());
         Assertions.assertFalse(lockerUtil.unlock());
@@ -68,7 +68,7 @@ class LockerUtilTest {
     @Test
     @DisplayName("Deve validar isLocked e unlock")
     void deveValidarIsLocked() {
-        var lockerUtil=new LockerUtil();
+        var lockerUtil = new LockerUtil();
         {
             Assertions.assertTrue(lockerUtil.lock("locker-1"));
             Assertions.assertTrue(lockerUtil.isLocked("locker-1"));
@@ -87,7 +87,7 @@ class LockerUtilTest {
     @Test
     @DisplayName("Deve validar execute com sucesso")
     void deveValidarExecutorComSucesso() {
-        var lockerUtil=new LockerUtil();
+        var lockerUtil = new LockerUtil();
 
         Assertions.assertFalse(
                 lockerUtil.executor()

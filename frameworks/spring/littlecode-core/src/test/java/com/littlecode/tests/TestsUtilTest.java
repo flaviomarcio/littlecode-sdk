@@ -3,7 +3,8 @@ package com.littlecode.tests;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.littlecode.util.TestsUtil;
-import lombok.*;
+import lombok.Data;
+import lombok.Getter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,7 +12,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.stereotype.Service;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.time.LocalDate;
@@ -26,7 +26,7 @@ class TestsUtilTest {
     @Test
     @DisplayName("Deve validar getter|setter")
     void deveValidarClasses() {
-        for(var vBool: List.of(true,false)) {
+        for (var vBool : List.of(true, false)) {
             TestsUtil.setPrintLog(vBool);
             Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(new Person()));
             Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(new DTO_Class_AllTypes()));
@@ -36,12 +36,12 @@ class TestsUtilTest {
     @Test
     @DisplayName("Deve validar enums")
     void deveValidarEnums() {
-        for(var vBool: List.of(true,false)){
+        for (var vBool : List.of(true, false)) {
             TestsUtil.setPrintLog(vBool);
             Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(UUID.class, UUID.randomUUID()));
             Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(Enum_A.values()));
-            Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(List.of(Enum_B.values(),Enum_C.values())));
-            Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(Enum_E.values(),Enum_D.values()));
+            Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(List.of(Enum_B.values(), Enum_C.values())));
+            Assertions.assertDoesNotThrow(() -> TestsUtil.checkObject(Enum_E.values(), Enum_D.values()));
         }
     }
 
@@ -123,9 +123,11 @@ class TestsUtilTest {
         PROVIDER(0), PROFESSIONAL(1), CUSTOMER(2), SEGMENT(3), PRODUCT(4), PRODUCT_AVA(5), PROFESSION(6), ALL_CUSTOMER(7), ALL_PROFESSIONAL(8);
         @JsonValue
         private final Integer value;
-        Enum_E(int value){
-            this.value=value;
+
+        Enum_E(int value) {
+            this.value = value;
         }
+
         @JsonCreator
         static Enum_E of(Object id) {
             if (id instanceof Integer v) {
@@ -145,10 +147,10 @@ class TestsUtilTest {
     @Service
     @Data
     static class DTO_Class_AllTypes {
+        private static Object argObject;
+        private static Object argObject2;
         private Object id;
         private Boolean argBoolean;
-        private static Object argObject;
-
         private UUID argUUID;
         private URI argURI;
         private LocalDate argLocalDate;
@@ -157,7 +159,6 @@ class TestsUtilTest {
         private int argInt;
         private Integer argInteger;
         private Long argLong;
-        private static Object argObject2;
         private boolean argBoolean2;
         private long argLong2;
         private Double argDouble;
@@ -194,7 +195,7 @@ class TestsUtilTest {
     }
 
     @Data
-    static class Person{
+    static class Person {
         private UUID id;
         private LocalDateTime dt;
         private UUID rev;

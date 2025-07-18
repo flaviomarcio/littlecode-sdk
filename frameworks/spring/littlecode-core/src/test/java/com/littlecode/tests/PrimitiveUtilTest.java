@@ -54,7 +54,7 @@ class PrimitiveUtilTest {
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.isPrimitiveValue((Class<?>) null));
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.isPrimitiveValue(int.class));
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.isPrimitiveValue(LocalDate.class));
-        Assertions.assertFalse(PrimitiveUtil.isPrimitiveValue((Object)null));
+        Assertions.assertFalse(PrimitiveUtil.isPrimitiveValue((Object) null));
         Assertions.assertFalse(PrimitiveUtil.isPrimitiveValue(new Object()));
         Assertions.assertFalse(PrimitiveUtil.isPrimitiveValue(new StringBuilder()));
 
@@ -284,7 +284,7 @@ class PrimitiveUtilTest {
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toDouble((String) null));
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toDouble(""));
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toDouble(""));
-        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toDouble((Double)null,0));
+        Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toDouble((Double) null, 0));
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toDouble(100.11001D, 2));
         Assertions.assertDoesNotThrow(() -> PrimitiveUtil.toDouble(0D, 0));
 

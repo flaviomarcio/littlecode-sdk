@@ -1,7 +1,7 @@
 package com.littlecode.parsers;
 
-import com.littlecode.exceptions.ArithmeticException;
 import com.littlecode.exceptions.*;
+import com.littlecode.exceptions.ArithmeticException;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -371,15 +371,15 @@ public class ExceptionBuilder {
     }
 
     public static RuntimeException ofResponse(HttpStatusCode statusCode, String format, Object... args) {
-        return new ResponseStatusException(statusCode, String.format(format,args));
+        return new ResponseStatusException(statusCode, String.format(format, args));
     }
 
     //List
-    public static <T> RuntimeException  ofBadRequest(List<T> args) {
+    public static <T> RuntimeException ofBadRequest(List<T> args) {
         return of(Type.BadRequest, ObjectUtil.toString(args));
     }
 
-    public static <T>RuntimeException ofResponse(HttpStatusCode statusCode, List<T> args) {
+    public static <T> RuntimeException ofResponse(HttpStatusCode statusCode, List<T> args) {
         return new ResponseStatusException(statusCode, ObjectUtil.toString(args));
     }
 

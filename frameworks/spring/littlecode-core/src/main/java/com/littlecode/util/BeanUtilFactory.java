@@ -1,23 +1,19 @@
 package com.littlecode.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.cfg.MapperConfig;
 import com.littlecode.config.UtilCoreConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
 import javax.net.ssl.*;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 
 @Slf4j
@@ -33,11 +29,11 @@ public class BeanUtilFactory {
         return UtilCoreConfig.newModelMapper();
     }
 
-    public static RestTemplate createRestTemplate(){
+    public static RestTemplate createRestTemplate() {
         return createRestTemplate("TLS");
     }
 
-    public static RestTemplate createRestTemplate(String sslInstance){
+    public static RestTemplate createRestTemplate(String sslInstance) {
         // Create a trust manager that does not validate certificate chains
         TrustManager[] trustAllCerts = getTrustManagers();
 
@@ -65,20 +61,6 @@ public class BeanUtilFactory {
         return restTemplate;
     }
 
-    public static class InternalResponseErrorHandler implements ResponseErrorHandler {
-
-        @Override
-        public boolean hasError(ClientHttpResponse response) throws IOException {
-            // Sempre retorna false para indicar que nenhuma resposta é um "erro"
-            return false;
-        }
-
-        @Override
-        public void handleError(ClientHttpResponse response) throws IOException {
-            // Não faz nada, evitando que exceções sejam lançadas
-        }
-    }
-
     public static TrustManager[] getTrustManagers() {
         TrustManager[] trustAllCerts = new TrustManager[]{
                 new X509TrustManager() {
@@ -94,5 +76,19 @@ public class BeanUtilFactory {
                 }
         };
         return trustAllCerts;
+    }
+
+    public static class InternalResponseErrorHandler implements ResponseErrorHandler {
+
+        @Override
+        public boolean hasError(ClientHttpResponse response) throws IOException {
+            // Sempre retorna false para indicar que nenhuma resposta é um "erro"
+            return false;
+        }
+
+        @Override
+        public void handleError(ClientHttpResponse response) throws IOException {
+            // Não faz nada, evitando que exceções sejam lançadas
+        }
     }
 }
